@@ -9,6 +9,8 @@
 
 Next useful step: build/review the four-page synthetic portal, starting with MapLibre map, tracker list and device detail. No VM needed for this step. Later pin backend/worker dependencies when their interfaces are implemented.
 
+Publication/CI evidence: pushed baseline commit `cae58e5` to `origin/main`. The first [GitHub-hosted Portal CI job](https://github.com/lfg-seth/snorr-meshlink/actions/runs/38422409410) completed successfully, including lockfile installation, checks/build and artifact upload. No deployment occurred.
+
 ## 2026-10-13 — Portal work brought forward without nodes
 
 - Owner has no nodes available for bench testing and requested moving forward with portal design and building. Reviewed the agreed portal, naming and infrastructure warning requirements; hardware testing is not a prerequisite for a synthetic prototype.
