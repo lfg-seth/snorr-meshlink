@@ -17,7 +17,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Decisions so far
 
-None resolved. The owner's confirmed project direction is recorded in the project brief; pilot design choices are open.
+- [Distinguish LoRaWAN and the candidate mesh firmware](issues/03-protocol-baseline.md) — Separate architectures; existing timing settings warrant a configuration-first evaluation, while hardware compatibility and passive behavior still need bench evidence.
 
 ## Not yet specified
 
