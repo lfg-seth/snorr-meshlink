@@ -16,6 +16,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 - Inventory the owner's significant existing hardware supply and use it before buying more.
 - Repeaters are intended to use solar power and 18650 batteries. Specific pack, charging, protection, and weather designs remain open.
 - Every member node is intended to have dedicated GPS.
+- Initial scale: roughly 20 member trackers, with as few as 5 for the first trial (owner input on 2026-10-12).
+- Tentative GPS target: 5–15 minutes. Whether this means broadcast interval, maximum position age at dispatch, or both remains to be confirmed; this is a starting range, not a tested guarantee.
 - Support members who use companion apps and members who operate entirely from the device. Some may use a keyboard-equipped, BlackBerry-style node.
 - Provide a web portal/dashboard for dispatch and members to see nodes and status.
 - Use a closed private network. The owner reports all participating members consent to tracking and its privacy implications; operational access, retention, and public-content permissions still need definition.
@@ -30,7 +32,7 @@ Some vehicles may provide internet through Starlink or cellular service. One or 
 ## Open choices
 
 - Network architecture: the owner said “LoRaWAN” while also naming Meshtastic and MeshCore. Establish whether the intended system is a LoRa mesh, LoRaWAN, or a combination before choosing firmware.
-- Pilot size, terrain/routes, desired position age, mission duration, and acceptable missing-position rate.
+- Pilot terrain/routes, precise dispatch position-age target, mission duration, and acceptable missing-position rate. Initial scale is 5 toward roughly 20 trackers; the owner's GPS starting range is 5–15 minutes.
 - Existing hardware models, counts, condition, radio variants, and GPS capabilities.
 - Message workflow, display/button needs, and behavior without a phone or internet.
 - Site permission, radio configuration/compliance, link coverage, and service access.
