@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-13 — Project status review
+
+- Reviewed the project brief, session history, pilot map, tracker, inventory, wishlist and planned field criteria. Pilot approach and portal requirements are agreed; no bench/field results or deployed portal are recorded.
+- Reconfirmed the planned six-V4 pilot includes only two on-hand V4s, with two purchases and two recoveries pending. Hardware identification, firmware/configuration pinning, passive GPS freshness, runtime and outage checks remain next.
+- Recommended starting with the owned-hardware passive-tracking bench baseline; the next software step remains a synthetic-data four-page portal mockup. MQTT connectivity investigation and wishlist items stay deferred. No new decision, ticket claim, implementation or hardware test.
+
+Next useful step: identify the two on-hand V4 revisions/GPS wiring, two undamaged RAK cores and two V3 variants, then prepare a repeatable stock-firmware bench configuration and test procedure.
+
 ## 2026-10-12 — Project setup
 
 - Captured the owner's mission, priorities, existing-hardware preference, intended member devices, solar/18650 repeaters, backhaul possibilities, dashboard, content, and grant-reporting goals.
