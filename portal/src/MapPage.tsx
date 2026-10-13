@@ -53,6 +53,8 @@ export default function MapPage({
   const pointCarrier =
     members.find((m) => m.id === pointAssignment?.memberId)?.name ??
     `Device #${selected.number} · unassigned at measurement time`;
+  const contactAt =
+    selected.lastContactAt ?? selected.position?.receivedAt ?? null;
   const age = selected.position
     ? positionAgeSeconds(selected.position, now)
     : null;
@@ -249,24 +251,18 @@ export default function MapPage({
             <dd>{timeLabel(selected.position?.measuredAt ?? null)}</dd>
           </div>
           <div>
-            <dt>Received at</dt>
+            <dt>Position received at</dt>
             <dd>
               {selected.position
                 ? timeLabel(selected.position.receivedAt)
-                : 'Never received'}
+                : 'No position receipt'}
             </dd>
           </div>
           <div>
             <dt>Last contact age</dt>
             <dd>
-              {selected.position
-                ? ageLabel(
-                    (now -
-                      Date.parse(
-                        selected.lastContactAt ?? selected.position.receivedAt,
-                      )) /
-                      1000,
-                  )
+              {contactAt
+                ? ageLabel((now - Date.parse(contactAt)) / 1000)
                 : 'None'}
             </dd>
           </div>
