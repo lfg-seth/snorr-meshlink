@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-13 — Firmware fork added and RAK release branch published
+
+- Owner requested adding `lfg-seth/firmware` as a submodule and creating a current-public-release RAK branch. Added `firmware/`, configured its tracked branch as `snorr/rak-survey`, and published that branch to the fork.
+- Verified GitHub latest public release is `v2.7.26.54e0d8d` (title Beta, GitHub prerelease=false), commit `54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb`. New branch matches that release exactly; existing fork develop remains `76d5156e72d9d9aaa9722b7bbc1336335b685984`. No old customizations merged or history rewritten.
+- Initialized the release-pinned protobufs and meshtestic submodules; verified clean firmware tree and remote branch SHAs. Added [workspace/setup notes](../docs/research/firmware-workspace.md). Exact owned RAK core remains unknown; no firmware build, flash, RF transmission or hardware test performed.
+- Commit scope is submodule configuration/pointer, setup notes and this session entry. Existing portal/broker/repeater-planning working-tree changes are preserved outside this commit. No tracker decision resolved.
+
+Next useful step: identify the RAK core, then check the dedicated direct-only ping/pong module design against this pinned release before implementing and building it.
+
 ## 2026-10-13 — PocketBase installer running-file fix
 
 - Owner reported `Errno 26: Text file busy` from installing over the running PocketBase executable. Replaced in-place truncating writes with same-directory staging and atomic replacement. Matching binaries stay untouched; a private verification receipt allows subsequent matching installs without another download. Older installs receive one archive/binary comparison without rewriting the executable.
