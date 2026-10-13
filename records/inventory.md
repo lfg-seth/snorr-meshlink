@@ -42,6 +42,8 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 ## First confirmation pass
 
+2026-10-13 — Development resources: owner reports a home desktop with WSL/Docker potentially available for portal development/integration; exact specs, remote access and working service setup are unverified. Owner's current development laptop is a low-powered Dell; whether this is the same device as HW-033 remains unconfirmed. No Proxmox VM has been created yet. No purchase, value or production capacity is inferred.
+
 The updated pass accounts for 21 radio boards/devices on hand: 8 RAK (1 with a broken carrier board), 9 Heltec V3, 2 Heltec V4, and 2 LILYGO T-Deck. Excluding the damaged RAK leaves 20 candidates for inspection, not 20 bench-verified working devices. Another 2 RAK units are deployed and unavailable for the bench pilot pending replacement and recovery. Member-held Heltec V4 quantities remain unknown.
 
 Four on-hand devices have owner-confirmed GPS modules: 2 Heltec V4 and 2 T-Deck. All 9 V3 units have no GPS; RAK GPS status remains unknown. No device has bench-verified passive tracking recorded. Identify exact radio/core builds and GPS models, then confirm operation and HW-002 cells before a pilot parts decision. The source-listed quantities are historical references and are preserved even where current counts differ.

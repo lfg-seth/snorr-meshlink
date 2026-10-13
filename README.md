@@ -18,6 +18,7 @@ Priority order: member location awareness, member communications, and later supp
 - [Field results](records/field-results.md): test plans and measured outcomes.
 - [Content and reporting](records/content.md): project documentation, social content, and grant evidence.
 - [Session log](records/sessions.md): what changed and where to resume.
+- [Portal development](portal/README.md): local React/TypeScript/Vite commands and CI baseline; currently synthetic data only.
 
 ## Working rhythm
 

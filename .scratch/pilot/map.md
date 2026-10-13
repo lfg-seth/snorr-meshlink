@@ -19,6 +19,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Decisions so far
 
+- [Establish the portal development and CI baseline](issues/13-portal-build-environment.md) — Accepted stack scaffolded with approachable TypeScript, native Dell commands and GitHub-hosted tests/build artifacts; optional desktop integration and VM deployment follow later.
+
 - [Inventory owned hardware for the pilot](issues/01-inventory.md) — First-pass on-hand stock confirmed; four devices have GPS modules. Plan from current stock, with deployed/uncertain hardware excluded and build/runtime checks carried into pilot selection.
 
 - [Define useful tracking for the first field pilot](issues/02-pilot-needs.md) — 6 GPS-equipped V4 member trackers, RAK repeaters, and 2 V3 internet backhauls (one later permitted to transmit portal replies); stale at 15 minutes with visible age; battery minimum 4 hours, target 12; power-on tracking, SOS deferred.

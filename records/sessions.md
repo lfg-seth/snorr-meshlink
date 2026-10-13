@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-13 — Accepted portal stack and development/CI baseline
+
+- Owner accepted React + TypeScript + Vite, PocketBase and Python worker, requesting simple TypeScript and explanations. Owner reports a desktop with WSL/Docker potentially available and no Proxmox VM yet; recorded development resources without assuming desktop access or readiness.
+- Added the local frontend baseline, exact npm dependency lockfile, Node version, synthetic GPS freshness examples and developer instructions. Added GitHub-hosted CI for tests/type checking/build and seven-day main build artifacts; no deployment workflow or service credentials.
+- Documented native Dell development now, optional desktop integration later and VM deployment after persistence/backup/rollback preparation. Checked official Vite, GitHub Actions, Microsoft WSL and PocketBase guidance. MQTT connectivity investigation stays deferred.
+- Resolved [Establish the portal development and CI baseline](../.scratch/pilot/issues/13-portal-build-environment.md). Local lockfile install, four direct measurement-age tests, strict type checking, production build and whitespace checks passed. Dependencies/build output are ignored. No browser QA, desktop/Docker verification, backend or hosted portal; first remote CI execution awaits publication/verification.
+
+Next useful step: build/review the four-page synthetic portal, starting with MapLibre map, tracker list and device detail. No VM needed for this step. Later pin backend/worker dependencies when their interfaces are implemented.
+
 ## 2026-10-13 — Portal work brought forward without nodes
 
 - Owner has no nodes available for bench testing and requested moving forward with portal design and building. Reviewed the agreed portal, naming and infrastructure warning requirements; hardware testing is not a prerequisite for a synthetic prototype.

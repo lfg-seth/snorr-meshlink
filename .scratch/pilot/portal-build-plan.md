@@ -19,7 +19,7 @@ Map behavior should match the agreed age bands. A basemap failure must retain th
 
 ## Sequence
 
-1. Confirm the previously recommended frontend direction: React + TypeScript + Vite. PocketBase, Python worker and MapLibre remain the planned evaluation stack; no new hosting provider needed.
+1. Owner accepted React + TypeScript + Vite, PocketBase and Python worker on 2026-10-13. Keep TypeScript simple and explain unfamiliar constructs. MapLibre remains planned for map evaluation; no new hosting provider needed. Start with the [local development and CI baseline](../../portal/README.md) while the VM is unavailable.
 2. Build and review the local four-page synthetic prototype. Prioritize the map and device detail before secondary controls. Check desktop and narrow layouts, keyboard navigation and reduced motion.
 3. Define the normalized ingestion contract and PocketBase collections: accounts, devices, dated assignments, positions, packet receipts, messages/send attempts, infrastructure observations, warnings/incidents, configuration and audit events. Preserve measurement time, receipt time, source packet/gateway identity and timestamp quality separately. Retain receipt evidence while deduplicating display records. Do not infer a fresh GPS fix from receipt time.
 4. Implement authenticated backend operations and a Python simulation/replay path before connecting a broker. Enforce account roles and assignment consistency server-side, not merely through hidden buttons. Demonstrate simulated ingestion through storage to map updates.
@@ -37,6 +37,6 @@ Map behavior should match the agreed age bands. A basemap failure must retain th
 
 ## What is needed from the owner
 
-Now: frontend preference (React/TypeScript/Vite recommended), followed by review of the prototype. Visual defaults can be chosen and revised without blocking progress.
+Now: stack accepted; next review the prototype. Visual defaults can be chosen and revised without blocking progress. VM access is not needed for local frontend development.
 
 Later: VM resources/access, portal hostname and Cloudflare setup, initial admin provisioning, backup destination, sanitized packet samples from pinned builds and verified telemetry capabilities. Keep actual credentials and operational data in ignored private locations. No node, hardware purchase or VM access is needed to start the prototype.

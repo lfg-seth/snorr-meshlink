@@ -1,0 +1,44 @@
+name: Portal CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
+  pull_request:
+    paths: ['portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portal-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Test and build portal
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: portal
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - name: Save build from main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portal-${{ github.sha }}
+          path: portal/dist/
+          retention-days: 7
+          if-no-files-found: error
