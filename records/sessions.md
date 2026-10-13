@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-13 — Portal work brought forward without nodes
+
+- Owner has no nodes available for bench testing and requested moving forward with portal design and building. Reviewed the agreed portal, naming and infrastructure warning requirements; hardware testing is not a prerequisite for a synthetic prototype.
+- Prepared the [portal build plan](../.scratch/pilot/portal-build-plan.md), including first-review screen behavior, build sequence, normalized data needs, meaningful verification and owner inputs needed now versus later.
+- Asked whether to adopt the previously recommended React + TypeScript + Vite frontend with the planned PocketBase/Python backend. No stack acceptance inferred. MQTT connectivity investigation and wishlist features remain deferred.
+
+Next useful step: confirm frontend direction and build the local responsive Map/Users/Messages/Infrastructure prototype with clearly labelled synthetic data. No app implementation, deployment, packet integration or hardware tests performed in this planning step.
+
 ## 2026-10-13 — Project status review
 
 - Reviewed the project brief, session history, pilot map, tracker, inventory, wishlist and planned field criteria. Pilot approach and portal requirements are agreed; no bench/field results or deployed portal are recorded.
