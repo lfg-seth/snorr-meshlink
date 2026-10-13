@@ -20,6 +20,8 @@ npm run check
 
 This runs the measurement-age, assignment and history tests, TypeScript checking and a production build into ignored `dist/`. `npm run preview` serves that build locally for review, not as the production server. `npm ci` installs the exact lockfile; use `npm install` only when intentionally changing dependencies and commit the resulting lockfile.
 
+For the authenticated portal with saved records, complete the one-time [backend setup](../backend/README.md), then run `python3 backend/launch.py` from the repository root. It starts the API, simulation worker and portal in one terminal. Open `http://127.0.0.1:5173` and choose **Backend sign in**; Ctrl+C stops the three processes together. Private per-process logs live under ignored `local-data/backend/logs/`. The standalone `npm run dev` command above remains useful for frontend-only work.
+
 ## Review the prototype
 
 Navigation uses `#map`, `#users`, `#messages` and `#infrastructure`, including browser back/forward and direct links. The common role selector previews Admin and Member (Demo Casey); it is not authentication or access enforcement. The feed toggle simulates availability, without generating fresh GPS or telemetry observations on reconnect.

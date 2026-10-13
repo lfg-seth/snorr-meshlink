@@ -1,6 +1,6 @@
 # Candidate sites and backhaul
 
-Updated: 2026-10-12. Candidate entries below are owner-described possibilities. None has verified coverage, permission, or internet availability recorded. Existing deployments are recorded separately.
+Updated: 2026-10-13. Candidate entries below are owner-described possibilities. None has verified coverage, permission, or internet availability recorded. Existing deployments are recorded separately.
 
 | ID | Candidate | Possible role | Internet possibility | Permission / feasibility | Next evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -11,6 +11,8 @@ Updated: 2026-10-12. Candidate entries below are owner-described possibilities. 
 | SITE-005 | Member homes in Las Vegas | Fixed node and backhaul | Home internet | RF reach and participation unconfirmed | Identify willing hosts and test mountain link |
 
 Create a separate entry when a specific site is identified. Record hardware IDs, installation/access permission, survey/test IDs, power source, internet availability, and maintenance responsibility. Keep exact private home addresses and sensitive site access details in ignored local records.
+
+2026-10-13 — Owner reports a rough idea of repeater locations from previous testing, but has not supplied landmarks, coordinates, configurations or results. No new site or measured coverage is inferred. Proposed [direct-link survey](../docs/research/repeater-operations-survey.md) will compare temporary antenna placements along mission routes, then separately verify onward relay paths. Candidate placement and test access do not establish permanent installation permission.
 
 ## Existing deployments reported by owner
 
@@ -30,3 +32,44 @@ Create a separate entry when a specific site is identified. Record hardware IDs,
 - Owner plans recovery when replacement nodes are ready, rather than an immediate remote recovery trip. Replacement readiness and recovery dates remain unset.
 - Owner subsequently reports a possible third mountain RAK repeater, or a destroyed unit, as explanations for the unresolved source-list difference. Neither is confirmed; no third deployed unit is counted in planning stock.
 - Later inventory update: an additional RAK was found on hand with a broken carrier board. This closes the numerical source-list difference; the earlier third-repeater/destroyed-unit possibility remains unverified. Owner estimates perhaps 4 × 18650 cells per deployed repeater (about 8 total across the 2 reported deployments), separate from 88 cells on hand; deployed counts and condition are unconfirmed.
+
+## 2026-10-13 — Existing pilot broker endpoint
+
+Owner reports an old pilot MQTT server at `mqtt.spp.lol` and authorized SSH inspection. Mosquitto is active; external TCP 8883 is reachable, but validating TLS fails because its certificate expired on 2026-03-24. External 1883 refused connections. This is an existing endpoint candidate for outbound home-worker access, not a deployed MeshLink integration. Host location/provider, billing, backup and maintenance arrangements remain unknown. See [inspection findings](../docs/research/dispatch-portal-transport.md#2026-10-13--existing-pilot-broker-inspected). No server/network change, installation or new expense.
+
+## Broker hosting record — Mike Rollins
+
+Owner-confirmed 2026-10-13; service inspection performed earlier the same day.
+
+| Item | Recorded state |
+| --- | --- |
+| Host / administrator | Mike Rollins hosts the existing old-pilot MQTT server |
+| Current hostname | `mqtt.spp.lol`; the project owner owns the domain |
+| Intended new hostname | `mqtt.snorr.org`; Mike is updating DNS and placing the VM behind Nginx. Completion/reachability and DNS control not independently verified |
+| Broker | Mosquitto 2.0.18, active and enabled on inspected Ubuntu host |
+| Current broker listener | Fresh Mosquitto on `127.0.0.1:1883` only; no VM listener on 8883. Separate-host Nginx access awaits private source IP and restricted LAN listener |
+| Public TLS / certificates | Mike manages TLS/certificates on Nginx for intended `mqtt.snorr.org:8883`; routing/completion unverified. Old broker-specific renewal configuration archived |
+| Pilot accounts/access | Fresh separate V3 uplink accounts plus read-only worker; protobuf root `snorr/pilot`. Local authentication/ACL tests passed; portal/live gateway adapters and designated-gateway downlink pending |
+| Automatic updates | Enabled by owner 2026-10-13: Ubuntu security and same-release stable updates daily at 03:00 America/Los_Angeles, with up to 10 minutes jitter; no major release upgrade |
+| Scheduled reboots | Enabled: 04:00 America/Los_Angeles only when reboot-required flag exists; logged-in users do not block it. Skip if apt daily maintenance is active; missed reboot windows are not caught up at startup |
+| Timezone | Host remains UTC; timers explicitly use America/Los_Angeles and adjust for daylight saving |
+| Configuration recovery | Root-only archive at `/root/meshlink-maintenance/auto-20261013T194349Z/config-before.tgz`; contains secrets, remains on server. Full system/broker-data backup and restore remain unverified |
+| Remaining administration details | No active maintainer reported; failure monitoring/response, full backup/restore, certificate deployment/reload, topic ACLs, credential provisioning and hosting costs remain to settle |
+
+No new server purchase, service donation/value, physical hardware count, DNS change or MeshLink deployment is established. Hosting support is owner-reported; no outreach to Mike performed. See [inspection and migration notes](../docs/research/dispatch-portal-transport.md).
+
+2026-10-13 maintenance update — Owner completed package updates and rebooted; remote verification confirms kernel 6.8.0-146 with SSH/Mosquitto active. Owner reports no active maintainer and requests automation; scheduled-update/reboot installer prepared but not enabled. Certificate repair and broker access review remain pending. See [maintenance record](../docs/research/mqtt-server-maintenance.md).
+
+2026-10-13 automation enabled — Owner supplied successful installer output confirming `meshlink-maintenance-reboot.timer` enabled and all three apt/maintenance timers scheduled. First shown upgrade is 2026-10-14 10:08:37 UTC (03:08:37 Pacific) and reboot check is 11:00 UTC (04:00 Pacific). This supersedes the earlier prepared-only state. Configuration activation is confirmed by owner output; future automated upgrade/reboot and MQTT reconnection are not yet observed.
+
+2026-10-13 fresh-pilot direction — Owner authorized archiving old MQTT configuration/accounts/data/logs and reprovisioning this existing host for the new pilot. Prepared/uploaded a private-archive reset installer, tested initial three-account uplink/worker ACLs against an isolated broker; live reset awaits local sudo execution. No archive completion or live new credentials claimed yet. [Reset details](../docs/research/mqtt-server-maintenance.md#2026-10-13--fresh-pilot-reset-authorized-and-prepared).
+
+2026-10-13 proxy candidate — Owner asked whether Nginx can front the VM/MQTT TCP. Documented a separate-edge TLS stream passthrough plus HTTP-01 routing proposal and same-VM port/Certbot constraints. Proxy location/private upstream address and topology selection remain pending; no route or service changed. [Configuration notes](../docs/research/mqtt-nginx-proxy.md).
+
+2026-10-13 Nginx TLS direction — Owner reports Mike wants Nginx to handle certificates and confirms Mike has certificate management handled. Prepared [consolidated routing handoff](../docs/operations/mqtt-nginx-handoff.md): public Nginx TLS 8883 to private Mosquitto 1883, private backend restricted to proxy, existing SSH preserved. This supersedes TLS-passthrough proposal for the requested handoff. IPs/topology and deployment remain unverified; existing reset installer must be adapted before running for this layout. No certificate work or external outreach performed.
+
+2026-10-13 owner hold — Owner instructed holding the MQTT issue until Mike completes `mqtt.snorr.org` DNS and Nginx placement. Work paused; intended route is public TLS 8883 terminated by Nginx to private broker 1883, certificates handled by Mike. No new endpoint check, proxy completion, fresh reset or integration claimed. Resume with owner after infrastructure is ready; existing old endpoint/maintenance observations remain historical evidence.
+
+2026-10-13 broker-only work resumed — Owner authorized fresh broker configuration during the external-infrastructure hold. Updated installer for private 1883 and independent account/ACL setup, no broker-side certificates. Uploaded/tested but local sudo execution pending. Default is loopback-only until Nginx source IP is supplied and LAN firewall restrictions verified; no live readiness claimed.
+
+2026-10-13 fresh reset completed — Owner supplied successful reset output and local permission-test PASS. Archived old broker material at `/root/meshlink-archive/mqtt-legacy-20261013T204408Z`; new credentials at root-private `/root/meshlink-private/mqtt-credentials.json` (contents not read/published). SSH reinspection independently confirms active Mosquitto running as mosquitto, listener `127.0.0.1:1883` only, config/data/log directories mode 0750 and maintenance reboot timer enabled. No public or proxy backend connectivity claimed. Broker configuration is complete for local tracking ingestion; restricted Nginx access and real-client integration remain pending.

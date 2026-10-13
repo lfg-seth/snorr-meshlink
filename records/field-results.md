@@ -4,6 +4,12 @@ Updated: 2026-10-12. No bench or field results have been recorded. Agree numeric
 
 ## Test index
 
+## Planned direct-link repeater survey — 2026-10-13
+
+Owner requests a firmware ping/pong responder on solar RAKs, with a GPS-equipped Heltec V4 testing node and Dell log storage; compare repeater and testing-node antennas separately. [Draft procedure and metrics](../docs/research/repeater-operations-survey.md), under [Define repeater operations and direct-link placement testing](../.scratch/pilot/issues/14-repeater-operations-survey.md).
+
+Record repeater-measured ping RSSI/SNR and V4-measured pong RSSI/SNR, direct-path evidence, every attempt/timeout, GPS fix time/age, antenna mounting/feedline, firmware/radio settings and transport discontinuities. Proposed repeated checkpoint sampling is exploratory, not an agreed acceptance criterion. Round-trip success cannot separately establish directional delivery rates. Later GPS relay/outage tests remain separate. Owner mentions previous testing but has not supplied evidence; no measured results, preferred site, antenna winner or completed test is recorded here. Raw GPS logs remain ignored/private.
+
 ## Agreed pilot criteria — 2026-10-12
 
 Source: owner responses in [Define useful tracking for the first field pilot](../.scratch/pilot/issues/02-pilot-needs.md). These are planned criteria; no measured results exist.

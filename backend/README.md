@@ -15,7 +15,17 @@ python3 backend/manage.py init-demo
 
 The installer verifies the downloaded release archive against the tracked official SHA-256 manifest. Repeating `install` reuses a matching verified binary, even while PocketBase is running. Older installations without a verification receipt download once to compare the binary, then subsequent repeats work offline. Replacements use a staged file and atomic rename; a locked replacement leaves the existing binary intact and asks you to stop the backend first. Stop the worker/backend before an intentional version upgrade and restart them afterward. Initialization creates unique random passwords, admin/member accounts, a separate worker account, six fictional trackers and four illustrative infrastructure devices. It seeds observations through the same authenticated ingestion API used by the worker. It refuses to overwrite an existing database or credential file.
 
-Use three terminals:
+For subsequent launches, use **one terminal** from the repository root:
+
+```sh
+python3 backend/launch.py
+```
+
+First install frontend dependencies with `cd portal` and `npm ci` if you have not already. The launcher runs PocketBase, the Python simulation worker and Vite together, waits for API/portal readiness, and prints `http://127.0.0.1:5173`. Choose **Backend sign in**. Ctrl+C stops all three; saved backend data remains. If a process exits, the launcher stops the others and reports the relevant log. Logs for each run are private files under ignored `local-data/backend/logs/`.
+
+The launcher supports Linux, macOS and WSL; Linux is verified here. It refuses duplicate launches or occupied ports 8090/5173 instead of attaching to another service or switching ports. It uses installed dependencies and existing initialized data. No installation, initialization/reset, credential printing or MQTT connection happens at launch. All service listeners bind to localhost and simulation is explicitly enabled. This is foreground local development supervision; VM service management comes later.
+
+Alternatively, use three terminals for individual debugging:
 
 ```sh
 # Terminal 1: persistent API/database, bound to localhost

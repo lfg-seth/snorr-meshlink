@@ -62,6 +62,10 @@ Source rows for INA219 and RF coax have unusual per-repeater/unit-cost placement
 
 ## Additional inventory to capture
 
+2026-10-13 — Owner identifies the RAK cores as RAK4631. Exact frequency variants, individual unit labels and working condition remain unverified. Counts unchanged. Owner selects Dell-driven testing through the V4 with a GUI/readout.
+
+2026-10-13 — Repeater planning: owner intends solar RAK builds with 2–4 18650 cells and either Muzi whip or fiberglass antenna, plus a GPS-equipped Heltec V4 testing node tethered to the Dell for logs. This is a proposed allocation/configuration, not additional stock or a verified assembly. Exact RAK cores, cell chemistry/condition/pack arrangement, panel/controller, antenna/feedline and tether compatibility remain to verify. No counts, purchases or measured capacities changed. [Operations/survey draft](../docs/research/repeater-operations-survey.md).
+
 2026-10-12 — Future SOS hardware idea: owner suggested adding a buzzer or similar audible alert to Heltec boards, alongside an OLED popup/flashing alert. No buzzer model, quantity on hand, GPIO/driver compatibility, wiring, cost, or purchase confirmed. Evaluate existing parts and the selected board before choosing hardware; SOS remains beyond the passive-tracking MVP.
 
 2026-10-12 — Pilot infrastructure allocation: owner includes RAK repeaters from HW-001 (count/builds still open) and 2 Heltec V3s from the 9 on hand in HW-012. These 2 V3s are planned receive-only internet backhauls, not member GPS trackers or RF repeaters. Internet forwarding with radio silence is an intended requirement, not a tested capability. Allocations do not change stock counts. Use on-hand RAK candidates; the damaged unit requires repair/verification and the 2 deployed units are not assumed available.
@@ -81,3 +85,9 @@ Source rows for INA219 and RF coax have unusual per-repeater/unit-cost placement
 - Backhaul equipment and spares.
 
 Photos, labels, receipts, and bench tests can support entries later. Record unknowns explicitly. Link spending or contributions to the same hardware IDs in [finances](finances.md). Do not overwrite the purchase-list source when reconciling stock.
+
+## Existing hosted service — MQTT broker
+
+2026-10-13 — Owner confirms Mike Rollins hosts the existing old-pilot server at `mqtt.spp.lol`, a domain owned by the project owner. One existing broker service identified and inspected; physical server/VM ownership, specifications and quantity are unknown, and it is not counted as owner-held radio hardware. Mosquitto is running; certificate renewal and topic-permission checks remain before MeshLink integration. Possible new hostnames are `mqtt.snorr.vegas` or `mqtt.snorr.org`, with no migration selected. [Hosting record](sites.md#broker-hosting-record--mike-rollins). No purchase, donation value or inventory valuation inferred.
+
+2026-10-13 hosted-service update — Fresh pilot Mosquitto configuration installed on the existing Mike-hosted service; local loopback 1883 and auth/ACL checks verified. Old MQTT state privately archived; no hardware quantity, purchase or service valuation changed. Public/proxy access and real node integration remain pending.

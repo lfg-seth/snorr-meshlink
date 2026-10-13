@@ -1,5 +1,60 @@
 # Session log
 
+## 2026-10-13 — Project held and desktop handoff checkpoint
+
+- Owner requests holding the survey issue, wrapping all current project progress and pushing it to GitHub for another desktop. Released the survey claim, left it open/deferred, recorded the project-wide hold in the map/project brief and added [desktop handoff](../docs/operations/desktop-handoff.md). Resume only at owner direction; no planning decision falsely marked complete.
+- Checkpoint includes accumulated portal launcher/test/documentation work, broker maintenance/reset scripts and sanitized hosting/handoff research, hardware/field planning records and accepted RAK/Dell survey requirements. Firmware submodule remains clean at the published release pin; no survey firmware/GUI built or hardware-tested.
+- Verification: all 27 backend tests pass with localhost sockets enabled (initial sandbox run could not create sockets). Portal tests, TypeScript checking and production build pass; existing large-map-bundle warning remains. Both server shell scripts pass `bash -n`; reset script passes Python compilation. Publication candidate secret-pattern scan finds no matches; Git excludes private credentials/databases/raw tracks, binaries, dependencies and generated output. Documentation diff check passes. Privileged server scripts were not rerun; external broker path and firmware/hardware behavior remain unverified.
+- Owner-authorized commit/push checkpoint targets `main` on `origin`; final response reports commit and push result. GitHub contains reproducible source/planning, not the current ignored local database or credentials. New-desktop setup and private-data transfer limits are documented in the handoff.
+
+Next useful step: clone/update recursively on the other desktop and read the handoff. Keep work held until owner resumes the selected task.
+
+## 2026-10-13 — Survey GUI behavior accepted and live map added
+
+- Owner accepts proposed scheduling, run controls, disconnect handling and automatic logging with optional labels/configuration segments. Added live GPS/signal map to active tester scope to help revisit dead spots during a run.
+- Recorded success/timeout attempt markers, per-repeater inspection and an independent timestamped GPS stream as the map design direction. Distinguish failed round trips from directional loss and stale/no-fix locations from precise measurements. Offline basemap preparation remains to verify; map availability must not block logs/readouts.
+- Survey draft/ticket updated; broad operations ticket remains claimed pending field/power requirements. No GUI/firmware implementation or hardware test. Documentation diff checked; unrelated edits preserved, no commit requested or made.
+
+Next useful step: implement the touchscreen survey prototype and RAK responder, verifying selected-build GPS availability, PKI and direct-only exchanges; verify offline map preparation before field use.
+
+## 2026-10-13 — Touchscreen multi-repeater survey GUI requirements
+
+- Owner requires a simple touchscreen Dell GUI with large buttons, touch input pads, one-or-more repeater selection and interval/other parameters. Recorded accepted requirements in the survey draft/ticket.
+- Proposed sequential round-robin scheduling with one outstanding ping and interval between individual attempts, configurable timeout/continuous or finite runs, automatic private logging with configuration labels, and pause/explicit resume after tester disconnection. These behavior choices await owner input; no UI built, firmware changed or hardware tested.
+- Broader operations ticket remains claimed. Documentation diff checked; unrelated edits preserved, no commit requested or made.
+
+Next useful step: settle scheduling, disconnect behavior and run labels, then implement the simple touchscreen tester alongside the pinned-release responder.
+
+## 2026-10-13 — Always-available survey responder accepted
+
+- Owner selects always-available response to authorized survey pings because RAK nodes will be placed in hard-to-reach locations. Recorded rationale and behavior in the repeater ticket and survey draft: no physical visit/per-survey enable step, Dell drives attempts, and RAK responds only to valid requests authorized by the separate survey public-key allowlist.
+- First-prototype direction now includes RAK4631, Dell GUI and transferable V4 native-PKI keys. Broader field/power decisions remain open; operations ticket stays claimed. No implementation, provisioning, build, flash or RF test. Documentation diff check passed; unrelated edits preserved. No commit requested or made.
+
+Next useful step: specify the minimal GUI/logging controls and implement the pinned-release responder/tester prototype, followed by direct-only and authorized/unauthorized bench checks when hardware is available.
+
+## 2026-10-13 — Portable survey key accepted
+
+- Owner accepts transferring the tester private key to the V4. Recorded native PKI with a separate survey public-key allowlist as the chosen authentication approach in the existing repeater ticket and survey draft. Replacement tester hardware requires keypair restoration and node/key discovery; no admin rights implied.
+- RAK4631 target and Dell-driven GUI remain confirmed. Survey enablement and GUI defaults remain open; broader operations ticket not resolved. No secrets generated/read, provisioning, firmware changes, build or flash performed. Documentation diff check passed; unrelated edits preserved, no commit requested or made.
+
+Next useful step: settle whether the authorized responder is always available or explicitly enabled, then prepare the minimal responder and Dell GUI bench prototype.
+
+## 2026-10-13 — RAK target and GUI tester clarified
+
+- Owner confirms RAK4631 cores and Dell-driven V4 testing with a GUI/readout; updated inventory without changing counts or claiming verified frequency variants/condition.
+- Checked pinned firmware routing/admin key handling and primary cryptographic documentation, with a delegated read-only source check. Native survey public-key authorization is feasible; keys live on tester radios, can migrate to replacement hardware, and still need node/key discovery. Proposed a survey-only allowlist separate from admin privileges. Dell-held payload signatures are an alternative requiring additional implementation/replay design.
+- Recorded accepted hardware/test-control direction and proposed authentication/GUI scope in the existing survey ticket/draft. No full operations decision resolved, key generated, firmware changed, build, flash or hardware test performed. Existing edits preserved; no commit requested or made.
+
+Next useful step: owner chooses radio-held native PKI versus Dell-held signing key; then specify survey enablement and GUI controls before implementing the first bench prototype.
+
+## 2026-10-13 — RAK survey firmware pre-build readiness
+
+- Used owner-invoked Wayfinder and its grilling/domain-modeling guidance to review the existing repeater survey ticket, inventory, proposed exchange/logging contract and firmware workspace. Confirmed clean firmware checkout at the recorded release commit; preserved unrelated working-tree edits.
+- Identified immediate prerequisites: exact RAK core/radio variant, owner choice of tethered versus autonomous tester, and survey enable/access policy. Recommended Dell-controlled V4 testing first and explicitly enabled responder access for a configured tester; these remain proposals. Site selection, solar endurance and field acceptance thresholds can follow the first bench prototype.
+- Added the readiness review to [Define repeater operations and direct-link placement testing](../.scratch/pilot/issues/14-repeater-operations-survey.md). No decision resolved, firmware implementation, build, flash or RF test performed. No commit requested or made.
+
+Next useful step: identify the selected RAK core and settle tester control/access, then verify the direct-only module/API paths against the pinned release before implementation.
+
 ## 2026-10-13 — Firmware fork added and RAK release branch published
 
 - Owner requested adding `lfg-seth/firmware` as a submodule and creating a current-public-release RAK branch. Added `firmware/`, configured its tracked branch as `snorr/rak-survey`, and published that branch to the fork.
@@ -8,6 +63,165 @@
 - Commit scope is submodule configuration/pointer, setup notes and this session entry. Existing portal/broker/repeater-planning working-tree changes are preserved outside this commit. No tracker decision resolved.
 
 Next useful step: identify the RAK core, then check the dedicated direct-only ping/pong module design against this pinned release before implementing and building it.
+
+## 2026-10-13 — Dedicated direct-link survey module reviewed
+
+- Owner asks about firmware modifications/plugins, a dedicated packet type, addressed zero-hop exchanges and adjustable usage restrictions. Reviewed upstream primary module/port/routing/airtime/radio/API sources and appended [implementation findings](../docs/research/repeater-operations-survey.md#dedicated-firmware-module--follow-up-source-review) to the existing survey draft/ticket discussion.
+- Recommended compiled-in RAK responder module on a private application port, explicit PING/PONG payload, zero-hop/no-ACK requests and replies, and client-controlled attempts. Noted generic reply/ACK hop rewriting, MQTT exclusion, duplicate handling and queue/actual-TX distinctions. Stock V4 with Dell API control is a candidate minimal prototype; autonomous V4 testing and precise radio-time logging may need client firmware.
+- Distinguished configurable survey scheduling/congestion policies from regional radio constraints and hardware queue/half-duplex operation. No unrestricted RF operation, global restriction removal, final port number or implementation approved/inferred. Reviewed moving upstream sources only; revision lookup failed, so release/commit pinning remains before implementation.
+- No firmware cloned, built/flashed, hardware tested, portal/MQTT work resumed or new decision resolved. Existing edits preserved. Documentation checks only; no commit requested or made.
+
+Next useful step: identify target RAK core and V4 firmware/API versions, pin a firmware revision, and verify a minimal private-port responder plus Dell-controlled direct-only exchange on three nodes.
+
+## 2026-10-13 — Repeater operations and placement survey opened
+
+- Owner steps back from portal work and brings solar RAK repeater operations forward: 2–4 18650 cells, Muzi whip or fiberglass antenna, firmware ping/pong responder and GPS-equipped V4 testing node tethered to Dell log storage. Captured intended builds without changing stock counts or assuming installation permission.
+- No installed `$wayfind` skill found after local search; used repository-defined Wayfinder tracker conventions. Created/claimed [Define repeater operations and direct-link placement testing](../.scratch/pilot/issues/14-repeater-operations-survey.md), retaining claim pending owner input. No non-research decision resolved; MQTT remains held.
+- Reviewed primary RAK electrical documentation, Meshtastic range-test/role documentation and packet schema. Recorded [draft operations/survey plan](../docs/research/repeater-operations-survey.md): per-packet metrics in both directions, verified direct-only paths, timeout/GPS-age logging, controlled antenna comparisons and separate later GPS relay validation. Recorded power autonomy, cell/charger/cold-charge protection, recovery, mounting and service-access questions. No firmware built, hardware tested or coverage measured.
+- Asked owner for prior-test candidate landmarks/routes and coverage gaps. Outstanding: exact RAK/core/cell/panel builds, no-sun endurance target, survey cadence/sample size and route acceptance thresholds. Existing unrelated working-tree edits preserved. Documentation checks only; no commit requested or made.
+
+Next useful step: capture candidate sites and required routes, agree no-sun endurance, then identify one representative RAK power build and bench-check the direct-link responder/logging contract before a field survey.
+
+## 2026-10-13 — Worker readiness review
+
+- Owner asked what comes next and whether DNS completion makes the worker ready for Mosquitto. Inspected worker code, backend contract/tests and current broker handoff. The Python worker supports authenticated synthetic ingestion and normalized JSONL replay only; it has no MQTT connection/subscription, TLS/broker credential configuration or selected-firmware decoder. DNS completion alone will not enable live tracking.
+- Fresh Mosquitto local authentication/ACL readiness is recorded, but its last verified listener is loopback-only. Separate-host Nginx requires restricted private access, followed by external TLS/auth/topic verification. No remote probes, broker changes, implementation or tests performed in this review; existing edits preserved.
+
+Next useful step: implement a receive-only MQTT-to-normalized-ingestion adapter with explicit simulation/live modes, reconnect/outage handling and decoder tests using sanitized selected-build packets; verify the external broker path with Mike when ready. No commit requested or made.
+
+## 2026-10-13 — Fresh pilot Mosquitto installed
+
+- Owner ran adapted reset and supplied successful live authentication/ACL test output. Old broker configuration/accounts/data/logs and broker-specific renewal state archived privately at `/root/meshlink-archive/mqtt-legacy-20261013T204408Z`; fresh account credentials stored root-private on server, not read/published.
+- SSH follow-up confirms active Mosquitto under its own account, loopback `127.0.0.1:1883` only, no VM 8883 listener, config/data/log directories mode 0750 and enabled scheduled-maintenance reboot timer. Updated current server/project/handoff records from prepared to installed. Unrelated backend/portal launcher edits preserved.
+- Local broker accounts/ACLs are ready for tracking ingestion; no command publishing/downlink yet. Restricted separate-host Nginx access needs its private source IP. External TLS/DNS/proxy path, actual V3/worker adapters and SSH password hardening remain pending. No credentials, raw messages/tracks or archive contents accessed during verification.
+
+Next useful step: Mike supplies Nginx private source IP, then enable only that proxy's private 1883 access and test public `mqtt.snorr.org:8883` when Mike is ready. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — Broker-only setup resumed and adapted
+
+- Owner authorized making the fresh Mosquitto updates while Mike's external infrastructure remains pending. Inspected live service/private interface; no fresh marker found and sudo still requires local password. Preserved unrelated backend launcher/README/test edits visible in Git.
+- Adapted/uploaded reset installer to private 1883, no broker certificates/hooks, intended client hostname `mqtt.snorr.org`, old MQTT archive plus broker-specific old renewal configuration archive, fresh per-gateway and worker credentials/ACLs. Default loopback-only because proxy source IP is unknown; LAN mode requires explicit addresses and active source-restricted UFW preflight.
+- Private-backend isolated auth/ACL tests passed. Temporary-filesystem full-flow archive/credential and injected-startup-failure rollback tests use actual isolated Mosquitto with mocked privilege/service operations; real privileged execution remains pending. [Details](../docs/research/mqtt-server-maintenance.md#2026-10-13--private-backend-reset-adapted).
+
+Next useful step: owner runs updated script with sudo, then verify live fresh broker/archive without exposing credentials. Enable restricted LAN listener once Mike supplies Nginx source IP; external infrastructure remains deferred. No live broker reset, firewall change, commit or push performed.
+
+## 2026-10-13 — Combined local launcher
+
+- Owner confirms no Proxmox VM or nodes are available and brought local launch cleanup forward. Added `python3 backend/launch.py` to supervise PocketBase, the synthetic Python worker and Vite in one foreground terminal on Linux/macOS/WSL. Updated backend/portal startup instructions; individual commands remain available for debugging.
+- Launcher checks installed dependencies/initialized storage and Node version, refuses duplicate launches and occupied ports, waits for API/portal readiness, binds services to localhost and keeps per-process logs in ignored private storage. Ctrl+C/termination or a child exit shuts down its process groups, stopping the worker before the API; bounded escalation handles unresponsive children. It does not install/reset data or print credentials. Synthetic observations continue to be saved while running.
+- Verification: existing twenty backend/installer tests passed. Seven launcher tests passed, including occupied-port preservation, duplicate refusal, startup failure, real child cleanup and forced termination. A disposable real PocketBase/worker/Vite run on temporary ports verified API proxying, ingestion, duplicate refusal, Ctrl+C cleanup, restart with saved data and worker-failure cleanup. Existing port-8090 service was left untouched. Linux verified; macOS/WSL runtimes remain untested. Documentation diff check passed; no commit requested or made, unrelated edits preserved.
+
+Next useful step: stop the existing individual development terminals, run the combined launcher on the Dell and review the saved portal workflows. VM deployment and hardware integration await availability; MQTT remains on hold pending Mike and owner resumption.
+
+## 2026-10-13 — Hypothetical SNORR companion-app forks
+
+- Owner asked whether SNORR could fork the Meshtastic iOS/Android apps and what features would suit the project. Reviewed current primary [Apple source/README](https://github.com/meshtastic/Meshtastic-Apple), [Android source/README](https://github.com/meshtastic/Meshtastic-Android), [Android fork/rebrand guidance](https://github.com/meshtastic/Meshtastic-Android/blob/main/CONTRIBUTING.md#forks-and-rebrands) and [position configuration](https://meshtastic.org/docs/configuration/radio/position/). Both apps use GPLv3-family licenses; distribution requires applicable source/notices and distinct branding under the upstream conditions.
+- Suggested hypothetical priorities: GPS measurement age and explicit stale/unknown states, prepared offline field maps, cached device/member assignments, simple member controls, clear local-radio versus dispatch-feed status, and later concise messaging with honest delivery/acknowledgment states. Keep phone-free GPS and device-only SOS in node firmware; an app cannot establish radio coverage or dispatch receipt without evidence.
+- Recommended a small customization that preserves the Meshtastic protocol and upstream improvements, after stock-app pilot checks identify actual gaps. Apple/Android have separate UI stacks and ongoing maintenance needs. No app cloned, built or tested; feasibility is source/documentation review only. No active ticket, wishlist activation, firmware selection change, broker work, commit or push. Existing edits preserved.
+
+Next useful step if the owner brings app work forward: compare stock apps on the pilot devices against freshness, offline map and reconnect requirements, then select one platform and a minimal scope. Passive GPS bench testing remains the first hardware priority.
+
+## 2026-10-13 — Next-work review
+
+- Reviewed project records, tracker and portal build checkpoints. Recommended tested backend backup/restore as the next independent software task, followed by VM service supervision and HTTPS deployment. Live MQTT integration remains on hold pending Mike and owner resumption.
+- Passive GPS bench testing remains the first hardware priority when nodes are available. No implementation, ticket change, remote check or deployment performed; existing uncommitted work preserved. No commit requested or made.
+
+Next useful step: implement private backend backup/restore and demonstrate recovery into a separate local instance, preserving accounts, assignments, observations and history.
+
+## 2026-10-13 — MQTT issue held pending Mike
+
+- Owner explicitly instructed holding the broker issue until Mike completes infrastructure work. Recorded `mqtt.snorr.org` as intended endpoint, with Mike updating DNS and placing the VM behind Nginx; certificate management belongs to Mike. Completion is unverified.
+- Released the connectivity ticket claim and left it open/deferred; updated map, project brief, hosting record and handoff. No broker/proxy probes, implementation, hardening or reset performed after the hold. Earlier update/maintenance verification remains recorded.
+- Fresh broker reset is prepared but not executed and needs adaptation for Nginx TLS termination/private port 1883. Firewall activation, SSH-password hardening, live ACL provisioning, actual firmware/client configuration and one-gateway dispatch downlink remain unverified. Documentation diff checked; no commit requested or made.
+
+Resume only when owner brings this issue back after Mike's work is complete. First confirm `mqtt.snorr.org` TLS/proxy reachability, then adapt/archive/reset the broker and test gateway/worker access.
+
+## 2026-10-13 — Nginx MQTT handoff prepared
+
+- Owner reports Mike wants Nginx to own certificates and says certificate management is handled. Prepared [consolidated handoff](../docs/operations/mqtt-nginx-handoff.md) for TLS termination on public 8883, private broker TCP 1883 restricted to Nginx, DNS/client settings, existing SSH preservation and verification. No certificate-provisioning instructions or outreach.
+- Recorded current direction over earlier passthrough proposal. Actual proxy/VM addresses, separate/same-host layout and deployed configuration remain unknown. Marked existing fresh-reset installer unsuitable unchanged because it provisions broker-side TLS/certificate handling; adaptation remains before running it for this topology.
+- No live broker reset, proxy/firewall/DNS change, template runtime verification or completed security hardening claimed. Documentation diff checked; no commit requested or made.
+
+Next useful step: Mike supplies private upstream/source addresses and validates Nginx configuration; adapt the archived fresh-broker setup for the chosen private 1883 listener, then test external TLS/auth/topic access and reconnects.
+
+## 2026-10-13 — Nginx TCP proxy proposal documented
+
+- Owner asked about fronting the VM with Nginx. Verified primary Nginx TCP stream/HTTP routing and Cloudflare proxy-port documentation. Prepared [configuration proposal](../docs/research/mqtt-nginx-proxy.md): separate Nginx edge forwards TLS 8883 and HTTP-01 challenges to the broker VM, keeping certificates/auth/ACLs at Mosquitto.
+- Asked whether proxy is on a separate host or the broker VM. Same-VM option requires different backend listener and Certbot validation configuration; no topology/installation assumed. No Nginx, router, DNS or broker change made. Existing fresh reset remains prepared, not executed.
+
+Next useful step: confirm proxy location/management interface and private upstream address, then adapt and validate configuration with Mike's existing routing. Examples are templates and not syntax-tested on an actual proxy. Documentation diff check passed; no commit requested or made.
+
+## 2026-10-13 — Fresh MQTT reset prepared
+
+- Owner authorized archiving all old MQTT state and setting up the host fresh for the new pilot. Prepared/uploaded a root installer that stops/flushed broker, moves old configuration/accounts/cert copies/persistence/logs to a root-private timestamped archive and creates an empty TLS-only broker with separate V3 uplink credentials and read-only worker credential. Initial root `snorr/pilot`; commands denied until designated gateway integration. Secrets/raw data remain on server.
+- Installer creates private credentials, guards against accidental repeat reset, restores old trees on reset/startup/test failure, and installs a certificate copy/reload deploy hook scoped to the current hostname. Known expired cert still blocks external validating TLS; renewal pending port-80 routing.
+- Python syntax checks and isolated installed-Mosquitto tests passed for valid/invalid/anonymous credentials, gateway publish/no-delivery, worker read/no-publish and command/unrelated-topic denial. Adjusted test to verify actual delivery because SUBACK may precede ACL filtering. Full root reset/rollback/hook not exercised; live old broker unchanged. [Details](../docs/research/mqtt-server-maintenance.md#2026-10-13--fresh-pilot-reset-authorized-and-prepared).
+
+Next useful step: owner runs uploaded reset via local sudo and shares status without credentials; verify archive/fresh service, then renew TLS and configure actual gateways/worker. Firewall/SSH hardening remains pending. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — Privileged broker security audit received
+
+- Owner output confirms inactive UFW and effective SSH password authentication enabled, correcting earlier inference from the readable main config. Root login is disabled and public-key login enabled. Eleven MQTT accounts exist; secrets/hashes not read.
+- AppArmor loaded/enforcing selected profiles but no Mosquitto profile listed; no broker confinement claimed. Existing generic profiles do not establish installed apps.
+- Prepared firewall rules preserving local SSH 22, MQTT TLS 8883 and HTTP-01 80; dormant rules need inspection. Asked whether Mike uses SSH keys before disabling passwords. No firewall/SSH/account changes performed, and update-policy dry-run remains pending.
+
+Next useful step: inspect/activate UFW rules and verify a fresh SSH connection; confirm Mike's key access, then fix effective SSH password policy and design topic ACLs. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — Security checks while port-80 routing is pending
+
+- Rechecked active SSH/Mosquitto, enabled maintenance timer and effective apt policy. Confirmed security/stable updates plus timer-controlled reboots. Running broker uses the mosquitto account; private-key/password-file modes are restrictive. UFW enabled state and installed AppArmor tool do not establish effective rules/profiles. Broker data-directory mode is 0755; local-user visibility needs file-permission review without reading tracks.
+- Credential-free diagnostic TLS negotiated 1.3 and anonymous MQTT CONNECT was rejected with code 5. Expired certificate verification bypass was confined to this probe; no credentials, topic operations or payloads accessed. This is not validating TLS or ACL verification.
+- Prepared next local-sudo audit commands for firewall, effective SSH, account names, AppArmor and update-policy dry-run. No server changes. [Evidence](../docs/research/mqtt-server-maintenance.md#2026-10-13--checks-while-http-01-routing-is-pending).
+
+Next useful step: owner supplies privileged audit output, then define/install tested per-client topic restrictions while awaiting certificate repair. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — Enabled broker maintenance documented
+
+- Owner supplied successful automation installer/timer output. Recorded enabled daily security/stable updates at 03:00 Pacific (up to ten minutes jitter) and required-only reboots at 04:00 Pacific with timezone/DST handling, busy-apt skip and no missed-window reboot catch-up in the server hosting and maintenance records. Logged-in users do not block scheduled reboots. No major release upgrades enabled.
+- Recorded the server-local root-only configuration archive path without copying its sensitive contents. First shown next upgrade/reboot-check dates agree with the intended Pacific window. Updated project summary.
+- Activation confirmed from owner output; no future automated run/reboot/reconnection or full backup restore observed. Certificate repair, MQTT topic permissions, firewall audit, unattended-upgrade dry-run and failure response remain outstanding. Documentation diff check passed; no commit requested or made.
+
+Next useful step: complete the privileged update-policy dry-run and certificate renewal after Mike's port-80 routing change; then finish topic/firewall checks and observe the first maintenance run.
+
+## 2026-10-13 — Broker updated/rebooted; scheduled maintenance prepared
+
+- Owner supplied completed OS update output and rebooted the server. Reconnected and confirmed kernel 6.8.0-146, active SSH/Mosquitto and no remaining reboot-required flag. fwupd failed during update-time restart; after boot its unit reports inactive/success, but the prior failure cause is unverified.
+- Owner requested automatic updates and scheduled reboots, reporting no active maintainer. Existing automation covers security updates. Prepared/uploaded a sudo installer adding same-release Ubuntu updates, a Pacific-time upgrade window and required-only reboot timer. Proposed 03:00 updates/04:00 reboot pending owner preference; timezone expression verified and shell syntax checks passed. [Details](../docs/research/mqtt-server-maintenance.md#2026-10-13--updatesreboot-completed-automation-prepared).
+- Installer is not yet run as root or enabled. TLS certificate renewal, topic ACLs and privileged firewall/effective SSH audit remain outstanding. No claim of completed security hardening or verified future automatic reboot.
+
+Next useful step: owner enables the maintenance schedule via local sudo and shares timer/dry-run output, then continue certificate and access-control repairs. No commit requested or made.
+
+## 2026-10-13 — Broker update/security work started
+
+- Owner authorized server updates and security work. Read-only checks found pending Ubuntu packages and an existing reboot-required flag. Readable SSH settings disable root/password/keyboard-interactive login; apt security automation is enabled. Effective SSH/firewall/topic-account checks remain privileged.
+- Sudo still requires an interactive password. Prepared, syntax-checked and uploaded an OS update script to the owner's server home directory, with root-only configuration backup, no-removal package upgrade, health checks and no automatic reboot. [Maintenance record](../docs/research/mqtt-server-maintenance.md). Script has not been run as root; no packages updated or security settings changed.
+- Requested privileged audit output without secrets; certificate repair, topic ACLs, firewall review, post-update validation and coordinated reboot remain. No non-research decision resolved or commit requested.
+
+Next useful step: owner runs the uploaded script with sudo and supplies audit results; continue TLS/ACL changes from verified settings. Shell syntax check and upload passed; runtime untested until privileged execution.
+
+## 2026-10-13 — Broker host and domain plans recorded
+
+- Owner confirms Mike Rollins hosts the old-pilot broker, and the owner owns its current `mqtt.spp.lol` domain. Documented the hosted service in sites/inventory and the current project brief; physical host resources, costs, backup and maintenance details remain unknown.
+- Mike plans to open/route port 80 shortly; completion and renewal success remain unverified. Recorded `mqtt.snorr.vegas` and `mqtt.snorr.org` as possible future hostnames, not selected or configured.
+- Verified official Certbot/Let's Encrypt guidance: a new hostname needs certificate coverage and domain validation; a transition certificate can cover old plus chosen new hostname. Recorded DNS, HTTP-01 routing, certificate deployment/reload and client-address cutover prerequisites in the transport report. No DNS, certificate, server or radio changes, outreach, expense or non-research decision resolution.
+
+Next useful step: once Mike's routing change is ready, verify renewal dry-run and repair broker certificate deployment/reload; choose a replacement hostname separately if desired. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — Old pilot MQTT server investigated
+
+- Owner provided `mqtt.spp.lol` and authorized SSH inspection. Connected and performed read-only service/configuration/renewal-status checks plus external TCP/TLS probes; no credentials, password hashes, keys, member data or broker payloads read.
+- Found enabled/active Mosquitto 2.0.18 with password-required TLS on 8883. External 8883 reachable; 1883 refused and has no local listener. Public certificate expired 2026-03-24; validating TLS rejected it. Latest Certbot run failed, standalone renewal configured, no renewal-hook files found; privileged logs unavailable and cause remains unknown. No topic ACL directive found in inspected configuration.
+- Recorded [findings and reuse recommendation](../docs/research/dispatch-portal-transport.md#2026-10-13--existing-pilot-broker-inspected) and existing endpoint in site records. No server changes, service restart, broker publish/subscribe, hardware test, spending or hosting decision made.
+
+Next useful step: inspect privileged certificate-renewal failure evidence and repair/verify renewal plus broker certificate installation/reload; then verify topic access and stock V3 integration. Noninteractive sudo was unavailable. Documentation diff checked; no commit requested or made.
+
+## 2026-10-13 — MQTT broker discussion reopened
+
+- Owner asked to revisit the broker issue. Claimed [Check Heltec MQTT over WebSockets for Tunnel hosting](../.scratch/pilot/issues/09-heltec-websocket-research.md) and lifted the connectivity-research deferral in current project/map notes; separate wishlist features remain parked.
+- Rechecked official Cloudflare, Meshtastic source/configuration and Mosquitto documentation. Stock direct MQTT transport and published Tunnel TCP still need an adapter between them. Recorded home site VPN/bridge, separate reachable private broker and custom WSS candidates in the [transport report](../docs/research/dispatch-portal-transport.md#2026-10-13--broker-issue-revisited). Recommended Mosquitto for evaluation without recording owner acceptance.
+- Hosting preference remains open: all-home requirement versus acceptable external private broker. Existing no-inbound-home-port-forwarding preference and one designated V3 downlink remain intact. No broker/VM deployed, firmware changed, external service purchased, real packets tested or non-research decision resolved.
+
+Next useful step: settle hosting preference; for a home broker, inventory available site routers/computers before choosing an adapter. Then prepare a LAN broker test on identified/pinned gateway firmware and implement the real worker adapter. Documentation/source review only; no commit requested or made.
 
 ## 2026-10-13 — PocketBase installer running-file fix
 
@@ -517,3 +731,18 @@ Next useful step: owner selects a name. No repository rename, availability check
 - Refreshed the README's outdated pilot summary. Kept the unrelated untracked battery-box 3MF model outside the commit. No hardware tests, implementation or operational deployment performed.
 
 Next useful step: identify pilot boards/GPS wiring and prepare passive-tracking bench tests, or resume the synthetic-data portal mockup. Push each completed commit to origin and report failures; keep private operational data outside Git.
+
+### Broker renewal diagnosis follow-up
+
+- Owner asked whether closed inbound 443 explains renewal failure. Official [Certbot standalone documentation](https://eff-certbot.readthedocs.io/en/stable/using.html#standalone) confirms the configured standalone HTTP-01 method requires public inbound TCP 80; inbound 443 is not required for that method. Outbound HTTPS to the ACME service is separately required. Closed 80 is a possible cause, not confirmed without logs.
+- Requested root-visible Certbot journal and the latest Let's Encrypt log error block. Renewal cause remains pending; no firewall change or renewal attempted. After renewal, separately verify deployment of the renewed certificate into Mosquitto's configured certificate files and reload behavior.
+
+### HTTP-01 failure located
+
+- Owner supplied root-visible Certbot failure evidence. Active HTTP-01 challenge request received 404 on public port 80; outbound ACME HTTPS succeeded. Read-only follow-up HTTP probe returned an nginx 404. A routing/proxy/challenge-serving mismatch is suspected; the precise destination remains to inspect. Closed inbound 443 is not the cause of this configured HTTP-01 failure.
+- Recorded sanitized evidence in the transport report. Next inspect public port-80 forwarding/nginx routing, correct the selected challenge path and run a renewal dry-run before production renewal and broker certificate deployment. No remote changes or commit performed.
+
+### Heltec port explanation
+
+- Owner asked whether Heltecs specify a port and what 1883/8883 do. Verified current Meshtastic source parses `hostname:port`, choosing default 8883 with TLS and 1883 otherwise. Documented gateway settings `mqtt.spp.lol:8883` with TLS enabled and private proxy-to-broker 1883 role. Actual firmware remains unpinned/unverified; member LoRa trackers do not all need MQTT.
+- Captured source-level credential-logging/certificate-verification checks for later provisioning without reading or publishing actual credentials. No device/server changes or commit performed. Next step remains adapting the fresh broker for Mike's TLS-termination layout and verifying actual endpoints/builds.

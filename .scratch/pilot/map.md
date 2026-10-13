@@ -8,6 +8,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
+- Owner put project work on hold on 2026-10-13 for desktop handoff. Preserve decisions and deferred work; resume only at owner direction. [Desktop handoff](../../docs/operations/desktop-handoff.md) records current state and setup. The repeater survey claim is released; this is a hold, not a completed pilot decision.
+
 - Full mission and standing priorities: [Project brief](../../PROJECT.md).
 - Keep it simple. Chart decisions now; implementation and installation follow when their prerequisites are settled.
 - Use Wayfinder with the local tracker in [Tracker conventions](../TRACKER.md). For live design questions use grilling/domain-modeling lightly; avoid exhaustive interviews at this stage.
@@ -15,7 +17,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 - Owned hardware comes first; no speculative purchase list.
 - Future ideas are parked in the [deferred feature wishlist](../../records/wishlist.md), outside the active ticket frontier. Do not begin work on them until the owner explicitly brings them forward.
 - Child tickets live in `issues/`; find the frontier using the tracker conventions rather than duplicating open questions here.
-- Owner has deferred MQTT connectivity investigation. For portal planning use the owner's assumed working Cloudflare/local-broker connection with stock MQTT clients, marked unverified; do not resume connectivity research until asked.
+- Owner put the [MQTT broker issue](issues/09-heltec-websocket-research.md) on hold on 2026-10-13 pending Mike's DNS/Nginx setup for `mqtt.snorr.org`. Intended path: Nginx TLS 8883 → private broker 1883, with certificates handled by Mike. Claim released; fresh broker installed and locally verified on loopback 1883, external proxy access and firmware/worker integration remain unverified. Resume only when owner brings it back.
 
 ## Decisions so far
 
@@ -44,6 +46,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 - [Define infrastructure warning and intrusion handling](issues/10-infrastructure-warning-rules.md) — Silent persistent badges, capability-specific cadence rules, automatic health recovery, admin-resolved intrusion incidents, feed-outage handling and battery configuration metadata.
 
 ## Not yet specified
+
+- Owner brought [Define repeater operations and direct-link placement testing](issues/14-repeater-operations-survey.md) forward on 2026-10-13: solar RAKs with 2–4 18650 cells and Muzi/fiberglass antennas; firmware pong responder, GPS-equipped V4 testing node and Dell logging. Draft procedure recorded; candidate locations, endurance target, exact builds and survey acceptance criteria remain open. Portal work is set aside for this discussion; MQTT hold remains.
 
 - Owner brought portal design/building forward on 2026-10-13 while nodes are unavailable. The [portal build plan](portal-build-plan.md) now has a reviewed four-page prototype and a local authenticated PocketBase/Python simulation backend. Deployment/backup/restore and selected-build hardware integration remain to verify.
 
