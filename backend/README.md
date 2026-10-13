@@ -13,7 +13,7 @@ python3 backend/manage.py install
 python3 backend/manage.py init-demo
 ```
 
-The installer verifies the downloaded release archive against the tracked official SHA-256 manifest. Initialization creates unique random passwords, admin/member accounts, a separate worker account, six fictional trackers and four illustrative infrastructure devices. It seeds observations through the same authenticated ingestion API used by the worker. It refuses to overwrite an existing database or credential file.
+The installer verifies the downloaded release archive against the tracked official SHA-256 manifest. Repeating `install` reuses a matching verified binary, even while PocketBase is running. Older installations without a verification receipt download once to compare the binary, then subsequent repeats work offline. Replacements use a staged file and atomic rename; a locked replacement leaves the existing binary intact and asks you to stop the backend first. Stop the worker/backend before an intentional version upgrade and restart them afterward. Initialization creates unique random passwords, admin/member accounts, a separate worker account, six fictional trackers and four illustrative infrastructure devices. It seeds observations through the same authenticated ingestion API used by the worker. It refuses to overwrite an existing database or credential file.
 
 Use three terminals:
 
@@ -81,7 +81,7 @@ cd portal
 npm run check
 ```
 
-Fourteen backend tests use fresh temporary databases and the actual pinned binary, covering authorization/bypass rejection, account lifecycle, concurrent claims, original measurement age, duplicates, timestamp quality, retained invalid receipts, gateway send/outage behavior, latched intrusion, battery/missing-report rules, reconnect grace, stale name jobs and restart persistence. Tests disable rate throttling only in their disposable databases; the development schema enables PocketBase rate limits. The GitHub-hosted Backend CI workflow installs the verified pinned binary and runs the same tests without credentials or external services.
+Backend integration tests use fresh temporary databases and the actual pinned binary, covering authorization/bypass rejection, account lifecycle, concurrent claims, original measurement age, duplicates, timestamp quality, retained invalid receipts, gateway send/outage behavior, latched intrusion, battery/missing-report rules, reconnect grace, stale name jobs and restart persistence. Tests disable rate throttling only in their disposable databases; the development schema enables PocketBase rate limits. The GitHub-hosted Backend CI workflow installs the verified pinned binary and runs the same tests without credentials or external services.
 
 Development and production browser review covers authenticated tracking/history, assignment persistence after reload, messages and outage drafts, warnings/incidents, member controls, mobile layout and API loss while retaining observations. The portal polls an authenticated snapshot every two seconds; history is bounded to the latest 500 points per tracker within 12 hours, messages/events to 200, and other lists to 2,000. All received pilot data remains in storage. Cursor pagination, larger historical queries, realtime subscriptions and load testing follow before wider use.
 

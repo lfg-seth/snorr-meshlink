@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-13 — PocketBase installer running-file fix
+
+- Owner reported `Errno 26: Text file busy` from installing over the running PocketBase executable. Replaced in-place truncating writes with same-directory staging and atomic replacement. Matching binaries stay untouched; a private verification receipt allows subsequent matching installs without another download. Older installs receive one archive/binary comparison without rewriting the executable.
+- Locked replacements now preserve the existing binary, clean staged files and report how to stop/retry/restart the backend. Updated native setup instructions. No database/credential replacement or service restart is required for a matching reinstall.
+- Verification: all twenty backend/installer tests passed, including a real running PocketBase reinstall, offline reuse, legacy installs without receipts, checksum rejection, tampered-binary replacement and locked-file preservation. Frontend is unchanged; Windows runtime/locking behavior remains untested (the error branch is exercised with a simulated lock).
+
+Next useful step: repeat `python3 backend/manage.py install`, then continue backend sign-in/review. Keep existing local data and credentials; initialization remains a one-time command.
+
 ## 2026-10-13 — Local authenticated backend and connected portal built
 
 - Owner approved backend development after reviewing the portal. Implemented PocketBase 0.40.5 migrations/hooks, the normalized [backend contract](../docs/research/portal-backend-contract.md), and a standard-library Python simulation/replay worker. Pinned official release checksums and Python 3.14.3; added native install/initialization/startup/account commands and GitHub-hosted backend CI. No VM, broker or hosted service provisioned.

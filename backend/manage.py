@@ -1,5 +1,6 @@
 """Local native backend commands; binaries, databases and credentials stay ignored."""
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -30,6 +31,25 @@ def command(data_dir=None):
             f'--hooksDir={BACKEND / "pb_hooks"}', f'--migrationsDir={BACKEND / "pb_migrations"}', '--automigrate=false', '--hooksWatch=false']
 
 
+def install_receipt_path():
+    return BINARY.with_name('pocketbase-install.json')
+
+
+def save_install_receipt(receipt):
+    target = install_receipt_path()
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', dir=target.parent, delete=False) as file:
+            temporary = Path(file.name)
+            json.dump(receipt, file, indent=2)
+            file.flush()
+            os.fsync(file.fileno())
+        os.replace(temporary, target)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 def install():
     manifest = json.loads((BACKEND / 'pocketbase-release.json').read_text())
     machine = {'x86_64': 'amd64', 'AMD64': 'amd64', 'aarch64': 'arm64', 'arm64': 'arm64'}.get(platform.machine())
@@ -38,6 +58,19 @@ def install():
     expected = manifest['sha256'].get(filename)
     if not expected:
         raise ValueError('Unsupported platform for the pinned release.')
+    # A verified installation can be reused offline, including while it runs.
+    try:
+        receipt = json.loads(install_receipt_path().read_text())
+    except (FileNotFoundError, ValueError):
+        receipt = {}
+    if (receipt.get('version') == manifest['version']
+            and receipt.get('archive') == filename
+            and receipt.get('archiveSha256') == expected
+            and BINARY.is_file()
+            and hashlib.sha256(BINARY.read_bytes()).hexdigest() == receipt.get('binarySha256')):
+        print(f'PocketBase {manifest["version"]} is already installed and verified; kept the existing binary.')
+        return
+
     url = f'https://github.com/pocketbase/pocketbase/releases/download/v{manifest["version"]}/{filename}'
     with urllib.request.urlopen(url, timeout=60) as response:
         archive = response.read()
@@ -46,9 +79,37 @@ def install():
     import io
     with zipfile.ZipFile(io.BytesIO(archive)) as archive:
         binary = archive.read(BINARY.name)
+    digest = hashlib.sha256(binary).hexdigest()
+    receipt = {'version': manifest['version'], 'archive': filename,
+               'archiveSha256': expected, 'binarySha256': digest}
     BINARY.parent.mkdir(parents=True, exist_ok=True)
-    BINARY.write_bytes(binary)
-    BINARY.chmod(0o755)
+    # Installations created before receipts existed need one verification download.
+    if BINARY.is_file() and hashlib.sha256(BINARY.read_bytes()).hexdigest() == digest:
+        save_install_receipt(receipt)
+        print(f'PocketBase {manifest["version"]} is already installed and verified; kept the existing binary.')
+        return
+
+    # Never truncate an executable. Stage a complete file on the same filesystem.
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=BINARY.parent, delete=False) as file:
+            temporary = Path(file.name)
+            file.write(binary)
+            file.flush()
+            os.fsync(file.fileno())
+        temporary.chmod(0o755)
+        try:
+            os.replace(temporary, BINARY)
+        except PermissionError as error:
+            raise RuntimeError('PocketBase could not be replaced. Stop the backend with Ctrl+C, rerun install, then restart it.') from error
+        except OSError as error:
+            if error.errno == errno.ETXTBSY:
+                raise RuntimeError('PocketBase is running and cannot be replaced. Stop the backend with Ctrl+C, rerun install, then restart it.') from error
+            raise
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    save_install_receipt(receipt)
     print(f'Installed verified PocketBase {manifest["version"]} in local-data/backend/bin.')
 
 
@@ -146,6 +207,6 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except (ValueError, RuntimeError, FileNotFoundError, urllib.error.URLError) as error:
+    except (ValueError, RuntimeError, OSError, urllib.error.URLError) as error:
         print(str(error), file=sys.stderr)
         sys.exit(1)
