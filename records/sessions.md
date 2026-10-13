@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-13 — Four-page synthetic portal and map built
+
+- Owner requested continuing portal development with the remaining pages and map. Replaced the starter with responsive Map, Users, Messages and Infrastructure pages, using six fictional trackers, five fictional members and four illustrative infrastructure devices. No actual sites, member records, hardware changes or live packets are represented.
+- Added MapLibre/USGS topo and aerial layers, selectable/searchable tracker list, measurement/receipt/contact times, aging and stale/unknown/never-seen states, optional infrastructure layer and opt-in recorded history. History shows measurement-time carriers, inspected points and dashed estimated connections broken across gaps over 15 minutes. Reduced motion and map/WebGL failure keep the tracking list usable. Rechecked official map/bundler guidance and explicitly bundled the MapLibre worker for Vite production builds.
+- Added browser-memory assignment claim/release/admin transfer with dated history and stable short names, separate simulated long-name jobs and latest-job outcome controls. Shared messages include manual simulated sending, author prefixes, unread notifications and drafts preserved through page changes/outages without reconnect resend. Role previews are illustrative, not authentication.
+- Added infrastructure role filtering, capability-specific readings, voltage history, declared hardware configuration, event/audit history, silent persistent badges and latched intrusion acknowledgment/admin resolution with a note. Battery rule configuration is a preview; automatic warning/recovery/missing-report/reconnect evaluation awaits ingestion. Demo sensor/voltage/configuration values do not establish hardware fitment or approved thresholds.
+- Verification: npm checks, strict TypeScript and production build passed; all eight domain tests also passed with Node's single-process test mode. Browser checks passed against development and production at 1440px/390px, including topo/aerial tiles, layers/history, assignment/name jobs, outage draft/manual sending, notifications, incidents/rules and role previews. Additional checks passed for blocked tiles, unavailable WebGL, reduced motion, keyboard skip navigation, browser back and narrow layout overflow. Visually reviewed page captures. Map renderer size still produces Vite's default bundle-size warning (about 286 kB compressed plus a 508 kB uncompressed worker).
+
+Next useful step: owner reviews the prototype on the Dell, then define the normalized persistence/ingestion contract and implement authenticated PocketBase operations with a Python simulation path. No backend, VM, live radio integration, offline-map readiness, field/GPU performance or automatic warning engine is verified. MQTT connectivity and wishlist features remain deferred.
+
 ## 2026-10-13 — Owner confirms Dell development works
 
 - Owner confirms the frontend works and can be built on the Dell. This verifies the owner's development experience for the current starter; it does not establish full-stack, MapLibre or field-device performance.

@@ -40,3 +40,7 @@ Map behavior should match the agreed age bands. A basemap failure must retain th
 Now: stack accepted; next review the prototype. Visual defaults can be chosen and revised without blocking progress. VM access is not needed for local frontend development.
 
 Later: VM resources/access, portal hostname and Cloudflare setup, initial admin provisioning, backup destination, sanitized packet samples from pinned builds and verified telemetry capabilities. Keep actual credentials and operational data in ignored private locations. No node, hardware purchase or VM access is needed to start the prototype.
+
+## Prototype checkpoint — 2026-10-13
+
+The owner brought the remaining pages and map forward. The [local four-page prototype](../../portal/README.md) is built and browser-reviewed with synthetic data, including assignments, history, messaging outages and infrastructure incidents. Both development and production map-worker paths were checked. Records and demo actions remain in browser memory; automatic infrastructure warning evaluation, authentication, persistence and ingestion are next-stage work. No field/backend/hosting decision or ticket status changed.
