@@ -3,22 +3,28 @@ import Badge from './Badge';
 import {
   ageLabel,
   historyInRange,
-  initialTrackers,
-  members,
+  initialTrackers as demoTrackers,
+  members as demoMembers,
   timeLabel,
 } from './demo';
-import type { Assignment, Fix } from './demo';
+import type { Assignment, Fix, Tracker, Member, Infrastructure } from './demo';
 import { positionAgeSeconds, positionStatus } from './position';
 import { statusText } from './tracker';
 const TrackingMap = lazy(() => import('./TrackingMap'));
 export default function MapPage({
   assignments,
+  trackers = demoTrackers,
+  members = demoMembers,
+  infrastructureNodes,
   now,
   selectedId,
   onSelect,
   labels,
 }: {
   assignments: Assignment[];
+  trackers?: Tracker[];
+  members?: Member[];
+  infrastructureNodes?: Infrastructure[];
   now: number;
   selectedId: string;
   onSelect: (id: string) => void;
@@ -30,14 +36,16 @@ export default function MapPage({
   const [hours, setHours] = useState(4);
   const [point, setPoint] = useState<Fix | null>(null);
   const [listOpen, setListOpen] = useState(true);
-  const selected = initialTrackers.find((t) => t.id === selectedId)!;
+  const selected = trackers.find((t) => t.id === selectedId) ?? trackers[0];
+  if (!selected)
+    return <p className="empty">No member trackers have been provisioned.</p>;
   const history = showHistory
     ? historyInRange(selected.history, now, hours)
     : [];
   const pointAssignment = point?.measuredAt
     ? assignments.find(
         (a) =>
-          a.deviceId === selectedId &&
+          a.deviceId === selected.id &&
           Date.parse(a.startedAt) <= Date.parse(point.measuredAt!) &&
           (!a.endedAt || Date.parse(a.endedAt) > Date.parse(point.measuredAt!)),
       )
@@ -49,7 +57,7 @@ export default function MapPage({
     ? positionAgeSeconds(selected.position, now)
     : null;
   const status = positionStatus(age);
-  const filtered = initialTrackers.filter((t) =>
+  const filtered = trackers.filter((t) =>
     `${t.shortName} ${t.number} ${labels[t.id]}`
       .toLowerCase()
       .includes(search.toLowerCase()),
@@ -58,10 +66,14 @@ export default function MapPage({
     <>
       <div className="summary-grid">
         {[
-          ['6', 'Member trackers', 'Fictional pilot scenario'],
+          [
+            String(trackers.length),
+            'Member trackers',
+            'Fictional pilot scenario',
+          ],
           [
             String(
-              initialTrackers.filter(
+              trackers.filter(
                 (t) =>
                   t.position &&
                   positionStatus(positionAgeSeconds(t.position, now)) !==
@@ -75,7 +87,7 @@ export default function MapPage({
           ],
           [
             String(
-              initialTrackers.filter(
+              trackers.filter(
                 (t) =>
                   t.position &&
                   positionStatus(positionAgeSeconds(t.position, now)) ===
@@ -85,7 +97,16 @@ export default function MapPage({
             'Stale positions',
             '15 minutes or older',
           ],
-          ['2', 'Unknown / never seen', 'No fresh fix inferred'],
+          [
+            String(
+              trackers.filter(
+                (t) =>
+                  !t.position || positionAgeSeconds(t.position, now) === null,
+              ).length,
+            ),
+            'Unknown / never seen',
+            'No fresh fix inferred',
+          ],
         ].map(([value, label, detail]) => (
           <div className="summary-card" key={label}>
             <span>{label}</span>
@@ -121,7 +142,9 @@ export default function MapPage({
         >
           <div className="panel-heading">
             <h2>Trackers</h2>
-            <span className="muted small">{filtered.length} of 6</span>
+            <span className="muted small">
+              {filtered.length} of {trackers.length}
+            </span>
           </div>
           <label className="search">
             <span className="sr-only">Search trackers or members</span>
@@ -140,9 +163,9 @@ export default function MapPage({
               const state = positionStatus(fixAge);
               return (
                 <button
-                  className={`tracker-row ${selectedId === tracker.id ? 'active' : ''}`}
+                  className={`tracker-row ${selected.id === tracker.id ? 'active' : ''}`}
                   key={tracker.id}
-                  aria-pressed={selectedId === tracker.id}
+                  aria-pressed={selected.id === tracker.id}
                   onClick={() => {
                     onSelect(tracker.id);
                     setPoint(null);
@@ -188,9 +211,10 @@ export default function MapPage({
           fallback={<div className="map-loading">Loading map renderer…</div>}
         >
           <TrackingMap
-            trackers={initialTrackers}
+            trackers={trackers}
+            infrastructureNodes={infrastructureNodes}
             labels={labels}
-            selectedId={selectedId}
+            selectedId={selected.id}
             now={now}
             showInfrastructure={showInfrastructure}
             history={history}
@@ -237,7 +261,11 @@ export default function MapPage({
             <dd>
               {selected.position
                 ? ageLabel(
-                    (now - Date.parse(selected.position.receivedAt)) / 1000,
+                    (now -
+                      Date.parse(
+                        selected.lastContactAt ?? selected.position.receivedAt,
+                      )) /
+                      1000,
                   )
                 : 'None'}
             </dd>
@@ -290,6 +318,12 @@ export default function MapPage({
         </div>
         {showHistory && (
           <div className="history-detail">
+            {selected.history.length >= 500 && (
+              <p className="small muted">
+                Backend history is capped at the latest 500 points per tracker
+                in the last 12 hours. Earlier observations remain stored.
+              </p>
+            )}
             <p className="small muted">
               {history.length} measured points. Dashed lines estimate
               connections; gaps over 15 minutes are left open. Earlier points

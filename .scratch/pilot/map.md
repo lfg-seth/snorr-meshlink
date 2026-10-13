@@ -45,7 +45,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Not yet specified
 
-- Owner brought portal design/building forward on 2026-10-13 while nodes are unavailable. The [portal build plan](portal-build-plan.md) starts with a local synthetic-data prototype, then authenticated storage and simulated ingestion before hardware integration.
+- Owner brought portal design/building forward on 2026-10-13 while nodes are unavailable. The [portal build plan](portal-build-plan.md) now has a reviewed four-page prototype and a local authenticated PocketBase/Python simulation backend. Deployment/backup/restore and selected-build hardware integration remain to verify.
 
 - Exact V4 builds, compatibility, and readiness for the planned six-device pilot after purchases/recoveries and bench checks.
 - How much firmware customization is actually needed for the agreed reporting behavior.

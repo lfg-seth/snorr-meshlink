@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import Badge from './Badge';
 import { timeLabel } from './demo';
 import type { Message } from './demo';
 export default function MessagesPage({
   messages,
+  authorName,
   draft,
   onDraft,
   online,
@@ -11,13 +13,15 @@ export default function MessagesPage({
   onIncoming,
 }: {
   messages: Message[];
+  authorName?: string;
   draft: string;
   onDraft: (text: string) => void;
   online: boolean;
   admin: boolean;
-  onSend: () => void;
-  onIncoming: () => void;
+  onSend: () => void | Promise<void>;
+  onIncoming?: () => void;
 }) {
+  const [sending, setSending] = useState(false);
   return (
     <div className="messages-layout">
       <section className="panel message-panel">
@@ -28,9 +32,11 @@ export default function MessagesPage({
               Chronological · fictional training traffic
             </span>
           </div>
-          <button disabled={!online} onClick={onIncoming}>
-            Simulate inbound
-          </button>
+          {onIncoming && (
+            <button disabled={!online} onClick={onIncoming}>
+              Simulate inbound
+            </button>
+          )}
         </div>
         <ol className="message-list">
           {messages.map((message) => (
@@ -46,13 +52,19 @@ export default function MessagesPage({
         </ol>
         <form
           className="composer"
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
-            onSend();
+            if (sending) return;
+            setSending(true);
+            try {
+              await onSend();
+            } finally {
+              setSending(false);
+            }
           }}
         >
           <label htmlFor="message-draft">
-            Message as {admin ? 'Demo Dispatch' : 'Demo Casey'}
+            Message as {authorName ?? (admin ? 'Demo Dispatch' : 'Demo Casey')}
           </label>
           <textarea
             id="message-draft"
@@ -69,10 +81,10 @@ export default function MessagesPage({
             </span>
             <button
               className="primary"
-              disabled={!online || !draft.trim()}
+              disabled={sending || !online || !draft.trim()}
               type="submit"
             >
-              Simulate send
+              {sending ? 'Sending…' : 'Simulate send'}
             </button>
           </div>
         </form>

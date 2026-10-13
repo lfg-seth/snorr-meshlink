@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
-import { ageLabel, historyConnections, infrastructure } from './demo';
-import type { Fix, Tracker } from './demo';
+import {
+  ageLabel,
+  historyConnections,
+  infrastructure as demoInfrastructure,
+} from './demo';
+import type { Fix, Tracker, Infrastructure } from './demo';
 import { positionAgeSeconds, positionStatus } from './position';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
@@ -12,6 +16,7 @@ maplibregl.setWorkerUrl(workerUrl);
 
 type Props = {
   trackers: Tracker[];
+  infrastructureNodes?: Infrastructure[];
   labels: Record<string, string>;
   selectedId: string;
   now: number;
@@ -171,7 +176,7 @@ export default function TrackingMap(props: Props) {
       );
     });
     if (props.showInfrastructure)
-      infrastructure.forEach((device) =>
+      (props.infrastructureNodes ?? demoInfrastructure).forEach((device) =>
         marker(
           device.id,
           [device.longitude, device.latitude],

@@ -1,6 +1,6 @@
 # Portal development
 
-React + TypeScript + Vite with MapLibre. This is a responsive four-page **synthetic prototype**. All members, observations, sites and actions are fictional. Changes live in browser memory and reset on refresh. PocketBase, the Python worker, authentication and a live radio feed are not installed yet.
+React + TypeScript + Vite with MapLibre. This is a responsive four-page **synthetic prototype**. All members, observations, sites and actions are fictional. Changes live in browser memory and reset on refresh. The [local PocketBase backend and Python simulation worker](../backend/README.md) now provide authentication and persistent observations/assignments/messages. A live radio feed is not connected. Standalone demo mode still resets on refresh.
 
 ## Run on the Dell or desktop WSL
 
@@ -55,4 +55,8 @@ Map configuration follows the [MapLibre raster source example](https://maplibre.
 
 See [the environment plan](../docs/research/portal-build-environment.md). GitHub Actions runs the same `npm ci` / `npm run check` commands for portal changes. A successful main push uploads a seven-day static build artifact named with its commit SHA. There is no deployment workflow or external preview hosting yet.
 
-The future authenticated portal must validate incoming records and enforce access/assignment rules on the server. Never put credentials in frontend configuration: browser-visible build variables are public. Real data, secrets and backups remain in ignored `private/` or `local-data/`; generated output and dependencies stay out of Git. MQTT connectivity research remains deferred.
+Connected mode uses server-enforced roles, transactional assignments and validated normalized ingestion. Choose **Backend sign in** after starting the local backend and worker; browser tokens stay in memory. Never put credentials in frontend configuration: browser-visible build variables are public. Real data, secrets and backups remain in ignored `private/` or `local-data/`; generated output and dependencies stay out of Git. MQTT connectivity research remains deferred.
+
+## Connected backend checkpoint — 2026-10-13
+
+The backend adds username/password login, server records for all four pages, a two-second authenticated snapshot poll, warning acknowledgment and saved mutations. The role selector remains only in standalone demo mode. Saved assignments/messages survive reload and backend restarts; sign in again after reload. Worker/backend outages retain the last snapshot, age its observations and disable sending. Drafts are preserved through reconnect and through edits while an earlier send is pending. API access rules are tested separately from visible controls. Account creation/password reset/deactivation are available through owner-run backend commands; no account-management form is added here. See the [backend setup and limits](../backend/README.md).

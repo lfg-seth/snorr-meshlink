@@ -1,9 +1,18 @@
 import { useState } from 'react';
 import Badge from './Badge';
-import { ageLabel, infrastructure, telemetryState, timeLabel } from './demo';
+import {
+  ageLabel,
+  infrastructure as demoInfrastructure,
+  telemetryState,
+  timeLabel,
+} from './demo';
 import type { AuditEvent, BatteryRule, Incident } from './demo';
 export default function InfrastructurePage({
   now,
+  connected = false,
+  infrastructureNodes = demoInfrastructure,
+  warnings = [],
+  onAckWarning,
   online,
   admin,
   incidents,
@@ -13,6 +22,16 @@ export default function InfrastructurePage({
   onIncident,
 }: {
   now: number;
+  connected?: boolean;
+  infrastructureNodes?: import('./demo').Infrastructure[];
+  warnings?: {
+    id: string;
+    deviceId: string;
+    kind: string;
+    recoveredAt: string | null;
+    acknowledgedAt: string | null;
+  }[];
+  onAckWarning?: (id: string) => void;
   online: boolean;
   admin: boolean;
   incidents: Incident[];
@@ -24,10 +43,30 @@ export default function InfrastructurePage({
   const [selectedId, setSelectedId] = useState('r1');
   const [role, setRole] = useState('All');
   const [note, setNote] = useState('');
-  const selected = infrastructure.find((d) => d.id === selectedId)!;
+  const selected =
+    infrastructureNodes.find((d) => d.id === selectedId) ??
+    infrastructureNodes[0];
+  if (!selected)
+    return (
+      <p className="empty">No infrastructure devices have been provisioned.</p>
+    );
   const incident = incidents.find(
-    (i) => i.deviceId === selectedId && !i.resolvedAt,
+    (i) => i.deviceId === selected.id && !i.resolvedAt,
   );
+  const metricState = (metric: string) => {
+    const time = selected.readingTimes
+      ? selected.readingTimes[metric]
+      : selected.reportedAt;
+    if (selected.readingTimes && metric in selected.readingTimes && !time)
+      return 'unknown measurement time';
+    const cadence =
+      selected.reportCadenceMinutes?.[metric] ?? selected.cadenceMinutes;
+    const timeout = selected.missingTimeoutMinutes?.[metric] ?? cadence * 3;
+    if (!time) return 'awaiting first report';
+    return now - Date.parse(time) >= timeout * 60000
+      ? 'stale reading'
+      : 'current reading';
+  };
   const state = telemetryState(
     selected.reportedAt,
     now,
@@ -52,7 +91,7 @@ export default function InfrastructurePage({
         </span>
       </div>
       <div className="infrastructure-grid">
-        {infrastructure
+        {infrastructureNodes
           .filter((d) => role === 'All' || d.role === role)
           .map((device) => {
             const deviceState = telemetryState(
@@ -65,9 +104,9 @@ export default function InfrastructurePage({
             );
             return (
               <button
-                className={`infra-card ${selectedId === device.id ? 'active' : ''}`}
+                className={`infra-card ${selected.id === device.id ? 'active' : ''}`}
                 key={device.id}
-                aria-pressed={selectedId === device.id}
+                aria-pressed={selected.id === device.id}
                 onClick={() => {
                   setSelectedId(device.id);
                   setNote('');
@@ -90,6 +129,16 @@ export default function InfrastructurePage({
                 >
                   {deviceState}
                 </Badge>
+                {warnings
+                  .filter((w) => w.deviceId === device.id && !w.recoveredAt)
+                  .map((w) => (
+                    <Badge key={w.id} kind="old">
+                      {w.kind === 'battery'
+                        ? 'Low battery'
+                        : `Missing ${w.kind.split(':')[1]}`}
+                      {w.acknowledgedAt ? ' · acknowledged' : ''}
+                    </Badge>
+                  ))}
                 {open && (
                   <Badge kind="old">
                     Intrusion ·{' '}
@@ -130,7 +179,7 @@ export default function InfrastructurePage({
             <dd>
               {selected.battery === null
                 ? 'Awaiting first reading'
-                : `${selected.battery.toFixed(2)} V · ${state.toLowerCase()}`}
+                : `${selected.battery.toFixed(2)} V · ${metricState('battery')}`}
             </dd>
           </div>
           <div>
@@ -140,7 +189,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped'
                 : selected.solar === null
                   ? 'Awaiting first reading'
-                  : `${selected.solar} W (demo) · ${state.toLowerCase()}`}
+                  : `${selected.solar} W (demo) · ${metricState('solar')}`}
             </dd>
           </div>
           <div>
@@ -150,7 +199,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped'
                 : selected.temperature === null
                   ? 'Awaiting first reading'
-                  : `${selected.temperature} °C (demo) · ${state.toLowerCase()}`}
+                  : `${selected.temperature} °C (demo) · ${metricState('temperature')}`}
             </dd>
           </div>
           <div>
@@ -160,7 +209,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped · no all-clear inferred'
                 : selected.intrusion === null
                   ? 'Awaiting first reading'
-                  : `${selected.intrusion ? 'Triggered' : 'Reported normal'} · ${state.toLowerCase()}`}
+                  : `${selected.intrusion ? 'Triggered' : 'Reported normal'} · ${metricState('intrusion')}`}
             </dd>
           </div>
           <div>
@@ -178,6 +227,23 @@ export default function InfrastructurePage({
             </dd>
           </div>
         </dl>
+        {warnings
+          .filter((w) => w.deviceId === selected.id && !w.recoveredAt)
+          .map((w) => (
+            <div className="incident" key={w.id}>
+              <Badge kind="old">{w.kind} warning</Badge>
+              <p className="small">
+                {w.acknowledgedAt
+                  ? 'Acknowledged · still open'
+                  : 'Open · fresh evidence required for recovery'}
+              </p>
+              {onAckWarning && !w.acknowledgedAt && (
+                <button onClick={() => onAckWarning(w.id)}>
+                  Acknowledge warning
+                </button>
+              )}
+            </div>
+          ))}
         {incident && (
           <div className="incident">
             <div className="panel-heading">
@@ -288,9 +354,10 @@ export default function InfrastructurePage({
           </div>
         </div>
         <RuleForm
-          key={selectedId}
-          deviceId={selectedId}
-          rule={rules[selectedId]}
+          key={selected.id}
+          deviceId={selected.id}
+          connected={connected}
+          rule={rules[selected.id] ?? rules['*']}
           admin={admin}
           onRule={onRule}
         />
@@ -304,7 +371,7 @@ export default function InfrastructurePage({
         <ol className="event-list">
           {[...events]
             .reverse()
-            .filter((e) => e.deviceId === selectedId)
+            .filter((e) => e.deviceId === selected.id)
             .map((event) => (
               <li key={event.id}>
                 <time>{timeLabel(event.at)}</time>
@@ -312,11 +379,11 @@ export default function InfrastructurePage({
               </li>
             ))}
         </ol>
-        {!events.some((e) => e.deviceId === selectedId) && (
+        {!events.some((e) => e.deviceId === selected.id) && (
           <p className="empty">No simulated events recorded for this device.</p>
         )}
         {incidents
-          .filter((i) => i.deviceId === selectedId && i.resolvedAt)
+          .filter((i) => i.deviceId === selected.id && i.resolvedAt)
           .map((i) => (
             <p className="small" key={i.id}>
               Resolved {timeLabel(i.resolvedAt)} · {i.note}
@@ -328,11 +395,13 @@ export default function InfrastructurePage({
 }
 function RuleForm({
   deviceId,
+  connected = false,
   rule,
   admin,
   onRule,
 }: {
   deviceId: string;
+  connected?: boolean;
   rule?: BatteryRule;
   admin: boolean;
   onRule: (id: string, rule: BatteryRule) => void;
@@ -344,11 +413,14 @@ function RuleForm({
     <div className="rule-section">
       <h3>Battery warning configuration</h3>
       <p className="small muted">
-        {rule
-          ? `Demo rule: below ${rule.trigger} V; recover at ${rule.recovery} V on fresh evidence.`
-          : 'Unconfigured · no hardware voltage thresholds selected.'}{' '}
-        This prototype records the rule only; automatic warning evaluation comes
-        with ingestion.
+        {rule?.enabled === false
+          ? 'Disabled rule · earlier warning history retained.'
+          : rule
+            ? `Demo rule: below ${rule.trigger} V; recover at ${rule.recovery} V on fresh evidence.`
+            : 'Unconfigured · no hardware voltage thresholds selected.'}{' '}
+        {connected
+          ? 'The server evaluates supported readings and separate recovery thresholds.'
+          : 'This prototype records the rule only; automatic warning evaluation comes with ingestion.'}
       </p>
       {admin && (
         <form

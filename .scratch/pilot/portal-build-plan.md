@@ -44,3 +44,7 @@ Later: VM resources/access, portal hostname and Cloudflare setup, initial admin 
 ## Prototype checkpoint — 2026-10-13
 
 The owner brought the remaining pages and map forward. The [local four-page prototype](../../portal/README.md) is built and browser-reviewed with synthetic data, including assignments, history, messaging outages and infrastructure incidents. Both development and production map-worker paths were checked. Records and demo actions remain in browser memory; automatic infrastructure warning evaluation, authentication, persistence and ingestion are next-stage work. No field/backend/hosting decision or ticket status changed.
+
+## Backend checkpoint — 2026-10-13
+
+After the owner accepted the prototype and requested the backend, implemented the [normalized storage/API contract](../../docs/research/portal-backend-contract.md), PocketBase migrations/authenticated transactions, Python simulation/replay and connected portal mode. Server authorization, assignment concurrency, duplicate/delayed ingestion, warnings/incidents and restart persistence are integration-tested. [Native startup and CI instructions](../../backend/README.md) cover private data/credentials. No broker route, live firmware decoder, radio publish/name execution, VM deployment or backup/restore is verified; these remain next-stage integration work. No ticket status changed.

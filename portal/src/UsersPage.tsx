@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import Badge from './Badge';
-import { initialTrackers, members, timeLabel } from './demo';
-import type { Assignment, NameJob } from './demo';
+import {
+  initialTrackers as demoTrackers,
+  members as demoMembers,
+  timeLabel,
+} from './demo';
+import type { Assignment, NameJob, Tracker, Member } from './demo';
 export default function UsersPage({
   assignments,
+  connected = false,
+  trackers = demoTrackers,
+  members = demoMembers,
+  selfMemberId = 'm5',
   nameJobs,
   admin,
   onAssign,
@@ -11,14 +19,28 @@ export default function UsersPage({
   onJob,
 }: {
   assignments: Assignment[];
+  connected?: boolean;
+  trackers?: Tracker[];
+  members?: Member[];
+  selfMemberId?: string;
   nameJobs: NameJob[];
   admin: boolean;
   onAssign: (deviceId: string, memberId: string) => void;
   onRelease: (deviceId: string) => void;
   onJob: (deviceId: string, status: NameJob['status']) => void;
 }) {
-  const [deviceId, setDeviceId] = useState('d5');
-  const [memberId, setMemberId] = useState('m5');
+  const [deviceId, setDeviceId] = useState(
+    () =>
+      trackers.find(
+        (t) => !assignments.some((a) => a.deviceId === t.id && !a.endedAt),
+      )?.id ??
+      trackers[0]?.id ??
+      '',
+  );
+  const [memberId, setMemberId] = useState(
+    () =>
+      members.find((m) => m.id === selfMemberId)?.id ?? members[0]?.id ?? '',
+  );
   const [error, setError] = useState('');
   const active = assignments.filter((a) => !a.endedAt);
   return (
@@ -31,9 +53,7 @@ export default function UsersPage({
         <div className="member-grid">
           {members.map((member) => {
             const assignment = active.find((a) => a.memberId === member.id);
-            const tracker = initialTrackers.find(
-              (t) => t.id === assignment?.deviceId,
-            );
+            const tracker = trackers.find((t) => t.id === assignment?.deviceId);
             const job = tracker
               ? nameJobs.findLast((j) => j.deviceId === tracker.id)
               : null;
@@ -64,7 +84,7 @@ export default function UsersPage({
                 {tracker && (
                   <div className="card-actions">
                     <button
-                      disabled={!admin && member.id !== 'm5'}
+                      disabled={!admin && member.id !== selfMemberId}
                       onClick={() => onRelease(tracker.id)}
                     >
                       Release tracker
@@ -94,8 +114,10 @@ export default function UsersPage({
         </div>
         <p className="muted small">
           One active tracker per member. Transfers close the previous dated
-          association. Role previews demonstrate the UI; authentication and
-          server enforcement come later.
+          association.{' '}
+          {connected
+            ? 'The server validates your role and rejects conflicting claims.'
+            : 'Role previews demonstrate the UI; authentication and server enforcement come later.'}
         </p>
         <form
           className="assignment-form"
@@ -103,7 +125,7 @@ export default function UsersPage({
             event.preventDefault();
             setError('');
             try {
-              onAssign(deviceId, admin ? memberId : 'm5');
+              onAssign(deviceId, admin ? memberId : selfMemberId);
             } catch (e) {
               setError(e instanceof Error ? e.message : 'Assignment failed');
             }
@@ -115,7 +137,7 @@ export default function UsersPage({
               value={deviceId}
               onChange={(event) => setDeviceId(event.target.value)}
             >
-              {initialTrackers.map((t) => (
+              {trackers.map((t) => (
                 <option
                   key={t.id}
                   value={t.id}
@@ -145,11 +167,21 @@ export default function UsersPage({
             </label>
           ) : (
             <p>
-              Claim as <strong>Demo Casey</strong>
+              Claim as{' '}
+              <strong>
+                {members.find((m) => m.id === selfMemberId)?.name ??
+                  'Your account'}
+              </strong>
             </p>
           )}
           <button className="primary" type="submit">
-            {admin ? 'Simulate assignment / transfer' : 'Simulate self-claim'}
+            {connected
+              ? admin
+                ? 'Save assignment / transfer'
+                : 'Claim tracker'
+              : admin
+                ? 'Simulate assignment / transfer'
+                : 'Simulate self-claim'}
           </button>
         </form>
         {error && (
@@ -161,7 +193,7 @@ export default function UsersPage({
       <section className="panel">
         <h2>Unassigned devices</h2>
         <div className="unassigned-list">
-          {initialTrackers
+          {trackers
             .filter((t) => !active.some((a) => a.deviceId === t.id))
             .map((t) => (
               <span key={t.id}>
@@ -169,7 +201,7 @@ export default function UsersPage({
               </span>
             ))}
         </div>
-        {active.length === initialTrackers.length && (
+        {active.length === trackers.length && (
           <p>All demo trackers are assigned.</p>
         )}
         <p className="muted small">
@@ -196,10 +228,7 @@ export default function UsersPage({
                 <div className="job-row" key={job.assignmentId}>
                   <span>
                     <strong>
-                      {
-                        initialTrackers.find((t) => t.id === job.deviceId)
-                          ?.shortName
-                      }
+                      {trackers.find((t) => t.id === job.deviceId)?.shortName}
                     </strong>{' '}
                     → {job.longName}
                   </span>
@@ -236,10 +265,7 @@ export default function UsersPage({
               {[...assignments].reverse().map((a) => (
                 <tr key={a.id}>
                   <td>
-                    {
-                      initialTrackers.find((t) => t.id === a.deviceId)
-                        ?.shortName
-                    }
+                    {trackers.find((t) => t.id === a.deviceId)?.shortName}
                   </td>
                   <td>{members.find((m) => m.id === a.memberId)?.name}</td>
                   <td>{new Date(a.startedAt).toLocaleString()}</td>

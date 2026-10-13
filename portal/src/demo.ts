@@ -8,6 +8,7 @@ export type Tracker = {
   battery: number | null;
   position: Fix | null;
   history: Fix[];
+  lastContactAt?: string | null;
 };
 export type Member = { id: string; name: string; initials: string };
 export type Assignment = {
@@ -18,12 +19,15 @@ export type Assignment = {
   endedAt: string | null;
 };
 export type NameJob = {
+  id?: string;
   assignmentId: string;
   deviceId: string;
   longName: string;
   status: 'pending' | 'confirmed' | 'failed';
 };
 export type Message = {
+  direction?: string;
+  authorId?: string;
   id: string;
   author: string;
   text: string;
@@ -47,6 +51,10 @@ export type Infrastructure = {
   solarSetup: string;
   antenna: string;
   samples: { at: string; volts: number }[];
+  readingTimes?: Record<string, string | null>;
+  reportCadenceMinutes?: Record<string, number>;
+  missingTimeoutMinutes?: Record<string, number>;
+  disabledMonitoring?: string[];
 };
 export type Incident = {
   id: string;
@@ -62,7 +70,11 @@ export type AuditEvent = {
   at: string;
   text: string;
 };
-export type BatteryRule = { trigger: number; recovery: number };
+export type BatteryRule = {
+  trigger: number;
+  recovery: number;
+  enabled?: boolean;
+};
 
 export const demoStartedAt = Date.now();
 export function minutesAgo(minutes: number) {
