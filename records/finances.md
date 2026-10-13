@@ -18,6 +18,8 @@ Do not add these amounts to the cash ledger or count them as new project spendin
 
 ## Cash ledger
 
+Planned acquisition, recorded 2026-10-12: owner intends to order 2 Heltec V4 member nodes with GPS and 3000mAh batteries and recover 2 existing member-held V4s with the same intended equipment. Evidence: owner response recorded in [Define useful tracking for the first field pilot](../.scratch/pilot/issues/02-pilot-needs.md). Price, shipping, tax, recovery costs, and payment status are unknown; no cash transaction or funding commitment recorded. Hardware reference: HW-013; battery reference: HW-010.
+
 Use stable transaction IDs such as `TX-001`. Record actual positive amounts; the direction identifies money in or out. Keep planned costs out of this table. A purchase funded by a reimbursement and the reimbursement itself are separate entries linked in the notes.
 
 | ID | Date | Direction (in/out) | Type (expense/funding/reimbursement/refund) | Description | Amount USD | Paid by / received by | Hardware or test ID | Receipt / evidence reference | Notes |
@@ -31,6 +33,8 @@ Track donated or already-owned hardware separately from project cash expenditure
 | --- | --- | --- | --- | --- | --- | --- |
 
 ## Budget and funding
+
+2026-10-12 — Owner is open to larger member-node batteries to support the 4-hour minimum / 12-hour target runtime. Capacity, quantity, cost, and purchase timing are unspecified; this is a planning option, not a cash transaction or spending ceiling.
 
 | Item | Status |
 | --- | --- |

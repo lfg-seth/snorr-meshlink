@@ -1,4 +1,4 @@
-# Working in SnorrMesh
+# Working in SNORR MeshLink
 
 ## At the start of a session
 
@@ -8,6 +8,7 @@ This repository is the durable project record. Preserve the user's priority orde
 
 ## When doing work
 
+- Wishlist: read `records/wishlist.md` when capturing a wishlist request or discussing a related topic. Record requested ideas as deferred, outside the active ticket frontier. Mention relevant parked ideas when useful to the current conversation; mentioning one does not activate it. Research, design, implementation, and testing wait until the owner explicitly brings it forward.
 - Inventory or hardware changes: update `records/inventory.md`; distinguish confirmed quantities, estimates, and unknowns.
 - Spending, donations, or funding: update `records/finances.md` with dated amounts and evidence references. Never invent balances, prices, or donated values.
 - Sites or backhaul: update `records/sites.md`; candidate locations are not permission to install.
@@ -25,4 +26,6 @@ Read `.scratch/TRACKER.md` before creating, claiming, blocking, or resolving tic
 
 Update `records/sessions.md` with completed work, outstanding questions, and the next useful step. Commit coherent completed changes as requested by the user; stage explicit paths and preserve unrelated edits. Do not amend or rewrite existing history unless requested. Report the commit and material verification limits.
 
-Keep secrets, identifiable member rosters, and raw location tracks out of Git using `private/` or `local-data/`. Track sanitized summaries and evidence references. The user has requested local setup; do not create a remote or publish content without authorization.
+The owner has authorized publishing project records to `git@github.com:lfg-seth/snorr-meshlink.git` (remote `origin`). Keep this repository updated and push every completed commit to its corresponding branch on `origin`; report any failed push. Track `main` against `origin/main`. Do not force-push or rewrite remote history without explicit authorization. The local Markdown tracker remains the decision record; GitHub receives it with each push.
+
+Keep secrets, identifiable member rosters, and raw location tracks out of Git using `private/` or `local-data/`. Track sanitized summaries and evidence references. Publication to the GitHub repository above is authorized; other publishing and external outreach require authorization.
