@@ -1,0 +1,21 @@
+# Local credentials and operational data; keep project summaries in Git.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+private/
+local-data/
+
+# Generated output and tool caches.
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.tmp
+
+# .scratch/ is the tracked local issue tracker. Do not ignore it.
