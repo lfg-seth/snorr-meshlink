@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-13 — Owner confirms Dell development works
+
+- Owner confirms the frontend works and can be built on the Dell. This verifies the owner's development experience for the current starter; it does not establish full-stack, MapLibre or field-device performance.
+- Reviewed the existing portal build plan. Next deliverable is the synthetic tracking screen: MapLibre/USGS map, six fictional trackers, searchable list and selectable device detail, with measurement age separate from last contact, stale/unknown/never-seen states and a simulated feed outage. Follow with opt-in history, then the remaining portal pages and backend integration.
+
+Next useful step: implement and review the tracking screen on the Dell at desktop and narrow widths. Existing CI remains the automated check; no VM or live nodes are required. No new implementation or ticket decision in this status review.
+
 ## 2026-10-13 — Accepted portal stack and development/CI baseline
 
 - Owner accepted React + TypeScript + Vite, PocketBase and Python worker, requesting simple TypeScript and explanations. Owner reports a desktop with WSL/Docker potentially available and no Proxmox VM yet; recorded development resources without assuming desktop access or readiness.
