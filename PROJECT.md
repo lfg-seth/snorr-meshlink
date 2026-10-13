@@ -33,12 +33,14 @@ Some vehicles may provide internet through Starlink or cellular service. One or 
 
 - Network architecture: the owner said “LoRaWAN” while also naming Meshtastic and MeshCore. Establish whether the intended system is a LoRa mesh, LoRaWAN, or a combination before choosing firmware.
 - Pilot terrain/routes, precise dispatch position-age target, mission duration, and acceptable missing-position rate. Initial scale is 5 toward roughly 20 trackers; the owner's GPS starting range is 5–15 minutes.
-- Existing hardware models, counts, condition, radio variants, and GPS capabilities.
+- Current hardware counts, condition, radio variants, and GPS capabilities. A 32-row historical purchase list is imported in [Inventory](records/inventory.md); the owner reports most items are retained, but quantities are not yet confirmed.
 - Message workflow, display/button needs, and behavior without a phone or internet.
 - Site permission, radio configuration/compliance, link coverage, and service access.
 - Dispatch data access, track retention, and handling of delayed/stale positions.
 - Power sizing, environmental limits, and maintainability.
 - Budget ceiling, ownership of equipment, grant applicant, and partners.
+
+The initial [protocol baseline](docs/research/protocol-baseline.md) records official-source findings and configuration options. It supports a bench evaluation after inventory; it does not settle firmware selection or prove that a fork is required.
 
 ## First planning destination
 
