@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily SNORR MeshLink private backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 America/Los_Angeles
+Persistent=true
+Unit=meshlink-backup.service
+
+[Install]
+WantedBy=timers.target

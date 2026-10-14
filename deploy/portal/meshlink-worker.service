@@ -1,0 +1,24 @@
+[Unit]
+Description=SNORR MeshLink synthetic packet worker (no radio connection)
+After=network.target meshlink-api.service
+Wants=meshlink-api.service
+
+[Service]
+User=meshlink-worker
+Group=meshlink-worker
+WorkingDirectory=/opt/meshlink/backend
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=MESHLINK_WORKER_CREDENTIALS=/etc/meshlink/worker.json
+ExecStart=/usr/bin/python3 -u /opt/meshlink/backend/worker.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

@@ -2,7 +2,11 @@
 
 PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python worker uses the standard library to submit normalized synthetic packets. The React portal can sign in and read saved records; standalone demo mode remains available.
 
-This is a local development backend with fictional records. No MQTT connection, firmware decoder, radio transmission, remote rename, VM or external deployment is implemented.
+Development and the current hosted pilot use fictional records. No MQTT connection, firmware decoder, radio transmission or remote rename is implemented.
+
+Deployment update, 2026-10-13: the owner-authorized [Ubuntu LXC simulation portal](../docs/operations/portal-lxc.md) now runs this backend with service supervision, HTTPS Tunnel routing and tested isolated backup recovery. The instructions below remain local-development commands; use the deployment guide for the hosted instance. Live MQTT/radio integration is still absent.
+
+The hosted worker uses `MESHLINK_WORKER_CREDENTIALS` to read a separate worker-only JSON credential file, under its own OS account. Native development keeps the existing default private credentials file. No worker or admin credential is sent to the browser.
 
 ## Start on the Dell
 

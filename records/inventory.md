@@ -42,7 +42,9 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 ## First confirmation pass
 
-2026-10-13 — Development resources: owner reports a home desktop with WSL/Docker potentially available for portal development/integration; exact specs, remote access and working service setup are unverified. Owner's current development laptop is a low-powered Dell; whether this is the same device as HW-033 remains unconfirmed. No Proxmox VM has been created yet. No purchase, value or production capacity is inferred.
+2026-10-13 — Development resources: owner reports a home desktop with WSL/Docker potentially available for portal development/integration; exact specs, remote access and working service setup are unverified. Owner's current development laptop is a low-powered Dell; whether this is the same device as HW-033 remains unconfirmed. Initially no Proxmox VM existed; owner subsequently created an Ubuntu LXC for the portal (see below). No purchase, value or production capacity is inferred.
+
+2026-10-13 — One portal LXC confirmed by owner and inspected over authorized SSH: Ubuntu 24.04.5 amd64, 4 logical CPUs, 8192 MiB RAM, 512 MiB swap allowance and 64 GiB SSD-backed root storage. These are virtual resource allocations, not new physical equipment or dedicated host capacity. Unprivileged-container configuration, physical Proxmox specs and off-host backups were not independently inspected. [Deployment record](sites.md#portal-hosting-record--owners-proxmox-lxc). No radio quantity, expense or donation value changed.
 
 The updated pass accounts for 21 radio boards/devices on hand: 8 RAK (1 with a broken carrier board), 9 Heltec V3, 2 Heltec V4, and 2 LILYGO T-Deck. Excluding the damaged RAK leaves 20 candidates for inspection, not 20 bench-verified working devices. Another 2 RAK units are deployed and unavailable for the bench pilot pending replacement and recovery. Member-held Heltec V4 quantities remain unknown.
 

@@ -1,6 +1,7 @@
 """Authenticated normalized replay/simulation boundary. No MQTT/radio connection yet."""
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -10,7 +11,10 @@ from manage import credentials
 
 
 def run(once=False, replay=None, interval=5):
-    secret = credentials()['worker']
+    # Hosted workers receive only their own credential, under a separate OS user.
+    credential_file = os.environ.get('MESHLINK_WORKER_CREDENTIALS')
+    secret = (json.loads(Path(credential_file).read_text()) if credential_file
+              else credentials()['worker'])
     client = Client()
     client.login(secret['username'], secret['password'])
     authenticated_at = time.monotonic()

@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-10-13 — Portal LXC deployed through Cloudflare
+
+- Owner confirms LXC creation, authorizes root SSH setup and chooses `meshlink.spp.lol`. Inspected Ubuntu 24.04.5 amd64 with 4 CPUs, 8 GiB RAM, 512 MiB swap and 64 GiB SSD-backed root filesystem; recorded virtual resources without altering radio counts or inventing costs. Portal hosting resumes; MQTT/survey holds remain.
+- Added reproducible deployment source for static Nginx/PocketBase/Python simulation services, private persistent state, restricted public API routes, per-client proxy IP/throttling and Ubuntu security updates. Owner installed/configured the existing remotely managed Cloudflare connector; preserved it and verified four connections plus the loopback-8080 route. No second tunnel, router forwarding, MQTT adapter or Cloudflare protection change.
+- Isolated the hosted worker under a separate OS account with only its own credential JSON; verified ingestion succeeds while admin credentials/database reads are denied. Native development retains its original credential path. Backend checks rerun after this worker-source change.
+- Daily 02:30 Pacific root-private backups retain 14 local archives, quiescing the worker/API for consistent state and including matching source/build. Verified checksum, SQLite integrity, restored credentials/assignments/messages/incidents/events and retained history via a separate loopback API; live state was not replaced. Off-host/Proxmox backups remain pending owner-selected storage/access.
+- Verification: existing 27 backend and 8 frontend tests, TypeScript/production build, Nginx/shell/Python syntax, loopback sign-in/role boundaries, independent client throttling, restart persistence, isolated restore and credential-free public HTTPS/certificate/API boundaries pass. Existing MapLibre bundle warning remains. Public DNS is correct; LAN DNS retains an older negative IPv4 result, blocking desktop browser review during setup. Cloudflare blocks Python's default user-agent; curl probes pass without altering protection.
+- Automatic approval review rejected transmitting generated admin credentials through Cloudflare for a public sign-in test. Replaced that test with credential-free HTTPS probes and retained loopback authenticated checks; no credentials/tokens published. Owner public browser sign-in and actual reboot recovery remain unverified. Preserved unrelated battery-box model. Completed source/records checkpoint is committed/pushed to main; final response reports result.
+
+Next useful step: owner opens the portal and signs in using privately viewed generated credentials after LAN DNS catches up; configure off-host Proxmox backups, then resume live MQTT integration only when the owner brings it forward.
+
+## 2026-10-13 — Ubuntu LXC portal sizing
+
+- Owner resumes portal hosting setup and selects Ubuntu LXC on Proxmox. Reviewed the current PocketBase/Python/static React stack and primary Proxmox/Ubuntu documentation; recommended 2 cores, 2 GiB RAM, 512 MiB swap allowance and 32 GiB SSD-backed storage in an unprivileged Ubuntu 24.04 LTS container, with direct services, a stable LAN address and start at boot. Recorded the proposed hosting configuration in sites; these are estimates, not confirmed allocations or measured capacity.
+- No container created, service deployed, broker integration resumed or hardware count changed. MQTT and other held work remain held. Documentation whitespace checked; unrelated storage-box file preserved. No commit requested or made.
+
+Next useful step: owner creates the container and supplies its Ubuntu version and LAN address privately as appropriate; then configure access, pinned runtimes, persistent services and a tested backup/restore before HTTPS rollout.
+
 ## 2026-10-13 — Project held and desktop handoff checkpoint
 
 - Owner requests holding the survey issue, wrapping all current project progress and pushing it to GitHub for another desktop. Released the survey claim, left it open/deferred, recorded the project-wide hold in the map/project brief and added [desktop handoff](../docs/operations/desktop-handoff.md). Resume only at owner direction; no planning decision falsely marked complete.

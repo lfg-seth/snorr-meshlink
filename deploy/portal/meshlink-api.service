@@ -1,0 +1,23 @@
+[Unit]
+Description=SNORR MeshLink PocketBase API (simulation pilot)
+After=network.target
+
+[Service]
+User=meshlink
+Group=meshlink
+WorkingDirectory=/opt/meshlink
+Environment=MESHLINK_SIMULATION=1
+ExecStart=/var/lib/meshlink/bin/pocketbase --dir=/var/lib/meshlink/pb_data --hooksDir=/opt/meshlink/backend/pb_hooks --migrationsDir=/opt/meshlink/backend/pb_migrations --automigrate=false --hooksWatch=false serve --http=127.0.0.1:8090 --origins=https://meshlink.spp.lol,http://127.0.0.1:8080,http://localhost:8080
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/meshlink
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

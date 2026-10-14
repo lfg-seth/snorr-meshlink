@@ -48,3 +48,7 @@ The owner brought the remaining pages and map forward. The [local four-page prot
 ## Backend checkpoint — 2026-10-13
 
 After the owner accepted the prototype and requested the backend, implemented the [normalized storage/API contract](../../docs/research/portal-backend-contract.md), PocketBase migrations/authenticated transactions, Python simulation/replay and connected portal mode. Server authorization, assignment concurrency, duplicate/delayed ingestion, warnings/incidents and restart persistence are integration-tested. [Native startup and CI instructions](../../backend/README.md) cover private data/credentials. No broker route, live firmware decoder, radio publish/name execution, VM deployment or backup/restore is verified; these remain next-stage integration work. No ticket status changed.
+
+## LXC deployment checkpoint — 2026-10-13
+
+Owner resumes hosting and selects Ubuntu LXC in place of the earlier VM. The [deployment record](../../docs/operations/portal-lxc.md) documents production static serving, supervised PocketBase/simulation worker, Cloudflare HTTPS, local authentication, service restart and isolated consistent-backup recovery. Public DNS/credential-free HTTPS checks pass; owner browser sign-in waits for the LAN resolver's older negative IPv4 answer to clear. Off-host Proxmox backups, actual reboot recovery and live packets remain unverified. MQTT/survey holds and wishlist deferrals remain; no ticket status changed.

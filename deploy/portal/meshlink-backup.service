@@ -1,0 +1,7 @@
+[Unit]
+Description=Consistent private backup of SNORR MeshLink state and release
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/meshlink-backup
+UMask=0077

@@ -8,7 +8,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
-- Owner put project work on hold on 2026-10-13 for desktop handoff. Preserve decisions and deferred work; resume only at owner direction. [Desktop handoff](../../docs/operations/desktop-handoff.md) records current state and setup. The repeater survey claim is released; this is a hold, not a completed pilot decision.
+- Owner put project work on hold on 2026-10-13 for desktop handoff, then resumed portal hosting setup. [Ubuntu LXC deployment](../../docs/operations/portal-lxc.md) records the running simulation portal, Cloudflare route and backup recovery evidence. Preserve the survey/MQTT and other deferrals until separately resumed. The repeater survey claim remains released; no pilot decision is falsely completed.
 
 - Full mission and standing priorities: [Project brief](../../PROJECT.md).
 - Keep it simple. Chart decisions now; implementation and installation follow when their prerequisites are settled.
