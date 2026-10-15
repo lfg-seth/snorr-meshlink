@@ -6,6 +6,7 @@ Prepared 2026-10-14 at the owner's request, using two connected on-hand RAK4631s
 | --- | --- | --- | --- |
 | R001 | COM8 | `!a65601b3` | `2.7.26.54e0d8d` |
 | R002 | COM9 | `!b456f760` | `2.7.26.54e0d8d` |
+| R003 | COM14 | `!05237743` | `2.7.26.54e0d8d` |
 
 Ports can change; verify hardware identity before writing settings. Physically label the boards R001/R002 before separating them. Owner confirms suitable 915 MHz antennas attached. Exact antenna model/gain, radio frequency SKU markings, fitted sensors and battery assembly are not independently inspected.
 
@@ -35,3 +36,15 @@ References: official [RAK4631 target](https://meshtastic.org/docs/hardware/devic
 ## Next checks
 
 See [TEST-006](../../records/field-results.md#test-006--stock-rak-pilot-repeater-preparation). Direct bench reception does not establish a forced relay path. Next reconnect a GPS-equipped V4, isolate direct reception so each RAK is demonstrably required in turn, and verify original GPS measurement timestamps through both V3 gateways and the portal. Then test internet loss/local viewing, sustained freshness and the actual battery/solar assembly before site placement.
+
+## R003 environmental sensor follow-up — 2026-10-14
+
+Owner connects a third on-hand RAK, labels it R003, confirms its antenna, and tentatively identifies its temperature sensor as **AHT21 at 0x38**. Sensor model/wiring are not independently inspected. This prepares another board; the original two-repeater field allocation is not automatically expanded.
+
+R003's older `2.7.17.36133d29d` settings are backed up privately. Full reset followed by 1200-baud entry exposes COM15 Nordic recovery; install the same official stock `firmware-rak4631-2.7.26.54e0d8d-ota.zip`. Normal identity remains COM14/`!05237743`. Apply the matching pilot profile twice to account for role defaults. Independent full readback passes, including fresh keys, cleared fixed position/admin keys and matching radio/channel settings. Device telemetry and environmental measurement are explicitly enabled at **900 seconds** each. Unrelated power/air-quality/health sensor options are cleared; displayed-temperature preference reset to Celsius. Brief private USB debug collection is restored to disabled afterward.
+
+Both receive-only V3s receive R003's automatic device metrics, including reported voltages **4.259 V** and **4.278 V** in two startup samples; level 101 reports charging/external-power/no-battery status rather than 101%. These are firmware-reported readings, not meter-verified battery voltages. No temperature or humidity is returned in gateway observation or the short local sensor request/observation. Do not claim environmental reporting works.
+
+Pinned-source explanation: standard RAK4631 [variant.h](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/variants/nrf52840/rak4631/variant.h) defines `HAS_NCP5623`. [ScanI2CTwoWire.cpp](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/src/detect/ScanI2CTwoWire.cpp) then includes NCP5623 LED-controller detection and compiles out the AHT sensor case behind `#ifndef HAS_NCP5623`. The [AHT driver](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/src/modules/Telemetry/Sensor/AHT10.cpp) would otherwise supply temperature and relative humidity through Adafruit AHTX0. This stock-target exclusion explains why merely enabling telemetry cannot activate the owner's reported AHT sensor. It does not independently prove its wiring, precise AHT21 model or driver compatibility.
+
+Keep stock firmware as requested. Environmental enable remains saved, but actual AHT reporting requires a separately authorized firmware compatibility change or a compatible sensor choice. Neither a custom build, sensor replacement, portal telemetry implementation nor purchase was performed. [TEST-007](../../records/field-results.md#test-007--r003-stock-setup-and-environmental-sensor-limit).

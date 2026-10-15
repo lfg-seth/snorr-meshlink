@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-14 — R003 prepared; stock AHT sensor limitation identified
+
+- Owner replaces the connected RAKs with another unit, requests R003 with matching stock pilot configuration and temperature/humidity if available, confirms antenna, and tentatively identifies AHT21 at 0x38. Sync main (already current), preserve unrelated untracked 3MF, identify COM14 RAK4631 `!05237743` and privately back up its older profile.
+- Full reset, 1200-baud Nordic entry on COM15 and official matching stock package install succeed. Apply shared private profile with device/environment telemetry explicitly enabled at 900 seconds each; reapply after role defaults, clear unrelated telemetry options and verify the complete profile after configuration reboot. Private provisioning/verifier updated; no changes to disconnected R001/R002 or the gateways/portal.
+- Both V3s receive two automatic device-metric packets (4/4 receipts) with firmware-reported 4.259/4.278 V and level 101. No temperature/humidity arrives in gateway observation or short local request. Brief private debug logging restored off. Pinned standard RAK variant defines HAS_NCP5623, which compiles out the scanner's AHT detection case; environmental enable alone cannot overcome that stock-target exclusion. Sensor model/wiring and actual voltage calibration remain unverified.
+- Record third existing-stock allocation, verification and source explanation in [setup](../docs/operations/rak-pilot-setup.md#r003-environmental-sensor-follow-up--2026-10-14), inventory and [TEST-007](field-results.md#test-007--r003-stock-setup-and-environmental-sensor-limit). Keep the original two-repeater field plan, stock firmware constraint and deferred custom survey scope; no new purchase, site work, custom firmware or tracker status change.
+- Final explicit reboot/reconnection passes the complete profile, including debug off and unrelated sensor modules disabled. Local Python close/disconnect race recurs after reboot, with successful subsequent device readback.
+
+Next useful step: owner chooses whether to retain stock with this sensor unavailable or bring forward a targeted firmware/sensor compatibility change. Forced GPS relaying, actual sensor wiring/model verification, calibrated battery voltage and sustained cadence/runtime tests remain outstanding; portal telemetry is separate.
+
 ## 2026-10-14 — Enable RAK battery-voltage telemetry
 
 - Owner asks whether R001/R002 track/report battery voltage. Check saved profiles and pinned stock `DeviceTelemetry.cpp`: a 900-second interval alone does not enable broadcasts. Initial setup missed `device_telemetry_enabled`, which remained false. Correct it to true on both identified RAKs and retain the interval.
