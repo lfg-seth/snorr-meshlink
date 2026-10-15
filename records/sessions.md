@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-15 — Restore connected gateway Wi-Fi
+
+- Owner requests restoring supplied Wi-Fi credentials on the connected gateway. After USB reconnection, COM6 identifies as G002 (`!849ad7a0`). G001 is unchanged.
+- Privately back up settings, apply supplied credentials with Wi-Fi enabled, and reconnect to verify exact saved values. Serialized MQTT and LoRa settings remain unchanged. Credentials and snapshots stay in ignored `private/bench/2026-10-15-gateway-wifi/`.
+- Saved configuration passes; hotspot association and subsequent MQTT delivery remain unverified. No firmware, hardware allocation, portal or radio-profile changes.
+
+Next useful step: keep the hotspot available and verify fresh G002 receipts in the live portal.
+
 ## 2026-10-14 — Correct standalone-demo frontend on live portal
 
 - Owner reports demo data after repeater deployment. Fresh public browser reproduces six fictional trackers; authenticated loopback confirms live backend/configurations retained. Served bundle matches staged artifact. Cause: build omitted `VITE_PORTAL_MODE=live`, selecting old demo default. Earlier API/restore checks missed browser entry behavior.
