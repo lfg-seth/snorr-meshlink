@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-14 — All four Windows serial ports accessible
+
+- After owner reconnects the V3s, both CP2102 bridges report healthy drivers (error code 0), assigned COM6 and COM7. Both V4 ports COM4/COM5 and both V3 ports COM6/COM7 pass brief native open/close with DTR/RTS disabled. No additional Windows driver permissions needed for serial access.
+- No firmware/configuration changes, GPS/MQTT delivery test or hosted deployment. V3 label-to-port mapping remains to read through the device protocol.
+
+Next useful step: install local bench dependencies and read device identities, then resume the MQTT ingestion adapter using the accessible LXC. Hosted simulation-data handling remains to settle before changing its database.
+
 ## 2026-10-14 — Windows driver installation recheck
 
 - Owner reports driver installed. One CP2102 bridge now has a healthy driver and COM6; native open/close passes on COM4, COM5 and COM6. The second CP2102 bridge still reports missing-driver error 28 and has no COM port. Per-V3 identity remains unverified. No hardware quantity changes.

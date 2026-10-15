@@ -42,7 +42,7 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 ## First confirmation pass
 
-2026-10-14 desktop access check — Four connected boards enumerate on Windows: V4 USB identities match B001 on COM4 and B002 on COM5, both passing native serial open/close. Two CP2102 bridges have device error 28 (missing Windows drivers), leaving the V3s without COM ports; per-V3 mapping remains unverified here. Ubuntu-24.04 WSL starts but has no USB serial passthrough. No quantities, firmware or radio configuration changed.
+2026-10-14 desktop access check — Four connected boards enumerate on Windows: V4 USB identities match B001 on COM4 and B002 on COM5. Initially both CP2102 bridges lacked drivers (error 28); following owner driver installation and reconnection, both report healthy drivers (error 0) on COM6 and COM7. All four ports pass native serial open/close with DTR/RTS disabled; per-V3 mapping remains unverified here. Ubuntu-24.04 WSL starts but has no USB serial passthrough. No quantities, firmware or radio configuration changed; GPS/MQTT delivery was not retested.
 
 2026-10-14 development workflow confirmation — Owner identifies the current machine as the Dell laptop running Linux and the other development machine as a Windows desktop with WSL, and will regularly alternate between them. No new hardware, quantity or expense; desktop specifications/Docker operation and whether this Dell is HW-033 remain unverified. [Handoff](../docs/operations/development-handoff.md).
 
