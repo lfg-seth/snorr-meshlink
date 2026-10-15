@@ -19,6 +19,42 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_raw_mqtt_archive_is_lossless_private_and_idempotent(self):
+        import base64
+        import uuid
+        item = {'receiptId': str(uuid.uuid4()), 'topic': 'snorr/pilot/unknown',
+                'receivedAt': at(), 'qos': 1, 'retained': True, 'duplicate': True,
+                'payloadBase64': base64.b64encode(b'\x00\xff').decode(),
+                'payloadBytes': 2, 'decodeOutcome': 'rejected', 'decodeReason': 'retained packet'}
+        path = '/api/meshlink/worker/archive'
+        before = self.state()
+        for client in [Client(self.url), self.admin, self.member]:
+            with self.assertRaises(ApiError):
+                client.request('POST', path, item)
+        self.assertEqual(self.worker.request('POST', path, item)['outcome'], 'saved')
+        # JSON object order can change during durable queue/API serialization.
+        retry = dict(reversed(list(item.items())))
+        self.assertEqual(self.worker.request('POST', path, retry)['outcome'], 'duplicate')
+        with self.assertRaises(ApiError):
+            self.worker.request('POST', path, {**item, 'topic': 'changed'})
+        rows = self.records('mqtt_archive')
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['envelope'], item)
+        for client in [Client(self.url), self.admin, self.member, self.worker]:
+            # Locked collection list queries cannot reveal archived payloads.
+            with self.assertRaises(ApiError):
+                client.request('GET', '/api/collections/mqtt_archive/records')
+        self.assertEqual(before['trackers'], self.state()['trackers'])
+        self.assertEqual(before['infrastructure'], self.state()['infrastructure'])
+        for value in ['', 'AA=', '!!!!']:
+            with self.assertRaises(ApiError):
+                self.worker.request('POST', path, {**item, 'receiptId': str(uuid.uuid4()),
+                    'payloadBase64': value})
+        self.stop()
+        self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual(self.records('mqtt_archive')[0]['envelope'], item)
+
     def test_unknown_clock_humidity_updates_without_replacing_known_measurements(self):
         first = packet('r1', 'telemetry', {'temperature': 23, 'humidity': 35}, gateway='b1')
         first['measuredAt'] = None

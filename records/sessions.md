@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-15 — Archive all received MQTT traffic in PocketBase
+
+- Owner directs saving all MQTT data now and deciding how to use it later. Add private `mqtt_archive` collection and worker-only archive route: exact payload bytes as base64, topic, arrival time, QoS/retain/duplicate flags, stable receipt UUID and bounded normalization outcome/reason. Unsupported, unknown-source, retained, malformed and duplicate deliveries are preserved; existing operational normalization/contact/freshness rules stay intact.
+- Subscribe to the configured project root (`snorr/pilot/#`), archive before normalized ingestion and acknowledge QoS 1 after private SQLite persistence. API retries reuse archive IDs; old normalized queue entries still drain, and backend validation rejection receipts no longer block the queue. No raw data/keys enter Git, no automatic expiry is introduced, and archive access stays behind trusted PocketBase administration.
+- Deploy additive migration and worker/hooks to the authorized LXC after verified backup `meshlink-20261015T202515Z.tar.gz`. Verify an actual new live receipt, byte-length preservation, zero pending queue and active services. All 42 backend tests pass locally and on the production runtime against disposable databases. Post-update backup `meshlink-20261015T202742Z.tar.gz` and isolated recovery include the archive; protected proxy and login checks pass.
+- Worker requests all root topics, but broker delivery remains ACL-limited: documented read permission is `snorr/pilot/2/e/#`. Broker SSH works as the owner, but ACL inspection/change requires unavailable sudo authentication; root SSH is denied. No broker permissions were changed. Raw ciphertext retains later decoding options with the matching private key; past discarded data and offline/QoS-0 losses are not recovered. [Operations and limits](../docs/operations/live-mqtt.md#raw-mqtt-archive--2026-10-15).
+- Preserve the pre-existing firmware, frontend, inventory and session edits outside this change.
+
+Next useful step: let the archive collect real traffic; broker admin can expand the worker read ACL to `snorr/pilot/#` if topics outside the existing encrypted subtree are needed. Review stored packet types when the owner brings interpretation forward.
+
 ## 2026-10-15 — Restore connected gateway Wi-Fi
 
 - Owner requests restoring supplied Wi-Fi credentials on the connected gateway. After USB reconnection, COM6 identifies as G002 (`!849ad7a0`). G001 is unchanged.

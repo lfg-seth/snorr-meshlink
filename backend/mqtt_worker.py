@@ -1,5 +1,6 @@
 """Persistent TLS MQTT subscriber. Never publishes or performs radio administration."""
 import argparse
+import base64
 import json
 import os
 from pathlib import Path
@@ -8,11 +9,12 @@ import sqlite3
 import ssl
 import threading
 import time
+import uuid
 
 import paho.mqtt.client as mqtt
 
 from client import ApiError, Client
-from mqtt_adapter import Adapter, PacketRejected
+from mqtt_adapter import Adapter, PacketRejected, at
 
 
 class Spool:
@@ -49,9 +51,9 @@ class Worker:
         self.connected = threading.Event()
         self.stopping = threading.Event()
         self.fatal = threading.Event()
-        self.counts = {'queued': 0, 'ignored': 0, 'rejected': 0, 'saved': 0}
+        self.counts = {'queued': 0, 'unsupported': 0, 'rejected': 0, 'saved': 0}
         self.mqtt = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,
-                                client_id='meshlink-pilot-gps', clean_session=True)
+                                client_id='meshlink-pilot-gps', clean_session=True, manual_ack=True)
         self.mqtt.username_pw_set(config['username'], config['password'])
         self.mqtt.tls_set_context(ssl.create_default_context())
         self.mqtt.reconnect_delay_set(1, 30)
@@ -63,7 +65,7 @@ class Worker:
     def on_connect(self, client, userdata, flags, reason, properties):
         self.connected.clear()
         if not reason.is_failure:
-            client.subscribe(f'{self.adapter.root}/2/e/{self.adapter.channel}/+', qos=1)
+            client.subscribe(f'{self.adapter.root}/#', qos=1)
 
     def on_subscribe(self, client, userdata, mid, reasons, properties):
         if reasons and all(not reason.is_failure for reason in reasons):
@@ -74,16 +76,36 @@ class Worker:
 
     def on_message(self, client, userdata, message):
         try:
-            packet = self.adapter.decode(message.topic, message.payload, time.time(), message.retain)
-            if packet is None:
-                self.counts['ignored'] += 1
-                return
-            self.spool.put(packet)
+            received = time.time()
+            # Preserve the wire bytes before any filtering or interpretation.
+            archive = {
+                'receiptId': str(uuid.uuid4()), 'topic': message.topic,
+                'receivedAt': at(received), 'qos': int(message.qos),
+                'retained': bool(message.retain), 'duplicate': bool(message.dup),
+                'payloadBase64': base64.b64encode(message.payload).decode('ascii'),
+                'payloadBytes': len(message.payload),
+            }
+            packet = None
+            try:
+                packet = self.adapter.decode(message.topic, message.payload, received, message.retain)
+                archive['decodeOutcome'] = 'normalized' if packet else 'unsupported'
+                if packet is None:
+                    self.counts['unsupported'] += 1
+            except PacketRejected as error:
+                archive['decodeOutcome'] = 'rejected'
+                archive['decodeReason'] = str(error)
+                self.counts['rejected'] += 1
+            except Exception:
+                # An unexpected decoder failure must not discard the original.
+                archive['decodeOutcome'] = 'error'
+                archive['decodeReason'] = 'decoder error'
+                self.counts['rejected'] += 1
+            self.spool.put({'archive': archive, 'normalized': packet})
             self.counts['queued'] += 1
-        except PacketRejected:
-            self.counts['rejected'] += 1
+            # QoS 1/2 acknowledgement follows durable local persistence.
+            if message.qos:
+                client.ack(message.mid, message.qos)
         except Exception:
-            # Persistence failure must not leave a healthy-looking subscriber.
             self.connected.clear()
             self.fatal.set()
             client.disconnect()
@@ -109,7 +131,20 @@ class Worker:
             item = self.spool.first()
             if not item:
                 break
-            self.request('/api/meshlink/worker/ingest', item[1])
+            queued = item[1]
+            if 'archive' in queued:
+                # Stable receipt ID makes retries after API commit idempotent.
+                self.request('/api/meshlink/worker/archive', queued['archive'])
+                packet = queued.get('normalized')
+            else:
+                packet = queued  # Drain receipts queued by the previous release.
+            if packet:
+                try:
+                    self.request('/api/meshlink/worker/ingest', packet)
+                except ApiError as error:
+                    # Ingest commits a rejection receipt before returning 400.
+                    if error.status != 400:
+                        raise
             self.spool.ack(item[0])
             self.counts['saved'] += 1
 

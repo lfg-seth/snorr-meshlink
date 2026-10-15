@@ -1,6 +1,22 @@
 # Live GPS and infrastructure telemetry ingestion
 
-The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered infrastructure voltage and temperature/humidity telemetry are also decoded; unsupported packet kinds are ignored. See [repeater provisioning and measured verification](repeater-telemetry.md).
+The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered infrastructure voltage and temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
+
+## Raw MQTT archive — 2026-10-15
+
+Owner authorizes recording all MQTT traffic now and deciding how to use it later. The worker subscribes to `snorr/pilot/#` (the configured project root), rather than one channel/gateway pattern. Broker ACLs still determine which messages it can receive. The documented `pilot-worker` read ACL is `snorr/pilot/2/e/#`; broader topics require a broker-admin ACL update. Gateway publishing rights are unchanged.
+
+Every delivery is stored in the private `mqtt_archive` PocketBase collection: exact binary payload encoded as base64, byte count, topic, original worker arrival time, MQTT QoS/retain/duplicate flags, stable receipt UUID, normalization outcome and bounded rejection reason. This includes other application kinds/channels, unknown sources/gateways, retained messages, malformed packets and separate gateway copies. Encrypted payloads stay encrypted in this archive; later interpretation needs the matching private channel key. Unsupported fields can be recovered from the original bytes. No automatic expiry/pruning is added.
+
+Collection reads/writes remain locked to trusted PocketBase superuser administration. The worker has only an authenticated write route on loopback; archive data is absent from portal snapshots and public proxy routes. Raw packets, queue and database stay out of Git. The existing private backups include the archive and matching private key/configuration.
+
+One durable queue entry holds the archive plus any existing normalized packet. Archive storage succeeds before normalized ingestion; API retries reuse the UUID, while separate MQTT deliveries retain separate records. Old normalized queue entries drain compatibly. QoS 1 acknowledgement follows SQLite commit. This does not recover past discarded packets or traffic lost before delivery; QoS 0, clean-session disconnect gaps and upstream buffering still limit completeness. Archiving does not change source validation, last-contact semantics or measurement freshness.
+
+After deployment, run `python3 /opt/meshlink/deploy/portal/verify-mqtt-archive.py` to verify new receipts, binary lengths, database integrity and pending queue count without printing payloads. Use the standard private backup and isolated restore verification too.
+
+Deployment verified 2026-10-15: additive migration applied, both services active, one actual new receipt captured and binary length checked with an empty pending queue. All 42 backend tests pass locally and on the LXC runtime in disposable databases. Private backup `meshlink-20261015T202742Z.tar.gz` restores the archive in isolation and passes proxy/authentication checks. Broader ACL inspection/update could not proceed: owner SSH works, but sudo requires authentication and root SSH is denied. No broker ACL was changed.
+
+Schema/API references: [PocketBase migrations](https://pocketbase.io/docs/js-migrations/), [record operations](https://pocketbase.io/docs/js-records/), [JSON size limits](https://pocketbase.io/jsvm/interfaces/core.JSONField.html).
 
 ## Private configuration
 
@@ -14,7 +30,7 @@ Registered source-node mappings are B001/B002 → the two V4 member trackers and
 
 ## Receipt and freshness behavior
 
-- Verify TLS hostname/certificate, subscribe only to the configured encrypted channel, and accept only registered source/gateway mappings with matching envelope/topic identities. Reject retained, plaintext, PKI, MQTT-forwarded, malformed and out-of-range position packets. Unsupported traffic and decode rejections increment counters without logging raw payloads.
+- Verify TLS hostname/certificate, subscribe only to the configured encrypted channel, and accept only registered source/gateway mappings with matching envelope/topic identities. Reject retained, plaintext, PKI, MQTT-forwarded, malformed and out-of-range position packets. All received messages are archived privately before normalization; counters and service logs never include raw payloads.
 - Preserve `Position.timestamp` (plus its bounded millisecond adjustment) as GPS measurement time; a zero solution timestamp stays unknown. `Position.time` is a separate device/transmit clock and is never used to refresh a fix. Future times remain future for the existing backend validation. Subscriber receipt time is distinct from gateway radio reception time. No new location is invented from contact time.
 - Packet identity combines source device, radio packet ID and a digest of decrypted channel/data content. Identical copies across gateways or replays create separate receipts and one displayed observation. Reused radio IDs with different fixes remain distinct. A different payload under a reused ID is retained as another observation rather than silently losing the fix.
 - Private SQLite queue `/var/lib/meshlink-worker/receipts.sqlite` survives restarts/API outages. Remove a receipt from the queue only after the backend stores its outcome. A crash after API commit can create another duplicate receipt on retry; it cannot create another displayed position. Disk failure stops the worker. Broker/radio loss before receipt is not recoverable by this queue; gateway QoS and buffering do not guarantee full history.

@@ -2,7 +2,7 @@
 
 PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python simulation/replay worker uses the standard library; the separate MQTT worker uses the pinned dependencies in `requirements-mqtt.txt`. The React portal signs in and reads saved records; standalone demo mode remains available for development.
 
-Native development uses fictional records. The receive-only Meshtastic GPS adapter, persistent private receipt queue and real-device cutover are implemented; see [live ingestion and deployment](../docs/operations/live-mqtt.md). Radio transmission, inbound text decoding and remote rename remain unimplemented. Registered infrastructure voltage and temperature/humidity ingestion are deployed; see [verification](../docs/operations/repeater-telemetry.md).
+Native development uses fictional records. The receive-only Meshtastic GPS adapter, persistent private receipt queue and real-device cutover are implemented; see [live ingestion and deployment](../docs/operations/live-mqtt.md). All MQTT messages received under the project root are now privately archived as exact bytes plus receipt metadata, including unsupported/rejected packets; broker ACLs constrain delivery. Radio transmission, operational inbound text decoding and remote rename remain unimplemented. Registered infrastructure voltage and temperature/humidity ingestion are deployed; see [verification](../docs/operations/repeater-telemetry.md).
 
 The owner-authorized [Ubuntu LXC portal](../docs/operations/portal-lxc.md) runs this backend with service supervision, HTTPS Tunnel routing and tested isolated backup recovery. The instructions below remain local-development commands; use the deployment guides for hosted state and the explicit real-device cutover.
 

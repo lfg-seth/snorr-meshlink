@@ -6,10 +6,13 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import Mock
+import base64
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
+from client import ApiError
 from mqtt_adapter import Adapter, PacketRejected
 from mqtt_worker import Spool, Worker
 
@@ -151,6 +154,9 @@ class WorkerTests(unittest.TestCase):
 
     def test_subscription_and_disconnect_heartbeat(self):
         success, failure = Mock(is_failure=False), Mock(is_failure=True)
+        client = Mock()
+        self.worker.on_connect(client, None, None, success, None)
+        client.subscribe.assert_called_once_with('snorr/pilot/#', qos=1)
         self.worker.on_subscribe(None, None, 1, [failure], None)
         self.assertFalse(self.worker.connected.is_set())
         self.worker.on_subscribe(None, None, 1, [success], None)
@@ -159,9 +165,45 @@ class WorkerTests(unittest.TestCase):
         self.worker.tick()
         self.worker.request.assert_called_with('/api/meshlink/worker/heartbeat', {'connected': False})
 
+    def test_archive_all_traffic_before_normalization_and_ack(self):
+        for topic, payload, retained in [
+            (*fixture(port=portnums_pb2.TEXT_MESSAGE_APP), False),
+            (*fixture(source=42), False),
+            ('snorr/pilot/arbitrary', b'\xff\x00', False),
+            (*fixture(), True),
+            ('snorr/pilot/empty', b'', False),
+        ]:
+            with self.subTest(topic=topic, retained=retained):
+                client = Mock()
+                message = Mock(topic=topic, payload=payload, retain=retained,
+                               qos=1, dup=True, mid=7)
+                self.worker.on_message(client, None, message)
+                queued = self.spool.first()[1]
+                self.assertEqual(base64.b64decode(queued['archive']['payloadBase64']), payload)
+                self.assertEqual(queued['archive']['topic'], topic)
+                self.assertTrue(queued['archive']['duplicate'])
+                self.assertIsNone(queued['normalized'])
+                client.ack.assert_called_once_with(7, 1)
+                self.worker.tick()
+                self.assertIsNone(self.spool.first())
+                self.worker.request.assert_called_with('/api/meshlink/worker/archive', queued['archive'])
+
+    def test_archive_retry_keeps_identity_and_normalized_rejection_can_drain(self):
+        topic, payload = fixture()
+        self.worker.on_message(Mock(), None, Mock(topic=topic, payload=payload,
+            retain=False, qos=0, dup=False, mid=0))
+        queued = self.spool.first()[1]
+        self.worker.request.side_effect = [None, OSError('API unavailable')]
+        with self.assertRaises(OSError):
+            self.worker.tick()
+        self.assertEqual(self.spool.first()[1], queued)
+        self.worker.request.side_effect = [None, {}, ApiError(400, 'rejected')]
+        self.worker.tick()
+        self.assertIsNone(self.spool.first())
+
     def test_message_rejection_and_storage_failure(self):
         topic, payload = fixture()
-        message = Mock(topic=topic, payload=payload, retain=False)
+        message = Mock(topic=topic, payload=payload, retain=False, qos=1, dup=False, mid=7)
         self.worker.on_message(Mock(), None, message)
         self.assertIsNotNone(self.spool.first())
         self.worker.spool.put = Mock(side_effect=OSError('disk full'))

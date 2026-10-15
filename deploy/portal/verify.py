@@ -126,6 +126,8 @@ def main():
                       for table in ['accounts', 'devices', 'members', 'assignments',
                                     'positions', 'observations', 'packet_receipts',
                                     'messages', 'incidents', 'events']}
+            if database.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='mqtt_archive'").fetchone():
+                counts['mqtt_archive'] = database.execute('SELECT COUNT(*) FROM mqtt_archive').fetchone()[0]
             with sqlite3.connect('file:/var/lib/meshlink/pb_data/data.db?mode=ro', uri=True) as current:
                 account_count = current.execute('SELECT COUNT(*) FROM accounts').fetchone()[0]
             assert counts['accounts'] == account_count

@@ -96,3 +96,11 @@ routerAdd(
   $apis.requireAuth('accounts'),
   $apis.bodyLimit(16384),
 );
+
+routerAdd(
+  'POST',
+  '/api/meshlink/worker/archive',
+  (e) => require(`${__hooks}/archive.js`).archive(e),
+  $apis.requireAuth('accounts'),
+  $apis.bodyLimit(400000000),
+);
