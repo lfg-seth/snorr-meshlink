@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-14 — Windows driver installation recheck
+
+- Owner reports driver installed. One CP2102 bridge now has a healthy driver and COM6; native open/close passes on COM4, COM5 and COM6. The second CP2102 bridge still reports missing-driver error 28 and has no COM port. Per-V3 identity remains unverified. No hardware quantity changes.
+- Windows hardware rescan via `pnputil /scan-devices` is denied by the current Windows token even outside the sandbox. No radio/configuration changes or application-level packet tests.
+
+Next useful step: unplug/replug both V3s to trigger driver detection; if the second bridge remains unconfigured, use administrator Device Manager to apply the installed CP210x driver to that device.
+
 ## 2026-10-14 — Windows desktop access smoke check
 
 - Synced main from origin (already current), preserving the unrelated untracked 3MF file. Firmware submodule is pinned but not initialized in this checkout.
