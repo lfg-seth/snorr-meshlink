@@ -42,6 +42,8 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 ## First confirmation pass
 
+2026-10-14 desktop access check — Four connected boards enumerate on Windows: V4 USB identities match B001 on COM4 and B002 on COM5, both passing native serial open/close. Two CP2102 bridges have device error 28 (missing Windows drivers), leaving the V3s without COM ports; per-V3 mapping remains unverified here. Ubuntu-24.04 WSL starts but has no USB serial passthrough. No quantities, firmware or radio configuration changed.
+
 2026-10-14 development workflow confirmation — Owner identifies the current machine as the Dell laptop running Linux and the other development machine as a Windows desktop with WSL, and will regularly alternate between them. No new hardware, quantity or expense; desktop specifications/Docker operation and whether this Dell is HW-033 remain unverified. [Handoff](../docs/operations/development-handoff.md).
 
 2026-10-14 GPS/network follow-up — Owner reconnects the four bench boards and changes hotspot. Both V3s persist the new private Wi-Fi settings, preserve MQTT/receive-only profiles and reconnect. Both original V4s now have internal GPS positions and each automatic encrypted GPS report reaches MQTT through both gateways (4/4 paths; measured ages about 21–35 seconds). Short sample only; runtime/field coverage remain unknown. No quantity, purchase or member assignment change. [TEST-004](field-results.md#test-004--automatic-gps-positions-through-both-mqtt-gateways).

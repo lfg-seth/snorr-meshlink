@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-14 — Windows desktop access smoke check
+
+- Synced main from origin (already current), preserving the unrelated untracked 3MF file. Firmware submodule is pinned but not initialized in this checkout.
+- All four boards enumerate on Windows USB. V4 descriptor identities match B001 on COM4 and B002 on COM5; both ports pass a brief native open/close with DTR/RTS disabled. Both CP2102 bridges have Windows device error 28 (missing drivers), so neither V3 has a COM port. No firmware/configuration write or application-level GPS/radio test performed.
+- Initial sandbox CIM/WSL access denials clear with approved outside-sandbox read-only checks. Ubuntu-24.04 WSL starts as the owner, with Python available but no attached USB serial devices. Native Python lacks serial/Meshtastic/MQTT packages. Existing SSH access to root@meshlink.int.spp.lol succeeds; API and simulation worker services are active. No hosted data/service changes.
+
+Next useful step: install the signed [Silicon Labs CP210x Windows VCP driver](https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers) with Windows administrator access, then verify both V3 serial ports and set up local bench dependencies. Native Windows serial plus LXC deployment is available; WSL USB passthrough is unnecessary for that path. Live MQTT adapter and hosted demo-data choice remain pending.
+
 ## 2026-10-14 — Dell Linux to Windows/WSL development handoff
 
 - Owner requests committing/pushing all pending publishable work for desktop continuation and confirms regular switching between the Dell Linux laptop and Windows desktop running WSL. Record the ongoing workflow in PROJECT.md, the environment plan, inventory and the linked handoff; GitHub is the sync point for both machines.
