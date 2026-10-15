@@ -71,7 +71,7 @@ export default function MapPage({
           [
             String(trackers.length),
             'Member trackers',
-            'Fictional pilot scenario',
+            'Provisioned tracker devices',
           ],
           [
             String(
@@ -279,7 +279,7 @@ export default function MapPage({
             <dd>
               {selected.battery === null
                 ? 'Unknown'
-                : `${selected.battery}% (demo)`}
+                : `${selected.battery}%`}
             </dd>
           </div>
         </dl>

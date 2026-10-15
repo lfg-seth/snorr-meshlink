@@ -2,6 +2,8 @@
 
 Prepared 2026-10-13. Owner has no nodes available and explicitly brings portal design/building forward. This plan uses synthetic data; hardware integration and operational deployment follow separately.
 
+2026-10-14 update: the owner-authorized real-device cutover is complete. The LXC now runs the receive-only MQTT GPS worker with authenticated real bench records, archived simulation history and verified isolated live-backup recovery. Native development keeps the labelled synthetic scenario. [Live operations](../../docs/operations/live-mqtt.md) and [measured integration evidence](../../records/field-results.md#test-005--live-portal-gps-ingestion) supersede the earlier MQTT hold/unfinished-integration notes below. Radio messaging, telemetry, survey and wishlist work remain separate.
+
 ## Existing requirements
 
 Use [Define the dispatch portal MVP](issues/06-dispatch-portal.md), [Choose assignment-driven radio names and identity](issues/12-assignment-radio-names.md), and [Define infrastructure warning and intrusion handling](issues/10-infrastructure-warning-rules.md) as the requirements baseline. Do not reopen the requirements interview by default.

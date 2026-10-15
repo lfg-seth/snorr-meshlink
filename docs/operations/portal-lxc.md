@@ -1,6 +1,6 @@
 # Portal LXC deployment
 
-2026-10-13. Owner authorized configuring the Ubuntu LXC and publishing the portal through Cloudflare Tunnel at **https://meshlink.spp.lol**. This is the authenticated **simulation pilot**, with fictional members/devices/positions and simulated message/name outcomes. Live MQTT/firmware integration remains held.
+Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
 ## Deployed environment
 
@@ -51,7 +51,7 @@ Public probes use curl without credentials and retain HTTPS certificate/hostname
 
 The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `/opt/meshlink`. It installs dependencies, builds/tests the frontend, prepares state/services and initializes fictional records only when both database and credentials are absent. It does not authorize or replace a Cloudflare connector. For a new host, configure a remotely managed tunnel route to loopback 8080 after installation using [Cloudflare's setup instructions](https://developers.cloudflare.com/tunnel/get-started/).
 
-For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured.
+For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
 
 ## Evidence and limits
 

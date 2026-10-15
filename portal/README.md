@@ -1,6 +1,8 @@
 # Portal development
 
-React + TypeScript + Vite with MapLibre. This is a responsive four-page **synthetic prototype**. All members, observations, sites and actions are fictional. Changes live in browser memory and reset on refresh. The [local PocketBase backend and Python simulation worker](../backend/README.md) now provide authentication and persistent observations/assignments/messages. A live radio feed is not connected. Standalone demo mode still resets on refresh.
+React + TypeScript + Vite with MapLibre. The four-page portal supports both a labelled synthetic development scenario and authenticated persistent backend records. The [backend](../backend/README.md) includes a receive-only live Meshtastic GPS worker; see [live deployment](../docs/operations/live-mqtt.md). Native standalone demo changes still reset on refresh.
+
+Build the hosted real-device portal with `VITE_PORTAL_MODE=live npm run check`. It opens at sign-in, displays only authenticated operational records, and disables simulation controls/radio sending when the backend reports live mode. Running the default native development commands below keeps the standalone demonstration available.
 
 ## Run on the Dell or desktop WSL
 

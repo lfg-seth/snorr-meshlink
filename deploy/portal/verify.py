@@ -31,6 +31,16 @@ def main():
     parser.add_argument('--public', action='store_true', help='Also test HTTPS through Cloudflare using public DNS')
     args = parser.parse_args()
     proxy = 'http://127.0.0.1:8080'
+    # systemd start confirms process launch, not HTTP readiness after a backup.
+    for attempt in range(100):
+        try:
+            if status(proxy, '/api/health') == 200:
+                break
+        except urllib.error.URLError:
+            pass
+        time.sleep(.1)
+    else:
+        raise RuntimeError('API did not become ready after service restart.')
     for path, expected in [('/', 200), ('/map', 200), ('/api/health', 200),
                            ('/api/meshlink/state', 401), ('/_/', 404),
                            ('/api/settings', 404),
@@ -42,14 +52,19 @@ def main():
     client = Client(proxy)
     client.login(secrets['admin']['username'], secrets['admin']['password'])
     live = client.request('GET', '/api/meshlink/state')
-    assert live['simulation'] is True
-    assert len(live['trackers']) == 6
+    simulation = live['simulation']
+    assert len(live['trackers']) == (6 if simulation else 2)
     # Respect the enabled 2-auth-requests/3-second policy; the worker can log in too.
     time.sleep(3.1)
-    member = Client(proxy)
-    member.login(secrets['member']['username'], secrets['member']['password'])
-    assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
-    print('Proxy, protected routes and admin/member sign-in: PASS')
+    if simulation:
+        member = Client(proxy)
+        member.login(secrets['member']['username'], secrets['member']['password'])
+        assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
+    else:
+        assert {d['id'] for d in live['trackers']} == {'b001', 'b002'}
+        assert {d['id'] for d in live['infrastructure']} == {'g001', 'g002'}
+        assert not live['members']
+    print('Proxy, protected routes and sign-in: PASS')
 
     # The loopback proxy trusts only CF-Connecting-IP. Public callers cannot
     # supply this header themselves because Cloudflare replaces it.
@@ -102,7 +117,7 @@ def main():
                       for table in ['accounts', 'devices', 'members', 'assignments',
                                     'positions', 'observations', 'packet_receipts',
                                     'messages', 'incidents', 'events']}
-            assert counts['accounts'] == 4 and counts['devices'] == 10
+            assert counts['accounts'] == 4 and counts['devices'] == (10 if simulation else 4)
             assert counts['positions'] > 0 and counts['packet_receipts'] > 0
         restored_secret = json.loads((state / 'credentials.json').read_text())
         assert restored_secret == secrets
@@ -114,7 +129,7 @@ def main():
                 f'--migrationsDir={backend / "pb_migrations"}',
                 '--automigrate=false', '--hooksWatch=false',
                 'serve', '--http=127.0.0.1:18090'],
-                env={**os.environ, 'MESHLINK_SIMULATION': '1'}, stdout=log, stderr=log)
+                env={**os.environ, 'MESHLINK_SIMULATION': '1' if simulation else '0'}, stdout=log, stderr=log)
             try:
                 restored = Client('http://127.0.0.1:18090')
                 for _ in range(100):
@@ -129,6 +144,7 @@ def main():
                     raise RuntimeError('Restored API did not become ready.')
                 restored.login(restored_secret['admin']['username'], restored_secret['admin']['password'])
                 snapshot = restored.request('GET', '/api/meshlink/state')
+                assert snapshot['simulation'] == simulation
                 assert snapshot['trackers'] and snapshot['members'] == live['members']
                 assert snapshot['assignments'] == live['assignments']
                 assert snapshot['messages'] == live['messages']

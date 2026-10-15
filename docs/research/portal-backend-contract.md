@@ -2,6 +2,8 @@
 
 2026-10-13. Owner approved backend development after reviewing the four-page portal. Implemented with pinned PocketBase 0.40.5, JavaScript hooks/migrations and a standard-library Python simulation worker. This is a normalized application boundary, not a Meshtastic/MeshCore wire-format claim. [Run/check instructions](../../backend/README.md).
 
+2026-10-14: the separate [live Meshtastic GPS adapter](../operations/live-mqtt.md) now feeds this boundary on the LXC. It provisions B001/B002 and G001/G002 against verified physical identities, uses `Position.timestamp` for GPS measurement time, and identifies packets by source/radio ID plus channel/decrypted-content digest so identical gateway copies deduplicate while different fixes under reused IDs remain distinct. Native `d1`/`m5` fixture identifiers below still describe development simulation only. The hosted fictional operational records were privately archived and replaced; no real member roster is inferred.
+
 ## Records and identities
 
 | Collection | Purpose |

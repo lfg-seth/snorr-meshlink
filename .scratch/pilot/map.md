@@ -8,9 +8,9 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
-- 2026-10-14 desktop handoff: work alternates between Dell Linux and Windows/WSL through GitHub. [Resume here](../../docs/operations/development-handoff.md). Owner brought live portal MQTT ingestion forward; implementation has not started. Both V4s now deliver automatic GPS via both V3 gateways; the portal remains simulation-only. Survey and other deferred work stay parked.
+- 2026-10-14 live GPS integration: work alternates between Dell Linux and Windows/WSL through GitHub. [Resume here](../../docs/operations/development-handoff.md). The LXC portal now displays only real bench devices through a persistent read-only MQTT GPS worker; two-gateway receipts/display deduplication, worker restart and isolated live-backup recovery pass. Secrets are in the owner-authorized 1Password Environment with separate private service provisioning. [Measured evidence](../../records/field-results.md#test-005--live-portal-gps-ingestion), [operations](../../docs/operations/live-mqtt.md). Survey and other deferred work stay parked.
 
-- Owner put project work on hold on 2026-10-13 for desktop handoff, then resumed portal hosting setup and MQTT endpoint testing (2026-10-14). [Ubuntu LXC deployment](../../docs/operations/portal-lxc.md) records the running simulation portal, Cloudflare route and backup recovery evidence. Survey and other held work remain deferred. The repeater survey claim remains released; no pilot decision is falsely completed.
+- Owner put project work on hold on 2026-10-13 for desktop handoff, then resumed portal hosting, MQTT endpoint testing and live GPS integration on 2026-10-14. [Ubuntu LXC deployment](../../docs/operations/portal-lxc.md) records the running portal, Cloudflare route and backup recovery evidence. Survey and other held work remain deferred. The repeater survey claim remains released; no pilot decision is falsely completed.
 
 - Full mission and standing priorities: [Project brief](../../PROJECT.md).
 - Keep it simple. Chart decisions now; implementation and installation follow when their prerequisites are settled.
@@ -19,7 +19,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 - Owned hardware comes first; no speculative purchase list.
 - Future ideas are parked in the [deferred feature wishlist](../../records/wishlist.md), outside the active ticket frontier. Do not begin work on them until the owner explicitly brings them forward.
 - Child tickets live in `issues/`; find the frontier using the tracker conventions rather than duplicating open questions here.
-- Owner resumed endpoint testing under [Check Heltec MQTT over WebSockets for Tunnel hosting](issues/09-heltec-websocket-research.md) on 2026-10-14. Public `mqtt.snorr.org` TLS 8883 → Nginx → source-restricted private Mosquitto 1883 now reaches broker authentication; anonymous/invalid logins are rejected and certificate verification passes. Mike handles certificates. Owner-run valid-account synthetic publish/subscribe/ACL checks through the public TLS endpoint passed. Real V3 uplinks and automatic GPS through both gateways now pass short bench checks; persistent portal-worker integration remains unimplemented. Ticket stays open/unassigned.
+- Owner resumed endpoint testing under [Check Heltec MQTT over WebSockets for Tunnel hosting](issues/09-heltec-websocket-research.md) on 2026-10-14. Public TLS 8883 through Nginx to source-restricted private Mosquitto 1883 passes authentication/delivery checks; Mike handles certificates. The persistent portal worker now decodes actual encrypted GPS through both V3 gateways and saves deduplicated positions. No WebSockets implementation or research-ticket resolution is claimed; that ticket stays open/unassigned.
 
 ## Decisions so far
 

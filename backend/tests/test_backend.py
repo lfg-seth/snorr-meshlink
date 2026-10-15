@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 import os
 from pathlib import Path
 import socket
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -18,6 +19,46 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_live_cutover_transaction_and_real_gps_receipts(self):
+        import json
+        migrations = self.data / 'cutover-migrations'
+        migrations.mkdir()
+        source = Path(__file__).resolve().parents[2] / 'deploy/portal/live-cutover.js'
+        shutil.copyfile(source, migrations / '1792010000_live_cutover.js')
+        config = {'members': {'!699c2ed8': 'b001', '!699ca878': 'b002'},
+                  'gateways': {'!9ea13cc0': 'g001', '!849ad7a0': 'g002'},
+                  'identities': {}}
+        settings = self.data / 'mqtt.json'
+        settings.write_text(json.dumps(config))
+        self.stop()
+        cmd = [x for x in command(self.data) if not x.startswith('--migrationsDir=')]
+        cmd += [f'--migrationsDir={migrations}', 'migrate', 'up']
+        env = {**os.environ, 'MESHLINK_MQTT_CONFIG': str(settings)}
+        failed = subprocess.run(cmd, env=env, capture_output=True)
+        self.assertNotEqual(failed.returncode, 0)
+        # Missing physical identity is discovered after deletes; transaction must
+        # restore the complete fictional input, including accounts/members.
+        import sqlite3
+        with sqlite3.connect(self.data / 'data.db') as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM devices').fetchone()[0], 10)
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM members').fetchone()[0], 5)
+        for node_id, key in {**config['members'], **config['gateways']}.items():
+            config['identities'][key] = {'hardwareId': f'test-{key}', 'nodeId': node_id,
+                                         'shortName': key.upper()}
+        settings.write_text(json.dumps(config))
+        subprocess.run(cmd, env=env, check=True, stdout=subprocess.DEVNULL)
+        self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual({d['key'] for d in self.records('devices')}, {'b001', 'b002', 'g001', 'g002'})
+        self.assertFalse(self.records('members'))
+        self.assertEqual(len([a for a in self.records('accounts') if a['role'] == 'disabled']), 2)
+        # The ordinary normalized boundary now stores real mapped device keys.
+        item = packet('b001', 'position', {'latitude': 36.2, 'longitude': -115.6}, gateway='g001')
+        self.assertEqual(self.ingest(item)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**item, 'gatewayId': 'g002'})['outcome'], 'duplicate')
+        self.assertEqual(len(self.records('positions')), 1)
+        self.assertEqual(len(self.records('packet_receipts')), 2)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='meshlink-test-')
         self.addCleanup(self.temp.cleanup)

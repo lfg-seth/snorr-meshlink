@@ -3,9 +3,9 @@ name: Backend CI
 on:
   push:
     branches: [main]
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    paths: ['backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
   pull_request:
-    paths: ['backend/**', '.github/workflows/backend-ci.yml']
+    paths: ['backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
   workflow_dispatch:
 
 permissions:
@@ -28,4 +28,5 @@ jobs:
         with:
           python-version-file: backend/.python-version
       - run: python3 backend/manage.py install
+      - run: python3 -m pip install -r backend/requirements-mqtt.txt
       - run: python3 backend/manage.py check

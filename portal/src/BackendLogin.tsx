@@ -6,7 +6,7 @@ export default function BackendLogin({
   onClose,
 }: {
   onLogin: (session: BackendSession) => void;
-  onClose: () => void;
+  onClose?: () => void;
 }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -15,8 +15,8 @@ export default function BackendLogin({
   return (
     <section className="panel backend-login" aria-label="Backend sign in">
       <div className="panel-heading">
-        <h2>Sign in to the local backend</h2>
-        <button onClick={onClose}>Close</button>
+        <h2>Sign in to MeshLink</h2>
+        {onClose && <button onClick={onClose}>Close</button>}
       </div>
       <p className="small muted">
         Use the account created by the backend setup. The server enforces your

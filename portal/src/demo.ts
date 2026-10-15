@@ -38,8 +38,9 @@ export type Infrastructure = {
   id: string;
   name: string;
   role: 'Repeater' | 'Backhaul';
-  longitude: number;
-  latitude: number;
+  downlink?: boolean;
+  longitude?: number;
+  latitude?: number;
   reportedAt: string | null;
   cadenceMinutes: number;
   battery: number | null;

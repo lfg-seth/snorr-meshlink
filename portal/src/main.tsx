@@ -61,15 +61,17 @@ function App() {
   const [demoIncidents, setIncidents] = useState<Incident[]>(initialIncidents);
   const [demoEvents, setEvents] = useState<AuditEvent[]>(initialEvents);
   const [demoRules, setRules] = useState<Record<string, BatteryRule>>({});
-  const trackers = snapshot?.trackers ?? initialTrackers;
-  const members = snapshot?.members ?? demoMembers;
-  const infrastructureNodes = snapshot?.infrastructure ?? demoInfrastructure;
-  const assignments = snapshot?.assignments ?? demoAssignments;
-  const nameJobs = snapshot?.nameJobs ?? demoNameJobs;
-  const messages = snapshot?.messages ?? demoMessages;
-  const incidents = snapshot?.incidents ?? demoIncidents;
-  const events = snapshot?.events ?? demoEvents;
-  const rules = snapshot?.rules ?? demoRules;
+  const simulation = !session || snapshot?.simulation === true;
+  const trackers = snapshot?.trackers ?? (session ? [] : initialTrackers);
+  const members = snapshot?.members ?? (session ? [] : demoMembers);
+  const infrastructureNodes =
+    snapshot?.infrastructure ?? (session ? [] : demoInfrastructure);
+  const assignments = snapshot?.assignments ?? (session ? [] : demoAssignments);
+  const nameJobs = snapshot?.nameJobs ?? (session ? [] : demoNameJobs);
+  const messages = snapshot?.messages ?? (session ? [] : demoMessages);
+  const incidents = snapshot?.incidents ?? (session ? [] : demoIncidents);
+  const events = snapshot?.events ?? (session ? [] : demoEvents);
+  const rules = snapshot?.rules ?? (session ? {} : demoRules);
   const admin = session ? session.account.role === 'admin' : demoAdmin;
   const feedOnline = session
     ? Boolean(snapshot?.feedOnline && backendConnected)
@@ -250,6 +252,25 @@ function App() {
   const warningCount =
     incidents.filter((i) => !i.resolvedAt).length +
     (snapshot?.warnings.filter((w) => !w.recoveredAt).length ?? 0);
+  if (import.meta.env.VITE_PORTAL_MODE === 'live' && !session)
+    return (
+      <main
+        className="workspace"
+        style={{ maxWidth: 640, margin: '64px auto', padding: 24 }}
+      >
+        <h1>SNORR MeshLink</h1>
+        <p>Sign in to view recorded device positions.</p>
+        <BackendLogin
+          onLogin={(value) => {
+            seenMessages.current = null;
+            setSession(value);
+            setDraft('');
+            setUnread(0);
+            setBackendError('');
+          }}
+        />
+      </main>
+    );
   return (
     <div className="app-shell">
       <a
@@ -331,7 +352,9 @@ function App() {
           <span>
             <strong>
               {session
-                ? 'Connected backend · synthetic scenario'
+                ? simulation
+                  ? 'Connected backend · synthetic scenario'
+                  : 'Connected backend · real devices'
                 : 'Standalone synthetic prototype'}
             </strong>{' '}
             ·{' '}
@@ -388,7 +411,9 @@ function App() {
             <strong>
               {session
                 ? feedOnline
-                  ? 'Simulation worker connected'
+                  ? simulation
+                    ? 'Simulation worker connected'
+                    : 'MQTT worker connected'
                   : 'Worker / backend feed unavailable'
                 : feedOnline
                   ? 'Demo feed available'
@@ -397,11 +422,14 @@ function App() {
             <span className="feed-explanation">
               {feedOnline
                 ? session
-                  ? 'Persisted observations; no live radios connected.'
+                  ? simulation
+                    ? 'Persisted observations; no live radios connected.'
+                    : 'GPS ingestion active; check each position’s measurement age.'
                   : 'Fixture observations age with time; no live nodes connected.'
                 : 'Showing last observations. Health is uncertain; drafts stay unsent. Use local Meshtastic for field viewing.'}
             </span>
           </span>
+          {simulation && (
           <button
             disabled={Boolean(session && !admin)}
             onClick={() => {
@@ -414,11 +442,14 @@ function App() {
           >
             {feedOnline ? 'Simulate outage' : 'Restore demo feed'}
           </button>
+          )}
         </div>
         <main id="page-content" tabIndex={-1}>
           <div className="page-heading">
             <div>
-              <p className="eyebrow">SNORR operations · training scenario</p>
+              <p className="eyebrow">
+                SNORR operations · {simulation ? 'training scenario' : 'live bench'}
+              </p>
               <h1>
                 {page === 'Map'
                   ? 'Member tracking'
@@ -440,12 +471,14 @@ function App() {
             </div>
             <Badge kind="neutral">
               {page === 'Map'
-                ? `${trackers.length} demo trackers`
+                ? `${trackers.length} ${simulation ? 'demo ' : ''}trackers`
                 : page === 'Users'
-                  ? `${members.length} fictional members`
+                  ? `${members.length} ${simulation ? 'fictional ' : ''}members`
                   : page === 'Messages'
-                    ? 'Demo channel'
-                    : `${infrastructureNodes.length} demo devices`}
+                    ? simulation
+                      ? 'Demo channel'
+                      : 'Messaging not integrated'
+                    : `${infrastructureNodes.length} ${simulation ? 'demo ' : ''}devices`}
             </Badge>
           </div>
           {session && !snapshot && (
@@ -471,6 +504,7 @@ function App() {
               trackers={trackers}
               members={members}
               nameJobs={nameJobs}
+              simulation={simulation}
               selfMemberId={selfMemberId}
               connected={Boolean(session)}
               admin={admin}
@@ -501,6 +535,7 @@ function App() {
             <MessagesPage
               key={session?.account.id ?? 'demo'}
               messages={messages}
+              sendingEnabled={simulation}
               authorName={accountName}
               draft={draft}
               onDraft={setDraft}

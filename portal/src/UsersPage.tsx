@@ -9,6 +9,7 @@ import type { Assignment, NameJob, Tracker, Member } from './demo';
 export default function UsersPage({
   assignments,
   connected = false,
+  simulation = true,
   trackers = demoTrackers,
   members = demoMembers,
   selfMemberId = 'm5',
@@ -20,6 +21,7 @@ export default function UsersPage({
 }: {
   assignments: Assignment[];
   connected?: boolean;
+  simulation?: boolean;
   trackers?: Tracker[];
   members?: Member[];
   selfMemberId?: string;
@@ -63,7 +65,7 @@ export default function UsersPage({
                   <span className="avatar">{member.initials}</span>
                   <div>
                     <h3>{member.name}</h3>
-                    <small className="muted">Fictional member</small>
+                    <small className="muted">{simulation ? 'Fictional member' : 'Assigned member'}</small>
                   </div>
                 </div>
                 <p>
@@ -202,7 +204,7 @@ export default function UsersPage({
             ))}
         </div>
         {active.length === trackers.length && (
-          <p>All demo trackers are assigned.</p>
+          <p>All trackers are assigned.</p>
         )}
         <p className="muted small">
           Reporting unassigned trackers appear on the map by device number.
@@ -212,12 +214,13 @@ export default function UsersPage({
         <h2>Radio name jobs</h2>
         <p className="muted small">
           Short names stay fixed. Assignment succeeds independently of a
-          long-name job. These controls simulate outcomes; no radio command is
-          sent. Only the latest job for a device may be confirmed.
+          long-name job. {simulation
+            ? 'These controls simulate outcomes; no radio command is sent. Only the latest job for a device may be confirmed.'
+            : 'Remote radio naming is not integrated; pending jobs do not change the radio.'}
         </p>
         {!nameJobs.length ? (
           <p className="empty">
-            Assign or release a tracker to create a simulated name job.
+            {simulation ? 'Assign or release a tracker to create a simulated name job.' : 'No radio-name jobs. Member provisioning precedes assignments.'}
           </p>
         ) : (
           <div className="job-list">
@@ -233,12 +236,12 @@ export default function UsersPage({
                     → {job.longName}
                   </span>
                   <Badge>{latest ? job.status : 'Superseded'}</Badge>
-                  {latest && admin && (
+                  {latest && admin && simulation && (
                     <span className="card-actions">
-                      <button onClick={() => onJob(job.deviceId, 'confirmed')}>
+                      <button disabled={!simulation} onClick={() => onJob(job.deviceId, 'confirmed')}>
                         Simulate read-back
                       </button>
-                      <button onClick={() => onJob(job.deviceId, 'failed')}>
+                      <button disabled={!simulation} onClick={() => onJob(job.deviceId, 'failed')}>
                         Simulate failure
                       </button>
                     </span>

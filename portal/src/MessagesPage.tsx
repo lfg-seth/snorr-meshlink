@@ -11,6 +11,7 @@ export default function MessagesPage({
   admin,
   onSend,
   onIncoming,
+  sendingEnabled = true,
 }: {
   messages: Message[];
   authorName?: string;
@@ -20,6 +21,7 @@ export default function MessagesPage({
   admin: boolean;
   onSend: () => void | Promise<void>;
   onIncoming?: () => void;
+  sendingEnabled?: boolean;
 }) {
   const [sending, setSending] = useState(false);
   return (
@@ -29,7 +31,7 @@ export default function MessagesPage({
           <div>
             <h2>Shared operational channel</h2>
             <span className="muted small">
-              Chronological · fictional training traffic
+              {sendingEnabled ? 'Chronological · fictional training traffic' : 'GPS integration only · messaging pending'}
             </span>
           </div>
           {onIncoming && (
@@ -54,7 +56,7 @@ export default function MessagesPage({
           className="composer"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (sending) return;
+            if (sending || !sendingEnabled || !online || !draft.trim()) return;
             setSending(true);
             try {
               await onSend();
@@ -75,16 +77,16 @@ export default function MessagesPage({
           />
           <div>
             <span className="muted small">
-              {online
+              {!sendingEnabled ? 'Radio messaging is not integrated yet.' : online
                 ? 'Manual send · author prefix added'
                 : 'Draft preserved · reconnect, then send manually'}
             </span>
             <button
               className="primary"
-              disabled={sending || !online || !draft.trim()}
+              disabled={sending || !sendingEnabled || !online || !draft.trim()}
               type="submit"
             >
-              {sending ? 'Sending…' : 'Simulate send'}
+              {sending ? 'Sending…' : sendingEnabled ? 'Simulate send' : 'Send unavailable'}
             </button>
           </div>
         </form>
@@ -93,12 +95,12 @@ export default function MessagesPage({
         <p className="eyebrow">Send evidence</p>
         <h2>Know what was received</h2>
         <p>
-          A simulated gateway submission does not prove radio delivery or human
+          A gateway submission does not prove radio delivery or human
           receipt.
         </p>
         <p>
-          Only the designated demo dispatch gateway represents a downlink path.
-          The second gateway is uplink-only.
+          Portal replies require a separately verified designated downlink gateway.
+          The live GPS bench currently uses two uplink-only gateways.
         </p>
         <hr />
         <h3>During an outage</h3>

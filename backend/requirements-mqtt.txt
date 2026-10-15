@@ -1,0 +1,4 @@
+# Reviewed direct dependencies; Meshtastic supplies generated protobuf classes.
+meshtastic==2.7.11
+paho-mqtt==2.1.0
+cryptography==50.0.2

@@ -1,5 +1,7 @@
 # Hardware inventory
 
+2026-10-14 live-ingestion preparation — Native Windows protocol readbacks identify B002 (`!699ca878`) on COM4, B001 (`!699c2ed8`) on COM5, G001 (`!9ea13cc0`) on COM6 and G002 (`!849ad7a0`) on COM7. This supersedes the earlier V4 port-label assumption; follow verified device identity when ports change. Four distinct firmware-reported hardware identities match between independent reads, including across the gateways' Wi-Fi update/restart. Owner supplies replacement Wi-Fi; both V3s save/read back the new settings, with exact MQTT and LoRa configurations preserved and LoRa transmit still disabled. Credentials and physical identity readbacks stay private; quantities, stock firmware and RAK readiness are unchanged.
+
 Updated: 2026-10-12. Imported the owner's [original purchase list](<../Mesh Purchase List - Purchase List.csv>) without modifying it. Listed quantities come from the source `Total QTY` column. Six higher-value groups now have owner-confirmed on-hand counts from the 2026-10-12 inventory check-in; other counts remain unknown. These are owner reports, not independent inspections or bench tests. Blank/dash source quantities remain unknown, not zero.
 
 Source row numbers count the header as row 1. Stable IDs below link to the original rows. Split entries into identifiable units when counted or assigned; preserve the original source references. Specs and roles below are source labels, not verified compatibility or performance.

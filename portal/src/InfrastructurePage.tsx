@@ -87,7 +87,7 @@ export default function InfrastructurePage({
           </select>
         </label>
         <span className="muted small">
-          Scenario capabilities and readings · hardware fitment unverified
+          Recorded capabilities and readings · unverified values stay unknown
         </span>
       </div>
       <div className="infrastructure-grid">
@@ -167,8 +167,9 @@ export default function InfrastructurePage({
           {selected.reportedAt
             ? `${timeLabel(selected.reportedAt)} · ${ageLabel((now - Date.parse(selected.reportedAt)) / 1000)} ago`
             : 'Never reported'}
-          . Demo cadence {selected.cadenceMinutes}m; missing timeout{' '}
-          {selected.cadenceMinutes * 3}m (three intervals).{' '}
+          {selected.cadenceMinutes > 0
+            ? `. Cadence ${selected.cadenceMinutes}m; default missing timeout ${selected.cadenceMinutes * 3}m (three intervals). `
+            : '. Telemetry reporting cadence is not configured. '}
           {online
             ? 'Fresh evidence is required to recover existing warnings.'
             : 'Outage suppresses new missing incidents and preserves existing warnings. Reconnect grace applies before new missing warnings.'}
@@ -178,7 +179,9 @@ export default function InfrastructurePage({
             <dt>Battery voltage</dt>
             <dd>
               {selected.battery === null
-                ? 'Awaiting first reading'
+                ? selected.disabledMonitoring?.includes('battery')
+                  ? 'Not integrated'
+                  : 'Awaiting first reading'
                 : `${selected.battery.toFixed(2)} V · ${metricState('battery')}`}
             </dd>
           </div>
@@ -189,7 +192,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped'
                 : selected.solar === null
                   ? 'Awaiting first reading'
-                  : `${selected.solar} W (demo) · ${metricState('solar')}`}
+                  : `${selected.solar} W · ${metricState('solar')}`}
             </dd>
           </div>
           <div>
@@ -199,7 +202,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped'
                 : selected.temperature === null
                   ? 'Awaiting first reading'
-                  : `${selected.temperature} °C (demo) · ${metricState('temperature')}`}
+                  : `${selected.temperature} °C · ${metricState('temperature')}`}
             </dd>
           </div>
           <div>
@@ -219,11 +222,11 @@ export default function InfrastructurePage({
           <div>
             <dt>Gateway direction</dt>
             <dd>
-              {selected.id === 'b1'
-                ? 'Designated downlink + uplink (demo)'
-                : selected.id === 'b2'
-                  ? 'Uplink only (demo)'
-                  : 'Relay (demo)'}
+              {selected.role === 'Backhaul'
+                ? selected.downlink ?? selected.id === 'b1'
+                  ? 'Designated downlink + uplink'
+                  : 'Uplink only'
+                : 'Relay'}
             </dd>
           </div>
         </dl>
@@ -284,7 +287,7 @@ export default function InfrastructurePage({
                   />
                 </label>
                 <button disabled={!note.trim()} type="submit">
-                  Resolve demo incident
+                  Resolve incident
                 </button>
               </form>
             )}
@@ -294,7 +297,7 @@ export default function InfrastructurePage({
           <div>
             <h3>Recorded battery history</h3>
             <p className="small muted">
-              Illustrative voltage observations, not remaining charge or
+              Recorded voltage observations, not remaining charge or
               runtime.
             </p>
             {selected.samples.length ? (
@@ -380,7 +383,7 @@ export default function InfrastructurePage({
             ))}
         </ol>
         {!events.some((e) => e.deviceId === selected.id) && (
-          <p className="empty">No simulated events recorded for this device.</p>
+          <p className="empty">No events recorded for this device.</p>
         )}
         {incidents
           .filter((i) => i.deviceId === selected.id && i.resolvedAt)
@@ -416,7 +419,7 @@ function RuleForm({
         {rule?.enabled === false
           ? 'Disabled rule · earlier warning history retained.'
           : rule
-            ? `Demo rule: below ${rule.trigger} V; recover at ${rule.recovery} V on fresh evidence.`
+            ? `Rule: below ${rule.trigger} V; recover at ${rule.recovery} V on fresh evidence.`
             : 'Unconfigured · no hardware voltage thresholds selected.'}{' '}
         {connected
           ? 'The server evaluates supported readings and separate recovery thresholds.'
@@ -440,7 +443,7 @@ function RuleForm({
           }}
         >
           <label>
-            Trigger voltage (demo)
+            Trigger voltage
             <input
               type="number"
               step="0.01"
@@ -451,7 +454,7 @@ function RuleForm({
             />
           </label>
           <label>
-            Recovery voltage (demo)
+            Recovery voltage
             <input
               type="number"
               step="0.01"
@@ -461,7 +464,7 @@ function RuleForm({
               required
             />
           </label>
-          <button type="submit">Save illustrative rule</button>
+          <button type="submit">Save rule</button>
         </form>
       )}
       {error && (

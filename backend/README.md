@@ -1,10 +1,10 @@
 # Local MeshLink backend
 
-PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python worker uses the standard library to submit normalized synthetic packets. The React portal can sign in and read saved records; standalone demo mode remains available.
+PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python simulation/replay worker uses the standard library; the separate MQTT worker uses the pinned dependencies in `requirements-mqtt.txt`. The React portal signs in and reads saved records; standalone demo mode remains available for development.
 
-Development and the current hosted pilot use fictional records. No MQTT connection, firmware decoder, radio transmission or remote rename is implemented.
+Native development uses fictional records. The receive-only Meshtastic GPS adapter, persistent private receipt queue and real-device cutover are implemented; see [live ingestion and deployment](../docs/operations/live-mqtt.md). Radio transmission, inbound text/telemetry decoding and remote rename remain unimplemented.
 
-Deployment update, 2026-10-13: the owner-authorized [Ubuntu LXC simulation portal](../docs/operations/portal-lxc.md) now runs this backend with service supervision, HTTPS Tunnel routing and tested isolated backup recovery. The instructions below remain local-development commands; use the deployment guide for the hosted instance. Live MQTT/radio integration is still absent.
+The owner-authorized [Ubuntu LXC portal](../docs/operations/portal-lxc.md) runs this backend with service supervision, HTTPS Tunnel routing and tested isolated backup recovery. The instructions below remain local-development commands; use the deployment guides for hosted state and the explicit real-device cutover.
 
 The hosted worker uses `MESHLINK_WORKER_CREDENTIALS` to read a separate worker-only JSON credential file, under its own OS account. Native development keeps the existing default private credentials file. No worker or admin credential is sent to the browser.
 
@@ -95,10 +95,12 @@ cd portal
 npm run check
 ```
 
+Install `backend/requirements-mqtt.txt` in the test environment before the backend suite; it includes encrypted-wire adapter and durable-queue tests. CI installs these dependencies automatically. The hosted runtime uses a separate `/opt/meshlink-mqtt-venv`; the simulation worker remains a local development tool.
+
 Backend integration tests use fresh temporary databases and the actual pinned binary, covering authorization/bypass rejection, account lifecycle, concurrent claims, original measurement age, duplicates, timestamp quality, retained invalid receipts, gateway send/outage behavior, latched intrusion, battery/missing-report rules, reconnect grace, stale name jobs and restart persistence. Tests disable rate throttling only in their disposable databases; the development schema enables PocketBase rate limits. The GitHub-hosted Backend CI workflow installs the verified pinned binary and runs the same tests without credentials or external services.
 
 Development and production browser review covers authenticated tracking/history, assignment persistence after reload, messages and outage drafts, warnings/incidents, member controls, mobile layout and API loss while retaining observations. The portal polls an authenticated snapshot every two seconds; history is bounded to the latest 500 points per tracker within 12 hours, messages/events to 200, and other lists to 2,000. All received pilot data remains in storage. Cursor pagination, larger historical queries, realtime subscriptions and load testing follow before wider use.
 
-Still required before operational use: selected-build decoding and verified physical identities/units, real delivery evidence and payload/expiry policy, radio/admin gateway tests, VM/HTTPS setup, service supervision, tested backup/restore, retention review, and device/browser/field testing. Copying only frontend code does not back up the database; a deployment backup plan must include PocketBase data/files and private provisioning credentials. Restart persistence has been tested; backup/restore and VM rollout have not. MQTT connectivity investigation and wishlist features remain deferred.
+Still required before operational use: sustained delivery/freshness and field evidence, real message payload/expiry policy and radio/admin gateway tests, retention review, off-host backups, and device/browser testing. The GPS adapter and LXC deployment/isolated backup recovery are implemented; consult the live deployment record for measured verification. Copying only frontend code does not back up database/files, queued receipts or private provisioning credentials. Survey and wishlist work remain deferred.
 
 Implementation references checked 2026-10-13: [official release](https://github.com/pocketbase/pocketbase/releases/tag/v0.40.5), [migrations](https://pocketbase.io/docs/js-migrations/), [routing/auth middleware](https://pocketbase.io/docs/js-routing/), [record operations/transactions](https://pocketbase.io/docs/js-records/), [API rules](https://pocketbase.io/docs/api-rules-and-filters/) and [JavaScript handler scope](https://pocketbase.io/docs/js-overview/).

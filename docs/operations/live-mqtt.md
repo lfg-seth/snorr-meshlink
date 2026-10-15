@@ -1,0 +1,43 @@
+# Live GPS ingestion
+
+The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Other packet kinds are ignored in this first GPS integration.
+
+## Private configuration
+
+The owner-authorized **SNORR MeshLink — Pilot** 1Password Developer Environment stores the private channel key, existing broker worker/gateway passwords, replacement gateway Wi-Fi settings and existing portal admin/worker/superuser provisioning credentials. No passwords were rotated. Its MCP interface returns variable names, not values. Windows local environment-file mounting is unavailable through this integration; the headless LXC uses a separately provisioned private configuration. Updating 1Password does not automatically update the running service.
+
+`/etc/meshlink/mqtt.json` is root-owned, mode 0640, readable by `meshlink-worker`. It contains `host`, `port`, `root`, `channel`, a full base64 `channelKey`, `username`, `password`, `members`, `gateways` and verified `identities`. Do not print or commit it. Existing PocketBase worker credentials remain separate in `/etc/meshlink/worker.json`. The repository's ignored `private/bench/` contains source readbacks and private provisioning inputs; these do not move between machines through Git.
+
+Owner corrected broker SSH access during this integration: `ssh -p 64582 setheth@mqtt.snorr.org`. The previous hostname/default-port attempt timed out. The worker-only export helper reads the existing owner-private broker export and writes only the `pilot-worker` account plus endpoint metadata, without changing accounts or displaying passwords. Root-private canonical broker state remains on the broker.
+
+Registered source-node mappings are B001/B002 → the two V4 member trackers and G001/G002 → the two V3 gateways. Hardware identity is captured from each radio separately from its mutable node ID/name. These mappings constrain ingestion; they do not provide cryptographic authentication of the member carrying a node. Channel AES-CTR has no payload authentication tag.
+
+## Receipt and freshness behavior
+
+- Verify TLS hostname/certificate, subscribe only to the configured encrypted channel, and accept only registered source/gateway mappings with matching envelope/topic identities. Reject retained, plaintext, PKI, MQTT-forwarded, malformed and out-of-range position packets. Unsupported traffic and decode rejections increment counters without logging raw payloads.
+- Preserve `Position.timestamp` (plus its bounded millisecond adjustment) as GPS measurement time; a zero solution timestamp stays unknown. `Position.time` is a separate device/transmit clock and is never used to refresh a fix. Future times remain future for the existing backend validation. Subscriber receipt time is distinct from gateway radio reception time. No new location is invented from contact time.
+- Packet identity combines source device, radio packet ID and a digest of decrypted channel/data content. Identical copies across gateways or replays create separate receipts and one displayed observation. Reused radio IDs with different fixes remain distinct. A different payload under a reused ID is retained as another observation rather than silently losing the fix.
+- Private SQLite queue `/var/lib/meshlink-worker/receipts.sqlite` survives restarts/API outages. Remove a receipt from the queue only after the backend stores its outcome. A crash after API commit can create another duplicate receipt on retry; it cannot create another displayed position. Disk failure stops the worker. Broker/radio loss before receipt is not recoverable by this queue; gateway QoS and buffering do not guarantee full history.
+- Heartbeats indicate accepted broker subscription and API availability, not gateway health or fresh GPS. Broker disconnect clears connection state; a stopped worker times out after 20 seconds. Existing positions continue aging toward the agreed 15-minute stale threshold. API retries and token refresh happen without any outbound radio action.
+- Battery and infrastructure sensors remain unintegrated. Gateway locations are absent until measured, and map markers skip missing coordinates. Both gateways remain uplink-only. No fictional battery, solar, weather, sensor or assignment data is carried into live mode.
+
+## Deployment and cutover
+
+1. Stage the reviewed backend/deployment/frontend source in `/opt/meshlink`, preserving private runtime state. Create `/opt/meshlink-mqtt-venv` and install `backend/requirements-mqtt.txt`. Run the backend suite there against disposable databases.
+2. Read device identities/settings with `scripts/bench/read-live-settings.py`. Export only the existing worker credential using `scripts/bench/export-portal-worker.py`, then combine private inputs with `scripts/bench/build-portal-config.py`. Transfer only the resulting worker configuration to `/etc/meshlink/mqtt.json` and restrict its permissions.
+3. Build/check the portal with the installed pinned Node runtime and `VITE_PORTAL_MODE=live`. That build shows sign-in before operational pages; local development can still use the explicitly labelled standalone demonstration.
+4. Keep both V4s powered with GPS sky view and both V3s on working Wi-Fi. `backend/mqtt_probe.py --config /etc/meshlink/mqtt.json --seconds 300` verifies actual decoded GPS and prints only device/gateway counts and measurement ages. It requires both trackers and all four paths; missing reports block this initial cutover.
+5. Run `python3 /opt/meshlink/deploy/portal/enable-mqtt.py` as root. It requires a successful live preflight, takes a private backup and runs the existing isolated restore verifier before stopping services. The explicitly staged one-time migration replaces only the expected fictional database records with four verified devices in a transaction. It refuses unexpected devices/member evidence. Demo member accounts become disabled; admin and worker account credentials remain intact. No real member roster is created.
+6. The API override sets `MESHLINK_SIMULATION=0`; the worker service selects the isolated MQTT runtime and a private state directory. Deploy the reviewed production build to `/var/www/meshlink` after backing up the earlier static build. Run `python3 /opt/meshlink/deploy/portal/verify-live.py` to confirm stored positions and both trackers' two-gateway deduplication without printing tracks. Check worker restart persistence and ordinary browser rendering, then take and verify a new live backup.
+
+The migration lives in `deploy/portal/live-cutover.js`, outside ordinary schema migrations. Stage it as `1792010000_live_cutover.js` in `/etc/meshlink/cutover-migrations` only for this authorized cutover. Never add it to normal development initialization or run it on an unknown dataset. Backup archives preserve the discarded fictional records. A repeat already-applied migration is skipped by PocketBase; the preflight/verification steps still run.
+
+## Recovery
+
+Updated backups stop the worker and API and include database/files, private provisioning credentials, matching source/static build, `/etc/meshlink`, the durable worker queue and current API/worker service definitions. Archives remain root-private on the LXC; an off-host destination is still outstanding. The existing verifier restores an isolated API and checks schema/data integrity and preserved records without replacing the live database.
+
+For a failed deployment, stop both services and first archive the current state, including any real positions and queue. Restore the matching prior private backup and source/static build, restore its service definitions/configuration and ownership, reload systemd, and verify before restarting service. Removing the simulation override alone does not restore the fictional data. Do not attempt to undo a successful live cutover with a blank database or `init-demo`.
+
+## Primary implementation references
+
+Reviewed the [pinned stock crypto implementation](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/src/mesh/CryptoEngine.cpp), [ServiceEnvelope schema](https://github.com/meshtastic/protobufs/blob/master/meshtastic/mqtt.proto), [Position/MeshPacket schema](https://github.com/meshtastic/protobufs/blob/master/meshtastic/mesh.proto), and [cryptography release notes](https://cryptography.io/en/latest/changelog/) for the `50.0.2` runtime pin. Runtime generated protobuf classes come from the pinned Meshtastic Python package. Live preflight remains necessary to establish compatibility with actual bench packets.

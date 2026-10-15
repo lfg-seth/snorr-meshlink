@@ -176,13 +176,15 @@ export default function TrackingMap(props: Props) {
       );
     });
     if (props.showInfrastructure)
-      (props.infrastructureNodes ?? demoInfrastructure).forEach((device) =>
+      (props.infrastructureNodes ?? demoInfrastructure)
+        .filter((device) => typeof device.longitude === 'number' && typeof device.latitude === 'number')
+        .forEach((device) =>
         marker(
           device.id,
-          [device.longitude, device.latitude],
+          [device.longitude!, device.latitude!],
           'infrastructure-pin',
           device.role === 'Repeater' ? 'R' : 'B',
-          `${device.name} · ${device.role} · illustrative site`,
+          `${device.name} · ${device.role} · recorded location`,
         ),
       );
     props.history.forEach((fix) => {
@@ -242,7 +244,7 @@ export default function TrackingMap(props: Props) {
       <div
         ref={container}
         className="map-canvas"
-        aria-label="Mount Charleston map with fictional tracker positions"
+        aria-label="Map with recorded tracker positions"
       />
       <div className="map-tools">
         <div className="segmented">
@@ -279,9 +281,9 @@ export default function TrackingMap(props: Props) {
         </div>
       )}
       <div className="map-label">
-        <span className="eyebrow">Training area</span>
+        <span className="eyebrow">Operating area</span>
         <strong>Mount Charleston, NV</strong>
-        <span>Fictional positions · illustrative sites</span>
+        <span>Position age follows GPS measurement time</span>
       </div>
     </div>
   );

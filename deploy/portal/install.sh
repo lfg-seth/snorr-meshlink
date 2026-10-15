@@ -5,6 +5,10 @@ cd "$(dirname "$0")/../.."
 source_root="$PWD"
 test "$(id -u)" -eq 0
 test "$source_root" = /opt/meshlink
+if test -f /etc/meshlink/mqtt.json || test -f /etc/systemd/system/meshlink-api.service.d/live.conf; then
+  echo 'Live MQTT provisioning found; use docs/operations/live-mqtt.md rather than the simulation installer.' >&2
+  exit 1
+fi
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y ca-certificates curl nginx python3 sqlite3 unattended-upgrades

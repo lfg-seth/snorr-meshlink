@@ -36,6 +36,15 @@ def main():
             ]:
                 archive.add(source, arcname=name, filter=lambda info: None
                             if '__pycache__' in Path(info.name).parts else info)
+            # Live adapter configuration/key and buffered receipts are private
+            # recovery state too. Worker has already stopped before archiving.
+            for source, name in [('/etc/meshlink', 'worker-config'),
+                                 ('/var/lib/meshlink-worker', 'worker-state'),
+                                 ('/etc/systemd/system/meshlink-api.service', 'services/meshlink-api.service'),
+                                 ('/etc/systemd/system/meshlink-api.service.d', 'services/meshlink-api.service.d'),
+                                 ('/etc/systemd/system/meshlink-worker.service', 'services/meshlink-worker.service')]:
+                if Path(source).exists():
+                    archive.add(source, arcname=name)
         with tarfile.open(temporary) as archive:
             names = set(archive.getnames())
             if not {'state/pb_data/data.db', 'state/credentials.json'} <= names:
