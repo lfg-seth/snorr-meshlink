@@ -71,6 +71,7 @@ export default function InfrastructurePage({
     selected.reportedAt,
     now,
     selected.cadenceMinutes,
+    selected.lastContactAt,
   );
   return (
     <div className="stack">
@@ -98,6 +99,7 @@ export default function InfrastructurePage({
               device.reportedAt,
               now,
               device.cadenceMinutes,
+              device.lastContactAt,
             );
             const open = incidents.find(
               (i) => i.deviceId === device.id && !i.resolvedAt,
@@ -166,7 +168,7 @@ export default function InfrastructurePage({
           Last report:{' '}
           {selected.reportedAt
             ? `${timeLabel(selected.reportedAt)} · ${ageLabel((now - Date.parse(selected.reportedAt)) / 1000)} ago`
-            : 'Never reported'}
+            : selected.lastContactAt ? `Received ${timeLabel(selected.lastContactAt)} · measurement time unknown` : 'Never reported'}
           {selected.cadenceMinutes > 0
             ? `. Cadence ${selected.cadenceMinutes}m; default missing timeout ${selected.cadenceMinutes * 3}m (three intervals). `
             : '. Telemetry reporting cadence is not configured. '}
@@ -176,11 +178,15 @@ export default function InfrastructurePage({
         </p>
         <dl className="detail-grid">
           <div>
+            <dt>Placement</dt>
+            <dd>{selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>
+          </div>
+          <div>
             <dt>Battery voltage</dt>
             <dd>
               {selected.battery === null
                 ? selected.disabledMonitoring?.includes('battery')
-                  ? 'Not integrated'
+                  ? 'Monitoring disabled · awaiting first reading'
                   : 'Awaiting first reading'
                 : `${selected.battery.toFixed(2)} V · ${metricState('battery')}`}
             </dd>
@@ -204,6 +210,12 @@ export default function InfrastructurePage({
                   ? 'Awaiting first reading'
                   : `${selected.temperature} °C · ${metricState('temperature')}`}
             </dd>
+          </div>
+          <div>
+            <dt>Relative humidity</dt>
+            <dd>{!selected.equipped.weather ? 'Not equipped' : selected.humidity == null
+              ? 'Awaiting first reading'
+              : `${selected.humidity.toFixed(1)}% RH · ${metricState('humidity')}`}</dd>
           </div>
           <div>
             <dt>Intrusion sensor state</dt>

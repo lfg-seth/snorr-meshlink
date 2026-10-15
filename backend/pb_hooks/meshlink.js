@@ -222,7 +222,7 @@ function configuration(e) {
   c.admin(e);
   const b = e.requestInfo().body;
   const id = c.text(b.deviceId, 'device');
-  const metrics = ['battery', 'solar', 'temperature', 'intrusion'];
+  const metrics = ['battery', 'solar', 'temperature', 'humidity', 'intrusion'];
   const config = b.configuration;
   if (!config || typeof config !== 'object' || Array.isArray(config))
     throw new BadRequestError('Configuration must be an object.');
@@ -491,9 +491,11 @@ function state(e) {
         ...config,
         id: d.getString('key'),
         role: d.getString('kind') === 'repeater' ? 'Repeater' : 'Backhaul',
+        lastContactAt: d.getString('lastContactAt') || null,
         reportedAt: timesKnown[timesKnown.length - 1] || null,
         battery: value('battery'),
         temperature: value('temperature'),
+        humidity: value('humidity'),
         solar: value('solar'),
         intrusion: value('intrusion'),
         readingTimes: times,

@@ -1,5 +1,7 @@
 # Define an owned-hardware field pilot
 
+2026-10-14 owner expands provisioning to R001/R002/R003 at two private planned sites. All three equipment/location records and live voltage reports now reach PocketBase/portal; R003 also delivers actual temperature/humidity. Four reports × two gateways deduplicate correctly. Planned sites/assemblies remain unverified and warnings disabled pending activation. [Operations](../../docs/operations/repeater-telemetry.md), [TEST-009](../../records/field-results.md#test-009--live-repeater-provisioning-and-telemetry). Survey/wishlist work remains deferred.
+
 Label: wayfinder:map
 
 ## Destination

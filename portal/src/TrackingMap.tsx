@@ -175,18 +175,21 @@ export default function TrackingMap(props: Props) {
         () => current.current.onSelect(tracker.id),
       );
     });
-    if (props.showInfrastructure)
+    if (props.showInfrastructure) {
+      const sites = new Map<string, Infrastructure[]>();
       (props.infrastructureNodes ?? demoInfrastructure)
         .filter((device) => typeof device.longitude === 'number' && typeof device.latitude === 'number')
-        .forEach((device) =>
-        marker(
-          device.id,
-          [device.longitude!, device.latitude!],
-          'infrastructure-pin',
-          device.role === 'Repeater' ? 'R' : 'B',
-          `${device.name} · ${device.role} · recorded location`,
-        ),
-      );
+        .forEach((device) => {
+          const key = `${device.longitude},${device.latitude}`;
+          sites.set(key, [...(sites.get(key) ?? []), device]);
+        });
+      sites.forEach((devices, key) => {
+        const device = devices[0];
+        marker(`site-${key}`, [device.longitude!, device.latitude!], 'infrastructure-pin',
+          devices.length > 1 ? `R×${devices.length}` : device.role === 'Repeater' ? 'R' : 'B',
+          devices.map((d) => `${d.name} · ${d.role} · ${d.deploymentStatus === 'planned' ? 'planned' : 'recorded'} location`).join('; '));
+      });
+    }
     props.history.forEach((fix) => {
       const key = `point-${fix.measuredAt}`;
       marker(

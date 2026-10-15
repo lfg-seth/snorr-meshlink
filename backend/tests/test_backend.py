@@ -19,6 +19,23 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_unknown_clock_humidity_updates_without_replacing_known_measurements(self):
+        first = packet('r1', 'telemetry', {'temperature': 23, 'humidity': 35}, gateway='b1')
+        first['measuredAt'] = None
+        self.assertEqual(self.ingest(first)['outcome'], 'accepted')
+        later = {**packet('r1', 'telemetry', {'humidity': 36}, gateway='b1'), 'measuredAt': None}
+        self.assertEqual(self.ingest(later)['outcome'], 'accepted')
+        row = next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')
+        self.assertEqual(row['humidity'], 36)
+        self.assertIsNone(row['readingTimes']['humidity'])
+        self.assertTrue(row['lastContactAt'])
+        known = packet('r1', 'telemetry', {'humidity': 40}, gateway='b1')
+        self.assertEqual(self.ingest(known)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**later, 'packetId': 'unknown-late'})['outcome'], 'accepted')
+        self.assertEqual(next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['humidity'], 40)
+        with self.assertRaises(ApiError):
+            self.ingest(packet('r1', 'telemetry', {'humidity': 101}, gateway='b1'))
+
     def test_live_cutover_transaction_and_real_gps_receipts(self):
         import json
         migrations = self.data / 'cutover-migrations'
@@ -65,7 +82,7 @@ class BackendTests(unittest.TestCase):
         self.data = Path(self.temp.name)
         self.credentials = make_credentials()
         subprocess.run(command(self.data) + ['migrate', 'up'], check=True, stdout=subprocess.DEVNULL)
-        subprocess.run(command(self.data) + ['superuser', 'upsert', 'bootstrap@example.invalid', self.credentials['superuser']['password']], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run(command(self.data) + ['superuser', 'upsert', '--', 'bootstrap@example.invalid', self.credentials['superuser']['password']], check=True, stdout=subprocess.DEVNULL)
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', 0))
             port = sock.getsockname()[1]

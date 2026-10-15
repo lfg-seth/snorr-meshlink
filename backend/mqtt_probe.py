@@ -38,7 +38,7 @@ def main():
         nonlocal rejected
         try:
             packet = adapter.decode(message.topic, message.payload, time.time(), message.retain)
-            if packet:
+            if packet and packet['kind'] == 'position':
                 pair = packet['deviceId'] + '/' + packet['gatewayId']
                 counts[pair] = counts.get(pair, 0) + 1
                 if packet['measuredAt']:

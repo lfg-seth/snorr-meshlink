@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## TEST-009 — Live repeater provisioning and telemetry
+
+2026-10-14 Pacific; hosted PocketBase/portal and powered bench radios. Owner confirms R003 powered/in range. Planned sites/equipment are configuration evidence, not measured placements.
+
+- Three repeater records and explicit node mappings added, preserving two existing trackers, two gateways, five accounts and histories. Authenticated state matches exact private planned coordinates/equipment/identities. R002/R003 share one grouped map marker with separate cards. No raw coordinates/tracks published.
+- Genuine battery reports: R001 4.115 V at 21:34:29, R002 4.159 V at 21:38:15, R003 3.634 V at 21:37:54. R003 environmental measurement at 21:38:19: 19.8942°C, 36.7484% RH. Each arrives through G001/G002 and yields one accepted observation plus a duplicate receipt: four observations/eight receipts. Actual clocks are valid; calibrated accuracy and charge state are unverified.
+- Staged 39 backend tests, 8 frontend tests, TypeScript/build and isolated invalid-third-record transactional rollback/preservation pass. Unknown-time readings remain visibly unknown and cannot replace known measurements; zero values and invalid humidity/voltage are covered. No synthetic production injection.
+- Public Cloudflare HTTPS/certificate/protected routes, proxy auth/throttling and isolated backup restore pass. Final backup includes seven devices, four telemetry observations and preserved existing records/private configuration; matching checksum in [operations](../docs/operations/repeater-telemetry.md).
+
+Limits: short bench sample only; no installed-site proof, forced relay/coverage, sustained 15-minute cadence, solar input, battery runtime, sensor calibration, authenticated browser visual review or off-host backup. Planned-site warnings remain disabled pending activation and thresholds; ingestion/display is active.
+
 Updated: 2026-10-14. Software broker, firmware provisioning, local radio and actual two-gateway MQTT fixture tests are recorded below. A short GPS delivery/freshness observation is now recorded; sustained delivery, battery-runtime and field results remain unmeasured. Agree numerical acceptance criteria before using those tests to claim success.
 
 ## Test index

@@ -1,12 +1,12 @@
-# Live GPS ingestion
+# Live GPS and infrastructure telemetry ingestion
 
-The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Other packet kinds are ignored in this first GPS integration.
+The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered infrastructure voltage and temperature/humidity telemetry are also decoded; unsupported packet kinds are ignored. See [repeater provisioning and measured verification](repeater-telemetry.md).
 
 ## Private configuration
 
 The owner-authorized **SNORR MeshLink — Pilot** 1Password Developer Environment stores the private channel key, existing broker worker/gateway passwords, replacement gateway Wi-Fi settings and existing portal admin/worker/superuser provisioning credentials. No passwords were rotated. Its MCP interface returns variable names, not values. Windows local environment-file mounting is unavailable through this integration; the headless LXC uses a separately provisioned private configuration. Updating 1Password does not automatically update the running service.
 
-`/etc/meshlink/mqtt.json` is root-owned, mode 0640, readable by `meshlink-worker`. It contains `host`, `port`, `root`, `channel`, a full base64 `channelKey`, `username`, `password`, `members`, `gateways` and verified `identities`. Do not print or commit it. Existing PocketBase worker credentials remain separate in `/etc/meshlink/worker.json`. The repository's ignored `private/bench/` contains source readbacks and private provisioning inputs; these do not move between machines through Git.
+`/etc/meshlink/mqtt.json` is root-owned, mode 0640, readable by `meshlink-worker`. It contains `host`, `port`, `root`, `channel`, a full base64 `channelKey`, `username`, `password`, `members`, `infrastructure`, `gateways` and verified `identities`. Do not print or commit it. Existing PocketBase worker credentials remain separate in `/etc/meshlink/worker.json`. The repository's ignored `private/bench/` contains source readbacks and private provisioning inputs; these do not move between machines through Git.
 
 Owner corrected broker SSH access during this integration: `ssh -p 64582 setheth@mqtt.snorr.org`. The previous hostname/default-port attempt timed out. The worker-only export helper reads the existing owner-private broker export and writes only the `pilot-worker` account plus endpoint metadata, without changing accounts or displaying passwords. Root-private canonical broker state remains on the broker.
 
@@ -19,7 +19,7 @@ Registered source-node mappings are B001/B002 → the two V4 member trackers and
 - Packet identity combines source device, radio packet ID and a digest of decrypted channel/data content. Identical copies across gateways or replays create separate receipts and one displayed observation. Reused radio IDs with different fixes remain distinct. A different payload under a reused ID is retained as another observation rather than silently losing the fix.
 - Private SQLite queue `/var/lib/meshlink-worker/receipts.sqlite` survives restarts/API outages. Remove a receipt from the queue only after the backend stores its outcome. A crash after API commit can create another duplicate receipt on retry; it cannot create another displayed position. Disk failure stops the worker. Broker/radio loss before receipt is not recoverable by this queue; gateway QoS and buffering do not guarantee full history.
 - Heartbeats indicate accepted broker subscription and API availability, not gateway health or fresh GPS. Broker disconnect clears connection state; a stopped worker times out after 20 seconds. Existing positions continue aging toward the agreed 15-minute stale threshold. API retries and token refresh happen without any outbound radio action.
-- Battery and infrastructure sensors remain unintegrated. Gateway locations are absent until measured, and map markers skip missing coordinates. Both gateways remain uplink-only. No fictional battery, solar, weather, sensor or assignment data is carried into live mode.
+- Infrastructure voltage and R003 temperature/humidity are integrated. Planned RAK coordinates are owner-provided configuration, not measured placement; solar input remains unmeasured. Gateway locations are absent until measured, and map markers skip missing coordinates. Both gateways remain uplink-only. No fictional battery, solar, weather, sensor or assignment data is carried into live mode.
 
 ## Deployment and cutover
 

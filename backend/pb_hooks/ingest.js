@@ -76,7 +76,7 @@ function ingest(e) {
           !keys.length ||
           keys.some(
             (key) =>
-              ['battery', 'temperature', 'solar', 'intrusion'].indexOf(key) < 0,
+              ['battery', 'temperature', 'humidity', 'solar', 'intrusion'].indexOf(key) < 0,
           )
         )
           throw new BadRequestError('Unknown or empty telemetry metrics.');
@@ -89,7 +89,7 @@ function ingest(e) {
               data[key],
               key,
               key === 'temperature' ? -100 : 0,
-              key === 'temperature' ? 150 : 10000,
+              key === 'temperature' ? 150 : key === 'humidity' ? 100 : 10000,
             );
         });
       }
@@ -174,7 +174,7 @@ function ingest(e) {
         const supported =
           metric === 'battery' ||
           (config.equipped || {})[
-            { solar: 'solar', temperature: 'weather', intrusion: 'intrusion' }[
+            { solar: 'solar', temperature: 'weather', humidity: 'weather', intrusion: 'intrusion' }[
               metric
             ]
           ];
@@ -182,6 +182,8 @@ function ingest(e) {
         const latest = readings[metric];
         if (
           !latest ||
+          (!latest.measuredAt && !time.measuredAt && time.quality === 'unknown' &&
+            receivedAt > latest.receivedAt) ||
           (time.measuredAt &&
             (!latest.measuredAt || time.measuredAt > latest.measuredAt))
         )

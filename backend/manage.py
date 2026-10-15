@@ -155,7 +155,7 @@ def initialize():
         json.dump(data, file, indent=2)
     # Run setup commands without logging their generated password arguments.
     subprocess.run(command() + ['migrate', 'up'], check=True, stdout=subprocess.DEVNULL)
-    subprocess.run(command() + ['superuser', 'upsert', 'bootstrap@example.invalid', data['superuser']['password']], check=True, stdout=subprocess.DEVNULL)
+    subprocess.run(command() + ['superuser', 'upsert', '--', 'bootstrap@example.invalid', data['superuser']['password']], check=True, stdout=subprocess.DEVNULL)
     with (LOCAL / 'setup.log').open('w') as log:
         process = start(port=8091, log=log)
         try:

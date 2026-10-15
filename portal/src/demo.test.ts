@@ -69,6 +69,7 @@ test('history sorts recorded points, filters by measurement time and breaks long
 });
 test('infrastructure freshness uses its cadence and preserves never-reported state', () => {
   assert.equal(telemetryState(null, now, 5), 'Awaiting first report');
+  assert.equal(telemetryState(null, now, 15, fix(1).receivedAt), 'Unknown measurement time');
   assert.equal(telemetryState(fix(14).measuredAt, now, 5), 'Current reading');
   assert.equal(telemetryState(fix(15).measuredAt, now, 5), 'Stale reading');
   assert.equal(telemetryState(fix(7).measuredAt, now, 2), 'Stale reading');

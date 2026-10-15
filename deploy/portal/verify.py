@@ -62,7 +62,11 @@ def main():
         assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
     else:
         assert {d['id'] for d in live['trackers']} == {'b001', 'b002'}
-        assert {d['id'] for d in live['infrastructure']} == {'g001', 'g002'}
+        infrastructure = {'g001', 'g002'}
+        repeaters = Path('/etc/meshlink/repeaters.json')
+        if repeaters.exists():
+            infrastructure.update(d['key'] for d in json.loads(repeaters.read_text())['devices'])
+        assert {d['id'] for d in live['infrastructure']} == infrastructure
         assert not live['members']
     print('Proxy, protected routes and sign-in: PASS')
 
@@ -117,7 +121,10 @@ def main():
                       for table in ['accounts', 'devices', 'members', 'assignments',
                                     'positions', 'observations', 'packet_receipts',
                                     'messages', 'incidents', 'events']}
-            assert counts['accounts'] == 4 and counts['devices'] == (10 if simulation else 4)
+            with sqlite3.connect('file:/var/lib/meshlink/pb_data/data.db?mode=ro', uri=True) as current:
+                account_count = current.execute('SELECT COUNT(*) FROM accounts').fetchone()[0]
+            assert counts['accounts'] == account_count
+            assert counts['devices'] == len(live['trackers']) + len(live['infrastructure'])
             assert counts['positions'] > 0 and counts['packet_receipts'] > 0
         restored_secret = json.loads((state / 'credentials.json').read_text())
         assert restored_secret == secrets

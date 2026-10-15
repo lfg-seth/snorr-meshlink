@@ -23,11 +23,11 @@ function evaluate(app) {
     const restored = Date.parse(feed.getString('restoredAt')) || 0;
     const enabledAt =
       Date.parse(device.getString('monitoringStartedAt')) || now;
-    ['battery', 'solar', 'temperature', 'intrusion'].forEach((metric) => {
+    ['battery', 'solar', 'temperature', 'humidity', 'intrusion'].forEach((metric) => {
       const equipped =
         metric === 'battery' ||
         (config.equipped || {})[
-          { temperature: 'weather', solar: 'solar', intrusion: 'intrusion' }[
+          { temperature: 'weather', humidity: 'weather', solar: 'solar', intrusion: 'intrusion' }[
             metric
           ]
         ];

@@ -38,6 +38,8 @@ export type Infrastructure = {
   id: string;
   name: string;
   role: 'Repeater' | 'Backhaul';
+  deploymentStatus?: string;
+  lastContactAt?: string | null;
   downlink?: boolean;
   longitude?: number;
   latitude?: number;
@@ -45,6 +47,7 @@ export type Infrastructure = {
   cadenceMinutes: number;
   battery: number | null;
   temperature: number | null;
+  humidity?: number | null;
   solar: number | null;
   intrusion: boolean | null;
   equipped: { solar: boolean; weather: boolean; intrusion: boolean };
@@ -330,8 +333,9 @@ export function telemetryState(
   at: string | null,
   now: number,
   cadenceMinutes: number,
+  receivedAt?: string | null,
 ) {
-  if (!at) return 'Awaiting first report';
+  if (!at) return receivedAt ? 'Unknown measurement time' : 'Awaiting first report';
   return now - Date.parse(at) >= cadenceMinutes * 3 * 60_000
     ? 'Stale reading'
     : 'Current reading';

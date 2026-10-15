@@ -9,7 +9,7 @@ from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2
+from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
 from mqtt_adapter import Adapter, PacketRejected
 from mqtt_worker import Spool, Worker
 
@@ -36,6 +36,43 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
 
 
 class AdapterTests(unittest.TestCase):
+    def telemetry(self, telemetry, gateway='!9ea13cc0'):
+        source = 0x05237743
+        data = mesh_pb2.Data(portnum=portnums_pb2.TELEMETRY_APP, payload=telemetry.SerializeToString())
+        packet = mesh_pb2.MeshPacket(id=17)
+        setattr(packet, 'from', source)
+        packet.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(struct.pack('<QI', 17, source) + b'\0' * 4)).encryptor().update(data.SerializeToString())
+        wire = mqtt_pb2.ServiceEnvelope(packet=packet, channel_id='Test', gateway_id=gateway)
+        adapter = Adapter({**CONFIG, 'infrastructure': {'!05237743': 'r003'}})
+        return adapter.decode(f'snorr/pilot/2/e/Test/{gateway}', wire.SerializeToString(), NOW)
+
+    def test_environment_zero_values_unknown_clock_and_gateway_deduplication(self):
+        t = telemetry_pb2.Telemetry(time=91)
+        t.environment_metrics.temperature = 0
+        t.environment_metrics.relative_humidity = 0
+        first, second = self.telemetry(t), self.telemetry(t, '!849ad7a0')
+        self.assertEqual(first['data'], {'temperature': 0, 'humidity': 0})
+        self.assertEqual(first['deviceId'], 'r003')
+        self.assertIsNone(first['measuredAt'])
+        self.assertEqual(first['packetId'], second['packetId'])
+        t.time = NOW - 60
+        self.assertEqual(datetime.fromisoformat(self.telemetry(t)['measuredAt']).timestamp(), NOW - 60)
+        t.time = NOW + 60
+        self.assertGreater(self.telemetry(t)['measuredAt'], self.telemetry(t)['receivedAt'])
+
+    def test_voltage_presence_and_invalid_environment(self):
+        t = telemetry_pb2.Telemetry(time=NOW)
+        t.device_metrics.battery_level = 101
+        self.assertIsNone(self.telemetry(t))
+        t.device_metrics.voltage = 4.1
+        self.assertAlmostEqual(self.telemetry(t)['data']['battery'], 4.1, places=5)
+        t.environment_metrics.relative_humidity = 101
+        with self.assertRaises(PacketRejected):
+            self.telemetry(t)
+        t.environment_metrics.relative_humidity = float('nan')
+        with self.assertRaises(PacketRejected):
+            self.telemetry(t)
+
     def setUp(self):
         self.adapter = Adapter(CONFIG)
 

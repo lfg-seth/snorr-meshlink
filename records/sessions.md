@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-14 — Three repeaters provisioned with live telemetry
+
+- Owner authorizes adding R001/R002/R003 at two supplied planned sites with antenna, four 2550 mAh 18650 cells each and 160 mA solar-cell records; explicitly includes live infrastructure telemetry. Exact coordinates remain private. Record planned assemblies without inferring chemistry, wiring, aggregate capacity or panel wattage. Warn monitoring remains disabled pending deployment activation; live readings are enabled.
+- Extend encrypted MQTT decoding, PocketBase observations/health and portal humidity/unknown-clock display; group colocated map markers. Add guarded transactional provisioning, isolated rollback/preservation checks and dynamic restore expectations. Fix existing generated-password CLI parsing using `--`. Existing trackers/accounts/history and credentials are preserved.
+- Staged 39 backend tests and 8 frontend tests/TypeScript/build pass. First deployment attempt safely stops before provisioning because the old restore verifier assumes four accounts; actual deployment has five. Correct verifier and rerun backup/restore before successful migration. No reset or synthetic live records.
+- Live authenticated configuration matches all three exact private plans. R001 4.115 V, R002 4.159 V, R003 3.634 V; R003 19.8942°C/36.7484% RH. Each of four genuine radio reports arrives through both gateways: eight receipts, four observations, accepted/duplicate pairs. Valid wall-clock measurements are preserved; unknown uptime clocks are separately tested.
+- Public HTTPS/authentication boundaries, proxy throttling and isolated seven-device restore pass. Matching final private backup/checksum and details: [operations](../docs/operations/repeater-telemetry.md), [TEST-009](field-results.md#test-009--live-repeater-provisioning-and-telemetry). No new hardware purchases, field installation or deferred survey work.
+
+Next useful step: review authenticated rendering on the owner's devices, confirm installed-site status and monitoring thresholds, then measure sustained telemetry/GPS freshness, power endurance and actual relay coverage. Solar-input measurement, sensor calibration and off-host backup remain unverified. Publish this completed source/record checkpoint to origin/main; preserve unrelated 3MF.
+
 ## 2026-10-14 — R003 AHT fix ported, built and flashed
 
 - Owner explicitly authorizes bringing the identified changes forward, building and flashing R003. Sync main (already current), initialize pinned firmware/nested submodules and read firmware agent/build instructions. Switch clean firmware to the existing `snorr/rak-survey` project branch and port only the RAK sensor-detection fix; no forced reporting intervals, old defaults or survey implementation. Publish functional commit `b0aa05b41` and concise-comment follow-up `cc5907b1fc7b4c200e23f43e10baa54c39aeaf25`; no history rewritten.

@@ -1,4 +1,4 @@
-"""Receive-only adapter for pinned stock Meshtastic channel-encrypted positions."""
+"""Receive-only adapter for encrypted member positions and infrastructure metrics."""
 import base64
 from datetime import datetime, timezone
 import hashlib
@@ -7,7 +7,7 @@ import struct
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from google.protobuf.message import DecodeError
-from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2
+from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
 
 
 class PacketRejected(ValueError):
@@ -23,6 +23,9 @@ class Adapter:
         self.root = config['root'].rstrip('/')
         self.channel = config['channel']
         self.members = config['members']
+        self.infrastructure = config.get('infrastructure', {})
+        if set(self.members) & set(self.infrastructure):
+            raise ValueError('Member and infrastructure mappings must be disjoint.')
         self.gateways = config['gateways']
         self.key = base64.b64decode(config['channelKey'], validate=True)
         if len(self.key) not in (16, 32):
@@ -48,7 +51,7 @@ class Adapter:
                     or envelope.channel_id != self.channel):
                 raise PacketRejected('envelope/topic mismatch')
             source = f'!{getattr(packet, "from"):08x}'
-            if source not in self.members:
+            if source not in self.members and source not in self.infrastructure:
                 raise PacketRejected('unknown source')
             if not packet.id or packet.pki_encrypted or packet.via_mqtt:
                 raise PacketRejected('unsupported packet flags/ID')
@@ -57,16 +60,45 @@ class Adapter:
             nonce = struct.pack('<QI', packet.id, getattr(packet, 'from')) + b'\0' * 4
             plaintext = Cipher(algorithms.AES(self.key), modes.CTR(nonce)).decryptor().update(packet.encrypted)
             data = mesh_pb2.Data.FromString(plaintext)
-            if data.portnum != portnums_pb2.POSITION_APP:
-                return None  # Other packet kinds are deliberately deferred.
+            if not math.isfinite(received_at):
+                raise PacketRejected('invalid receipt time')
+            digest = hashlib.sha256(self.channel.encode() + b'\0' + data.SerializeToString()).hexdigest()[:32]
+            common = {'gatewayId': self.gateways[gateway], 'packetId': f'{packet.id:08x}:{digest}',
+                      'receivedAt': at(received_at)}
+            if data.portnum == portnums_pb2.TELEMETRY_APP:
+                if source not in self.infrastructure:
+                    return None
+                telemetry = telemetry_pb2.Telemetry.FromString(data.payload)
+                metrics = {}
+                if telemetry.HasField('device_metrics') and telemetry.device_metrics.HasField('voltage'):
+                    voltage = telemetry.device_metrics.voltage
+                    if not math.isfinite(voltage) or not 0 <= voltage <= 100:
+                        raise PacketRejected('invalid battery voltage')
+                    if voltage > 0:
+                        metrics['battery'] = voltage
+                if telemetry.HasField('environment_metrics'):
+                    for field, key, low, high in [('temperature', 'temperature', -100, 150),
+                                                  ('relative_humidity', 'humidity', 0, 100)]:
+                        environment = telemetry.environment_metrics
+                        if environment.HasField(field):
+                            value = getattr(environment, field)
+                            if not math.isfinite(value) or not low <= value <= high:
+                                raise PacketRejected('invalid environmental metric')
+                            metrics[key] = value
+                if not metrics:
+                    return None
+                # Small values observed on R003 are uptime, not Unix timestamps.
+                measured = at(telemetry.time) if telemetry.time >= 1577836800 else None
+                return {**common, 'deviceId': self.infrastructure[source], 'kind': 'telemetry',
+                        'measuredAt': measured, 'data': metrics}
+            if data.portnum != portnums_pb2.POSITION_APP or source not in self.members:
+                return None
             position = mesh_pb2.Position.FromString(data.payload)
             if not position.HasField('latitude_i') or not position.HasField('longitude_i'):
                 raise PacketRejected('position lacks coordinates')
             latitude, longitude = position.latitude_i / 1e7, position.longitude_i / 1e7
             if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
                 raise PacketRejected('invalid coordinates')
-            if not math.isfinite(received_at):
-                raise PacketRejected('invalid receipt time')
             # Position.time is a device/transmit clock. Only timestamp names the
             # GPS solution; never substitute a recent clock for an old fix.
             if abs(position.timestamp_millis_adjust) > 999:
@@ -75,10 +107,7 @@ class Adapter:
                         if position.timestamp else None)
             # Gateway-independent content identity prevents packet-ID reuse from
             # silently discarding a new fix after reboot; exact replays deduplicate.
-            digest = hashlib.sha256(self.channel.encode() + b'\0' + data.SerializeToString()).hexdigest()[:32]
-            return {'deviceId': self.members[source], 'gatewayId': self.gateways[gateway],
-                    'packetId': f'{packet.id:08x}:{digest}', 'kind': 'position',
-                    'measuredAt': measured, 'receivedAt': at(received_at),
+            return {**common, 'deviceId': self.members[source], 'kind': 'position', 'measuredAt': measured,
                     'data': {'latitude': latitude, 'longitude': longitude}}
         except (DecodeError, OverflowError, OSError):
             raise PacketRejected('malformed packet') from None
