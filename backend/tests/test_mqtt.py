@@ -63,6 +63,23 @@ class AdapterTests(unittest.TestCase):
         t.time = NOW + 60
         self.assertGreater(self.telemetry(t)['measuredAt'], self.telemetry(t)['receivedAt'])
 
+    def test_member_voltage_telemetry_preserves_measurement_and_deduplicates(self):
+        telemetry = telemetry_pb2.Telemetry(time=NOW - 90)
+        telemetry.device_metrics.voltage = 3.8
+        data = mesh_pb2.Data(portnum=portnums_pb2.TELEMETRY_APP, payload=telemetry.SerializeToString())
+        packet = mesh_pb2.MeshPacket(id=99)
+        setattr(packet, 'from', 0x699c2ed8)
+        packet.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(
+            struct.pack('<QI', 99, 0x699c2ed8) + b'\0' * 4)).encryptor().update(data.SerializeToString())
+        results = []
+        for gateway in CONFIG['gateways']:
+            wire = mqtt_pb2.ServiceEnvelope(packet=packet, channel_id='Test', gateway_id=gateway)
+            results.append(self.adapter.decode(f'snorr/pilot/2/e/Test/{gateway}', wire.SerializeToString(), NOW))
+        self.assertEqual(results[0]['deviceId'], 'b001')
+        self.assertAlmostEqual(results[0]['data']['battery'], 3.8, places=5)
+        self.assertEqual(datetime.fromisoformat(results[0]['measuredAt']).timestamp(), NOW - 90)
+        self.assertEqual(results[0]['packetId'], results[1]['packetId'])
+
     def test_voltage_presence_and_invalid_environment(self):
         t = telemetry_pb2.Telemetry(time=NOW)
         t.device_metrics.battery_level = 101

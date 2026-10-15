@@ -1,6 +1,6 @@
 # Live GPS and infrastructure telemetry ingestion
 
-The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered infrastructure voltage and temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
+The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered member battery-voltage telemetry and infrastructure voltage/temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
 
 ## Raw MQTT archive — 2026-10-15
 
@@ -17,6 +17,12 @@ After deployment, run `python3 /opt/meshlink/deploy/portal/verify-mqtt-archive.p
 Deployment verified 2026-10-15: additive migration applied, both services active, one actual new receipt captured and binary length checked with an empty pending queue. All 42 backend tests pass locally and on the LXC runtime in disposable databases. Private backup `meshlink-20261015T202742Z.tar.gz` restores the archive in isolation and passes proxy/authentication checks. Broader ACL inspection/update could not proceed: owner SSH works, but sudo requires authentication and root SSH is denied. No broker ACL was changed.
 
 Schema/API references: [PocketBase migrations](https://pocketbase.io/docs/js-migrations/), [record operations](https://pocketbase.io/docs/js-records/), [JSON size limits](https://pocketbase.io/jsvm/interfaces/core.JSONField.html).
+
+## Member battery support — 2026-10-15
+
+The adapter normalizes battery-voltage telemetry from registered member nodes into observations, preserving original measurement/receipt clocks and gateway deduplication. GPS fixes/history are unchanged by battery packets. Admins select a tracker on Map and use Battery configuration to save battery type and nominal mAh capacity. The approximate 1S LiPo percentage requires an explicit profile; existing B001/B002 settings remain unknown until the installed pack is recorded. Capacity suggestions include the source-list 1000/3000 mAh and earlier owner-reported 1100 mAh size. [Lookup, sources and limitations](../research/member-battery-charge.md).
+
+Verified on 2026-10-15: 44 backend tests pass on both runtimes, frontend tests/typecheck/live build pass in an isolated staged source tree, and deployed proxy/authentication/backup checks pass. Backup `meshlink-20261015T203735Z.tar.gz` restores in isolation. Ten archived actual packets were checked through the new decoder; none contained member voltage, so no backfill was performed and real member voltage reception is not yet measured. Live pack selection and calibration remain owner/hardware follow-ups. Existing local infrastructure UI work was excluded from this release.
 
 ## Private configuration
 

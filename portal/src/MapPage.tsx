@@ -1,5 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import Badge from './Badge';
+import MemberBattery from './MemberBattery';
+import type { BatteryConfiguration } from './MemberBattery';
 import {
   ageLabel,
   historyInRange,
@@ -12,6 +14,8 @@ import { positionAgeSeconds, positionStatus } from './position';
 import { statusText } from './tracker';
 const TrackingMap = lazy(() => import('./TrackingMap'));
 export default function MapPage({
+  online = true,
+  onBatteryConfigure,
   assignments,
   trackers = demoTrackers,
   members = demoMembers,
@@ -21,6 +25,8 @@ export default function MapPage({
   onSelect,
   labels,
 }: {
+  online?: boolean;
+  onBatteryConfigure?: (id: string, config: BatteryConfiguration) => Promise<boolean>;
   assignments: Assignment[];
   trackers?: Tracker[];
   members?: Member[];
@@ -283,6 +289,9 @@ export default function MapPage({
             </dd>
           </div>
         </dl>
+        <MemberBattery key={`member-battery-${selected.id}`} device={selected} now={now}
+          online={online} onConfigure={onBatteryConfigure
+            ? (config) => onBatteryConfigure(selected.id, config) : undefined} />
         <div className="history-controls">
           <label className="check">
             <input

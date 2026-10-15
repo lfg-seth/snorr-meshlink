@@ -17,6 +17,7 @@ import type {
   Incident,
   Message,
   NameJob,
+  Tracker,
 } from './demo';
 import './style.css';
 import Badge from './Badge';
@@ -44,6 +45,7 @@ function App() {
   const [demoAssignments, setAssignments] =
     useState<Assignment[]>(initialAssignments);
   const [demoNameJobs, setNameJobs] = useState<NameJob[]>([]);
+  const [demoTrackers, setDemoTrackers] = useState<Tracker[]>(initialTrackers);
   const [selectedId, setSelectedId] = useState('d1');
   const [session, setSession] = useState<BackendSession | null>(null);
   const [snapshot, setSnapshot] = useState<BackendState | null>(null);
@@ -62,7 +64,7 @@ function App() {
   const [demoEvents, setEvents] = useState<AuditEvent[]>(initialEvents);
   const [demoRules, setRules] = useState<Record<string, BatteryRule>>({});
   const simulation = !session || snapshot?.simulation === true;
-  const trackers = snapshot?.trackers ?? (session ? [] : initialTrackers);
+  const trackers = snapshot?.trackers ?? (session ? [] : demoTrackers);
   const members = snapshot?.members ?? (session ? [] : demoMembers);
   const infrastructureNodes =
     snapshot?.infrastructure ?? (session ? [] : demoInfrastructure);
@@ -486,6 +488,7 @@ function App() {
           )}
           {(!session || snapshot) && page === 'Map' && (
             <MapPage
+              online={feedOnline}
               key={session?.account.id ?? 'demo'}
               assignments={assignments}
               trackers={trackers}
@@ -495,6 +498,12 @@ function App() {
               onSelect={setSelectedId}
               labels={labels}
               infrastructureNodes={infrastructureNodes}
+              onBatteryConfigure={admin ? async (deviceId, configuration) => {
+                if (session) return saveBackend('/api/meshlink/configuration', { deviceId, configuration });
+                setDemoTrackers((old) => old.map((device) => device.id === deviceId
+                  ? { ...device, ...configuration } : device));
+                return true;
+              } : undefined}
             />
           )}
           {(!session || snapshot) && page === 'Users' && (

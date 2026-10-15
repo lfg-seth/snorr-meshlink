@@ -259,7 +259,16 @@ function configuration(e) {
       config.disabledMonitoring.some((metric) => metrics.indexOf(metric) < 0))
   )
     throw new BadRequestError('Invalid disabled monitoring list.');
+  if (config.batteryProfile !== undefined &&
+      ['unknown', 'lipo-1s', 'eve-26v-1s'].indexOf(config.batteryProfile) < 0)
+    throw new BadRequestError('Unknown battery profile.');
+  if (config.batteryCapacityMah !== undefined && config.batteryCapacityMah !== null &&
+      (!Number.isInteger(config.batteryCapacityMah) || config.batteryCapacityMah <= 0 ||
+       config.batteryCapacityMah > 1000000))
+    throw new BadRequestError('Battery capacity must be positive whole mAh or unknown.');
   const allowed = [
+    'batteryProfile',
+    'batteryCapacityMah',
     'cadenceMinutes',
     'reportCadenceMinutes',
     'missingTimeoutMinutes',
@@ -267,12 +276,13 @@ function configuration(e) {
   ];
   if (Object.keys(config).some((key) => allowed.indexOf(key) < 0))
     throw new BadRequestError(
-      'Only reporting/monitoring settings can be changed through this route.',
+      'Only battery and reporting settings can be changed through this route.',
     );
   e.app.runInTransaction((app) => {
     const device = c.device(app, id);
-    if (device.getString('kind') === 'member')
-      throw new BadRequestError('Infrastructure device required.');
+    if (device.getString('kind') === 'member' &&
+        Object.keys(config).some((key) => ['batteryProfile', 'batteryCapacityMah'].indexOf(key) < 0))
+      throw new BadRequestError('Member configuration supports battery type and capacity only.');
     const previous = c.object(device, 'configuration');
     const enabledTimes = previous.monitoringStartedAtByMetric || {};
     if (config.disabledMonitoring)
@@ -289,7 +299,7 @@ function configuration(e) {
     c.event(
       app,
       id,
-      'Infrastructure reporting configuration changed; warning history retained.',
+      'Device battery/reporting configuration changed; warning history retained.',
       e.auth.id,
     );
     health.evaluate(app);
@@ -451,6 +461,9 @@ function state(e) {
     .filter((d) => d.getString('kind') === 'member')
     .map((d) => {
       const position = c.object(d, 'latestPosition');
+      const config = c.object(d, 'configuration');
+      const battery = c.object(d, 'readings').battery;
+
       const history = c
         .rows(
           app,
@@ -467,6 +480,12 @@ function state(e) {
         number: d.getString('number'),
         shortName: d.getString('shortName'),
         battery: position.battery === undefined ? null : position.battery,
+        batteryVoltage: battery ? battery.value : null,
+        batteryMeasuredAt: battery ? battery.measuredAt : null,
+        batteryReceivedAt: battery ? battery.receivedAt : null,
+        batteryTimestampQuality: battery ? battery.timestampQuality : 'unknown',
+        batteryProfile: config.batteryProfile || 'unknown',
+        batteryCapacityMah: config.batteryCapacityMah || null,
         position: position.longitude === undefined ? null : position,
         lastContactAt: d.getString('lastContactAt') || null,
         history,

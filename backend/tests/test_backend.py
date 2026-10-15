@@ -19,6 +19,42 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_member_voltage_config_and_gps_clocks_are_independent(self):
+        fix = packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6, 'battery': 42})
+        self.ingest(fix)
+        before = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
+        reading = packet('d1', 'telemetry', {'battery': 3.8})
+        self.assertEqual(self.ingest(reading)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**reading, 'gatewayId': 'b2'})['outcome'], 'duplicate')
+        configured = {'deviceId': 'd1', 'configuration': {'batteryProfile': 'lipo-1s', 'batteryCapacityMah': 3000}}
+        with self.assertRaises(ApiError):
+            self.member.request('POST', '/api/meshlink/configuration', configured)
+        self.admin.request('POST', '/api/meshlink/configuration', configured)
+        row = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
+        self.assertEqual(row['position'], before['position'])
+        self.assertEqual(row['battery'], 42)  # Reported percent retains its original meaning.
+        self.assertEqual(row['batteryVoltage'], 3.8)
+        self.assertEqual(row['batteryMeasuredAt'], reading['measuredAt'])
+        self.assertEqual(row['batteryCapacityMah'], 3000)
+        self.assertEqual(row['batteryProfile'], 'lipo-1s')
+        for config in [{'batteryProfile': 'lipo-2s'}, {'batteryCapacityMah': -1},
+                       {'batteryCapacityMah': 1.5}, {'batteryCapacityMah': '1000'},
+                       {'cadenceMinutes': 1}]:
+            with self.assertRaises(ApiError):
+                self.admin.request('POST', '/api/meshlink/configuration', {'deviceId': 'd1', 'configuration': config})
+        for item in [packet('d1', 'telemetry', {'battery': 3.7}, minutes=-10),
+                     {**packet('d1', 'telemetry', {'battery': 3.6}), 'measuredAt': None},
+                     packet('d1', 'telemetry', {'battery': 4.1}, minutes=10)]:
+            self.ingest(item)
+        row = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
+        self.assertEqual(row['batteryVoltage'], 3.8)
+        self.assertEqual(row['position'], before['position'])
+        with self.assertRaises(ApiError):
+            self.ingest(packet('d1', 'telemetry', {'temperature': 20}))
+        self.admin.request('POST', '/api/meshlink/configuration', {'deviceId': 'd1',
+            'configuration': {'batteryProfile': 'unknown', 'batteryCapacityMah': None}})
+        self.assertIsNone(next(d for d in self.state()['trackers'] if d['id'] == 'd1')['batteryCapacityMah'])
+
     def test_raw_mqtt_archive_is_lossless_private_and_idempotent(self):
         import base64
         import uuid

@@ -6,6 +6,12 @@ export type Tracker = {
   number: string;
   shortName: string;
   battery: number | null;
+  batteryVoltage?: number | null;
+  batteryMeasuredAt?: string | null;
+  batteryReceivedAt?: string | null;
+  batteryTimestampQuality?: 'valid' | 'unknown' | 'invalid' | 'future';
+  batteryProfile?: string;
+  batteryCapacityMah?: number | null;
   position: Fix | null;
   history: Fix[];
   lastContactAt?: string | null;

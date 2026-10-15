@@ -67,11 +67,9 @@ function ingest(e) {
           number(data.battery, 'battery percent', 0, 100);
       }
       if (b.kind === 'telemetry') {
-        if (device.getString('kind') === 'member')
-          throw new BadRequestError(
-            'Infrastructure telemetry requires an infrastructure device.',
-          );
         const keys = Object.keys(data);
+        if (device.getString('kind') === 'member' && keys.some((key) => key !== 'battery'))
+          throw new BadRequestError('Member telemetry supports battery voltage only.');
         if (
           !keys.length ||
           keys.some(

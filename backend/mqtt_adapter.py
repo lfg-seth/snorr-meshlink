@@ -1,4 +1,4 @@
-"""Receive-only adapter for encrypted member positions and infrastructure metrics."""
+"""Receive-only adapter for encrypted member positions and device telemetry."""
 import base64
 from datetime import datetime, timezone
 import hashlib
@@ -66,8 +66,6 @@ class Adapter:
             common = {'gatewayId': self.gateways[gateway], 'packetId': f'{packet.id:08x}:{digest}',
                       'receivedAt': at(received_at)}
             if data.portnum == portnums_pb2.TELEMETRY_APP:
-                if source not in self.infrastructure:
-                    return None
                 telemetry = telemetry_pb2.Telemetry.FromString(data.payload)
                 metrics = {}
                 if telemetry.HasField('device_metrics') and telemetry.device_metrics.HasField('voltage'):
@@ -76,7 +74,7 @@ class Adapter:
                         raise PacketRejected('invalid battery voltage')
                     if voltage > 0:
                         metrics['battery'] = voltage
-                if telemetry.HasField('environment_metrics'):
+                if source in self.infrastructure and telemetry.HasField('environment_metrics'):
                     for field, key, low, high in [('temperature', 'temperature', -100, 150),
                                                   ('relative_humidity', 'humidity', 0, 100)]:
                         environment = telemetry.environment_metrics
@@ -89,7 +87,7 @@ class Adapter:
                     return None
                 # Small values observed on R003 are uptime, not Unix timestamps.
                 measured = at(telemetry.time) if telemetry.time >= 1577836800 else None
-                return {**common, 'deviceId': self.infrastructure[source], 'kind': 'telemetry',
+                return {**common, 'deviceId': (self.infrastructure if source in self.infrastructure else self.members)[source], 'kind': 'telemetry',
                         'measuredAt': measured, 'data': metrics}
             if data.portnum != portnums_pb2.POSITION_APP or source not in self.members:
                 return None
