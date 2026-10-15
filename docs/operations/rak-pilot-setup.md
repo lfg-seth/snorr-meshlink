@@ -1,12 +1,14 @@
-# Stock RAK pilot repeaters
+# RAK pilot repeaters
 
 Prepared 2026-10-14 at the owner's request, using two connected on-hand RAK4631s. This is bench preparation for the existing Meshtastic pilot, not installation approval or field acceptance. Custom survey firmware remains deferred.
 
-| Label | Current Windows port | Meshtastic ID | Stock firmware |
+Current follow-up: a third board, R003, now runs an owner-authorized targeted AHT compatibility build. Temperature/humidity and battery reports reach both gateways; its original pilot configuration and keys are preserved. [Exact build and evidence](r003-aht-build.md). The stock limitation described below is historical context for that fix.
+
+| Label | Current Windows port | Meshtastic ID | Installed firmware |
 | --- | --- | --- | --- |
 | R001 | COM8 | `!a65601b3` | `2.7.26.54e0d8d` |
 | R002 | COM9 | `!b456f760` | `2.7.26.54e0d8d` |
-| R003 | COM14 | `!05237743` | `2.7.26.54e0d8d` |
+| R003 | COM14 | `!05237743` | `2.7.26.cc5907b` (AHT patch) |
 
 Ports can change; verify hardware identity before writing settings. Physically label the boards R001/R002 before separating them. Owner confirms suitable 915 MHz antennas attached. Exact antenna model/gain, radio frequency SKU markings, fitted sensors and battery assembly are not independently inspected.
 

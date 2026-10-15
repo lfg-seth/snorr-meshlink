@@ -8,6 +8,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
+- 2026-10-14 owner authorizes port/build/flash of the prior AHT detection fix to R003. Custom `2.7.26.cc5907b` succeeds: actual temperature/humidity and device battery reports reach both V3s (4/4 new receipts), with exact pilot-profile/key preservation. This supersedes R003's stock-only sensor limitation below; R001/R002 remain stock and survey work remains deferred. [Build record](../../docs/operations/r003-aht-build.md), [TEST-008](../../records/field-results.md#test-008--r003-custom-aht-build-and-radio-telemetry).
+
 - 2026-10-14 R003 follow-up: third on-hand RAK4631 receives matching stock pilot profile with device/environment telemetry enabled. Battery packets reach both V3s; reported AHT21 temperature/humidity does not work on the pinned stock RAK target because AHT detection is compiled out with HAS_NCP5623. Stock firmware retained; no two-repeater field-scope change. [Evidence](../../records/field-results.md#test-007--r003-stock-setup-and-environmental-sensor-limit), [source explanation](../../docs/operations/rak-pilot-setup.md#r003-environmental-sensor-follow-up--2026-10-14).
 
 - 2026-10-14 owner resumes stock RAK preparation: R001/R002 are identified RAK4631s, flashed to stock `2.7.26.54e0d8d`, configured on the private pilot channel and verified through explicit reboot. Direct encrypted reception reaches the other RAK and both V3s (6/6); forced GPS relaying, field coverage and battery/solar endurance remain untested. [Setup](../../docs/operations/rak-pilot-setup.md), [evidence](../../records/field-results.md#test-006--stock-rak-pilot-repeater-preparation). Custom survey work remains deferred.

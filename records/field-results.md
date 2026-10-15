@@ -4,6 +4,14 @@ Updated: 2026-10-14. Software broker, firmware provisioning, local radio and act
 
 ## Test index
 
+### TEST-008 — R003 custom AHT build and radio telemetry
+
+- 2026-10-14: owner explicitly authorizes porting the identified AHT fix, building and flashing R003. Firmware submodule initialized at pinned `54e0d8d`, existing project branch advanced/published to `cc5907b1fc7b4c200e23f43e10baa54c39aeaf25`. Only the RAK `HAS_NCP5623` definition/explanation differs from the release; no forced environmental cadence or wider old-fork defaults. Native PlatformIO `rak4631` build succeeds, version `2.7.26.cc5907b`. [Build details/hashes](../docs/operations/r003-aht-build.md).
+- Identity-verified R003 enters DFU and accepts the checksum-verified UF2. No reset or bootloader update. Independent post-flash API confirms version/identity and exact equality of entire local/module/channel settings with the private pre-flash snapshot, preserving keys, private pilot profile, 900-second enabled device/environment telemetry and debug API off.
+- Local response now contains 22.90535°C/35.01892% RH. New automatic device packet `1993071474` reaches both V3s (4.267 V, charging/no-battery level 101, uptime 66 seconds). New automatic environment packet `2012857203` reaches both (22.97821°C/34.962845% RH). **4/4 new device/environment gateway receipts pass**; queued older packets observed during gateway connection are excluded. No gateway settings changed. This replaces TEST-007's stock-only environmental limitation for R003.
+- Telemetry time fields 66/91 are not Unix wall-clock times; future infrastructure ingestion needs explicit clock-validity/receipt-time handling. Short startup sample only: no calibration, sustained cadence, runtime, forced relay or field result. Portal remains GPS-only. Scope remains R003; R001/R002 stock images unchanged.
+- Scoped clang-format 16.0.3 and Git whitespace checks pass; Trunk unavailable on Windows. Vendor-library compiler warnings retained; full native/MCP suite not run. All firmware artifacts, config/key snapshots and raw telemetry receipts remain ignored/private.
+
 ### TEST-007 — R003 stock setup and environmental sensor limit
 
 - 2026-10-14: owner connects another on-hand RAK and requests R003 with the same stock pilot setup plus temperature/humidity if available; confirms antenna connected and tentatively identifies AHT21 at 0x38. API identifies RAK4631 `!05237743` on COM14, previously `2.7.17.36133d29d`. Private backup/reset and matching official Nordic serial stock install complete; no bootloader change. Full profile verification passes after configuration reboots, including shared private channel/radio, ROUTER/local-only, 10 dBm, device telemetry enabled at 900 seconds and environmental measurements enabled at 900 seconds.

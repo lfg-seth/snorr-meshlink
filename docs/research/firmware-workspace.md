@@ -2,6 +2,8 @@
 
 Established 2026-10-13 at the owner's request. The project includes the owner's [Meshtastic firmware fork](https://github.com/lfg-seth/firmware) as the Git submodule at `firmware/`.
 
+2026-10-14 update: the project branch/submodule now points to `cc5907b1fc7b4c200e23f43e10baa54c39aeaf25`, based on the release below with only the RAK AHT detection compatibility change and its explanation. A successful native Windows `rak4631` build is flashed to R003; temperature/humidity reaches both stock V3 gateways and the exact pilot profile/keys are retained. R001/R002 remain stock; custom survey work is unimplemented. [Build/version/checksums and verification](../operations/r003-aht-build.md). The original baseline details below remain historical.
+
 ## RAK branch and release baseline
 
 - Fork branch: [`snorr/rak-survey`](https://github.com/lfg-seth/firmware/tree/snorr/rak-survey).
