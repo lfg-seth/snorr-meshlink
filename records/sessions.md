@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-14 — Enable RAK battery-voltage telemetry
+
+- Owner asks whether R001/R002 track/report battery voltage. Check saved profiles and pinned stock `DeviceTelemetry.cpp`: a 900-second interval alone does not enable broadcasts. Initial setup missed `device_telemetry_enabled`, which remained false. Correct it to true on both identified RAKs and retain the interval.
+- Independent complete profile checks pass after configuration reboot on both devices, including the added enable-flag assertion. Private setup/verification helpers are corrected; keys/configuration stay outside Git. Stock device metrics include voltage and battery level, with level 101 for charging/no battery. Actual voltage calibration and timed periodic RF delivery remain unmeasured; the portal's existing GPS worker does not ingest battery telemetry.
+
+Next useful step: connect the verified battery assembly, compare reported voltage to a meter, observe automatic telemetry reception at the V3s, then implement portal infrastructure telemetry separately when brought forward. No radio/channel, inventory quantity, site, battery specification or ticket status change.
+
 ## 2026-10-14 — Two stock RAK pilot repeaters prepared
 
 - Owner brings forward setup of two plugged-in RAK repeaters with stock firmware and permits flash/reset; confirms suitable 915 MHz antennas on both. Sync main from origin (already current), preserve the unrelated untracked 3MF, read the pilot/inventory/handoff and identify COM8/COM9 as RAK4631 R001/R002. No purchase, stock-count change, site installation or custom survey work.
