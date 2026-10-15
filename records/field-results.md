@@ -1,5 +1,7 @@
 # Field testing and tangible results
 
+2026-10-14 TEST-009 correction — Owner's browser check caught standalone demo after successful live API/telemetry checks: frontend build omitted live mode. Records remained intact. Fresh public browser reproduces demo; corrected production default/mode marker/deployment guard restore sign-in. Ten frontend tests/typecheck/build pass; public boundaries and isolated restore pass. API success did not establish correct browser entry. [Root cause](../docs/operations/repeater-telemetry.md#frontend-mode-correction).
+
 ## TEST-009 — Live repeater provisioning and telemetry
 
 2026-10-14 Pacific; hosted PocketBase/portal and powered bench radios. Owner confirms R003 powered/in range. Planned sites/equipment are configuration evidence, not measured placements.

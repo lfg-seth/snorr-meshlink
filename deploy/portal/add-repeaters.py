@@ -64,6 +64,7 @@ def main():
     check_migration(args.source, args.settings)
     if args.check_only:
         return
+    assert '<meta name="meshlink-portal-mode" content="live">' in (args.source / 'portal/dist/index.html').read_text(), 'Refusing to deploy a frontend without verified live mode'
     run('python3', str(LIVE / 'deploy/portal/backup.py'))
     run('python3', str(args.source / 'deploy/portal/verify.py'))
     input_path = Path('/etc/meshlink/repeaters.json')

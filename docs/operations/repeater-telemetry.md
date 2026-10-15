@@ -25,3 +25,11 @@ The root-private `/etc/meshlink/repeaters.json` retains exact planned configurat
 - Proxy authentication boundaries, throttling, public Cloudflare HTTPS/certificate/protected-route checks and isolated restore pass. Final backup `meshlink-20261015T043840Z.tar.gz`, SHA-256 `3e47036f2472dffc85c5c4674245413c289ab66201121fa57ae17144bdcef668`.
 
 Authenticated browser visual review, sustained cadence, calibrated readings, solar input, pack endurance, installed-site coverage and off-host backup remain outstanding. See [TEST-009](../../records/field-results.md#test-009--live-repeater-provisioning-and-telemetry).
+
+## Frontend mode correction
+
+The owner found standalone demo data after this deployment. The staged build omitted `VITE_PORTAL_MODE=live`, selecting the previous demo default. Live records and the worker stayed correct, but API/restore checks did not exercise the signed-out browser entry. A fresh public browser reproduced six fictional trackers; the served bundle matched the staged artifact.
+
+Production builds now default to live; local development defaults to demo, with explicit `VITE_PORTAL_MODE=demo` available for standalone builds. Invalid modes fail. Vite records the resolved mode in HTML; live provisioning rejects non-live artifacts, and the hosted verifier checks the served mode. Two regression tests cover default/explicit modes; all 10 frontend tests/typecheck/build pass. Public browser reload shows sign-in; authenticated configuration checks confirm records retained. Authenticated rendering still awaits account-holder review.
+
+Corrected-build backup: `meshlink-20261015T045657Z.tar.gz`, SHA-256 `da3ee1a345982ed1ec0b4654857871419eb4237dbc10ed7d90886b89f55fbc7f`. Served live mode, public boundaries and isolated restore pass, preserving seven devices and eight genuine telemetry observations.

@@ -53,6 +53,11 @@ def main():
     client.login(secrets['admin']['username'], secrets['admin']['password'])
     live = client.request('GET', '/api/meshlink/state')
     simulation = live['simulation']
+    if not simulation:
+        with urllib.request.urlopen(proxy + '/', timeout=10) as response:
+            html = response.read().decode()
+        assert '<meta name="meshlink-portal-mode" content="live">' in html, 'Live backend is serving a frontend without verified live mode'
+        print('Hosted frontend declares live mode: PASS')
     assert len(live['trackers']) == (6 if simulation else 2)
     # Respect the enabled 2-auth-requests/3-second policy; the worker can log in too.
     time.sleep(3.1)

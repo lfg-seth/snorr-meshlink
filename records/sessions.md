@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-14 — Correct standalone-demo frontend on live portal
+
+- Owner reports demo data after repeater deployment. Fresh public browser reproduces six fictional trackers; authenticated loopback confirms live backend/configurations retained. Served bundle matches staged artifact. Cause: build omitted `VITE_PORTAL_MODE=live`, selecting old demo default. Earlier API/restore checks missed browser entry behavior.
+- Production now defaults live while retaining local development/explicit standalone demo. Vite validates/records mode in HTML; deployment refuses non-live artifacts and live verifier checks served mode. Two regression tests added; all 10 frontend tests/typecheck/build pass. Deploy hashed assets before atomic HTML replacement after private backup; no database/radio/credential changes.
+- Hosted mode assertion changes from failure to pass; fresh public browser shows sign-in. Configuration preservation, public HTTPS/auth boundaries and isolated corrected-build restore pass. Backup/checksum in [operations](../docs/operations/repeater-telemetry.md#frontend-mode-correction). Authenticated browser rendering still needs account-holder review.
+
+Next useful step: owner refreshes/signs in to review live Infrastructure cards; continue sustained telemetry/coverage/power measurements. Publish correction to origin/main, preserving unrelated 3MF.
+
 ## 2026-10-14 — Three repeaters provisioned with live telemetry
 
 - Owner authorizes adding R001/R002/R003 at two supplied planned sites with antenna, four 2550 mAh 18650 cells each and 160 mA solar-cell records; explicitly includes live infrastructure telemetry. Exact coordinates remain private. Record planned assemblies without inferring chemistry, wiring, aggregate capacity or panel wattage. Warn monitoring remains disabled pending deployment activation; live readings are enabled.
