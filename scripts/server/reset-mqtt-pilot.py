@@ -190,7 +190,9 @@ def main():
         run('systemctl', 'cat', 'mosquitto', stdout=service_record)
     legacy_file = Path('/etc/mosquitto/passwd')
     legacy = {line.split(':', 1)[0] for line in legacy_file.read_text().splitlines()} if legacy_file.exists() else set()
-    users = {name: secrets.token_urlsafe(36) for name in ('pilot-v3-uplink-1', 'pilot-v3-uplink-2', 'pilot-worker')}
+    # Stock Meshtastic's 32-byte password field needs room for a terminator.
+    users = {name: secrets.token_urlsafe(36 if name == 'pilot-worker' else 22)
+             for name in ('pilot-v3-uplink-1', 'pilot-v3-uplink-2', 'pilot-worker')}
     moved = []
     run('systemctl', 'stop', 'mosquitto')  # flush persistence before archiving
     try:

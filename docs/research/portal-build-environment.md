@@ -1,5 +1,7 @@
 # Portal development, CI and deployment environment
 
+2026-10-14 workflow update — Owner confirms regular switching between the Dell Linux laptop and Windows desktop with WSL. Both are active development machines; Docker remains optional/unverified. Use GitHub to synchronize source and project records, pull before each session, and commit/push before switching. Follow the [current handoff](../operations/development-handoff.md); credentials, local databases and private bench evidence do not travel through Git. Historical setup assumptions below are superseded by this update and the LXC deployment record.
+
 2026-10-13. Sources checked against official documentation. Owner accepts React + TypeScript + Vite, PocketBase and a Python worker, while requesting approachable TypeScript. Owner has a low-powered Dell, a home desktop with WSL/Docker potentially available, and no Proxmox VM yet.
 
 ## Development now

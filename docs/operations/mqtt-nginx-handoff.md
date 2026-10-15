@@ -2,6 +2,8 @@
 
 Prepared 2026-10-13. Mike handles certificates on Nginx. These are configuration templates; proxy/VM private addresses and certificate paths need substitution. No proxy or broker changes have been applied from this handoff.
 
+2026-10-14 status update: public `mqtt.snorr.org:8883` now reaches Mosquitto through certificate-valid Nginx TLS. The broker retains loopback and listens on `192.168.12.51:1883`, with owner-reported UFW rules allowing only Nginx `192.168.12.254` before blanket 1883 denial. Anonymous/invalid public logins are correctly rejected. Earlier pending/hold statements below are historical; [current evidence](../../records/sites.md#broker-hosting-record--mike-rollins) supersedes them. Owner-run valid-account synthetic publish/subscribe/ACL checks through public TLS pass; device reconnect remains to test.
+
 ## Intended connection
 
 ```text
@@ -87,6 +89,22 @@ Sources: [Nginx stream TLS](https://nginx.org/en/docs/stream/ngx_stream_ssl_modu
 
 ## Heltec connection settings
 
-For the MQTT-enabled V3 backhauls under this proposed topology: server address `mqtt.spp.lol:8883`, TLS enabled, per-gateway username/password and root `snorr/pilot`. The reviewed upstream Meshtastic MQTT implementation parses `hostname:port` and defaults to 8883 when TLS is enabled (1883 otherwise); these settings require verification on the selected installed build. No `https://` prefix. Heltecs use public Nginx 8883; private 1883 is only the proxy-to-broker hop. Member trackers still send over LoRa and do not all need Wi-Fi/MQTT. [Configuration docs](https://meshtastic.org/docs/configuration/module/mqtt/), [upstream parser/defaults](https://github.com/meshtastic/firmware/blob/master/src/mqtt/MQTT.cpp).
+2026-10-14 hardware finding: pinned stock Meshtastic has a 32-byte MQTT password buffer (31 usable UTF-8 bytes), while the original fresh installer generated 48-character values. Valid software-client MQTT tests therefore did not establish device credential compatibility. The V3s reject that oversized configuration. [Guarded two-account fix](../../scripts/server/fit-v3-mqtt-passwords.py) is prepared/uploaded and passes isolated real-Mosquitto authentication, worker/ACL preservation, idempotency and rollback tests; owner sudo execution is complete. It generates 30-character gateway passwords, preserves worker/ACL/listeners, reloads the broker and makes an owner-private export. Fresh installer generation is corrected for future gateways. The owner-private export confirms both gateway replacements are 30 bytes; saved V3 credentials match privately and actual encrypted LoRa-to-MQTT fixtures pass all four member/gateway checks. Worker authentication continues to pass. [Pinned password bound](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/protobufs/meshtastic/module_config.options).
 
-Security integration follow-up: reviewed moving upstream source currently logs MQTT username/password in its connection log and calls `setInsecure()` in its direct TLS path. Inspect the pinned firmware before provisioning; avoid capturing/publishing credential-bearing serial logs and verify client certificate identity behavior. These are source findings, not evidence about flashed project boards.
+For the MQTT-enabled V3 backhauls: server address `mqtt.snorr.org:8883`, TLS enabled, per-gateway username/password and root `snorr/pilot`. The reviewed upstream Meshtastic MQTT implementation parses `hostname:port` and defaults to 8883 when TLS is enabled (1883 otherwise); these settings now pass saved-config and actual delivery checks on stock `2.7.26.54e0d8d`. No `https://` prefix. Heltecs use public Nginx 8883; private 1883 is only the proxy-to-broker hop. Member trackers still send over LoRa and do not all need Wi-Fi/MQTT. [Configuration docs](https://meshtastic.org/docs/configuration/module/mqtt/), [upstream parser/defaults](https://github.com/meshtastic/firmware/blob/master/src/mqtt/MQTT.cpp).
+
+For the initial passive-tracking uplink bench, no additional broker configuration is identified. Existing `pilot-v3-uplink-1`/`pilot-v3-uplink-2` accounts may write `snorr/pilot/2/e/#`; `pilot-worker` may read it. First verify authenticated synthetic delivery and denied permissions over public TLS. Use channel uplink enabled, downlink disabled, JSON disabled and map reporting disabled for this protobuf tracking test; verify settings against the installed firmware. Portal-to-radio replies need a later narrowly scoped ACL change because current gateways cannot read and the worker cannot publish. MQTT transport readiness does not establish the simulation portal's real-packet ingestion readiness.
+
+### Authenticated public delivery check
+
+`scripts/server/check-mqtt-public.py` uses the protocol/ACL verification helpers from sibling `reset-mqtt-pilot.py` without invoking its reset function. Run **only the check script** with sudo on the broker; it reads root-private credentials, verifies TLS identity for `mqtt.snorr.org`, publishes non-retained synthetic fixtures, checks worker receipt and denied access, and prints status without passwords. It does not modify broker configuration.
+
+Both files are uploaded under `/home/setheth/meshlink-mqtt-check/`. The broker-origin public-endpoint probe timed out; a possible router hairpin limitation is not confirmed. For this session a temporary reverse SSH relay binds only broker loopback `127.0.0.1:18884`, forwards via the external test host to public `mqtt.snorr.org:8883`, and preserves end-to-end TLS/certificate verification. Its credential-free probe passes. While that relay is active, run:
+
+```bash
+sudo python3 /home/setheth/meshlink-mqtt-check/check-mqtt-public.py --connect-host 127.0.0.1 --connect-port 18884
+```
+
+Share status output only. Owner-run authenticated execution passed on 2026-10-14. The relay was closed afterward; SSH confirms no 18884 listener remains, and Mosquitto remains active. Recreate a loopback-only relay before reusing this command. The relay is temporary, not deployed broker infrastructure. Without a relay, the script defaults to direct public DNS/8883 and requires a working broker-to-public route.
+
+Security integration follow-up: the pinned stock build logs MQTT username/password in its direct connection log and calls `setInsecure()` in its direct TLS path. Device provisioning/status tests suppress serial debug logging and keep credential-bearing configurations private. Hardware delivery passes, but the validating worker subscriber does not establish certificate/hostname verification by the Heltecs. [Pinned source](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/src/mqtt/MQTT.cpp#L328).

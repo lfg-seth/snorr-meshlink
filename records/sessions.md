@@ -1,5 +1,123 @@
 # Session log
 
+## 2026-10-14 — Dell Linux to Windows/WSL development handoff
+
+- Owner requests committing/pushing all pending publishable work for desktop continuation and confirms regular switching between the Dell Linux laptop and Windows desktop running WSL. Record the ongoing workflow in PROJECT.md, the environment plan, inventory and the linked handoff; GitHub is the sync point for both machines.
+- Handoff includes broker setup/testing/password-compatibility scripts, serial access/export helpers, source review, bench checklist and sanitized four-device radio/MQTT/GPS evidence. Private credentials, channel key, flash backups, raw GPS captures, local databases and private bench helpers remain ignored on the Dell; they are not transferred through GitHub.
+- Portal is still the hosted simulation. Live MQTT ingestion was explicitly brought forward but no adapter/deployment has started. The next developer must settle demo-data handling, provision stable physical identities and build/test the persistent worker before claiming live portal tracking. No additional hardware or radio changes in this handoff.
+
+Next useful step on Windows/WSL: pull main (including submodules), read docs/operations/development-handoff.md, then resume the live ingestion adapter. Python compilation, shell syntax, Git whitespace and unchanged pinned firmware-submodule checks pass. The isolated broker test cannot be rerun on this Dell because `mosquitto_passwd` is absent; the earlier recorded remote test pass is retained without claiming a new pass. Publication follows this checkpoint commit.
+
+## 2026-10-14 — Live portal MQTT integration brought forward
+
+- Owner asks to connect MQTT to the portal and identify prerequisites. Reviewed existing deployment, normalized ingestion boundary and private bench subscriber code. Broker worker credentials and channel key already exist privately; the remaining software is a persistent decoder/identity adapter and hosted worker integration, replacing synthetic updates.
+- Recommend first connecting the two verified V4 trackers and two V3 gateways for read-only GPS ingestion, preserving measurement timestamps and per-gateway receipts while deduplicating displayed observations. Confirm handling of existing fictional portal records before changing hosted data. Keep live devices powered with GPS sky view for end-to-end verification. No deployment, credential transfer, database change, radio transmission, ticket resolution, commit or push performed; existing edits preserved.
+
+Next useful step: confirm whether the hosted portal should show only real bench devices or retain a separately labelled simulation, then implement/test and deploy the ingestion worker with a backup and live GPS verification.
+
+## 2026-10-14 — Replacement hotspot and real GPS delivery verified
+
+- Owner reconnects nodes, reports satellites and supplies new hotspot credentials. USB permissions changed; owner restores scoped ACL access after interactive sudo is required. Initial automatic permission-review timeout succeeds on its permitted retry. Save new Wi-Fi privately, apply to both V3s and verify private equality with MQTT config unchanged and LoRa transmit disabled. Both gateways reconnect to Wi-Fi/MQTT.
+- Direct snapshots show internal GPS positions on both V4s. First observation spanning the hotspot transition sees B001 only; subsequent clean automatic observation sees one real GPS report per V4 through both gateways (4/4 paths). B001 reports 9 satellites and 21.13-second fix age; B002 reports 8 satellites and 35.40/35.41-second fix age at subscriber receipt. Original GPS measurement timestamps survive encrypted radio/MQTT delivery. No forced/synthetic position used. [TEST-004](field-results.md#test-004--automatic-gps-positions-through-both-mqtt-gateways).
+- Raw coordinates, Wi-Fi/broker credentials and evidence stay ignored/private. Temporary observer exits after collection; no continuous recorder or live portal adapter installed. Short sample does not establish sustained delivery, phone-free startup, outage behavior, battery runtime or field performance. No firmware source change, inventory quantity change, ticket decision, commit or push; unrelated edits preserved.
+
+Next useful step: connect a persistent MQTT ingestion worker to the existing portal database, then measure sustained GPS freshness/duplicate handling, power-on behavior and battery runtime separately.
+
+## 2026-10-14 — Actual Heltec MQTT delivery and reboot recovery pass
+
+- Owner completes the guarded broker password compatibility fix. Retrieve its private export, confirm both gateway credentials are 30 bytes, then provision both V3s. Exact saved credentials, TLS endpoint/root/encrypted-protobuf settings, uplink-only channels and disabled LoRa transmit pass private readback. Both gateways connect to the hotspot and public broker; worker credential remains usable.
+- Each V4 encrypted fixture reaches the read-only worker subscriber through both V3s: 4/4 member/gateway checks pass. Independently reboot both V3s, verify every networking/receive-only setting persists, then confirm reconnection and repeat fresh fixtures: 4/4 pass again. Subscriber verifies broker certificate/hostname; stock Heltec direct TLS uses `setInsecure()`, so its server identity validation is not established. Serial debug logging is suppressed; credentials/configs/captures stay ignored/private.
+- Update sanitized readiness, inventory and TEST-003 records. All four boards are stock-flashed/profile-verified and ready for passive GPS/runtime testing. No fresh GPS positions collected, portal adapter integrated, battery runtime measured, broker/hotspot outage test or sustained delivery claim. No hardware count changes, firmware source patch, ticket decision, commit or push; unrelated edits preserved.
+
+Next useful step: give both GPS-equipped V4s sky view and verify fresh GPS measurement timestamps through both gateways, then measure phone-free restart/reporting and battery runtime. Portal ingestion remains a separate unfinished adapter.
+
+## 2026-10-14 — Hotspot connected; stock MQTT password limit found
+
+- Owner supplies hotspot/broker credentials and reports a hotspot reset in compatibility mode. Native NetworkManager confirms actual SSID is the original hotspot name; the parenthesized string is its Wi-Fi interface label. Both V3s associate and obtain IPs after recovery. Saved SSID/password matches are checked privately; credentials remain mode-0600 under ignored `private/bench/`, never copied into project records.
+- Broker SSH recovers after network blip; reading its root-private credential file requires interactive sudo. Prepared/uploaded a private export helper, but owner supplies credential JSON instead. Permission-review timeout recovers on the single permitted retry; no ongoing approval rejection.
+- Certificate/hostname-validating read-only subscriber authenticates to public broker. Gateway provisioning still leaves MQTT off and account settings unchanged: supplied gateway passwords are 48 bytes, whereas pinned NanoPB MQTT password field allows 31 bytes plus terminator. Actual two-V4/two-V3 MQTT fixture test receives zero of four expected deliveries; this is a failed client-provisioning test, not proof of a broker transport/ACL defect. No GPS/portal claim.
+- Correct future fresh-installer gateway generation to 30 characters, retaining 48-character worker credentials. Prepare/upload [guarded live compatibility fix](../scripts/server/fit-v3-mqtt-passwords.py) that replaces only the two gateway passwords, preserves worker/ACL/listeners, backs up privately, reloads, verifies and exports privately. [Isolated real-Mosquitto tests](../scripts/server/test-fit-v3-mqtt-passwords.py) pass new/old authentication, worker/hash/ACL preservation, rerun idempotency and injected-failure rollback. Syntax and local/remote SHA256 match; no production account changes performed.
+- Owner sudo execution requested as the remaining privileged step; new values will be retrieved privately, not pasted. All radios retain their verified roles; no firmware source patch/flash, ticket resolution, commit or push. Other in-progress changes preserved.
+
+Next useful step: owner runs the uploaded compatibility fix, retrieve its owner-private export, provision/read back both V3 accounts, then verify live radio-to-MQTT delivery and reconnect. Fresh GPS and portal ingestion remain separate.
+
+## 2026-10-14 — Four Heltecs prepared; local radio smoke passes
+
+- Owner runs runtime serial helper, reconnects missing V4, selects US on the three flashed nodes and confirms attached antennas. Runtime rules preserve access through USB re-enumeration. Newly reconnected V4 `!699ca878` is original 16MB/2MB PSRAM hardware on old `2.7.15.567b8ea`; 1200-baud touch reaches bootloader. Privately back up its configuration/full flash, then clean-install and independently verify stock factory/recovery/filesystem images. All four now run `v2.7.26.54e0d8d`; firmware source/submodule unchanged.
+- Finish shared private channel and full saved profiles. Bench B001/B002 V4s have GPS enabled, 60-second acquisition, 120-second reporting, smart/fixed position off and measurement timestamp flag; G001/G002 V3s have no GPS and remain transmit-disabled. US initialization re-enables TX/generates keys; restore each intended role explicitly. First second-V4 readback catches partial setup; reapplication after initialization passes. Final independent reboot checks every specified field and all four bench labels/roles.
+- Local encrypted text fixture smoke: each V4 reaches both V3s, four of four reception checks pass. No RAK, actual MQTT connection or fresh position event in this short run. Normal hop limit 3 does not establish direct-only paths. [Sanitized TEST-001/TEST-002 evidence](field-results.md#test-001--stock-heltec-provisioning); raw backups/configs/packets/key remain ignored/private.
+- Wi-Fi/MQTT remain disabled while current endpoint/root/TLS/encrypted protobuf settings are staged. Bench host cannot reach authorized broker SSH via public or recorded private address from its current connection; no broker fault/configuration change inferred. Requested local private credential paths and Wi-Fi choice; no secrets requested in chat. Existing software MQTT confirmation remains valid; actual gateway delivery/portal adapter and GPS freshness/runtime remain to test.
+- All four firmware/profile/role checks and local fixture reception pass. No ticket decisions, purchases, survey/SOS implementation, firmware patch, commit or push. Preserve unrelated in-progress broker records/scripts.
+
+Next useful step: privately provision both V3s' selected Wi-Fi and fresh broker accounts; obtain/measure phone-free fresh GPS fixes with sky view, then verify their original measurement timestamps through actual MQTT packets. Portal ingestion and field/runtime tests remain separate.
+
+## 2026-10-14 — Three Heltecs flashed; V3 profiles prepared
+
+- Owner grants temporary serial access. Privately export configs/full original flash for original V4 `!699c2ed8` and V3s `!9ea13cc0` / `!849ad7a0`. Second V4 with USB serial ending `A878` is absent before inspection. Confirmed 16MB/2MB PSRAM V4 and 8MB V3 chips; frequency/antenna/current-location confirmation requested before RF enablement.
+- Clean-install stock `v2.7.26.54e0d8d` on all three accessible boards from checksum-verified release archive and target-manifest partition offsets. Esptool independently verifies factory, recovery/OTA and filesystem images. First V3 no-reset connection attempt fails before erase; CP2102 default reset succeeds. Firmware submodule/source unchanged.
+- Both V3s boot stock release and receive shared private-key uplink-only profiles. Region UNSET, transmit disabled, GPS not present, Wi-Fi/MQTT disabled; endpoint/root/TLS/encryption staged without credentials. Bulk config writes initially drop settings; single-write probe succeeds, private logs show UART0 buffer overflow, and 0.4-second pacing plus 3-second commit hold removes overflows and processes MQTT settings. Check saved fields and reboot rather than trusting host command success.
+- Applied diagnosing-bugs skill to V4 serial failure: bounded probes time out, RTS reset leaves flasher accessible, watchdog reset re-enumerates as ACM0 and loses temporary ACL. Image verification passes; post-boot API/GPS/profile verification still awaits owner-local access. Prepared [runtime serial ACL helper](../scripts/bench/grant-heltec-serial-access.sh), limited to three observed hub sockets and missing V4 serial and expiring at reboot; owner root execution requested, not performed by agent.
+- Final independent reboot verifies both V3 bench short names and complete profiles, including staged MQTT endpoint/root/TLS and shared private channel; all assertions pass. Shell/Python syntax and documentation whitespace pass, firmware checkout stays clean. Recorded inventory and [TEST-001](field-results.md#test-001--stock-heltec-provisioning). No RF/GPS/runtime/actual MQTT results, ticket decisions, firmware code changes, commit or push. Unrelated MQTT records/scripts preserved.
+
+Next useful step: owner runs runtime access helper, reconnects missing V4 and confirms 915MHz/antennas/US location; finish V4 identification/setup, privately provision V3 Wi-Fi/current broker accounts, then begin phone-free GPS/RF/MQTT measurements.
+
+## 2026-10-14 — Four Heltecs connected; bench flashing preparation
+
+- Owner confirms MQTT tested and connects 2 V4 / 2 V3 boards, authorizing formatting/flashing as needed. Authenticated MQTT delivery/ACL evidence is already recorded in the following completed broker session; no broker re-test needed for initial preparation.
+- Escalated read-only USB discovery confirms two native Espressif ports and two CP2102 ports. Sandbox hides the device nodes, and host serial opens fail with OS permissions: current user is not in dialout and noninteractive sudo requires a password. Requested owner-run temporary user ACL on exactly the four connected ports; physical frequency/antenna/location confirmation requested before enabling transmission.
+- Installed esptool 5.5.0 / Meshtastic Python 2.7.11 in ignored project `.venv`; downloaded the official pinned `v2.7.26.54e0d8d` ESP32-S3 archive into ignored private storage. GitHub release SHA256 `339650ced8b8c859751f04be69c6af845fea96baca1327518f199afd2595a9d4` matches; V3/V4 factory image headers/checksums validate and specify 8MB/16MB respectively. Prepared private configuration inspection/backup helper; exact board identification precedes image selection.
+- No serial configuration read, flash/erase, device configuration write or RF test yet. Existing project edits and clean firmware submodule preserved; no commit requested/made.
+
+Next useful step: owner grants temporary serial access and confirms antenna/frequency/location; inspect/back up each board, flash matching pinned stock images only where needed, then save/read back a shared private bench configuration.
+
+## 2026-10-14 — Authenticated public MQTT delivery and ACL checks pass
+
+- Owner runs the uploaded public-check script with sudo and supplies all PASS lines. Existing V3 accounts publish non-retained synthetic messages through certificate-validated public TLS and the worker receives them. Anonymous/invalid logins, worker writes, gateway reads and JSON/unrelated-topic writes are denied. Credentials remain server-private and no broker configuration changes occur during the check.
+- Closed the temporary SSH relay; independent SSH confirms no 18884 listener and active Mosquitto. Updated current broker/project/bench records to reflect successful authenticated software testing, preserving historical pending observations. No radio/GPS/reconnect/runtime or live portal ingestion claim.
+- Documentation whitespace checked. No commit requested/made; other in-progress bench work preserved.
+
+Next useful step: begin selected-build V4 GPS/V3 MQTT hardware bench using the recorded checklist, verify actual packet delivery and reconnect, and implement live portal ingestion when brought forward. Broker-side initial-uplink readiness is verified.
+
+## 2026-10-14 — Authenticated public MQTT test prepared
+
+- Owner asks how to verify valid-account delivery. Added/uploaded a read-only configuration check script reusing the established MQTT 5 protocol/ACL test helpers; reset entry point is never invoked. Reads server-private credentials only under owner-interactive sudo, sends non-retained synthetic fixtures and validates gateway publish/worker receipt and denied permissions over certificate-validated TLS.
+- Broker-origin direct public endpoint probe times out, potentially due to router hairpin routing; cause unconfirmed. Opened a temporary reverse SSH relay bound to broker loopback 18884, routing through this external test host to public TLS 8883. SSH independently confirms loopback binding and the credential-free public TLS/anonymous-rejection check passes. Initial relay connection timed out; retry succeeds. No credentials read/transmitted yet, permanent service change or authenticated PASS claimed.
+- Python syntax/upload checks and documentation whitespace checks pass. Preserved other in-progress bench records. No commit requested/made.
+
+Next useful step: owner runs uploaded check script with sudo and relay options, shares status only; investigate any failure, then close the temporary relay. Record authenticated result before declaring external account/topic testing complete.
+
+## 2026-10-14 — Heltec V3/V4 bench readiness verified against records and sources
+
+- Owner requests bench readiness verification. Reviewed project/tracker, inventory, planned test criteria, MQTT handoff, worker and clean release-pinned firmware submodule. Prepared [bench checklist](../docs/operations/heltec-bench-checklist.md) and delegated [primary-source review](../docs/research/heltec-bench-source-check.md).
+- Stock configuration supports a small V4 GPS / V3 receiver evaluation after exact revision/image, GPS wiring, power/antenna, radio settings and viewer checks. Two GPS-equipped V4s and nine GPS-less V3s are owner-reported stock; condition and availability at this session remain unverified. No mandatory GPS patch identified. The six-member field pilot still needs planned additions and later relay/runtime/outage evidence.
+- Public TLS/broker rejection and local ACL evidence exist, but valid-account external delivery remains to test. Confirmed pinned MQTT source logs credentials, disables TLS certificate verification and gates other-node uplink at public-IP brokers by the packet's OK-to-MQTT flag. Recorded private-log/isolated-credential precautions and explicit member forwarding configuration.
+- Full live portal bench requires MQTT/protobuf adapter work; worker remains simulation/replay-only. Initial broker ACLs still prevent portal downlink; survey responder/GUI remain deferred/unimplemented. No ticket claimed/resolved, hardware/inventory quantities changed, server changes, credentials read, firmware build/flash or measured bench results. No visible USB serial radios in the agent environment. Preserved existing unrelated edits; no commit requested/made.
+
+Next useful step: identify one V4 revision/GPS connection and one V3 radio variant, select matching stock images and save/read back a private bench profile, then run phone-free GPS to local receiver before adding authenticated MQTT uplink.
+
+## 2026-10-14 — Nginx-to-Mosquitto access restored and publicly verified
+
+- Owner runs the guarded backend installer successfully. It retains loopback/accounts, adds broker LAN 1883, privately backs up configuration/firewall, and allows only Nginx's `192.168.12.254` source before blanket IPv4/IPv6 1883 deny. Owner supplies active UFW output and local anonymous-rejection PASS; SSH independently confirms active Mosquitto and both listeners.
+- External `mqtt.snorr.org:8883` verifies TLS 1.3 and the matching certificate. Anonymous and invalid-account MQTT CONNECT requests receive not-authorized CONNACK in 0.11/0.12 seconds, replacing the earlier 10-second closes and confirming proxy-to-broker MQTT reachability. Public 1883 times out from the test origin.
+- Valid-account publish/subscribe, external ACLs, unrelated-LAN denial, actual firmware/reconnect and certificate renewal remain untested. No credentials read/transmitted or operational packets published. Script syntax/checksum and documentation whitespace checks pass; no commit requested/made.
+
+Next useful step: privately run authenticated synthetic publish/subscribe and ACL tests through public TLS, then integrate the selected gateway/worker when brought forward. Survey and other held work remain deferred.
+
+Bench-readiness guidance — Owner asks whether more Mosquitto configuration is needed. Reviewed installed-template account/ACL design and current official Mosquitto/Meshtastic documentation. No additional broker configuration identified for initial passive-tracking uplink bench; authenticated public delivery/permission checks remain the next verification. Recorded V3 endpoint/root/settings and corrected legacy hostname in the handoff. Current ACLs intentionally block portal downlink and the existing portal worker remains simulation-only; those later integrations are separate from broker transport readiness. No account/ACL/device/server change or additional ticket resolution. Documentation whitespace checked; no commit requested/made.
+
+## 2026-10-14 — Public MQTT endpoint tested after DNS/Nginx rollout
+
+- Owner resumes endpoint testing and supplies root SSH on `mqtt.snorr.org:64582`. DNS resolves, TCP 8883 connects, and TLS 1.3 verifies a matching Let's Encrypt certificate expiring 2027-01-11.
+- Two anonymous MQTT 3.1.1 CONNECT probes each close after about 10 seconds without CONNACK; initial 8-second probe times out. Public 1883 times out from this origin. TLS rollout is verified; Mosquitto forwarding/authentication/ACLs are not.
+- Root SSH rejects available key/configured 1Password agent. Requested existing key/account information without secrets. No server changes, credentials read, authenticated traffic, real packets or hardware tests. Prior loopback-only listener is a possible separate-proxy obstacle, not a newly confirmed cause.
+- Recorded sanitized results in sites and the connectivity ticket. No commit requested or made.
+
+Next useful step: restore authorized SSH access, inspect current Mosquitto listener/firewall and Nginx stream upstream/error logs, then verify authenticated publish/subscribe and topic ACLs through public TLS. Survey and broader integration remain deferred.
+
+Follow-up — Owner corrects SSH account to `setheth`; SSH succeeds. Active Mosquitto is reverified on loopback 1883 only, with anonymous local CONNECT returning not authorized immediately; Nginx is inactive on this host, which has no 8883 listener. A separate edge cannot reach the loopback backend. Sudo requires a password, so requested owner-run UFW status and Nginx private source/upstream details before configuring restricted LAN access. No remote changes or credentials read. Next useful step is the restricted backend listener/firewall configuration, followed by external MQTT auth/ACL verification.
+
+Backend preparation — Owner supplies firewall rules and Nginx source `192.168.12.254`; broker LAN address is inspected as `192.168.12.51`. Added/uploaded guarded private-backend installer without resetting accounts; local/remote Python syntax and upload checksum match pass. Installer awaits owner-interactive sudo, checks active/default-deny UFW and expected configuration, backs up privately, restricts 1883 to proxy, preserves loopback and rolls configuration back on broker verification failure. No privileged changes executed. Next owner runs the uploaded installer, shares sanitized status and confirms Nginx upstream `192.168.12.51:1883`; then repeat external MQTT tests. No commit requested/made.
+
 ## 2026-10-13 — Portal LXC deployed through Cloudflare
 
 - Owner confirms LXC creation, authorizes root SSH setup and chooses `meshlink.spp.lol`. Inspected Ubuntu 24.04.5 amd64 with 4 CPUs, 8 GiB RAM, 512 MiB swap and 64 GiB SSD-backed root filesystem; recorded virtual resources without altering radio counts or inventing costs. Portal hosting resumes; MQTT/survey holds remain.
