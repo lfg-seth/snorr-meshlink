@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import Badge from './Badge';
+import { positionAgeSeconds, positionStatus } from './position';
+import { minuteAgeLabel, statusText, trackerMapLabel, trackerStatus } from './tracker';
+import TrackerDetail from './TrackerDetail';
+import MapShortName from './MapShortName';
 import {
   initialTrackers as demoTrackers,
   members as demoMembers,
@@ -7,6 +11,8 @@ import {
 } from './demo';
 import type { Assignment, NameJob, Tracker, Member } from './demo';
 export default function UsersPage({
+  now = Date.now(),
+  online = true,
   assignments,
   connected = false,
   simulation = true,
@@ -15,10 +21,15 @@ export default function UsersPage({
   selfMemberId = 'm5',
   nameJobs,
   admin,
+  onShortNameSave,
   onAssign,
   onRelease,
   onJob,
+  trailId,
+  onTrailChange,
 }: {
+  now?: number;
+  online?: boolean;
   assignments: Assignment[];
   connected?: boolean;
   simulation?: boolean;
@@ -27,9 +38,12 @@ export default function UsersPage({
   selfMemberId?: string;
   nameJobs: NameJob[];
   admin: boolean;
+  onShortNameSave?: (shortName: string) => Promise<boolean>;
   onAssign: (deviceId: string, memberId: string) => void;
   onRelease: (deviceId: string) => void;
   onJob: (deviceId: string, status: NameJob['status']) => void;
+  trailId: string | null;
+  onTrailChange: (id: string | null) => void;
 }) {
   const [deviceId, setDeviceId] = useState(
     () =>
@@ -44,9 +58,97 @@ export default function UsersPage({
       members.find((m) => m.id === selfMemberId)?.id ?? members[0]?.id ?? '',
   );
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const inspected = trackers.find((tracker) => tracker.id === inspectedId);
   const active = assignments.filter((a) => !a.endedAt);
+  function trackerLabel(tracker: Tracker) {
+    const assignment = active.find((item) => item.deviceId === tracker.id);
+    return members.find((member) => member.id === assignment?.memberId)?.name ?? `Device #${tracker.number}`;
+  }
+  const filtered = trackers.filter((tracker) =>
+    `${tracker.shortName} ${tracker.number} ${trackerLabel(tracker)} ${trackerMapLabel(tracker, assignments, members)}`.toLowerCase().includes(search.toLowerCase()),
+  );
   return (
     <div className="stack">
+      {onShortNameSave && <MapShortName key={selfMemberId}
+        shortName={members.find((member) => member.id === selfMemberId)?.shortName ?? ''}
+        onSave={onShortNameSave} />}
+      <div className="summary-grid">
+        {[
+          [
+            String(trackers.length),
+            'Member trackers',
+            'Provisioned tracker devices',
+          ],
+          [
+            String(
+              trackers.filter(
+                (t) =>
+                  t.position &&
+                  positionStatus(positionAgeSeconds(t.position, now)) !==
+                    'stale' &&
+                  positionStatus(positionAgeSeconds(t.position, now)) !==
+                    'unknown',
+              ).length,
+            ),
+            'Within 15 minutes',
+            'Based on measurement time',
+          ],
+          [
+            String(
+              trackers.filter(
+                (t) =>
+                  t.position &&
+                  positionStatus(positionAgeSeconds(t.position, now)) ===
+                    'stale',
+              ).length,
+            ),
+            'Stale positions',
+            '15 minutes or older',
+          ],
+          [
+            String(
+              trackers.filter(
+                (t) =>
+                  !t.position || positionAgeSeconds(t.position, now) === null,
+              ).length,
+            ),
+            'Unknown / never seen',
+            'No fresh fix inferred',
+          ],
+        ].map(([value, label, detail]) => (
+          <div className="summary-card" key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+            <small>{detail}</small>
+          </div>
+        ))}
+      </div>
+
+      <section className="panel users-trackers" aria-label="Tracker devices">
+        <div className="panel-heading"><h2>Tracker devices</h2><span className="small muted">{filtered.length} of {trackers.length}</span></div>
+        <label className="search">
+          <span className="sr-only">Search trackers or members</span>
+          <input type="search" placeholder="Search member or device…" value={search} onChange={(event) => setSearch(event.target.value)} />
+        </label>
+        <div className="tracker-list">
+          {filtered.map((tracker) => {
+            return <button key={tracker.id} className="tracker-row" onClick={() => {
+              setInspectedId(tracker.id);
+            }}>
+              <span className={`tracker-dot ${trackerStatus(tracker, now).kind}`} />
+              <span className="tracker-copy"><strong>{trackerLabel(tracker)}</strong><small>{tracker.shortName} · {statusText(tracker, now)}</small></span>
+              <span className="tracker-age">{tracker.position ? minuteAgeLabel(tracker.position.measuredAt, now) : 'No position'}</span>
+            </button>;
+          })}
+          {!filtered.length && <p className="empty">No trackers match this search.</p>}
+        </div>
+      </section>
+      {inspected && <TrackerDetail key={inspected.id} selected={inspected} label={trackerLabel(inspected)}
+        now={now} showTrail={trailId === inspected.id}
+        onTrailChange={(visible) => onTrailChange(visible ? inspected.id : null)}
+        onClose={() => setInspectedId(null)} />}
       <section className="panel">
         <div className="panel-heading">
           <h2>Active assignments</h2>

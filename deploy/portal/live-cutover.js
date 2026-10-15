@@ -62,6 +62,7 @@ migrate((app) => {
     record.set('monitoringStartedAt', now);
     record.set('configuration', {
       name: tracker ? `Bench tracker ${key.toUpperCase()}` : `Bench gateway ${key.toUpperCase()}`,
+      deviceType: tracker ? 'Heltec V4' : 'Heltec V3',
       hardwareId: identity.hardwareId, radioNodeId: nodeId,
       firmware: '2.7.26.54e0d8d', source: 'live', downlink: false,
       // GPS-only integration: no fitted sensor, battery or cadence claims.

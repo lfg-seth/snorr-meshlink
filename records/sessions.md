@@ -1,5 +1,78 @@
 # Session log
 
+## 2026-10-15 — Map release and public demo entry
+
+- Owner authorizes deploying the accumulated map/device-card changes and asks for a View demo button on sign-in without an account. Add explicit browser-only demo entry to the live build, a visible Demo label and Exit demo in the shared mobile/desktop header, and return to sign-in on refresh/sign-out. Extract App from the mounting entry point so the actual live-build sign-in/demo/authentication flow can be tested. No anonymous operational API access is added.
+- Local frontend tests/typecheck/live production build and all 46 backend integration tests pass. Initial live backup and public/proxy/isolated restore checks pass before release preparation. Test the additive shortname migration on an isolated copy before applying it to the live database; retain seven real devices and existing GPS/telemetry/archive data. Deployment and final verification are in progress.
+- No connected browser is available for visual review; interaction tests use real React/DOM with a MapLibre adapter. Preserve the unrelated firmware checkout and GPS cadence research.
+
+Next useful step: finish release checks, deploy the verified source/build and verify live service, authentication and backup recovery.
+
+## 2026-10-15 — Always-active full-battery demo tracker
+
+- Owner requests one full-battery demo whose GPS never exceeds two minutes old. Set Demo Avery/S001 to 100% and derive its standalone simulated position/contact timestamps from the current minute using the existing app clock. This also recovers immediately on the next clock update after an inactive tab; other fixture ages and authenticated backend observations stay unchanged.
+- Frontend tests and typecheck/production build pass, covering fresh GPS/Active status at startup, minute boundaries and after long clock jumps without mutating the original fixtures, plus the rendered solid-green 100% battery. No backend change, deployment or commit requested/performed; preserve unrelated edits.
+
+Next useful step: review Avery's solid green battery and Active pill in the demo card.
+
+## 2026-10-15 — Battery size and digit alignment refinement
+
+- Owner requests slightly smaller battery/digits and vertical/horizontal centering. Reduce the icon to 90% of pill height while retaining the 30:14 aspect ratio; reduce digits from 10 to 9 SVG units. Following visual feedback that digits remain too high, move their middle anchor down to x=13.5/y=8 for optical alignment. Preserve existing colors, values and solid 100% appearance.
+- Existing rendered component checks and frontend typecheck/production build pass. No connected browser for visual sizing review; no backend change, hosted deployment or commit requested/performed. Preserve other working-tree changes.
+
+Next useful step: review the refined battery in the tracker card at mobile/desktop sizes.
+
+
+## 2026-10-15 — Session clock clarity, distance and battery sizing
+
+- Owner questions First Seen 99 minutes ago versus Time Active 1h 27m for Demo Morgan. Clarify that the first is age since the first GPS point and the second is the observed first-to-last span (99 minus 12 minutes since the latest point = 87 minutes). Keep Time Active and change First Seen to clock time only, with Unknown retained when unavailable. Last GPS/Last Heard age behavior remains separate.
+- Add Distance Travelled beside Time Active in the latest-session summary, displaying miles to one decimal. Sum great-circle segments only between valid, ordered/deduplicated points in that same session; do not bridge >2-hour gaps or include prior sessions. Single point displays 0.0 mi and no timed points Unknown. This is a GPS-sample estimate, not measured route length; missing data/noise and the existing 500-point/12-hour snapshot cap limit completeness.
+- Give battery and status pill one shared full CSS height including pill padding; preserve the icon's 30:14 aspect ratio and existing colors/digit/full-charge rules. This supersedes the earlier font-height icon request.
+- Frontend tests/typecheck/build pass, including clock-only First Seen, duration semantics, displayed one-decimal distance placement, multi-leg mileage, prior-session exclusion, stationary/single-point/unknown behavior and dateline crossing. Existing MapLibre bundle warning remains; browser visual sizing/native review is unavailable. No backend/API/schema change, hosted deployment, hardware action or commit requested/performed; pre-existing work preserved.
+
+Next useful step: visually review the larger battery and session summary; full session/distance completeness still needs the deferred backend snapshot aggregation work.
+
+
+## 2026-10-15 — Compact battery/copy indicators and latest recorded trail
+
+- Owner requests UI-only refinement: compact battery beside status, icon-based coordinate copy, Area/Coordinates on one row, sheets that shrink to content with an approximately 85% viewport limit, “Show Recorded Trail” for the latest continuous session and always-visible session info below GPS/contact times. Read the supplied Lucide icon references and use small inline outline SVGs without another runtime dependency.
+- Battery outline/digits match red for 00–19, amber 20–39, green 40–99; 100 is solid green with no visible digits. Unknown/invalid values stay neutral/unknown. Fractional reports are floored; glyph height matches the pill font. Copy works from either text or symbol, shows a brief animated green check and accessible announcement, and handles clipboard failure with a manual-copy message. Mobile sheets have auto height/max 85dvh, bottom safe-area padding and sticky close controls.
+- Replace the history range selector, point buttons/details and expanding explanations with one Show Recorded Trail checkbox. Latest loaded GPS session splits only on gaps greater than two hours; exact two-hour gaps stay connected. Sort/deduplicate valid, nonfuture measurement times without mutating inputs, include a known current position, draw only that session and retain dots after card close. Dots are noninteractive and do not block device pins. Shared page state lets a trail chosen on Users appear on Map; login changes clear it.
+- Display First Seen from the latest session's earliest available GPS point, separate stored Last Heard and Time Active as the observed first-to-last GPS span, with a fixed loaded-point note. Silence does not grow activity. Session start/duration are unknown without timed points. No backend/API/schema changes: PocketBase currently returns at most 500 GPS points in 12 hours and no session summary. Complete long-session trails/start/activity values need a later backend snapshot aggregation change using retained observations; a new collection is not necessarily needed. Friendly-area mapping remains unconfigured.
+- Frontend tests/typecheck/production build pass, including two-hour boundaries, splits, sorting/deduplication, invalid/unknown/future timestamps, current-position inclusion, duration formatting, battery color/digit/full-charge boundaries, copy success/failure/text tapping, map trail features and unchanged card content on checkbox toggles. Existing MapLibre bundle warning remains. No browser surface is connected for actual layout/animation/native clipboard review. Prior backend, firmware, inventory and other work is preserved; no hosted deployment, hardware action, ticket resolution or commit requested/performed.
+
+Next useful step: review the compact sheet in a connected desktop/mobile browser. When backend work is brought forward, provide complete latest-session points and explicit session metadata beyond the current 12-hour/500-point snapshot window.
+
+
+## 2026-10-15 — Simplified tracker location card and member map shortnames
+
+- Owner requests Location fields (friendly Area, copyable Coordinates to five decimals, Last GPS and Last Heard), a pill beside the name, device-type/radio-name eyebrow and only reported Battery percent. Implement shared card on Map/Users; remove the detailed member battery estimate/voltage/configuration section, while preserving its existing backend storage/API and location history. Clipboard success/failure is announced; coordinates remain manually selectable. Battery is the final field.
+- Last GPS uses source measurement time and Last Heard uses receipt-based contact independently; local clocks omit seconds, age uses whole minutes and displays `+2hrs` after two hours. Missing/invalid/future times remain unknown. Provisional pills use Active <2 min, Recent 2–15 min, Stale 15 min–2h and No Location >2h/unknown/no position, pending the owner's optional threshold answer. The existing 15-minute stale summary rule is unchanged. Last known map pins/coordinates remain visible for No Location; no fresh fix is inferred from receipt time.
+- Area displays a supplied friendly name or “Unknown area.” Project notes specify owner-defined Google Earth KML/KMZ boundaries, but no dataset/resolver is configured or found. Actual area lookup remains outstanding; no geographic names or boundaries invented. Device type comes from configuration; demo fixtures/confirmed B001/B002 use Heltec V4, other unknown metadata shows Device.
+- Add optional five-character member shortnames with additive migration, authenticated own-profile route, owner account-creation prompt and Users form. Validate 1–5 letters/digits/underscores/dashes on server; derive the target member from authentication and reject unrelated fields/worker/anonymous access. Account creation saves a supplied alias transactionally. Assigned map markers use the saved choice; blank/unassigned falls back to the unchanged radio label. Marker width adapts to five characters. Existing records are not assigned invented aliases; fictional demo aliases are explicitly synthetic.
+- All 46 backend tests pass in the existing project virtual environment against disposable PocketBase databases, including profile validation, cross-member/role mutation rejection, persistence, account transaction behavior and unchanged tracker/assignment records. System Python initially lacked cryptography; use the existing `.venv` with the required MQTT dependencies. Frontend tests/typecheck/build pass, including exact age/status boundaries, aliases through assignment/release, old-coordinate retention, copy success/failure, card placement/content, shortname form and existing infrastructure/history interactions. Verify the live-cutover metadata addition separately. Existing MapLibre bundle-size warning remains; no connected browser for visual/native clipboard/gesture review.
+- Preserve prior firmware, infrastructure, inventory and other frontend work. No live database/schema change, hosted deployment, hardware action, radio naming command, ticket resolution or commit requested/performed.
+
+Next useful step: provide/configure owner area boundaries, confirm the provisional status thresholds, visually review the tracker sheet, and deploy the additive backend/frontend change together when requested.
+
+
+## 2026-10-15 — Full-screen map and mobile device sheets
+
+- Owner requests map-only viewing with full-width Apple-style mobile detail sheets for infrastructure/member devices, tracking stats on Users, cleaner battery copy and a remembered infrastructure overlay toggle. Map now fills the available viewport beside navigation; basemap/fit/layer controls overlay it and no detail opens until selection. Infrastructure starts on and persists its preference for one year in a SameSite=Lax cookie (Secure on HTTPS).
+- Share one native-dialog device sheet: nearly full-height, independently scrollable and animated upward on mobile through 850px; compact nonmodal overlay on desktop. Close control stays visible; Escape, backdrop and a downward handle swipe dismiss. Preserve GPS versus receipt ages, history/point attribution, member battery configuration, infrastructure weather/last heard and offline/stale indications. Move summary counts and searchable tracker list to Users; even devices without positions retain inspection/configuration access there. History remains visible after map-sheet close so points can still be selected.
+- Infrastructure estimate labels now say “Estimated battery percentage” without voltage-estimate warnings. Replace visible trend/rate copy with charging/discharging/steady direction and mA availability. No measured current is present in the live contract: display `— mA` rather than relabelling a voltage slope. Optional frontend signed `batteryCurrentMa` supports a supplied current; backend ingestion/sign mapping remains separate. Record owner's planned INA219 use on repeaters/gateways in inventory without claiming installation, measured data or changed quantities.
+- Frontend tests/typecheck/production build pass, including actual React/DOM interactions for exclusive device selection, mobile modal versus desktop panel APIs, close/cancel/Escape, focus restoration, history, cookie remounts, offline status, infrastructure-only maps and never-seen device inspection. Current checks distinguish signed mA readings from missing/invalid current and voltage-only history. Existing MapLibre bundle-size warning remains. Computer-use inventory exposes no apps or browsers, so native modal/gesture behavior, animation, WebGL/tiles and visual layout remain unverified.
+- Existing firmware, infrastructure battery/history UI, package/inventory/session and research work preserved. No firmware/backend change, hardware test, hosted deployment, ticket resolution or commit requested/performed.
+
+Logo/layout follow-up: owner supplies the [SNORR logo](https://snorr.vegas/wp-content/uploads/2021/12/cropped-SNORR-Final-Logo.png), requests the same mobile header as the other pages and reduces sheets to about 80% of the screen. Bundle the unchanged PNG locally in shared branding, restore the mobile map logo/navigation plus common topbar/status header, and size all mobile device sheets to `80dvh` with independent scrolling/sticky close controls. Desktop keeps the compact overlay. Frontend checks/typecheck/build pass; no connected browser for visual review and no hosted deployment/commit requested.
+
+Banner cleanup follow-up: owner removes both environment/feed banners from Map on every screen size and the breadcrumb/clock bar from every page. Do not render the two banners on Map; retain their account/demo/feed controls on other pages and keep shared logo/navigation visible. Remove unused breadcrumb/clock styling and the mobile banner override. Map outage notices and 80%-height device sheets remain available. Frontend checks/typecheck/build pass; browser visual review and hosted deployment remain outstanding. No commit requested/performed.
+
+Infrastructure visibility follow-up: owner removes the infrastructure toggle and requires infrastructure always on. Remove visibility state, cookie reads/writes, toggle props/control and unused styling; render infrastructure markers unconditionally and ignore previous off cookies. Update existing DOM coverage to retain infrastructure after page remount with an old off cookie and with zero member trackers. Frontend checks/typecheck/build pass; no hosted deployment or commit requested/performed.
+
+Next useful step: review the map and sheets in a connected browser at desktop/mobile widths, then deploy when requested. INA219 installation and live current telemetry remain unverified.
+
+
 ## 2026-10-15 — Member battery voltage and configurable LiPo estimate
 
 - Owner requests backend/frontend support for end-user voltage broadcasts, battery type/size configuration and similar state-of-charge estimates for the purchase-list 1000/3000 mAh LiPo packs. Preserve the earlier 1100 mAh inventory label for the smaller packs and unchanged stock counts; suggestions include 1000/1100/3000 with other positive whole capacities or unknown accepted. No installed device/pack mapping inferred.
@@ -19,6 +92,48 @@ Next useful step: admin selects the installed LiPo type/capacity for each tracke
 - Preserve the pre-existing firmware, frontend, inventory and session edits outside this change.
 
 Next useful step: let the archive collect real traffic; broker admin can expand the worker read ACL to `snorr/pilot/#` if topics outside the existing encrypted subtree are needed. Review stored packet types when the owner brings interpretation forward.
+
+## 2026-10-15 — RAK charging and solar specifications checked
+
+- Owner asks about published RAK4631 charge/discharge/cutoff/solar behavior. Inventory identifies RAK19007 base boards; per-unit revision remains unverified. Read the official RAK19007 datasheet and RAK support explanations, and inspect the pinned Meshtastic source without modifying firmware.
+- Record charging target 4.2 V, documented 350 mA charge current, nominal 5 V solar input / 5.5 V maximum and 3.3–4.3 V documented battery operating range. Distinguish 2.9 V charger precharge and recharge hysteresis from low-voltage discharge protection. Source has software low-battery sleep near 3.1 V; physical protection and real sleep/restart thresholds remain untested. [Sources and distinctions](../docs/research/battery-charge-estimate.md#rak19007-charging-and-low-voltage-behavior).
+- No hardware/protection installation claim, field measurement, threshold/code change, ticket resolution or deployment.
+
+Next useful step: confirm actual base-board revision, battery protection and panel voltage, then bench-test normal low-battery sleep and solar recovery when hardware is available.
+
+## 2026-10-15 — EVE battery profile and approximate charge display
+
+- Owner identifies EVE 26V 18650 2550 mAh / 7.5 A cells, confirms direct battery voltage and supplies 3.6/4.2/2.5 V nominal/full/cutoff. Update inventory without changing counts or claiming assembly/calibration.
+- Verify EVE specifications and visually inspect the manufacturer's reference discharge chart using PDF rendering. Document approximate nonlinear lookup from the 0.2C/77°F curve, interpolation, 5% display rounding and limits in [battery charge estimate](../docs/research/battery-charge-estimate.md). This is a loaded reference curve, not measured pack calibration or open-circuit data.
+- Add shared estimated charge display to Infrastructure battery detail and map quick stats for R001/R002/R003 and explicitly configured EVE 1S profiles. Other/unknown profiles stay unknown; member percentages and raw backend telemetry remain unchanged. Preserve voltage, unknown/stale/offline indications and charging-bias context. Cell cutoff is separate from unverified node cutoff and runtime; no warning rule changes or hosted deployment.
+- Verify nonlinear interpolation, bounds/invalid inputs, profile isolation, monotonicity, 5% rounding and rendered UI through frontend checks. Hardware calibration, actual charge-state verification and browser visual review remain outstanding. Existing unrelated firmware change preserved; no commit requested.
+
+Next useful step: review the approximate percentages locally, then compare telemetry to a multimeter and record a normal-load battery discharge when nodes are available.
+
+## 2026-10-15 — Voltage-derived charge estimate discussion
+
+- Owner asks whether battery chemistry/voltage can provide estimated state of charge and clarifies 2550 mAh 18650 cells in two- or four-cell parallel packs. Record owner-reported wiring and rated arithmetic in inventory without assigning unconfirmed per-device configurations or measured capacities.
+- A coarse chemistry-specific voltage lookup is feasible after confirming the cell model/charge profile and that telemetry measures battery terminals. Discuss calibration, charger/load influence, temperature and usable cutoff; capacity/parallel count alone does not define the voltage curve or remaining runtime. TI primary-source reference: https://www.ti.com/document-viewer/lit/html/SSZT786/GUID-5DD8C3D9-BCBE-467B-90E5-FAA672AAC15D .
+- No estimate curve, new hardware, backend/frontend implementation, field measurement or ticket resolution in this discussion.
+
+Next useful step: identify cell make/model or nominal/full-charge voltage and confirm per-device parallel packs/measurement path, then choose an explicitly approximate UI profile.
+
+## 2026-10-15 — Linux infrastructure battery UI
+
+- Owner resumes frontend development without nodes and requests better repeater battery direction/rate/history. Synced main (already current); preserved the pre-existing firmware submodule change.
+- Added voltage-derived charging/discharging/steady estimates and mV/hour slope from actual elapsed times over the latest continuous hour. Require three reports over ten minutes, break on configured battery timeout, and label stale/unknown-time/offline estimates as historical. Charger state/current remain unmeasured; no battery capacity/runtime claims.
+- Replaced the fixed-axis dots with a full-width time chart, adaptive voltage scale, 1h/6h/24h/all-loaded ranges, keyboard/selectable exact readings, range/change summary and reading table. Expose existing 40-observation snapshot limit; retain unknown-clock handling. Added richer fictional demo histories only; backend, hardware, hosted services and private data unchanged.
+- Frontend tests/typecheck/production build pass, including direction, irregular sampling, sparse data, outages and invalid timestamps. Existing MapLibre bundle-size warning remains. Visual browser review could not run: computer-use inventory has no browsers/apps. No hardware or live telemetry validation, hosted deployment, ticket resolution or commit requested/performed.
+
+Follow-up: owner reports repeated backhaul details after switching devices. Reproduced using actual React components in a temporary jsdom harness: switching to the backhaul leaves two battery sections and emits duplicate-key warnings. BatteryHistory and RuleForm shared the selected device ID as sibling keys. Give each component a distinct prefixed key; repeated repeater/backhaul switches now retain exactly one battery section and one rule form. Add a persistent DOM regression test and pinned development-only jsdom dependency to the existing Node test command. Browser visual review remains unavailable; this verifies actual React reconciliation and rendered DOM rather than appearance.
+
+Map follow-up: owner requests named/selectable infrastructure markers with quick power/weather/last-heard stats. Replace generic R/B/site-count pins with individual R001/G001-style labels, preserving separate selection at colocated coordinates using screen offsets. Member pins now show full short names such as S001. Add an on-map quick-stats panel for voltage, inferred direction/rate, available temperature/RH, receipt-based last heard and planned-site/offline/stale/unknown-time indicators. State of charge is explicitly unknown because the current infrastructure contract does not provide a percentage; do not derive one from voltage. Layer-off and close controls clear the panel; no new telemetry or deployment.
+
+DOM interaction tests exercise actual map React components with a minimal MapLibre marker adapter (no WebGL/tiles), covering colocated labels, device switching, sensor availability, offline status, close and layer toggling. Frontend tests/typecheck/build pass; browser visual/hardware checks remain outstanding.
+
+Temperature follow-up: owner requests Fahrenheit throughout the site while preserving Celsius in the backend. Centralize presentation conversion and apply it to both infrastructure details and map quick stats. Update rendered-DOM assertions for both surfaces (8.4°C displays as 47.1°F); preserve unavailable-reading behavior and raw telemetry.
+
+Next useful step: review local Infrastructure detail and infrastructure map quick stats on desktop/mobile, then decide whether to expand backend battery history/state-of-charge telemetry and deploy the reviewed frontend.
 
 ## 2026-10-15 — Restore connected gateway Wi-Fi
 

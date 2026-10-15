@@ -23,7 +23,7 @@ export default function MemberBattery({ device, now, online, onConfigure }: {
     <section aria-label="Member battery">
       <h3>Battery</h3>
       <dl className="detail-grid">
-        <div><dt>Estimated state of charge</dt><dd>
+        <div><dt>Estimated battery percentage</dt><dd>
           {estimate.percent === null ? 'Unknown' : `≈${estimate.percent}%`}
           <small>{estimate.reason}</small>
         </dd></div>

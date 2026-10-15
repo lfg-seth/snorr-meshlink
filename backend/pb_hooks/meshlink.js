@@ -329,16 +329,39 @@ function account(e) {
     throw new BadRequestError('Member does not exist.');
   if (b.role === 'member' && !memberId)
     throw new BadRequestError('Member account requires a member association.');
-  const record = c.create(e.app, 'accounts', {
-    username,
-    name,
-    role: b.role,
-    memberId,
-    password,
-    passwordConfirm: password,
+  const shortName = b.shortName === undefined ? null : c.shortName(b.shortName);
+  if (shortName !== null && !memberId)
+    throw new BadRequestError('A map shortname requires a member association.');
+  let record;
+  e.app.runInTransaction((app) => {
+    record = c.create(app, 'accounts', {
+      username, name, role: b.role, memberId, password, passwordConfirm: password,
+    });
+    if (shortName !== null) {
+      const member = c.first(app, 'members', 'key = {:id}', { id: memberId });
+      member.set('shortName', shortName);
+      app.save(member);
+    }
   });
   c.event(e.app, '', 'Account created by portal admin.', e.auth.id);
   return e.json(201, { id: record.id, username, role: b.role });
+}
+function profile(e) {
+  c.human(e);
+  const b = e.requestInfo().body;
+  if (Object.keys(b).some((key) => key !== 'shortName'))
+    throw new BadRequestError('Only your map shortname can be changed here.');
+  const shortName = c.shortName(b.shortName);
+  const memberId = e.auth.getString('memberId');
+  if (!memberId) throw new BadRequestError('This account has no member association.');
+  e.app.runInTransaction((app) => {
+    const member = c.first(app, 'members', 'key = {:id}', { id: memberId });
+    if (!member) throw new NotFoundError('Member not found.');
+    member.set('shortName', shortName);
+    app.save(member);
+    c.event(app, '', 'Member map shortname updated.', e.auth.id);
+  });
+  return e.json(200, { saved: true });
 }
 function accountAction(e) {
   c.admin(e);
@@ -455,6 +478,7 @@ function state(e) {
     id: m.getString('key'),
     name: m.getString('name'),
     initials: m.getString('initials'),
+    shortName: m.getString('shortName'),
   }));
   const cutoff = new Date(Date.now() - 12 * 3600000).toISOString();
   const trackers = devices
@@ -479,6 +503,7 @@ function state(e) {
         id: d.getString('key'),
         number: d.getString('number'),
         shortName: d.getString('shortName'),
+        deviceType: config.deviceType || null,
         battery: position.battery === undefined ? null : position.battery,
         batteryVoltage: battery ? battery.value : null,
         batteryMeasuredAt: battery ? battery.measuredAt : null,
@@ -617,6 +642,7 @@ module.exports = {
   ackWarning,
   account,
   accountAction,
+  profile,
   configuration,
   heartbeat,
   demoFeed,

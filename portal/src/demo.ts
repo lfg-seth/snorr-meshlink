@@ -1,10 +1,11 @@
 import type { Position } from './position';
 
-export type Fix = Position & { longitude: number; latitude: number };
+export type Fix = Position & { longitude: number; latitude: number; areaName?: string | null };
 export type Tracker = {
   id: string;
   number: string;
   shortName: string;
+  deviceType?: string | null;
   battery: number | null;
   batteryVoltage?: number | null;
   batteryMeasuredAt?: string | null;
@@ -16,7 +17,7 @@ export type Tracker = {
   history: Fix[];
   lastContactAt?: string | null;
 };
-export type Member = { id: string; name: string; initials: string };
+export type Member = { id: string; name: string; initials: string; shortName?: string };
 export type Assignment = {
   id: string;
   deviceId: string;
@@ -52,12 +53,15 @@ export type Infrastructure = {
   reportedAt: string | null;
   cadenceMinutes: number;
   battery: number | null;
+  // Signed battery current: positive charging, negative discharging.
+  batteryCurrentMa?: number | null;
   temperature: number | null;
   humidity?: number | null;
   solar: number | null;
   intrusion: boolean | null;
   equipped: { solar: boolean; weather: boolean; intrusion: boolean };
   batterySetup: string;
+  batteryProfile?: string;
   solarSetup: string;
   antenna: string;
   samples: { at: string; volts: number }[];
@@ -91,11 +95,11 @@ export function minutesAgo(minutes: number) {
   return new Date(demoStartedAt - minutes * 60_000).toISOString();
 }
 export const members: Member[] = [
-  { id: 'm1', name: 'Demo Avery', initials: 'DA' },
-  { id: 'm2', name: 'Demo Jordan', initials: 'DJ' },
-  { id: 'm3', name: 'Demo Morgan', initials: 'DM' },
-  { id: 'm4', name: 'Demo Riley', initials: 'DR' },
-  { id: 'm5', name: 'Demo Casey', initials: 'DC' },
+  { id: 'm1', name: 'Demo Avery', initials: 'DA', shortName: 'AVERY' },
+  { id: 'm2', name: 'Demo Jordan', initials: 'DJ', shortName: 'JORD' },
+  { id: 'm3', name: 'Demo Morgan', initials: 'DM', shortName: 'MORG' },
+  { id: 'm4', name: 'Demo Riley', initials: 'DR', shortName: 'RILEY' },
+  { id: 'm5', name: 'Demo Casey', initials: 'DC', shortName: 'CASEY' },
 ];
 const coordinates = [
   [-115.633, 36.265],
@@ -118,9 +122,10 @@ export const initialTrackers: Tracker[] = [1, 3, 8, 17, null, undefined].map(
         : [];
     return {
       id: `d${i + 1}`,
+      deviceType: 'Heltec V4',
       number: String(i + 1).padStart(3, '0'),
       shortName: `S${String(i + 1).padStart(3, '0')}`,
-      battery: [82, 67, 54, 31, null, null][i],
+      battery: [100, 67, 54, 31, null, null][i],
       history,
       position:
         minutes === undefined
@@ -134,6 +139,14 @@ export const initialTrackers: Tracker[] = [1, 3, 8, 17, null, undefined].map(
     };
   },
 );
+// Keep Avery's standalone demo active with a stationary simulated fix each
+// minute. The other fixtures retain their original freshness scenarios.
+export function demoTrackersAt(now: number): Tracker[] {
+  const at = new Date(Math.floor(now / 60_000) * 60_000).toISOString();
+  return initialTrackers.map((tracker) => tracker.id === 'd1' && tracker.position
+    ? { ...tracker, position: { ...tracker.position, measuredAt: at, receivedAt: at }, lastContactAt: at }
+    : tracker);
+}
 export const initialAssignments: Assignment[] = [0, 1, 2, 3].map((i) => ({
   id: `a${i}`,
   deviceId: `d${i + 1}`,
@@ -185,12 +198,13 @@ export const infrastructure: Infrastructure[] = [
     solar: 1.2,
     intrusion: false,
     equipped: { solar: true, weather: true, intrusion: true },
-    batterySetup: '18650 Li-ion · 2 cells · 3000 mAh per cell · 1S2P (demo)',
+    batterySetup: 'EVE 26V · 2 × 2550 mAh · 1S2P (demo)',
+    batteryProfile: 'eve-26v-1s',
     solarSetup: '6 W panel (demo configuration)',
     antenna: 'Fiberglass (demo)',
-    samples: [70, 50, 30, 10, 2].map((m, i) => ({
-      at: minutesAgo(m),
-      volts: [3.95, 3.88, 3.72, 3.61, 3.58][i],
+    samples: Array.from({ length: 15 }, (_, i) => ({
+      at: minutesAgo(72 - i * 5),
+      volts: Number((3.72 - i * 0.01).toFixed(3)),
     })),
   },
   {
@@ -206,10 +220,14 @@ export const infrastructure: Infrastructure[] = [
     solar: null,
     intrusion: null,
     equipped: { solar: true, weather: false, intrusion: false },
-    batterySetup: 'Battery chemistry / cell count / capacity unknown',
+    batterySetup: 'EVE 26V · 4 × 2550 mAh · 1S4P (demo)',
+    batteryProfile: 'eve-26v-1s',
     solarSetup: 'Panel configuration unknown',
     antenna: 'Muzi whip (demo)',
-    samples: [{ at: minutesAgo(22), volts: 3.9 }],
+    samples: Array.from({ length: 9 }, (_, i) => ({
+      at: minutesAgo(62 - i * 5),
+      volts: Number((3.82 + i * 0.01).toFixed(3)),
+    })),
   },
   {
     id: 'b1',

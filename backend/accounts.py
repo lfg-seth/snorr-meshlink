@@ -16,8 +16,10 @@ if args.action == 'create':
     name = input('Display name: ').strip()
     role = input('Role (admin/member): ').strip()
     member_id = input('Member key (required for member role): ').strip()
+    short_name = input('Member-chosen map shortname (1–5 letters/numbers, _ or -; blank to choose later): ').strip() if member_id else ''
     password = getpass.getpass('Initial password (12+ characters): ')
-    result = client.request('POST', '/api/meshlink/accounts', {'username': username, 'name': name, 'role': role, 'memberId': member_id, 'password': password})
+    result = client.request('POST', '/api/meshlink/accounts', {'username': username, 'name': name, 'role': role, 'memberId': member_id, 'password': password,
+        **({'shortName': short_name} if short_name else {})})
     print('Created account ID:', result['id'])
 else:
     if not args.id:

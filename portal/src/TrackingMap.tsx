@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
 import {
-  ageLabel,
-  historyConnections,
   infrastructure as demoInfrastructure,
 } from './demo';
 import type { Fix, Tracker, Infrastructure } from './demo';
-import { positionAgeSeconds, positionStatus } from './position';
+import { minuteAgeLabel, trackerStatus } from './tracker';
+import { infrastructureMarkers } from './infrastructure-map';
+import { recordedTrailConnections } from './recorded-session';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
@@ -18,12 +18,14 @@ type Props = {
   trackers: Tracker[];
   infrastructureNodes?: Infrastructure[];
   labels: Record<string, string>;
+  markerLabels: Record<string, string>;
   selectedId: string;
   now: number;
-  showInfrastructure: boolean;
-  history: Fix[];
+  online?: boolean;
+  trail: Fix[];
+  selectedInfrastructureId: string | null;
+  onInfrastructureSelect: (id: string) => void;
   onSelect: (id: string) => void;
-  onPoint: (fix: Fix) => void;
 };
 const services = { Topo: 'USGSTopo', 'Aerial imagery': 'USGSImageryOnly' };
 function mapStyle(basemap: keyof typeof services): StyleSpecification {
@@ -40,7 +42,7 @@ function mapStyle(basemap: keyof typeof services): StyleSpecification {
         attribution:
           '<a href="https://www.usgs.gov/programs/national-geospatial-program/national-map">USGS · The National Map</a>',
       },
-      history: {
+      trail: {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
       },
@@ -53,9 +55,9 @@ function mapStyle(basemap: keyof typeof services): StyleSpecification {
       },
       { id: 'basemap', type: 'raster', source: 'basemap' },
       {
-        id: 'history-lines',
+        id: 'trail-lines',
         type: 'line',
-        source: 'history',
+        source: 'trail',
         paint: {
           'line-color': '#153f49',
           'line-width': 3,
@@ -91,7 +93,7 @@ export default function TrackingMap(props: Props) {
       });
     } catch {
       setError(
-        'Map rendering unavailable. Your browser may not support WebGL. The tracker list and recorded positions remain available.',
+        'Map rendering unavailable. Your browser may not support WebGL. View trackers and recorded coordinates on the Users page.',
       );
       return;
     }
@@ -143,6 +145,7 @@ export default function TrackingMap(props: Props) {
       text: string,
       label: string,
       action?: () => void,
+      offset: [number, number] = [0, 0],
     ) {
       present.add(id);
       let pin = markers.current.get(id);
@@ -161,50 +164,29 @@ export default function TrackingMap(props: Props) {
       element.setAttribute('aria-label', label);
       element.title = label;
       pin.setLngLat(coordinates);
+      pin.setOffset(offset);
     }
     props.trackers.forEach((tracker) => {
       if (!tracker.position) return;
-      const age = positionAgeSeconds(tracker.position, props.now);
-      const status = positionStatus(age);
+      const status = trackerStatus(tracker, props.now);
       marker(
         tracker.id,
         [tracker.position.longitude, tracker.position.latitude],
-        `map-pin ${status} ${props.selectedId === tracker.id ? 'selected-pin' : ''}`,
-        tracker.number,
-        `${props.labels[tracker.id]} · ${tracker.shortName} · GPS age ${ageLabel(age)}`,
+        `map-pin ${status.kind} ${props.selectedId === tracker.id ? 'selected-pin' : ''}`,
+        props.markerLabels[tracker.id] || tracker.shortName,
+        `${props.labels[tracker.id]} · ${tracker.shortName} · ${status.label} · GPS age ${minuteAgeLabel(tracker.position.measuredAt, props.now)}`,
         () => current.current.onSelect(tracker.id),
       );
     });
-    if (props.showInfrastructure) {
-      const sites = new Map<string, Infrastructure[]>();
-      (props.infrastructureNodes ?? demoInfrastructure)
-        .filter((device) => typeof device.longitude === 'number' && typeof device.latitude === 'number')
-        .forEach((device) => {
-          const key = `${device.longitude},${device.latitude}`;
-          sites.set(key, [...(sites.get(key) ?? []), device]);
-        });
-      sites.forEach((devices, key) => {
-        const device = devices[0];
-        marker(`site-${key}`, [device.longitude!, device.latitude!], 'infrastructure-pin',
-          devices.length > 1 ? `R×${devices.length}` : device.role === 'Repeater' ? 'R' : 'B',
-          devices.map((d) => `${d.name} · ${d.role} · ${d.deploymentStatus === 'planned' ? 'planned' : 'recorded'} location`).join('; '));
-      });
-    }
-    props.history.forEach((fix) => {
-      const key = `point-${fix.measuredAt}`;
-      marker(
-        key,
-        [fix.longitude, fix.latitude],
-        'history-pin',
-        '',
-        `Recorded point ${fix.measuredAt}`,
-        () => {
-          const point = current.current.history.find(
-            (f) => f.measuredAt === fix.measuredAt,
-          );
-          if (point) current.current.onPoint(point);
-        },
-      );
+    infrastructureMarkers(props.infrastructureNodes ?? demoInfrastructure).forEach(({ device, label, offset }) => {
+      marker(`infra-${device.id}`, [device.longitude!, device.latitude!],
+        `infrastructure-pin ${props.selectedInfrastructureId === device.id ? 'selected-pin' : ''}`,
+        label, `${label} · ${device.name} · ${device.role} · select for quick stats`,
+        () => current.current.onInfrastructureSelect(device.id), offset);
+    });
+    props.trail.forEach((fix) => {
+      marker(`trail-${fix.measuredAt}`, [fix.longitude, fix.latitude],
+        'trail-pin', '', `Recorded trail point ${fix.measuredAt}`);
     });
     markers.current.forEach((pin, id) => {
       if (!present.has(id)) {
@@ -212,11 +194,11 @@ export default function TrackingMap(props: Props) {
         markers.current.delete(id);
       }
     });
-    const source = instance.getSource('history') as GeoJSONSource | undefined;
+    const source = instance.getSource('trail') as GeoJSONSource | undefined;
     if (source) {
       source.setData({
         type: 'FeatureCollection',
-        features: historyConnections(props.history).map(([a, b]) => ({
+        features: recordedTrailConnections(props.trail).map(([a, b]) => ({
           type: 'Feature',
           properties: {},
           geometry: {
@@ -275,6 +257,7 @@ export default function TrackingMap(props: Props) {
           Fit area
         </button>
       </div>
+      {!props.online && <p className="map-feed-status" role="status">Feed offline · showing last recorded positions</p>}
       {error && (
         <div className="map-error" role="status">
           {error}{' '}
@@ -283,11 +266,6 @@ export default function TrackingMap(props: Props) {
           </button>
         </div>
       )}
-      <div className="map-label">
-        <span className="eyebrow">Operating area</span>
-        <strong>Mount Charleston, NV</strong>
-        <span>Position age follows GPS measurement time</span>
-      </div>
     </div>
   );
 }

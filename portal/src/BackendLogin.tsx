@@ -4,9 +4,11 @@ import type { BackendSession } from './backend';
 export default function BackendLogin({
   onLogin,
   onClose,
+  onDemo,
 }: {
   onLogin: (session: BackendSession) => void;
   onClose?: () => void;
+  onDemo?: () => void;
 }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,8 +21,7 @@ export default function BackendLogin({
         {onClose && <button onClick={onClose}>Close</button>}
       </div>
       <p className="small muted">
-        Use the account created by the backend setup. The server enforces your
-        role.
+        Sign in with your MeshLink account.
       </p>
       <form
         className="assignment-form"
@@ -61,6 +62,10 @@ export default function BackendLogin({
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
+      {onDemo && <div className="demo-entry">
+        <button type="button" onClick={onDemo} disabled={busy}>View demo</button>
+        <p className="small muted">Explore with fictional devices. No sign-in needed.</p>
+      </div>}
       {error && (
         <p role="alert" className="form-error">
           {error}

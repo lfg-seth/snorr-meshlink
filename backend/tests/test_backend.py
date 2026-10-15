@@ -19,6 +19,41 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_member_map_shortname_is_validated_persisted_and_only_changes_self(self):
+        route = '/api/meshlink/profile'
+        for client in [Client(self.url), self.worker]:
+            with self.assertRaises(ApiError):
+                client.request('POST', route, {'shortName': 'CASEY'})
+        self.denied(400, self.admin, 'POST', route, {'shortName': 'ADMIN'})
+        before = self.state()
+        for value in ['', '123456', 'a b', '<b>', 123, None]:
+            self.denied(400, self.member, 'POST', route, {'shortName': value})
+        self.denied(400, self.member, 'POST', route, {'shortName': 'OTHER', 'memberId': 'm2'})
+        self.denied(400, self.member, 'POST', route, {'shortName': 'OTHER', 'role': 'admin'})
+        self.member.request('POST', route, {'shortName': 'CJ_5'})
+        state = self.state()
+        self.assertEqual(next(m for m in state['members'] if m['id'] == 'm5')['shortName'], 'CJ_5')
+        self.assertEqual(next(m for m in state['members'] if m['id'] == 'm2')['shortName'], '')
+        self.assertEqual(state['assignments'], before['assignments'])
+        self.assertEqual(state['trackers'], before['trackers'])
+        self.stop()
+        self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual(next(m for m in self.state()['members'] if m['id'] == 'm5')['shortName'], 'CJ_5')
+
+    def test_account_setup_saves_member_chosen_shortname_atomically(self):
+        body = {'username': 'alias-member', 'name': 'Demo Alias', 'memberId': 'm1',
+                'role': 'member', 'shortName': 'ONE', 'password': self.credentials['member']['password']}
+        self.denied(400, self.admin, 'POST', '/api/meshlink/accounts', {**body, 'shortName': 'TOOLONG'})
+        self.assertEqual(next(m for m in self.state()['members'] if m['id'] == 'm1')['shortName'], '')
+        self.admin.request('POST', '/api/meshlink/accounts', body)
+        self.assertEqual(next(m for m in self.state()['members'] if m['id'] == 'm1')['shortName'], 'ONE')
+        # A duplicate account cannot partially replace the other member's label.
+        with self.assertRaises(ApiError):
+            self.admin.request('POST', '/api/meshlink/accounts', {**body, 'memberId': 'm3', 'shortName': 'THREE'})
+        self.assertEqual(next(m for m in self.state()['members'] if m['id'] == 'm3')['shortName'], '')
+        self.assertEqual(self.state()['trackers'][0]['deviceType'], 'Heltec V4')
+
     def test_member_voltage_config_and_gps_clocks_are_independent(self):
         fix = packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6, 'battery': 42})
         self.ingest(fix)
@@ -139,6 +174,7 @@ class BackendTests(unittest.TestCase):
         self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
         wait_ready(self.url, self.process)
         self.assertEqual({d['key'] for d in self.records('devices')}, {'b001', 'b002', 'g001', 'g002'})
+        self.assertTrue(all(t['deviceType'] == 'Heltec V4' for t in self.state()['trackers']))
         self.assertFalse(self.records('members'))
         self.assertEqual(len([a for a in self.records('accounts') if a['role'] == 'disabled']), 2)
         # The ordinary normalized boundary now stores real mapped device keys.

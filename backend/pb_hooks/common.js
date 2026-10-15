@@ -59,6 +59,12 @@ function text(value, name, max = 200) {
     throw new BadRequestError(`Invalid ${name}.`);
   return value.trim();
 }
+function shortName(value) {
+  const name = text(value, 'map shortname', 5);
+  if (!/^[A-Za-z0-9_-]{1,5}$/.test(name))
+    throw new BadRequestError('Map shortname must be 1–5 letters, numbers, underscores or dashes.');
+  return name;
+}
 function device(app, key) {
   const d = first(app, 'devices', 'key = {:key}', { key });
   if (!d) throw new NotFoundError('Device not found.');
@@ -114,6 +120,7 @@ module.exports = {
   simulation,
   demo,
   text,
+  shortName,
   device,
   event,
   feed,

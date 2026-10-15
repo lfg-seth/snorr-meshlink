@@ -15,7 +15,7 @@ MEMBERS = [
     ], 1)
 ]
 DEVICES = [
-    {'key': f'd{i}', 'kind': 'member', 'number': f'{i:03}', 'shortName': f'S{i:03}', 'configuration': {}}
+    {'key': f'd{i}', 'kind': 'member', 'number': f'{i:03}', 'shortName': f'S{i:03}', 'configuration': {'deviceType': 'Heltec V4'}}
     for i in range(1, 7)
 ]
 for key, name, kind, longitude, latitude, cadence, equipped in [

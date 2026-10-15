@@ -55,6 +55,13 @@ routerAdd(
 );
 routerAdd(
   'POST',
+  '/api/meshlink/profile',
+  (e) => require(`${__hooks}/meshlink.js`).profile(e),
+  $apis.requireAuth('accounts'),
+  $apis.bodyLimit(16384),
+);
+routerAdd(
+  'POST',
   '/api/meshlink/worker/ingest',
   (e) => require(`${__hooks}/ingest.js`).ingest(e),
   $apis.requireAuth('accounts'),

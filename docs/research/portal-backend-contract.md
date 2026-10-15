@@ -9,7 +9,7 @@
 | Collection | Purpose |
 | --- | --- |
 | `accounts` | Username/password authentication; admin/member/worker/disabled roles; optional stable member association |
-| `members` | Stable member key and display identity, independent of login/physical device |
+| `members` | Stable member key/display identity plus optional five-character member-chosen map `shortName`, independent of login/physical device and radio name |
 | `devices` | Stable portal key, role, device number/short name, declared configuration, latest observation pointers and separate contact time |
 | `assignments` | Dated device/member associations and actor; partial unique indexes enforce one active tracker per member and one member per tracker |
 | `positions` | Unique GPS observations with original measurement time, timestamp quality, first receipt time and measurement-time carrier |
@@ -65,7 +65,8 @@ All custom routes load PocketBase authentication and enforce current roles on th
 | `POST /api/meshlink/configuration` | Admin `{deviceId, configuration}`; positive device/per-report cadence and timeout overrides, or `disabledMonitoring`; no hardware/sensor assertions added |
 | `POST /api/meshlink/incidents/{id}` | Human `{action:"acknowledge"}`; admin `{action:"resolve",note}`; normal samples/acknowledgment never resolve |
 | `POST /api/meshlink/warnings/{id}/ack` | Human acknowledgment; does not recover a warning |
-| `POST /api/meshlink/accounts` | Admin creates admin/member account, validates member association, prevents worker creation |
+| `POST /api/meshlink/accounts` | Admin creates admin/member account, validates member association, accepts an optional member-chosen `shortName` transactionally, prevents worker creation |
+| `POST /api/meshlink/profile` | Human with a member association saves only their own `{shortName}`; 1–5 ASCII letters/digits/underscores/dashes, association taken from authentication; no radio/assignment mutation |
 | `POST /api/meshlink/accounts/{id}` | Admin resets password or disables account; preserves history; cannot disable self/last enabled admin; worker credentials remain locally provisioned |
 | `POST /api/meshlink/worker/heartbeat` | Worker `{connected:boolean}`; server timestamp; expires after 20 seconds; evaluates configured health rules |
 | `POST /api/meshlink/demo/feed` | Admin simulation-only outage override; requires `MESHLINK_SIMULATION=1` |
@@ -80,3 +81,5 @@ Tests use the real pinned PocketBase binary and temporary databases. Authorizati
 The first portal uses a two-second snapshot poll, not PocketBase realtime. The API bounds current history to 500 points/device within 12 hours, messages/events to 200 and other lists to 2,000. Wider-scale pagination/history queries, operational retention/export/deletion, backup/restore, supervision/VM/HTTPS, source packet adapters, broker connection, real radio send/name execution and field/device performance remain work before deployment. No real radio action is queued or sent by this backend. The owner-deferred MQTT transport investigation remains parked.
 
 Primary implementation references: [PocketBase routing/auth middleware](https://pocketbase.io/docs/js-routing/), [transactions/record operations](https://pocketbase.io/docs/js-records/), [migrations](https://pocketbase.io/docs/js-migrations/), [API rules](https://pocketbase.io/docs/api-rules-and-filters/), [handler isolation](https://pocketbase.io/docs/js-overview/) and [pinned release](https://github.com/pocketbase/pocketbase/releases/tag/v0.40.5), checked 2026-10-13.
+
+2026-10-15 tracker presentation update: member snapshots expose `shortName` (blank until chosen), and tracker snapshots expose configured `deviceType` or null. The field is portal display metadata, independent of radio short names and physical identity. The new additive migration supplies the member field and fills missing type metadata for the two already verified Heltec V4 member nodes. User cards show reported percentage only; normalized battery-voltage/configuration data remain stored independently. No owner-defined area boundaries/resolver are configured, so the card's optional `position.areaName` remains unknown in live snapshots; no synthetic area lookup is claimed.

@@ -1,5 +1,8 @@
+import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
+import BatteryHistory from './BatteryHistory';
+import { batteryPower } from './battery';
 import {
   ageLabel,
   infrastructure as demoInfrastructure,
@@ -50,6 +53,7 @@ export default function InfrastructurePage({
     return (
       <p className="empty">No infrastructure devices have been provisioned.</p>
     );
+  const power = batteryPower(selected, now);
   const incident = incidents.find(
     (i) => i.deviceId === selected.id && !i.resolvedAt,
   );
@@ -208,7 +212,7 @@ export default function InfrastructurePage({
                 ? 'Not equipped'
                 : selected.temperature === null
                   ? 'Awaiting first reading'
-                  : `${selected.temperature} °C · ${metricState('temperature')}`}
+                  : `${temperatureLabel(selected.temperature)} · ${metricState('temperature')}`}
             </dd>
           </div>
           <div>
@@ -228,8 +232,8 @@ export default function InfrastructurePage({
             </dd>
           </div>
           <div>
-            <dt>Charge / discharge current</dt>
-            <dd>Unknown · no measured value</dd>
+            <dt>{power.label}</dt>
+            <dd>{power.amount}</dd>
           </div>
           <div>
             <dt>Gateway direction</dt>
@@ -305,53 +309,8 @@ export default function InfrastructurePage({
             )}
           </div>
         )}
+        <BatteryHistory key={`battery-${selected.id}`} device={selected} now={now} online={online} connected={connected} />
         <div className="infra-detail-columns">
-          <div>
-            <h3>Recorded battery history</h3>
-            <p className="small muted">
-              Recorded voltage observations, not remaining charge or
-              runtime.
-            </p>
-            {selected.samples.length ? (
-              <>
-                <svg
-                  className="telemetry-chart"
-                  viewBox="0 0 400 130"
-                  role="img"
-                  aria-label={`Recorded battery voltages: ${selected.samples.map((s) => `${s.volts} V at ${timeLabel(s.at)}`).join(', ')}`}
-                >
-                  <path d="M35 10V100H390" fill="none" stroke="#cdd6d2" />
-                  <text x="0" y="20">
-                    4.2V
-                  </text>
-                  <text x="0" y="100">
-                    3.4V
-                  </text>
-                  {selected.samples.map((sample, i) => (
-                    <circle
-                      key={sample.at}
-                      cx={
-                        45 +
-                        (i * 330) / Math.max(1, selected.samples.length - 1)
-                      }
-                      cy={100 - ((sample.volts - 3.4) / 0.8) * 80}
-                      r="5"
-                      fill="#287162"
-                    />
-                  ))}
-                </svg>
-                <div className="point-buttons">
-                  {selected.samples.map((s) => (
-                    <span key={s.at}>
-                      {timeLabel(s.at)} · {s.volts} V
-                    </span>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="empty">No battery observations.</p>
-            )}
-          </div>
           <div>
             <h3>Declared hardware configuration</h3>
             <dl className="config-list">
@@ -369,7 +328,7 @@ export default function InfrastructurePage({
           </div>
         </div>
         <RuleForm
-          key={selected.id}
+          key={`rule-${selected.id}`}
           deviceId={selected.id}
           connected={connected}
           rule={rules[selected.id] ?? rules['*']}
