@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-14 — Existing fork AHT fix confirmed
+
+- Owner recalls fixing the RAK temperature-sensor issue in the older firmware fork and requests verification. Read the existing fork audit, then independently inspect GitHub's exact commit diff and current develop source. Confirm `e617a4dcfd95500c73f570c583f3ea6d02aa4881` (2025-12-31, “fix AHT10 for RAK4631”) comments out HAS_NCP5623. This survives at current develop `76d5156e72d9d9aaa9722b7bbc1336335b685984` and R003's former reported source revision `36133d29d`.
+- The same commit forced environmental enable/15-second reports; later commits revert the forced behavior while retaining the variant fix. Link this existing finding into the R003 setup record. The source change matches the stock scanner exclusion; it does not prove the tentatively identified AHT21's wiring or operation. No firmware/configuration/hardware change, build, flash, ticket resolution or broader fork transplant.
+
+Next useful step, if owner brings custom firmware forward: port only the RAK sensor-detection compatibility change onto the pinned current release, retain configured 900-second device/environment reports, build a traceable image and verify actual temperature/humidity on R003. Stock firmware remains installed pending that scope change.
+
 ## 2026-10-14 — R003 prepared; stock AHT sensor limitation identified
 
 - Owner replaces the connected RAKs with another unit, requests R003 with matching stock pilot configuration and temperature/humidity if available, confirms antenna, and tentatively identifies AHT21 at 0x38. Sync main (already current), preserve unrelated untracked 3MF, identify COM14 RAK4631 `!05237743` and privately back up its older profile.
