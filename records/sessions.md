@@ -3,10 +3,12 @@
 ## 2026-10-15 — Map release and public demo entry
 
 - Owner authorizes deploying the accumulated map/device-card changes and asks for a View demo button on sign-in without an account. Add explicit browser-only demo entry to the live build, a visible Demo label and Exit demo in the shared mobile/desktop header, and return to sign-in on refresh/sign-out. Extract App from the mounting entry point so the actual live-build sign-in/demo/authentication flow can be tested. No anonymous operational API access is added.
-- Local frontend tests/typecheck/live production build and all 46 backend integration tests pass. Initial live backup and public/proxy/isolated restore checks pass before release preparation. Test the additive shortname migration on an isolated copy before applying it to the live database; retain seven real devices and existing GPS/telemetry/archive data. Deployment and final verification are in progress.
+- Deploy and push source commit `3964f46` to the existing LXC/public portal. Local frontend tests/typecheck/live production build and all 46 backend integration tests pass; the staged server runtime also passes all 46 backend tests. The additive shortname migration passes first on a private live-database copy, then on the live database with exact checks that existing operational rows and all seven device identities are preserved.
+- Public HTML/assets match the verified live build byte-for-byte; authenticated snapshots contain only B001/B002 and five infrastructure devices, with the correct Heltec V4 type metadata. Worker heartbeat, all four services, anonymous profile/state denial, proxy boundaries, sign-in throttling and public TLS checks pass. No demo accounts or synthetic records are added to PocketBase. Preserve earlier hashed assets for open tabs and retain private rollback source/static files at `/opt/meshlink-rollback-3964f46`.
+- Pre-release backup: `meshlink-20261015T222413Z.tar.gz`. Post-release backup `meshlink-20261015T222458Z.tar.gz`, SHA-256 `6873c79a5949cef61ace28916c8f60550c298fb8ce16abcca193e0ec295d516d`, passes isolated integrity/API/history recovery, including MQTT archive preservation. [Release operations](../docs/operations/portal-lxc.md#map-and-demo-release--2026-10-15).
 - No connected browser is available for visual review; interaction tests use real React/DOM with a MapLibre adapter. Preserve the unrelated firmware checkout and GPS cadence research.
 
-Next useful step: finish release checks, deploy the verified source/build and verify live service, authentication and backup recovery.
+Next useful step: review View demo and the map sheets in a mobile/desktop browser. Friendly-area boundaries, complete long-session aggregation and measured INA219 current remain separate follow-ups.
 
 ## 2026-10-15 — Always-active full-battery demo tracker
 

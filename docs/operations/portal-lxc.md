@@ -14,7 +14,7 @@ Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare T
 
 ## Owner access
 
-Open the portal and choose **Backend sign in**. View generated admin/member credentials privately in your own terminal:
+Open the portal and sign in on the landing page. **View demo** opens fictional browser-only devices without an account; **Exit demo** returns to sign-in. View generated admin/member credentials privately in your own terminal:
 
 ```sh
 ssh root@meshlink.int.spp.lol
@@ -52,6 +52,18 @@ Public probes use curl without credentials and retain HTTPS certificate/hostname
 The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `/opt/meshlink`. It installs dependencies, builds/tests the frontend, prepares state/services and initializes fictional records only when both database and credentials are absent. It does not authorize or replace a Cloudflare connector. For a new host, configure a remotely managed tunnel route to loopback 8080 after installation using [Cloudflare's setup instructions](https://developers.cloudflare.com/tunnel/get-started/).
 
 For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
+
+## Map and demo release — 2026-10-15
+
+Owner authorizes deploying source commit `3964f46b877791bcd4ce737a35a5f18838010a27`. Map fills the available screen, infrastructure is always visible, and device selection opens a content-sized mobile bottom sheet up to 85% of the viewport. Tracker cards use the revised location/session, copy and battery indicators; summary counts live on Users. Shared branding uses the supplied SNORR logo.
+
+Production remains a live-mode build with sign-in as the initial page. **View demo** explicitly opens only fictional browser state, labelled Demo in the shared header; **Exit demo** returns to sign-in and refresh resets the choice. Demo viewing makes no operational API requests. Avery/S001 has a full battery and a simulated GPS fix each minute. The backend remains live; no demo database/account initialization is performed.
+
+The additive `1792110000_member_shortnames.js` migration adds optional member map shortnames and known Heltec V4 type metadata for B001/B002. It passes against a private live-database copy and then the live database, preserving all existing operational rows and seven device identities. Both local and staged LXC runtimes pass 46 backend tests; frontend tests, TypeScript and production build pass. The verified build is installed with its index published after assets; previous hashed assets remain available for open tabs. `/opt/meshlink/SOURCE_COMMIT` records the deployed source. Previous source/static files are root-private at `/opt/meshlink-rollback-3964f46`; the schema change is additive, and restoring old source does not undo it.
+
+Public HTML and referenced assets match the staged build byte-for-byte. Authenticated real-device state/type metadata, worker heartbeat, all four services, anonymous state/profile denial, proxy boundaries, authentication throttling and public TLS checks pass. Post-release backup `meshlink-20261015T222458Z.tar.gz` has SHA-256 `6873c79a5949cef61ace28916c8f60550c298fb8ce16abcca193e0ec295d516d` and passes isolated API/database/history recovery, including the MQTT archive. Pre-release backup is `meshlink-20261015T222413Z.tar.gz`.
+
+No browser is connected for native visual/mobile/clipboard review. Friendly-area boundaries, complete session aggregation beyond the existing snapshot cap, and measured INA219 ingestion remain follow-ups; this release does not fabricate those values.
 
 ## Evidence and limits
 

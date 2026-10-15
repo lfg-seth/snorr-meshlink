@@ -17,6 +17,8 @@ Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`
 
 ## Current state
 
+- Map/card release `3964f46` is deployed and pushed (2026-10-15), including the additive member-shortname migration. Production opens at sign-in with **View demo** for synthetic browser-only devices; its shared header labels Demo and offers Exit demo. Refresh returns to sign-in and real records remain authenticated. Avery/S001 stays at full battery with a minute-refreshed simulated GPS fix. Local/server backend suites, frontend checks, public asset/authentication/heartbeat checks and post-release isolated restore pass. [Release, backup and remaining UI/data limits](portal-lxc.md#map-and-demo-release--2026-10-15).
+
 - Frontend correction: owner spotted standalone demo after telemetry deployment. Missing live-mode build setting caused it; backend records stayed live. Production now defaults to live, artifacts carry a mode marker, deployment/verification reject a missing live marker, and two regression tests cover modes. Public browser sign-in verified; 10 frontend tests/typecheck/build pass. [Root cause](repeater-telemetry.md#frontend-mode-correction).
 
 - Latest: all three RAKs are registered at two private planned sites with recorded antenna/power equipment. Actual voltage from each and R003 temperature/humidity reach the live portal through both gateways with deduplication. 39 backend and 8 frontend tests/build pass; public boundaries and isolated seven-device restore pass. [Provisioning/telemetry handoff](repeater-telemetry.md). Planned deployments await installation/threshold confirmation; no solar measurement or endurance claim. This supersedes GPS-only and two-repeater-allocation statements below.
