@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- RAK bench preparation (2026-10-14): two connected RAK4631s now run stock Meshtastic `2.7.26.54e0d8d` as visible R001/R002 routers on the private pilot channel. Saved profiles match the Heltec bench radio settings at 10 dBm; direct encrypted packets reach the other RAK and both V3s (6/6 checks). Forced V4 GPS relaying, field coverage, solar/battery endurance and site readiness remain unmeasured. [Setup](docs/operations/rak-pilot-setup.md), [TEST-006](records/field-results.md#test-006--stock-rak-pilot-repeater-preparation).
+
 - Development moves regularly between the Dell laptop running Linux and the Windows desktop running WSL. GitHub is the shared source/decision record: pull before starting, commit and push before switching, and keep machine-local credentials, databases, raw tracks and environments out of Git. Current handoff and resume steps: [development handoff](docs/operations/development-handoff.md).
 
 - Heltec bench preparation (2026-10-14): two on-hand original V4s and two V3s run verified stock Meshtastic `2.7.26.54e0d8d`, with private-channel profiles/roles checked through reboot. Both V4s deliver automatic GPS through both receive-only V3s and MQTT. The live portal adapter now saves actual positions and per-gateway receipts, preserving GPS solution timestamps and deduplicating display records. Owner supplies replacement gateway Wi-Fi and restores B001 reporting during integration. This is a four-device local bench, not the six-member field pilot; sustained freshness/runtime remain unmeasured. [Evidence](records/field-results.md#test-005--live-portal-gps-ingestion).

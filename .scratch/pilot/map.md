@@ -8,6 +8,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
+- 2026-10-14 owner resumes stock RAK preparation: R001/R002 are identified RAK4631s, flashed to stock `2.7.26.54e0d8d`, configured on the private pilot channel and verified through explicit reboot. Direct encrypted reception reaches the other RAK and both V3s (6/6); forced GPS relaying, field coverage and battery/solar endurance remain untested. [Setup](../../docs/operations/rak-pilot-setup.md), [evidence](../../records/field-results.md#test-006--stock-rak-pilot-repeater-preparation). Custom survey work remains deferred.
+
 - 2026-10-14 live GPS integration: work alternates between Dell Linux and Windows/WSL through GitHub. [Resume here](../../docs/operations/development-handoff.md). The LXC portal now displays only real bench devices through a persistent read-only MQTT GPS worker; two-gateway receipts/display deduplication, worker restart and isolated live-backup recovery pass. Secrets are in the owner-authorized 1Password Environment with separate private service provisioning. [Measured evidence](../../records/field-results.md#test-005--live-portal-gps-ingestion), [operations](../../docs/operations/live-mqtt.md). Survey and other deferred work stay parked.
 
 - Owner put project work on hold on 2026-10-13 for desktop handoff, then resumed portal hosting, MQTT endpoint testing and live GPS integration on 2026-10-14. [Ubuntu LXC deployment](../../docs/operations/portal-lxc.md) records the running portal, Cloudflare route and backup recovery evidence. Survey and other held work remain deferred. The repeater survey claim remains released; no pilot decision is falsely completed.

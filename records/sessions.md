@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-14 — Two stock RAK pilot repeaters prepared
+
+- Owner brings forward setup of two plugged-in RAK repeaters with stock firmware and permits flash/reset; confirms suitable 915 MHz antennas on both. Sync main from origin (already current), preserve the unrelated untracked 3MF, read the pilot/inventory/handoff and identify COM8/COM9 as RAK4631 R001/R002. No purchase, stock-count change, site installation or custom survey work.
+- Privately back up previous configurations; verify the official nRF52840 release archive digest and matching RAK4631 UF2. Install stock `2.7.26.54e0d8d`. Both APIs time out after full reset; 1200-baud entry and official matching Nordic serial firmware reinstall restore access without a bootloader update. Cause remains unresolved. Full reset replaces legacy keys, admin configuration and old fixed locations.
+- Configure the shared private pilot channel/radio profile, visible ROUTER roles, local-only rebroadcast, US/LONG_FAST slot 35, hop limit 3 and 10 dBm. GPS/fixed location, MQTT/Wi-Fi and channel gateway functions off; device telemetry 900 seconds. Stock role-change defaults override initial values; reapply the explicit profile after role change and verify independently. Complete exports/keys stay private.
+- Six of six direct encrypted zero-hop fixture receipts pass: each RAK reaches the other and both independently identified receive-only V3s. Existing gateway/portal configurations unchanged. [Setup and recovery record](../docs/operations/rak-pilot-setup.md), [TEST-006](field-results.md#test-006--stock-rak-pilot-repeater-preparation).
+- Final explicit reboot/reconnection checks pass both complete profiles. Local Python cleanup reports an already-disconnected stream after reboot requests; successful subsequent readbacks verify the devices. No battery power cycle performed.
+
+Next useful step: physically label R001/R002, reconnect a GPS V4, then prove each repeater is required in an isolated V4-to-RAK-to-V3 path with original GPS measurement times retained at dispatch. Sustained freshness, local operation during internet loss, actual battery/solar assembly and runtime remain untested. No decision ticket status changed; custom survey work stays deferred.
+
 ## 2026-10-14 — Real MQTT GPS portal deployed; secrets stored in 1Password
 
 - Owner authorizes the recommended receive-only GPS integration, replacement of fake data and project-secret storage in 1Password. Create SNORR MeshLink — Pilot and store the existing channel/broker/gateway/portal provisioning secrets and replacement Wi-Fi without password rotation or values in Git/logs. Windows MCP environment mounts are unavailable; root-owned group-readable LXC JSON config is provisioned separately and does not automatically sync vault edits. Owner corrects broker SSH to `mqtt.snorr.org:64582`; export only the read-only worker credential.
