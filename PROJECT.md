@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Demo-first entry (2026-10-16, local; not yet deployed): anonymous visitors automatically open the separate database demo in production builds too, with **Sign in** in the top header for live account access. Saved live sessions retain server-validated refresh behavior. Demo/API isolation remains intact; sign-in inputs use a minimum 16px font to address iPhone focus zoom.
+
 - Accumulated portal release (2026-10-16): application source `3ca3a94` deploys GPS quality, neighbor maps/table, assignment-aware card mini maps, infrastructure battery history and a separate database demo at `meshlink.spp.lol`. Frontend/backend checks, public build/API separation and isolated live/demo recovery pass; native visuals, fresh live receipt observation and real neighbor ingestion remain separate verification limits. [Release evidence](docs/operations/portal-lxc.md#gps-neighbor-maps-battery-history-and-database-demo-release--2026-10-16).
 
 - Map neighbor signals (2026-10-16, deployed): a toggle beside Fit area draws selectable colored connections without line labels. Legend help expands independently behind an info button. Node cards list relationship/pill rows that open the relationship card, including with the overlay hidden or locations missing. One line per mapped pair uses the weakest known latest SNR; relationship cards preserve RSSI/SNR, original/final-hop identities, separate hearing/report times and planned/recorded endpoint context. Missing readings stay unknown. [Behavior and checks](.scratch/pilot/issues/18-map-neighbor-signals.md).

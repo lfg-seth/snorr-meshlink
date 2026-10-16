@@ -1452,6 +1452,10 @@ footer button {
 .backend-error {
   margin: 20px 32px;
 }
+.backend-login input {
+  /* Keep iPhone focus from zooming into the sign-in fields. */
+  font-size: max(16px, 1rem);
+}
 .backend-error {
   padding: 12px 16px;
   background: #fff0d4;

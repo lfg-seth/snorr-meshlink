@@ -38,7 +38,7 @@ registerHooks({
   },
 });
 
-test('live sign-in survives refresh and database demo requests stay isolated', async () => {
+test('production opens the isolated demo by default and live sign-in survives refresh', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://portal.example.test/' });
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
@@ -51,6 +51,7 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
   const requests = [];
   let stateFailure = 0;
   let demoFailure = false;
+  let demoGate;
   let stateGate;
   const account = { id: 'admin', name: 'Test Admin', role: 'admin', memberId: '' };
   const emptyState = { account, simulation: false, feedOnline: true,
@@ -72,6 +73,7 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options });
     const demo = url.startsWith('/demo-api/');
+    if (demo && demoGate) await demoGate;
     if (demo && demoFailure) throw new Error('Demo PocketBase unavailable');
     if (url.endsWith('/auth-with-password'))
       return { ok: true, json: async () => ({ token: demo ? 'demo-token' : 'test-token', record: demo ? demoAccount : account }) };
@@ -91,13 +93,9 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
   });
   try {
     await act(async () => root.render(createElement(App)));
-    assert.ok(document.querySelector('form input[type="password"]'));
-    assert.equal(document.querySelector('.app-shell'), null);
-    assert.ok(button('View demo'));
-    assert.equal(requests.length, 0);
-
-    await act(async () => button('View demo').click());
     assert.ok(document.querySelector('.app-shell'));
+    assert.ok(document.querySelector('.brand-row .access-button'));
+    assert.equal(document.querySelector('.brand-row .access-button').textContent, 'Sign in');
     assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
     assert.equal(document.querySelector('.demo-banner'), null, 'map remains banner-free');
     await navigate('#users');
@@ -116,26 +114,36 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
     await act(async () => button('Simulate outage').click());
     assert.ok(requests.some(r => r.url === '/demo-api/api/meshlink/demo/feed' && r.options.method === 'POST'));
     assert.ok(requests.every(r => r.url.startsWith('/demo-api/')), 'demo mutations also stay isolated');
-    await act(async () => button('Exit demo').click());
+    await act(async () => button('Sign in').click());
     assert.equal(document.querySelector('.app-shell'), null);
+    assert.ok(document.querySelector('form input[type="password"]'));
     assert.ok(button('View demo'));
 
-    // A refresh/remount starts signed out rather than persisting demo mode.
+    // Anonymous refresh opens the database demo in production too.
     await act(async () => button('View demo').click());
     await act(async () => root.render(createElement(App, { key: 'reload' })));
-    assert.equal(document.querySelector('.app-shell'), null);
-    assert.ok(button('View demo'));
+    assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
+    assert.ok(button('Sign in'));
 
     demoFailure = true;
-    await act(async () => button('View demo').click());
+    await act(async () => root.render(createElement(App, { key: 'unavailable-demo' })));
     assert.equal(document.querySelector('.app-shell'), null, 'unavailable DB cannot fall back to browser fixtures');
     assert.match(document.querySelector('[role="status"]').textContent, /unavailable/);
+    assert.ok(document.querySelector('form input[type="password"]'), 'live sign-in remains available during demo failure');
     demoFailure = false;
     demoState.simulation = false;
     await act(async () => button('View demo').click());
     assert.equal(document.querySelector('.app-shell'), null, 'demo rejects a live database response');
     assert.match(document.querySelector('[role="status"]').textContent, /separate simulation database/);
     demoState.simulation = true;
+
+    let releaseDemo;
+    demoGate = new Promise(resolve => { releaseDemo = resolve; });
+    await act(async () => root.render(createElement(App, { key: 'pending-demo' })));
+    assert.match(document.querySelector('[role="status"]').textContent, /Opening/);
+    await act(async () => button('Sign in').click());
+    await act(async () => { demoGate = undefined; releaseDemo(); });
+    assert.ok(document.querySelector('form input[type="password"]'), 'a late demo response cannot undo opening sign-in');
 
     await act(async () => document.querySelector('form').dispatchEvent(
       new window.Event('submit', { bubbles: true, cancelable: true }),
@@ -157,7 +165,8 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
     assert.ok(button('View demo'));
     assert.equal(window.sessionStorage.length, 0);
     await act(async () => root.render(createElement(App, { key: 'signed-out-reload' })));
-    assert.ok(button('View demo'), 'sign-out persists through refresh');
+    assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo', 'signed-out refresh returns to the demo');
+    assert.equal(window.sessionStorage.length, 0, 'refresh cannot restore the signed-out live account');
 
     window.sessionStorage.setItem('meshlink-session-token', 'test-token');
     stateFailure = 503;
@@ -190,6 +199,8 @@ test('live sign-in survives refresh and database demo requests stay isolated', a
     Object.defineProperty(window, 'sessionStorage', { configurable: true,
       get() { throw new Error('Storage disabled'); } });
     await act(async () => root.render(createElement(App, { key: 'storage-disabled' })));
+    assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
+    await act(async () => button('Sign in').click());
     await act(async () => document.querySelector('form').dispatchEvent(
       new window.Event('submit', { bubbles: true, cancelable: true }),
     ));

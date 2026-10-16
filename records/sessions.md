@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-10-16 — Default to the database demo in production builds
+
+- Owner requests demo-first startup even in production, retaining Sign in at the top. Remove the live-build restriction from anonymous demo startup and relabel the existing header action **Sign in**. Keep the production build's live account form and independent demo API routing; saved live tokens still undergo server validation before opening the live workspace. Anonymous refresh returns to the demo; sign-out clears the live token and offers the account form/View demo.
+- Keep Sign in available while the demo loads; cancel the pending demo attempt when it is selected so a late response cannot replace the account form. Failed or misdirected demo responses expose sign-in without rendering fallback fixtures. Preserve the preceding iPhone input-font fix.
+- Update the real-application DOM regression for production demo startup, header placement, refresh, demo read/write isolation, unavailable/misdirected databases, cancellation during loading and live sign-in restoration/rejection. The changed test fails before the application fix and passes after it. `npm run check` passes all 14 reported frontend test files, typecheck and the default live production build. Whitespace checks pass; existing MapLibre size warning remains. Native browser/iPhone visual and keyboard behavior remain unverified.
+
+Next useful step: deploy both portal changes and verify anonymous demo entry, top-header sign-in and iPhone field focus on the public site. Local source/build only; no commit, push or deployment performed.
+
+## 2026-10-16 — Prevent iPhone sign-in field focus zoom
+
+- Owner reports iPhone automatically zooming into the mobile login fields. Those fields inherit the assignment form's `0.77rem` text size (about 12px at the default root size). Add a scoped `.backend-login input` font size of `max(16px, 1rem)` so both fields remain readable without reducing larger user font settings. Preserve the existing viewport and manual pinch zoom.
+- `npm run check` passes all 14 reported frontend test files, typecheck and production build; `git diff --check` passes. Existing MapLibre chunk-size warning remains. Native iPhone focus/keyboard behavior is not reproduced or verified here; no artificial CSS-only regression test added for browser behavior. [WebKit focus-zoom implementation](https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm) uses the focused field's font size when revealing it.
+
+Next useful step: deploy the CSS fix and verify username/password focus, keyboard dismissal and manual pinch zoom on an iPhone. Local source/build only; no commit, push or deployment performed.
+
 ## 2026-10-16 — Publish and deploy accumulated local changes
 
 - Owner requests pushing and deploying all local changes. Commit/push application release `3ca3a94` to `origin/main`, retaining tracking against `origin/main`. Include GPS quality, separate database demo, neighbor table/signal map, card mini maps/labels, battery history, research/tracker records and the existing clean stock-firmware submodule pointer. No hardware flash or monitoring-stack implementation performed. Use the repository's established author identity for this commit because this machine has no Git identity configured.

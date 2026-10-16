@@ -43,7 +43,7 @@ function Portal() {
   const [draft, setDraft] = useState('');
   const [unread, setUnread] = useState(0);
   const [notice, setNotice] = useState('');
-  const [openingDemo, setOpeningDemo] = useState(!liveBuild && !restoreToken);
+  const [openingDemo, setOpeningDemo] = useState(!restoreToken);
   const demoAttempt = useRef(0);
   const loadBatteryHistory = useCallback<LoadBatteryHistory>((id, hours, signal) =>
     request(`/api/meshlink/battery-history/${encodeURIComponent(id)}?hours=${hours}`,
@@ -84,7 +84,7 @@ function Portal() {
     }
   }
   useEffect(() => {
-    if (!liveBuild && !restoreToken) void openDemo().catch(() => {});
+    if (!restoreToken) void openDemo().catch(() => {});
     return () => { demoAttempt.current++; };
   }, []);
   function startSession(value: BackendSession) {
@@ -254,7 +254,7 @@ function Portal() {
       <button onClick={signOut}>Sign out</button>
     </main>;
   if (openingDemo)
-    return <main className="workspace"><p role="status">Opening the demo database…</p><button onClick={signOut}>Cancel</button></main>;
+    return <main className="workspace"><p role="status">Opening the demo database…</p><button onClick={signOut}>Sign in</button></main>;
   if (!session)
     return (
       <main
@@ -289,7 +289,7 @@ function Portal() {
           <img className="brand-logo" src={snorrLogo} alt="SNORR" width={3797} height={1418} />
           <strong>MeshLink{demoMode && <small className="demo-mode-label">Demo</small>}</strong>
         </a>
-        <button className="access-button" onClick={signOut}>{demoMode ? 'Exit demo' : 'Sign out'}</button>
+        <button className="access-button" onClick={signOut}>{demoMode ? 'Sign in' : 'Sign out'}</button>
         </div>
         <p className="nav-label">{demoMode ? 'Demo workspace' : 'Dispatch workspace'}</p>
         <nav aria-label="Portal pages">
