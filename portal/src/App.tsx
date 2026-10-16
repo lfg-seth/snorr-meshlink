@@ -25,7 +25,7 @@ import UsersPage from './UsersPage';
 import MessagesPage from './MessagesPage';
 import InfrastructurePage from './InfrastructurePage';
 import BackendLogin from './BackendLogin';
-import { request } from './backend';
+import { BackendError, request, savedToken, saveToken } from './backend';
 import type { BackendSession, BackendState } from './backend';
 type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure';
 const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure'];
@@ -50,6 +50,8 @@ export default function App() {
   const [selectedId, setSelectedId] = useState('d1');
   const [trailId, setTrailId] = useState<string | null>(null);
   const [session, setSession] = useState<BackendSession | null>(null);
+  const [restoreToken, setRestoreToken] = useState(savedToken);
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
   const [snapshot, setSnapshot] = useState<BackendState | null>(null);
   const [backendConnected, setBackendConnected] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -84,6 +86,40 @@ export default function App() {
   const selfMemberId = session?.account.memberId ?? 'm5';
   const accountName =
     session?.account.name ?? (admin ? 'Demo Dispatch' : 'Demo Casey');
+  function startSession(value: BackendSession) {
+    saveToken(value.token);
+    setRestoreToken('');
+    seenMessages.current = null;
+    setDemoMode(false);
+    setShowLogin(false);
+    setSession(value);
+    setDraft('');
+    setUnread(0);
+    setBackendError('');
+  }
+  useEffect(() => {
+    if (!restoreToken) return;
+    let active = true;
+    const abort = new AbortController();
+    setBackendError('');
+    void request<BackendState>('/api/meshlink/state', restoreToken, undefined, abort.signal)
+      .then((next) => {
+        if (!active) return;
+        startSession({ token: restoreToken, account: next.account });
+        setSnapshot(next);
+        setBackendConnected(true);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        if (error instanceof BackendError && (error.status === 401 || error.status === 403)) {
+          saveToken('');
+          setRestoreToken('');
+        } else {
+          setBackendError('Unable to reconnect. Your sign-in is saved; try again when the connection returns.');
+        }
+      });
+    return () => { active = false; abort.abort(); };
+  }, [restoreToken, restoreAttempt]);
   async function refreshBackend() {
     if (!session) return;
     const next = await request<BackendState>(
@@ -259,8 +295,11 @@ export default function App() {
     incidents.filter((i) => !i.resolvedAt).length +
     (snapshot?.warnings.filter((w) => !w.recoveredAt).length ?? 0);
   function signOut() {
+    saveToken('');
+    setRestoreToken('');
     setSession(null);
     setSnapshot(null);
+    setBackendConnected(false);
     setDemoMode(!liveBuild);
     setShowLogin(false);
     setDraft('');
@@ -269,6 +308,13 @@ export default function App() {
     setBackendError('');
     seenMessages.current = null;
   }
+  if (restoreToken)
+    return <main className="workspace" style={{ maxWidth: 640, margin: '64px auto', padding: 24 }}>
+      <h1>SNORR MeshLink</h1>
+      <p role="status">{backendError || 'Restoring your sign-in…'}</p>
+      {backendError && <button onClick={() => setRestoreAttempt(value => value + 1)}>Try again</button>}
+      <button onClick={signOut}>Sign out</button>
+    </main>;
   if (liveBuild && !session && !demoMode)
     return (
       <main
@@ -282,14 +328,7 @@ export default function App() {
             setDemoMode(true);
             window.location.hash = '#map';
           }}
-          onLogin={(value) => {
-            seenMessages.current = null;
-            setDemoMode(false);
-            setSession(value);
-            setDraft('');
-            setUnread(0);
-            setBackendError('');
-          }}
+          onLogin={startSession}
         />
       </main>
     );
@@ -404,13 +443,7 @@ export default function App() {
         {showLogin && !session && (
           <BackendLogin
             onClose={() => setShowLogin(false)}
-            onLogin={(value) => {
-              seenMessages.current = null;
-              setDemoMode(false);
-              setSession(value);
-              setShowLogin(false);
-              setDraft('');
-            }}
+            onLogin={startSession}
           />
         )}
         {backendError && (

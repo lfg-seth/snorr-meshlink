@@ -37,6 +37,20 @@ export type BackendState = {
   events: AuditEvent[];
 };
 export type BackendSession = { token: string; account: BackendAccount };
+const sessionKey = 'meshlink-session-token';
+export function savedToken(): string {
+  try { return window.sessionStorage.getItem(sessionKey) ?? ''; }
+  catch { return ''; }
+}
+export function saveToken(token: string): void {
+  try {
+    if (token) window.sessionStorage.setItem(sessionKey, token);
+    else window.sessionStorage.removeItem(sessionKey);
+  } catch { /* Sign-in still works when browser storage is unavailable. */ }
+}
+export class BackendError extends Error {
+  constructor(message: string, public status: number) { super(message); }
+}
 const origin = (import.meta.env.VITE_BACKEND_URL ?? '').replace(/\/$/, '');
 export async function request<T>(
   path: string,
@@ -56,10 +70,11 @@ export async function request<T>(
   });
   const data = await response.json();
   if (!response.ok)
-    throw new Error(
+    throw new BackendError(
       data.message ||
         data.reason ||
         `Backend request failed (${response.status})`,
+      response.status,
     );
   return data as T;
 }

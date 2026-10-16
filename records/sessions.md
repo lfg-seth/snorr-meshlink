@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Preserve portal sign-in through refresh
+
+- Owner reports page refresh signs them out. Reproduce with the real live-mode React app in the DOM harness: sign in, remount, assert the authenticated workspace remains. The original app fails because its account/token exist only in React memory; no backend rejection is needed to reproduce it.
+- Save only the account bearer token in tab-scoped `sessionStorage`. Reload validates it through the existing protected snapshot endpoint before showing the workspace, using current server account details. Sign-out and rejected authentication remove the saved token. Temporary connection failure offers retry without discarding the sign-in; blocked browser storage retains working memory-only sign-in. Demo entry remains memory-only. Update backend usage/security documentation.
+- Frontend test suite, TypeScript check and production build pass. Regression coverage includes authenticated reload, sign-out across reload, 401/403 rejection, temporary outage/retry, a late restore response after sign-out, blocked storage and separate demo access. DOM tests use actual React with a MapLibre adapter; native browser/live-service verification is still outstanding. Existing MapLibre bundle warning remains.
+- Owner authorizes deployment on follow-up. Prepare a source commit with only the sign-in fix and its documentation; preserve unrelated firmware, GPS cadence research and pre-existing session-log edits. Origin fetch succeeds and main matches origin/main. Deployment verification will be recorded separately after release.
+
+Next useful step: deploy this reviewed frontend to `meshlink.spp.lol` with a verified backup and retained rollback assets, then check the public build and protected API boundaries. Native browser verification remains outstanding because no connected browser is available.
+
 ## 2026-10-15 — Map release and public demo entry
 
 - Owner authorizes deploying the accumulated map/device-card changes and asks for a View demo button on sign-in without an account. Add explicit browser-only demo entry to the live build, a visible Demo label and Exit demo in the shared mobile/desktop header, and return to sign-in on refresh/sign-out. Extract App from the mounting entry point so the actual live-build sign-in/demo/authentication flow can be tested. No anonymous operational API access is added.

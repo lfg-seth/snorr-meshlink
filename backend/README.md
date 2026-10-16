@@ -48,7 +48,7 @@ npm ci
 npm run dev
 ```
 
-Run `python3 backend/manage.py credentials` **privately** to view the generated admin and member portal logins. Open the Vite address and choose **Backend sign in**. The role preview disappears when authenticated. Reloading signs out because the browser keeps its token in memory; sign in again to see the saved assignments, messages and observations. Sign-out clears drafts and page-local selections. Worker and superuser credentials never go to the browser.
+Run `python3 backend/manage.py credentials` **privately** to view the generated admin and member portal logins. Open the Vite address and choose **Backend sign in**. The role preview disappears when authenticated. The browser saves the account token in tab-scoped `sessionStorage`, so refreshing restores sign-in after the backend validates the token through the protected state endpoint. Closing the tab or signing out clears it; an expired/rejected token returns to sign-in. Temporary connection failures retain the token and offer a retry. If browser storage is blocked, sign-in still works until refresh. Passwords and operational records are not saved in browser storage. Sign-out also clears drafts and page-local selections. Worker and superuser credentials never go to the browser.
 
 `npm run preview` also proxies `/api` to the local backend. `VITE_BACKEND_URL` may specify an explicit API origin when needed; it is a public URL, never a place for credentials. No tunnel or router changes are needed. This setup is verified on Linux amd64; the manifest includes other official release archives, whose runtimes have not been tested here.
 
