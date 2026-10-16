@@ -53,6 +53,18 @@ The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `
 
 For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
 
+## Sign-in refresh fix — 2026-10-16
+
+Owner authorizes deploying source commit `ee5e57e8c8993a75313fc5032826a0559c3e924e`. Previously, refreshing discarded the React-memory account token. The portal now saves only that token in tab-scoped `sessionStorage` and validates it through the protected state endpoint before restoring the workspace with current account details. Sign-out/rejected authentication clear it, temporary outages offer retry, and blocked storage falls back to memory-only sign-in. Demo entry still resets on refresh.
+
+Frontend tests, TypeScript and production build pass locally and in an isolated release directory on the pinned LXC Node runtime. The staged dependency install uses the lockfile; the older shared server dependency folder lacked jsdom. All seven release files match the tested build on disk, through Nginx and over public HTTPS. Index SHA-256: `8d4609f7d4a2ae67f1edf80580da09a5ed1af2525629fcc553f0564fc709eb03`. Loopback sign-in/token reuse, current server account, real-device counts, live worker heartbeat and rejected-token checks pass. All four services are active. Native browser sign-in/refresh remains unverified because no browser is connected.
+
+The release replaces frontend source/static files only; no backend code, schema or provisioning changes. Assets are installed before an atomic index replacement, and prior hashed assets remain available to open tabs. `/opt/meshlink/SOURCE_COMMIT` identifies this source. Previous frontend source, available changed documentation and all static assets are retained root-private at `/opt/meshlink-rollback-ee5e57e`. The staged tested source/build remains at `/opt/meshlink-release-ee5e57e`.
+
+Pre-release backup `meshlink-20261016T161141Z.tar.gz`, SHA-256 `36ab7b4493fcba9453a049aa9224cb19f33bf24acc6c4b4f1aef194b298ceb4d`, passes checksum, isolated database/API/history recovery and public proxy/authentication checks.
+
+Post-release backup `meshlink-20261016T161434Z.tar.gz`, SHA-256 `888f4a778e53938dbdf4b158aa06026f8149f3201aa2974b7cc64b81d9b6747a`, passes the same isolated integrity/API/history recovery, including MQTT archive preservation. Proxy boundaries, per-client sign-in throttling and public TLS/protected-route checks also pass after release. All four services are active after the backup restart.
+
 ## Map and demo release — 2026-10-15
 
 Owner authorizes deploying source commit `3964f46b877791bcd4ce737a35a5f18838010a27`. Map fills the available screen, infrastructure is always visible, and device selection opens a content-sized mobile bottom sheet up to 85% of the viewport. Tracker cards use the revised location/session, copy and battery indicators; summary counts live on Users. Shared branding uses the supplied SNORR logo.

@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Deploy sign-in refresh fix
+
+- Owner authorizes deployment. Commit and push source `ee5e57e`; build/test it in an isolated LXC release directory with dependencies from the lockfile. The initial shared dependency folder lacked jsdom; isolated installation resolves that without changing the running services. Frontend tests/typecheck/production build pass locally and on the pinned server Node runtime.
+- Take and verify a pre-release backup, then publish frontend assets before atomically replacing the index. All seven files match the staged build through Nginx and public HTTPS. Loopback sign-in, saved-token reuse/current account, invalid-token rejection, real-device counts and live MQTT heartbeat pass. All four services remain healthy. No backend code, schema or provisioning changes; old hashed assets and root-private source/static rollback remain available.
+- Post-release backup `meshlink-20261016T161434Z.tar.gz`, SHA-256 `888f4a778e53938dbdf4b158aa06026f8149f3201aa2974b7cc64b81d9b6747a`, passes isolated integrity/API/history recovery including MQTT archive preservation. Public TLS, proxy boundaries and per-client sign-in throttling pass. [Full release evidence and pre-release backup](../docs/operations/portal-lxc.md#sign-in-refresh-fix--2026-10-16).
+- No connected browser is available for native sign-in/refresh review; actual React DOM regression tests cover refresh, sign-out, rejected tokens, outage/retry, blocked storage and late responses. Preserve unrelated firmware, GPS cadence research and earlier uncommitted session-log entries.
+
+Next useful step: load the updated site and sign in once, then refresh the same tab to confirm the owner's browser retains sign-in. Closing the tab ends this tab-scoped session; demo refresh still returns to sign-in.
+
 ## 2026-10-16 — Preserve portal sign-in through refresh
 
 - Owner reports page refresh signs them out. Reproduce with the real live-mode React app in the DOM harness: sign in, remount, assert the authenticated workspace remains. The original app fails because its account/token exist only in React memory; no backend rejection is needed to reproduce it.

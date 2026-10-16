@@ -1,6 +1,6 @@
 # Development handoff: Dell Linux and Windows/WSL
 
-Updated 2026-10-14. The owner regularly switches between the **Dell laptop running Linux** and the **Windows desktop running WSL**. Treat both as active development machines. GitHub `origin` (`git@github.com:lfg-seth/snorr-meshlink.git`) is the shared source and project record. The hosted Ubuntu LXC is a separate deployment.
+Updated 2026-10-16. The owner regularly switches between the **Dell laptop running Linux** and the **Windows desktop running WSL**. Treat both as active development machines. GitHub `origin` (`git@github.com:lfg-seth/snorr-meshlink.git`) is the shared source and project record. The hosted Ubuntu LXC is a separate deployment.
 
 ## Each time you switch machines
 
@@ -17,7 +17,9 @@ Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`
 
 ## Current state
 
-- Map/card release `3964f46` is deployed and pushed (2026-10-15), including the additive member-shortname migration. Production opens at sign-in with **View demo** for synthetic browser-only devices; its shared header labels Demo and offers Exit demo. Refresh returns to sign-in and real records remain authenticated. Avery/S001 stays at full battery with a minute-refreshed simulated GPS fix. Local/server backend suites, frontend checks, public asset/authentication/heartbeat checks and post-release isolated restore pass. [Release, backup and remaining UI/data limits](portal-lxc.md#map-and-demo-release--2026-10-15).
+- Sign-in refresh fix `ee5e57e` is deployed (2026-10-16). Authenticated refresh restores the tab's saved token after server validation; sign-out/rejected authentication clear it and temporary outages offer retry. Demo refresh still returns to sign-in. Frontend checks pass locally/on the LXC; public assets match the tested build and loopback token reuse/heartbeat/protection checks pass. Native browser verification remains outstanding. [Release evidence](portal-lxc.md#sign-in-refresh-fix--2026-10-16).
+
+- Map/card release `3964f46` is deployed and pushed (2026-10-15), including the additive member-shortname migration. Production opens at sign-in with **View demo** for synthetic browser-only devices; its shared header labels Demo and offers Exit demo. Demo refresh returns to sign-in and real records remain authenticated. Avery/S001 stays at full battery with a minute-refreshed simulated GPS fix. Local/server backend suites, frontend checks, public asset/authentication/heartbeat checks and post-release isolated restore pass. [Release, backup and remaining UI/data limits](portal-lxc.md#map-and-demo-release--2026-10-15).
 
 - Frontend correction: owner spotted standalone demo after telemetry deployment. Missing live-mode build setting caused it; backend records stayed live. Production now defaults to live, artifacts carry a mode marker, deployment/verification reject a missing live marker, and two regression tests cover modes. Public browser sign-in verified; 10 frontend tests/typecheck/build pass. [Root cause](repeater-telemetry.md#frontend-mode-correction).
 
