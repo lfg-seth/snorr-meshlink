@@ -14,7 +14,7 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
-- Demo-first entry (2026-10-16, local; not yet deployed): anonymous visitors automatically open the separate database demo in production builds too, with **Sign in** in the top header for live account access. Saved live sessions retain server-validated refresh behavior. Demo/API isolation remains intact; sign-in inputs use a minimum 16px font to address iPhone focus zoom.
+- Demo-first entry (2026-10-16, deployed source `60ea977`): anonymous visitors automatically open the separate database demo in production builds too, with **Sign in** in the top header for live account access. Saved live sessions retain server-validated refresh behavior. Demo/API isolation remains intact; sign-in inputs use a minimum 16px font to address iPhone focus zoom. Server checks, public assets and live/demo recovery pass; native iPhone behavior remains to verify. [Release evidence](docs/operations/portal-lxc.md#demo-first-entry-and-iphone-login-fields--2026-10-16).
 
 - Accumulated portal release (2026-10-16): application source `3ca3a94` deploys GPS quality, neighbor maps/table, assignment-aware card mini maps, infrastructure battery history and a separate database demo at `meshlink.spp.lol`. Frontend/backend checks, public build/API separation and isolated live/demo recovery pass; native visuals, fresh live receipt observation and real neighbor ingestion remain separate verification limits. [Release evidence](docs/operations/portal-lxc.md#gps-neighbor-maps-battery-history-and-database-demo-release--2026-10-16).
 

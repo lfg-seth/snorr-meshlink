@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-16 — Deploy demo-first entry and iPhone login fix
+
+- Owner requests push and deployment. Commit/push application source `60ea977` to `origin/main` and deploy its frontend source/static assets to the LXC. Anonymous production entry now opens the separate database demo with Sign in at the top; live session restoration and independent API routes remain intact. Username/password inputs have a minimum 16px font. No backend/schema, radio or provisioning change.
+- All 43 frontend checks, typecheck and live build pass on the pinned server runtime after adding the same commit's synthetic test fixture to staging. All nine released files match through public HTTPS; public synthetic sign-in/state and the published input font rule pass. Live state/device identity, worker heartbeat, protected routes, authentication throttling, demo isolation and all six services pass. Pre/post-release backups pass isolated live/demo database/API/history recovery, preserving the MQTT archive. [Release and rollback evidence](../docs/operations/portal-lxc.md#demo-first-entry-and-iphone-login-fields--2026-10-16).
+- Native browser inventory is empty; iPhone focus/keyboard and visual behavior remain unverified. Preserve the concurrently added branch-build/automatic-deployment session note outside these commits. Existing bundle-size warning remains; no fresh radio reception or field-performance verification claimed.
+
+Next useful step: open the public site on iPhone, confirm automatic demo entry and top-header sign-in, then focus/dismiss both login fields and verify manual pinch zoom. Publish deployment evidence separately from the application release.
+
 ## 2026-10-16 — Default to the database demo in production builds
 
 - Owner requests demo-first startup even in production, retaining Sign in at the top. Remove the live-build restriction from anonymous demo startup and relabel the existing header action **Sign in**. Keep the production build's live account form and independent demo API routing; saved live tokens still undergo server validation before opening the live workspace. Anonymous refresh returns to the demo; sign-out clears the live token and offers the account form/View demo.

@@ -14,7 +14,7 @@ Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare T
 
 ## Owner access
 
-Open the portal and sign in on the landing page. **View demo** opens a separate synthetic database using public demo-only credentials; **Exit demo** returns to sign-in. Its shared fictional workspace has no MQTT connection. View generated live admin/member credentials privately in your own terminal:
+Open the portal to view the separate synthetic database demo automatically. **Sign in** at the top opens the live account form; **View demo** returns to the demo. Saved live sign-ins are validated and restored on refresh. The shared fictional demo workspace has no MQTT connection. View generated live admin/member credentials privately in your own terminal:
 
 ```sh
 ssh root@meshlink.int.spp.lol
@@ -52,6 +52,16 @@ Public probes use curl without credentials and retain HTTPS certificate/hostname
 The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `/opt/meshlink`. It installs dependencies, builds/tests the frontend, prepares state/services and initializes fictional records only when both database and credentials are absent. It does not authorize or replace a Cloudflare connector. For a new host, configure a remotely managed tunnel route to loopback 8080 after installation using [Cloudflare's setup instructions](https://developers.cloudflare.com/tunnel/get-started/).
 
 For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
+
+## Demo-first entry and iPhone login fields — 2026-10-16
+
+Owner requests pushing and deploying both portal changes. Application source `60ea977f8559cdba61dd93f40f2d0f5f4b3d8f42` opens the separate database demo automatically for anonymous visitors, including production builds, with **Sign in** in the top header. Saved live sessions still validate on refresh; opening Sign in cancels any pending demo load. Demo connection failures leave live sign-in available. Username/password inputs use `max(16px, 1rem)` to address iPhone focus zoom while retaining manual zoom and larger font settings.
+
+All 43 frontend checks, TypeScript and the live production build pass in `/opt/meshlink-release-60ea977` on the pinned server Node runtime. Initial staging omitted the tracked synthetic database required by one frontend test; adding that fixture from the same commit makes the full suite pass. Publish only frontend source/static assets, keeping backend code, schemas, live/demo databases and provisioning intact. Retain previous frontend source/assets and release markers root-private at `/opt/meshlink-rollback-60ea977`. Publish hashed assets before atomically replacing the index; previous hashed assets remain available to open tabs.
+
+All nine build files match the tested release over public HTTPS. Index SHA-256: `9bc8a5300de05119f46e14da37d18d6d921faeff0484b118a6cc0db4cd96af74`. The published CSS contains the login font floor; public synthetic authentication/state succeeds. Protected live routes, authentication throttling, live account/state checks, demo-token rejection by live routes, demo OS isolation and all six services pass. The real-application DOM regression covers production startup, header action, demo read/write isolation, unavailable/misdirected demo responses, cancellation during loading and live sign-in refresh. Browser inventory is empty; native browser/WebGL and iPhone focus/keyboard behavior remain unverified.
+
+Pre-release backup `meshlink-20261016T215107Z.tar.gz` (SHA-256 `3df44b9c0d2f54b68b5ba5ca6c8174ae4a641f7264bb266678a8ba4f3d722a8d`) and post-release backup `meshlink-20261016T215210Z.tar.gz` (SHA-256 `1600085d72647ade71866f0c4454f24cec4acb1d2c03a0ffe92d1d587187d1c2`) pass checksum and isolated live/demo database/API/history recovery, preserving the private MQTT archive. No fresh radio reception or field performance claim is added. `/opt/meshlink/SOURCE_COMMIT` identifies this application source; deployment evidence is recorded separately in `RECORDS_COMMIT`.
 
 ## GPS, neighbor maps, battery history and database demo release — 2026-10-16
 
