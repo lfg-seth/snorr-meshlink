@@ -10,9 +10,9 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
-- 2026-10-16 — [Show neighbor signal connections on the map](issues/18-map-neighbor-signals.md) adds the local signal-strength toggle and colored lines without labels, independent legend info disclosure, node-card relationship/pill rows and two endpoint buttons on relationship cards for returning to node cards. Known relationships remain accessible without mapped locations; missing identities stay unknown. Deployment and native visual review remain outstanding.
+- 2026-10-16 — [Show neighbor signal connections on the map](issues/18-map-neighbor-signals.md) adds the local signal-strength toggle and colored lines without labels, independent legend info disclosure, node-card relationship/pill rows and two endpoint buttons on relationship cards for returning to node cards. Known relationships remain accessible without mapped locations; missing identities stay unknown. Deployed in application release `3ca3a94`; native visual review remains outstanding.
 
-- 2026-10-16 — [Show plain-language GPS quality in tracker cards](issues/15-gps-quality-pill.md) is implemented locally: shared Map/Users Good/Limited/Poor/Unknown pill, same-fix quality storage and plain-language expandable help. All 48 backend checks and frontend checks/default/live builds pass; native browser review, deployment and field validation remain outstanding. Existing member flags are unchanged; no metre-accuracy guarantee implied.
+- 2026-10-16 — [Show plain-language GPS quality in tracker cards](issues/15-gps-quality-pill.md) is implemented locally: shared Map/Users Good/Limited/Poor/Unknown pill, same-fix quality storage and plain-language expandable help. All 48 backend checks and frontend checks/default/live builds pass; deployment now passes with application release `3ca3a94`; native browser review and field validation remain outstanding. Existing member flags are unchanged; no metre-accuracy guarantee implied.
 
 - 2026-10-14 owner authorizes port/build/flash of the prior AHT detection fix to R003. Custom `2.7.26.cc5907b` succeeds: actual temperature/humidity and device battery reports reach both V3s (4/4 new receipts), with exact pilot-profile/key preservation. This supersedes R003's stock-only sensor limitation below; R001/R002 remain stock and survey work remains deferred. [Build record](../../docs/operations/r003-aht-build.md), [TEST-008](../../records/field-results.md#test-008--r003-custom-aht-build-and-radio-telemetry).
 
@@ -37,7 +37,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 - [Check Meshtastic monitoring and recording stacks for the pilot](issues/19-meshtastic-monitoring-research.md) — Current projects/templates compared; a private read-only MeshMonitor trial leads the shortlist, with stack choice and compatibility checks still open.
 
-- [Serve the demo and neighbor table from a separate PocketBase](issues/17-database-demo-neighbor-table.md) — Local demo pages now read a separate inspectable database with a Git-tracked synthetic checkpoint and ten sample directional signal rows. Production remains on the VM; fork work stays parked. Checks pass; public deployment and real signal ingestion remain outstanding.
+- [Serve the demo and neighbor table from a separate PocketBase](issues/17-database-demo-neighbor-table.md) — Local demo pages now read a separate inspectable database with a Git-tracked synthetic checkpoint and ten sample directional signal rows. Production remains on the VM; fork work stays parked. Checks and public deployment pass with application release `3ca3a94`; real signal ingestion remains outstanding.
 
 - [Check node telemetry and directional neighbor signal reporting](issues/16-node-neighbor-telemetry.md) — Gateway receipts can provide final-hop SNR/RSSI; optional NeighborInfo provides directional SNR with slow reporting and configuration limits. Table/storage proposal recorded; implementation and live verification remain outstanding.
 

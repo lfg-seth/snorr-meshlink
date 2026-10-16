@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Verify hosted demo separation and restore its latest backup in isolation."""
 import hashlib
+from contextlib import closing
+from datetime import datetime, timedelta, timezone
 import os
 from pathlib import Path
 import sqlite3
@@ -64,7 +66,7 @@ def main():
                 for prefix in ['demo-state', 'demo-bin', 'release/backend'])]
             archive.extractall(root, members=members, filter='data')
         data = root / 'demo-state/pb_data'
-        with sqlite3.connect(data / 'data.db') as database:
+        with closing(sqlite3.connect(data / 'data.db')) as database:
             assert database.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
             assert database.execute('SELECT kind FROM meshlink_demo_marker').fetchall() == [('synthetic-only',)]
             counts = {name: database.execute(f'SELECT COUNT(*) FROM {name}').fetchone()[0]
@@ -96,7 +98,16 @@ def main():
                 assert len(snapshot['trackers']) + len(snapshot['infrastructure']) == counts['devices']
                 assert len(snapshot['members']) == counts['members']
                 assert len(snapshot['links']) == counts['link_observations']
-                assert len(restored.request('GET', '/api/meshlink/battery-history/r1?hours=720')['samples']) > 5000
+                history = restored.request('GET', '/api/meshlink/battery-history/r1?hours=720')
+                end = datetime.now(timezone.utc)
+                cutoff = (end - timedelta(hours=720)).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+                with closing(sqlite3.connect(data / 'data.db')) as database:
+                    expected = [{'at': at, 'volts': volts} for at, volts in database.execute(
+                        "SELECT measuredAt, json_extract(payload, '$.battery') FROM observations "
+                        "WHERE deviceId='r1' AND measuredAt >= ? AND measuredAt <= ? "
+                        "AND json_extract(payload, '$.battery') > 0 ORDER BY measuredAt, id",
+                        (cutoff, end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')))]
+                assert expected and history['samples'] == expected and history['truncated'] is False
             finally:
                 process.terminate()
                 process.wait(timeout=10)
