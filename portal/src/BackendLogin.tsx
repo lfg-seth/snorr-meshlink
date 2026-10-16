@@ -5,10 +5,12 @@ export default function BackendLogin({
   onLogin,
   onClose,
   onDemo,
+  demo = false,
 }: {
   onLogin: (session: BackendSession) => void;
   onClose?: () => void;
-  onDemo?: () => void;
+  onDemo?: () => Promise<void>;
+  demo?: boolean;
 }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -30,7 +32,7 @@ export default function BackendLogin({
           setBusy(true);
           setError('');
           try {
-            onLogin(await login(username, password));
+            onLogin(await login(username, password, demo));
             setPassword('');
           } catch (e) {
             setError(e instanceof Error ? e.message : 'Sign in failed');
@@ -63,7 +65,13 @@ export default function BackendLogin({
         </button>
       </form>
       {onDemo && <div className="demo-entry">
-        <button type="button" onClick={onDemo} disabled={busy}>View demo</button>
+        <button type="button" onClick={async () => {
+          setBusy(true);
+          setError('');
+          try { await onDemo(); }
+          catch (e) { setError(e instanceof Error ? e.message : 'Demo database unavailable'); }
+          finally { setBusy(false); }
+        }} disabled={busy}>View demo</button>
         <p className="small muted">Explore with fictional devices. No sign-in needed.</p>
       </div>}
       {error && (

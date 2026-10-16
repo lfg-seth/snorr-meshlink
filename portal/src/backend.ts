@@ -9,6 +9,7 @@ import type {
   NameJob,
   Tracker,
 } from './demo';
+import type { LinkObservation } from './NeighborTable';
 export type BackendAccount = {
   id: string;
   name: string;
@@ -25,6 +26,7 @@ export type BackendState = {
   nameJobs: NameJob[];
   messages: Message[];
   infrastructure: Infrastructure[];
+  links: LinkObservation[];
   incidents: Incident[];
   warnings: {
     id: string;
@@ -36,7 +38,7 @@ export type BackendState = {
   rules: Record<string, BatteryRule>;
   events: AuditEvent[];
 };
-export type BackendSession = { token: string; account: BackendAccount };
+export type BackendSession = { token: string; account: BackendAccount; demo?: boolean };
 const sessionKey = 'meshlink-session-token';
 export function savedToken(): string {
   try { return window.sessionStorage.getItem(sessionKey) ?? ''; }
@@ -52,13 +54,15 @@ export class BackendError extends Error {
   constructor(message: string, public status: number) { super(message); }
 }
 const origin = (import.meta.env.VITE_BACKEND_URL ?? '').replace(/\/$/, '');
+const demoOrigin = (import.meta.env.VITE_DEMO_BACKEND_URL ?? '/demo-api').replace(/\/$/, '');
 export async function request<T>(
   path: string,
   token = '',
   body?: object,
   signal?: AbortSignal,
+  demo = false,
 ): Promise<T> {
-  const response = await fetch(`${origin}${path}`, {
+  const response = await fetch(`${demo ? demoOrigin : origin}${path}`, {
     method: body ? 'POST' : 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -76,18 +80,23 @@ export async function request<T>(
         `Backend request failed (${response.status})`,
       response.status,
     );
+  if (demo && path === '/api/meshlink/state' && data.simulation !== true)
+    throw new Error('The demo address must point to a separate simulation database.');
   return data as T;
 }
 export async function login(
   username: string,
   password: string,
+  demo = false,
 ): Promise<BackendSession> {
   const result = await request<{ token: string; record: BackendAccount }>(
     '/api/collections/accounts/auth-with-password',
     '',
     { identity: username, password },
+    undefined,
+    demo,
   );
   if (result.record.role !== 'admin' && result.record.role !== 'member')
     throw new Error('Use a portal account, not a worker account.');
-  return { token: result.token, account: result.record };
+  return { token: result.token, account: result.record, ...(demo ? { demo: true } : {}) };
 }

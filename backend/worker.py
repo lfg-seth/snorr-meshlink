@@ -3,10 +3,14 @@ import argparse
 import json
 import os
 import time
+from datetime import datetime, timezone
+from contextlib import closing
+import sqlite3
 from pathlib import Path
 
 from client import ApiError, Client
 from fixtures import packet
+from demo_power import voltage
 from manage import credentials
 
 
@@ -15,8 +19,20 @@ def run(once=False, replay=None, interval=5):
     credential_file = os.environ.get('MESHLINK_WORKER_CREDENTIALS')
     secret = (json.loads(Path(credential_file).read_text()) if credential_file
               else credentials()['worker'])
-    client = Client()
+    client = Client(os.environ.get('MESHLINK_API_URL', 'http://127.0.0.1:8090'))
     client.login(secret['username'], secret['password'])
+    # Read only the explicitly marked, local demo's saved scenario clock. This
+    # does not touch a live database, and survives demo-worker restarts.
+    reference = datetime.now(timezone.utc)
+    demo_data = Path(credential_file).parent / 'pb_data' / 'data.db' if credential_file else None
+    if demo_data and demo_data.is_file():
+        with closing(sqlite3.connect(f'{demo_data.resolve().as_uri()}?mode=ro', uri=True)) as database:
+            marker = database.execute("SELECT name FROM sqlite_master WHERE name='meshlink_demo_marker'").fetchone()
+            if marker and database.execute('SELECT kind FROM meshlink_demo_marker').fetchall() == [('synthetic-only',)]:
+                row = database.execute("SELECT configuration FROM devices WHERE key='r1'").fetchone()
+                saved = json.loads(row[0]).get('demoBatteryReference') if row else None
+                if saved:
+                    reference = datetime.fromisoformat(saved)
     authenticated_at = time.monotonic()
     if replay:
         client.request('POST', '/api/meshlink/worker/heartbeat', {'connected': True})
@@ -43,12 +59,16 @@ def run(once=False, replay=None, interval=5):
             for i, longitude, latitude in [(1, -115.633, 36.265), (2, -115.650, 36.274), (3, -115.662, 36.281)]:
                 client.request('POST', '/api/meshlink/worker/ingest', packet(f'd{i}', 'position', {
                     'longitude': longitude + (tick % 20) * .0001, 'latitude': latitude,
-                    'battery': 80 - i * 5,
+                    'battery': 100 if i == 1 else 80 - i * 5,
+                    'pdop': [1.5, 3.5, 7][i - 1], 'satellites': [12, 8, 5][i - 1],
                 }))
-            client.request('POST', '/api/meshlink/worker/ingest', packet('r1', 'telemetry', {
-                'battery': 3.58, 'temperature': 8.4, 'solar': 1.2, 'intrusion': False,
-            }))
-            print('Simulation heartbeat and 4 normalized observations saved.', flush=True)
+            measured = datetime.now(timezone.utc)
+            for device_id in ['r1', 'r2', 'b1']:
+                data = {'battery': voltage(device_id, measured, reference)}
+                if device_id == 'r1':
+                    data.update(temperature=8.4, solar=1.2, intrusion=False)
+                client.request('POST', '/api/meshlink/worker/ingest', packet(device_id, 'telemetry', data))
+            print('Simulation heartbeat and 6 normalized observations saved.', flush=True)
             if once:
                 return
             tick += 1

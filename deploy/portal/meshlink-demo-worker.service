@@ -1,0 +1,25 @@
+[Unit]
+Description=SNORR MeshLink synthetic demo worker (no MQTT)
+After=network.target meshlink-demo-api.service
+Wants=meshlink-demo-api.service
+
+[Service]
+User=meshlink-demo
+Group=meshlink-demo
+WorkingDirectory=/opt/meshlink/backend
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=MESHLINK_API_URL=http://127.0.0.1:8092
+Environment=MESHLINK_WORKER_CREDENTIALS=/var/lib/meshlink-demo/worker.json
+ExecStart=/usr/bin/python3 -u /opt/meshlink/backend/worker.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

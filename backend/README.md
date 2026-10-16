@@ -1,6 +1,6 @@
 # Local MeshLink backend
 
-PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python simulation/replay worker uses the standard library; the separate MQTT worker uses the pinned dependencies in `requirements-mqtt.txt`. The React portal signs in and reads saved records; standalone demo mode remains available for development.
+PocketBase **0.40.5** owns authentication, SQLite storage and transactional API operations. The Python simulation/replay worker uses the standard library; the separate MQTT worker uses the pinned dependencies in `requirements-mqtt.txt`. The React portal signs in and reads saved records. Demo viewing now uses its own PocketBase with a synthetic SQLite checkpoint tracked in Git; production stays on the VM.
 
 Native development uses fictional records. The receive-only Meshtastic GPS adapter, persistent private receipt queue and real-device cutover are implemented; see [live ingestion and deployment](../docs/operations/live-mqtt.md). All MQTT messages received under the project root are now privately archived as exact bytes plus receipt metadata, including unsupported/rejected packets; broker ACLs constrain delivery. Radio transmission, operational inbound text decoding and remote rename remain unimplemented. Member battery voltage is also normalized independently of GPS; admins can configure `batteryProfile` and `batteryCapacityMah` per device, with a frontend-only approximate charge estimate. See [member battery profile](../docs/research/member-battery-charge.md). Registered infrastructure voltage and temperature/humidity ingestion are deployed; see [verification](../docs/operations/repeater-telemetry.md).
 
@@ -8,59 +8,32 @@ The owner-authorized [Ubuntu LXC portal](../docs/operations/portal-lxc.md) runs 
 
 The hosted worker uses `MESHLINK_WORKER_CREDENTIALS` to read a separate worker-only JSON credential file, under its own OS account. Native development keeps the existing default private credentials file. No worker or admin credential is sent to the browser.
 
-## Start on the Dell
+## Start and inspect the database demo
 
-From the repository root, using Python **3.14.3** (the CI/runtime pin in `.python-version`) and the existing Node setup:
+Follow [the tracked demo guide](demo/README.md). From the repository root:
 
 ```sh
 python3 backend/manage.py install
-python3 backend/manage.py init-demo
-```
-
-The installer verifies the downloaded release archive against the tracked official SHA-256 manifest. Repeating `install` reuses a matching verified binary, even while PocketBase is running. Older installations without a verification receipt download once to compare the binary, then subsequent repeats work offline. Replacements use a staged file and atomic rename; a locked replacement leaves the existing binary intact and asks you to stop the backend first. Stop the worker/backend before an intentional version upgrade and restart them afterward. Initialization creates unique random passwords, admin/member accounts, a separate worker account, six fictional trackers and four illustrative infrastructure devices. It seeds observations through the same authenticated ingestion API used by the worker. It refuses to overwrite an existing database or credential file.
-
-For subsequent launches, use **one terminal** from the repository root:
-
-```sh
+python3 backend/demo_database.py init
+npm --prefix portal ci
 python3 backend/launch.py
 ```
 
-First install frontend dependencies with `cd portal` and `npm ci` if you have not already. The launcher runs PocketBase, the Python simulation worker and Vite together, waits for API/portal readiness, and prints `http://127.0.0.1:5173`. Choose **Backend sign in**. Ctrl+C stops all three; saved backend data remains. If a process exits, the launcher stops the others and reports the relevant log. Logs for each run are private files under ignored `local-data/backend/logs/`.
+The launcher runs the separate demo PocketBase on localhost:8092, its synthetic worker and Vite on localhost:5173. Local development opens demo viewing automatically; every page reads records from that database. The writable copy is `local-data/demo/pb_data/data.db`; the tracked synthetic checkpoint is `backend/demo/data.db`. Dashboard edits and portal mutations persist across refresh/restart. Initialization verifies/copies the checkpoint and rebases its scenario timestamps once; subsequent launches preserve data. It refuses to replace an existing runtime.
 
-The launcher supports Linux, macOS and WSL; Linux is verified here. It refuses duplicate launches or occupied ports 8090/5173 instead of attaching to another service or switching ports. It uses installed dependencies and existing initialized data. No installation, initialization/reset, credential printing or MQTT connection happens at launch. All service listeners bind to localhost and simulation is explicitly enabled. This is foreground local development supervision; VM service management comes later.
+Inspect **http://127.0.0.1:8092/_/** with email `demo-admin@example.invalid` and password `fictional-demo-only-password`. These are deliberately public demo-only credentials; the demo guide lists portal accounts too. `link_observations` contains ten sample neighbor/gateway rows, including unknown values, valid zero SNR, differing gateway readings and unresolved relays. Production's ordinary migrations create an empty collection and never seed sample rows. Real signal ingestion remains unimplemented.
 
-Alternatively, use three terminals for individual debugging:
+The launcher checks for occupied ports/duplicate launches and stops its children on Ctrl+C. Its logs stay in ignored `local-data/demo/logs/`. `npm run dev` alone requires the separate demo API already running; it no longer supplies browser fixtures when the database is unavailable. Vite proxies `/demo-api` to 8092, separately from the existing `/api` development proxy on 8090. A production frontend release needs its own separate demo API route/origin; no live VM deployment is part of this change.
 
-```sh
-# Terminal 1: persistent API/database, bound to localhost
-python3 backend/manage.py serve
-```
-
-```sh
-# Terminal 2: synthetic position/telemetry updates and worker heartbeat
-python3 backend/manage.py worker
-```
-
-```sh
-# Terminal 3: portal with a localhost API proxy
-cd portal
-npm ci
-npm run dev
-```
-
-Run `python3 backend/manage.py credentials` **privately** to view the generated admin and member portal logins. Open the Vite address and choose **Backend sign in**. The role preview disappears when authenticated. The browser saves the account token in tab-scoped `sessionStorage`, so refreshing restores sign-in after the backend validates the token through the protected state endpoint. Closing the tab or signing out clears it; an expired/rejected token returns to sign-in. Temporary connection failures retain the token and offer a retry. If browser storage is blocked, sign-in still works until refresh. Passwords and operational records are not saved in browser storage. Sign-out also clears drafts and page-local selections. Worker and superuser credentials never go to the browser.
-
-`npm run preview` also proxies `/api` to the local backend. `VITE_BACKEND_URL` may specify an explicit API origin when needed; it is a public URL, never a place for credentials. No tunnel or router changes are needed. This setup is verified on Linux amd64; the manifest includes other official release archives, whose runtimes have not been tested here.
-
-Stop each terminal with Ctrl+C. A stopped worker becomes unavailable after a 20-second heartbeat timeout; existing observations continue aging. The demo feed override pauses the simulation producer and rejects sends, preserves warnings and unsent drafts, and does not resend on reconnect. A known outage suppresses new missing-report warnings. Reconnect grace uses each configured missing timeout, normally three reporting intervals.
+The older `manage.py init-demo`/`serve` commands remain available for an independent private local test backend on 8090, with random credentials in `local-data/backend/`. They are not the tracked demo or a local production database. Use disposable databases for tests and keep operational production state on the VM.
 
 ## Storage and account administration
 
-The verified binary, credentials, database, auxiliary logs and setup log live under ignored `local-data/backend/`. The credentials file has owner-only permissions on Linux. Keep that directory private and outside Git. Initialization stores credentials before provisioning, so a setup failure does not lose the generated secrets; it stops rather than automatically deleting or replacing partial data. Inspect the private setup log if initialization fails. Do not rerun initialization over existing pilot records.
+The verified binary and legacy test-backend state live under ignored `local-data/backend/`; the default demo runtime lives under ignored `local-data/demo/`. Only the deliberately synthetic `backend/demo/data.db` checkpoint is tracked. The credentials file has owner-only permissions on Linux. Keep that directory private and outside Git. Initialization stores credentials before provisioning, so a setup failure does not lose the generated secrets; it stops rather than automatically deleting or replacing partial data. Inspect the private setup log if initialization fails. Do not rerun initialization over existing pilot records.
 
 The generated portal admin is an ordinary `accounts` record with the admin role. The worker is a separate non-superuser account with access only to heartbeat/ingestion routes. PocketBase collection writes are locked for ordinary API clients; custom routes enforce permissions. The locally provisioned PocketBase superuser is for trusted database/schema administration, not frontend or worker use. Its password is in the private credentials file; its username is `bootstrap@example.invalid`.
 
-Owner-run account commands use the local admin account and prompt for passwords without echo:
+The legacy private local backend supports owner-run account commands using its local admin account and passwords without echo (use the demo dashboard for the separate tracked demo):
 
 ```sh
 python3 backend/accounts.py create
@@ -68,7 +41,7 @@ python3 backend/accounts.py reset-password --id ACCOUNT_RECORD_ID
 python3 backend/accounts.py disable --id ACCOUNT_RECORD_ID
 ```
 
-A member account needs an existing member key. Registered humans share operational viewing access; members may claim only a free tracker for themselves and release only their own. Admins may transfer devices, create/disable accounts, reset passwords, configure warnings and resolve intrusion incidents. Disabling accounts preserves their earlier records. Password resets invalidate prior tokens. Worker provisioning remains local; the account endpoint cannot create worker/superuser accounts. Use the PocketBase dashboard at `http://127.0.0.1:8090/_/` for trusted provisioning of additional member/device records; no public registration is enabled.
+A member account needs an existing member key. Registered humans share operational viewing access; members may claim only a free tracker for themselves and release only their own. Admins may transfer devices, create/disable accounts, reset passwords, configure warnings and resolve intrusion incidents. Disabling accounts preserves their earlier records. Password resets invalidate prior tokens. Worker provisioning remains local; the account endpoint cannot create worker/superuser accounts. Use the applicable PocketBase dashboard (demo: `http://127.0.0.1:8092/_/`; legacy local test backend: port 8090) for trusted provisioning of additional member/device records; no public registration is enabled.
 
 Member map shortnames (2026-10-15): migration `1792110000_member_shortnames.js` adds optional `members.shortName` (maximum five characters), preserving existing records/roles/assignments. Account creation accepts an optional member-chosen `shortName` and saves it with the account transaction; `accounts.py create` prompts for it. Members choose/change their own value on Users through `POST /api/meshlink/profile` with `{"shortName":"CJ_5"}`. The route accepts 1–5 ASCII letters/numbers/underscores/dashes, derives the member association from authentication, rejects other fields and blocks workers/anonymous users. It changes only the member's map label; device radio short names and historical assignments are unchanged. The authenticated snapshot includes member shortnames and configured tracker `deviceType`. The migration fills missing Heltec V4 type metadata for verified B001/B002; live cutover records the known board type for newly provisioned bench devices.
 

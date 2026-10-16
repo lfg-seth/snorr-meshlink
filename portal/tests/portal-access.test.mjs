@@ -38,7 +38,7 @@ registerHooks({
   },
 });
 
-test('live sign-in survives refresh, validates saved tokens, and keeps demo access separate', async () => {
+test('live sign-in survives refresh and database demo requests stay isolated', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://portal.example.test/' });
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
@@ -50,19 +50,36 @@ test('live sign-in survives refresh, validates saved tokens, and keeps demo acce
   const originalFetch = globalThis.fetch;
   const requests = [];
   let stateFailure = 0;
+  let demoFailure = false;
   let stateGate;
   const account = { id: 'admin', name: 'Test Admin', role: 'admin', memberId: '' };
+  const emptyState = { account, simulation: false, feedOnline: true,
+    trackers: [], members: [], assignments: [], nameJobs: [], messages: [],
+    infrastructure: [], links: [], incidents: [], warnings: [], rules: {}, events: [] };
+  const demoAccount = { ...account, id: 'demo-admin', name: 'Demo Dispatch' };
+  const demoState = { ...emptyState, account: demoAccount, simulation: true,
+    trackers: [{ id: 'db-tracker', number: '901', shortName: 'DB901', battery: 100, position: null, history: [] }],
+    members: [{ id: 'db-member', name: 'Demo Database Person', initials: 'DP' }],
+    assignments: [{ id: 'db-assignment', deviceId: 'db-tracker', memberId: 'db-member',
+      startedAt: new Date().toISOString(), endedAt: null }],
+    infrastructure: [{ id: 'db-gateway', name: 'Demo database gateway', role: 'Backhaul',
+      reportedAt: null, cadenceMinutes: 2, battery: null, temperature: null, solar: null, intrusion: null,
+      equipped: { solar: false, weather: false, intrusion: false }, batterySetup: 'Unknown', solarSetup: 'Unknown', antenna: 'Unknown', samples: [] }],
+    links: [{ id: 'db-link', observerDeviceId: 'db-gateway', heardDeviceId: 'db-tracker',
+      originalSourceDeviceId: 'db-tracker', source: 'gateway', path: 'direct', snrDb: 0, rssiDbm: -101,
+      receivedAt: new Date().toISOString(), observedAt: null }],
+  };
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options });
+    const demo = url.startsWith('/demo-api/');
+    if (demo && demoFailure) throw new Error('Demo PocketBase unavailable');
     if (url.endsWith('/auth-with-password'))
-      return { ok: true, json: async () => ({ token: 'test-token', record: account }) };
-    assert.equal(options.headers.Authorization, 'test-token');
-    if (stateGate) await stateGate;
-    if (stateFailure) return { ok: false, status: stateFailure,
+      return { ok: true, json: async () => ({ token: demo ? 'demo-token' : 'test-token', record: demo ? demoAccount : account }) };
+    assert.equal(options.headers.Authorization, demo ? 'demo-token' : 'test-token');
+    if (!demo && stateGate) await stateGate;
+    if (!demo && stateFailure) return { ok: false, status: stateFailure,
       json: async () => ({ message: 'Test backend failure' }) };
-    return { ok: true, json: async () => ({ account, simulation: false, feedOnline: true,
-      trackers: [], members: [], assignments: [], nameJobs: [], messages: [],
-      infrastructure: [], incidents: [], warnings: [], rules: {}, events: [] }) };
+    return { ok: true, json: async () => demo ? demoState : emptyState };
   };
   const { createRoot } = await import('react-dom/client');
   const { default: App } = await import('../src/App.tsx');
@@ -84,9 +101,21 @@ test('live sign-in survives refresh, validates saved tokens, and keeps demo acce
     assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
     assert.equal(document.querySelector('.demo-banner'), null, 'map remains banner-free');
     await navigate('#users');
-    assert.match(document.querySelector('.users-trackers').textContent, /Demo Avery/);
+    assert.match(document.querySelector('.users-trackers').textContent, /Demo Database Person/);
     assert.ok(document.querySelectorAll('.tracker-row').length > 0);
-    assert.equal(requests.length, 0, 'demo viewing never requests backend records');
+    assert.ok(requests.length >= 2, 'demo authenticates and reads its PocketBase');
+    assert.ok(requests.every(r => r.url.startsWith('/demo-api/')), 'demo cannot use production routes');
+    assert.equal(window.sessionStorage.length, 0, 'demo tokens cannot become saved production sign-ins');
+    await navigate('#infrastructure');
+    assert.match(document.querySelector('.neighbor-table').textContent, /DB901/);
+    assert.match(document.querySelector('.neighbor-table').textContent, /0 dB/);
+    demoState.links[0].snrDb = 8.5;
+    await navigate('#users');
+    await navigate('#infrastructure');
+    assert.match(document.querySelector('.neighbor-table').textContent, /8.5 dB/, 'table reflects backend changes');
+    await act(async () => button('Simulate outage').click());
+    assert.ok(requests.some(r => r.url === '/demo-api/api/meshlink/demo/feed' && r.options.method === 'POST'));
+    assert.ok(requests.every(r => r.url.startsWith('/demo-api/')), 'demo mutations also stay isolated');
     await act(async () => button('Exit demo').click());
     assert.equal(document.querySelector('.app-shell'), null);
     assert.ok(button('View demo'));
@@ -96,6 +125,17 @@ test('live sign-in survives refresh, validates saved tokens, and keeps demo acce
     await act(async () => root.render(createElement(App, { key: 'reload' })));
     assert.equal(document.querySelector('.app-shell'), null);
     assert.ok(button('View demo'));
+
+    demoFailure = true;
+    await act(async () => button('View demo').click());
+    assert.equal(document.querySelector('.app-shell'), null, 'unavailable DB cannot fall back to browser fixtures');
+    assert.match(document.querySelector('[role="status"]').textContent, /unavailable/);
+    demoFailure = false;
+    demoState.simulation = false;
+    await act(async () => button('View demo').click());
+    assert.equal(document.querySelector('.app-shell'), null, 'demo rejects a live database response');
+    assert.match(document.querySelector('[role="status"]').textContent, /separate simulation database/);
+    demoState.simulation = true;
 
     await act(async () => document.querySelector('form').dispatchEvent(
       new window.Event('submit', { bubbles: true, cancelable: true }),

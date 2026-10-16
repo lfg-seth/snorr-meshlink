@@ -2,17 +2,22 @@ import Badge from './Badge';
 import CoordinateCopy from './CoordinateCopy';
 import DeviceSheet from './DeviceSheet';
 import TrackerBatteryIcon from './TrackerBatteryIcon';
+import GPSQuality from './GPSQuality';
 import type { Tracker } from './demo';
 import { activeTimeLabel, latestRecordedSession } from './recorded-session';
 import { clockTimeLabel, observationLabel, trackerStatus } from './tracker';
+import type { ReactNode } from 'react';
+import { trackerMarkerClass } from './map-markers';
 
-export default function TrackerDetail({ selected, now, label, showTrail, onTrailChange, onClose }: {
+export default function TrackerDetail({ selected, now, label, mapLabel = selected.shortName, showTrail, onTrailChange, onClose, relationships }: {
   selected: Tracker;
   now: number;
   label: string;
+  mapLabel?: string;
   showTrail: boolean;
   onTrailChange: (visible: boolean) => void;
   onClose: () => void;
+  relationships?: ReactNode;
 }) {
   const contactAt = selected.lastContactAt ?? selected.position?.receivedAt ?? null;
   const status = trackerStatus(selected, now);
@@ -26,7 +31,9 @@ export default function TrackerDetail({ selected, now, label, showTrail, onTrail
         <Badge kind={status.kind}>{status.label}</Badge>
         <TrackerBatteryIcon battery={selected.battery} />
       </span>}
-      className="tracker-detail" closeLabel="Close tracker details" onClose={onClose}>
+      className="tracker-detail" closeLabel="Close tracker details" onClose={onClose}
+      mapNodes={[{ id: selected.id, label: mapLabel, markerClassName: trackerMarkerClass(selected, now, true),
+        coordinates: selected.position ? [selected.position.longitude, selected.position.latitude] : null }]}>
       <section aria-label="Location">
         <h3>Location</h3>
         <dl className="detail-grid tracker-location">
@@ -46,6 +53,10 @@ export default function TrackerDetail({ selected, now, label, showTrail, onTrail
             <dt>Last Heard</dt>
             <dd>{observationLabel(contactAt, now)}</dd>
           </div>
+          <div className="tracker-gps-quality">
+            <dt>GPS quality</dt>
+            <dd><GPSQuality key={selected.id} position={selected.position} /></dd>
+          </div>
         </dl>
       </section>
       <section className="tracker-session" aria-label="Latest session">
@@ -62,6 +73,7 @@ export default function TrackerDetail({ selected, now, label, showTrail, onTrail
         <input type="checkbox" checked={showTrail} onChange={(event) => onTrailChange(event.target.checked)} />
         Show Recorded Trail
       </label>
+      {relationships}
     </DeviceSheet>
   );
 }

@@ -1,0 +1,25 @@
+[Unit]
+Description=SNORR MeshLink separate synthetic demo API
+After=network.target
+
+[Service]
+User=meshlink-demo
+Group=meshlink-demo
+WorkingDirectory=/opt/meshlink
+Environment=MESHLINK_SIMULATION=1
+ExecStart=/opt/meshlink-demo/bin/pocketbase --dir=/var/lib/meshlink-demo/pb_data --hooksDir=/opt/meshlink/backend/pb_hooks --migrationsDir=/opt/meshlink/backend/pb_migrations --automigrate=false --hooksWatch=false serve --http=127.0.0.1:8092 --origins=https://meshlink.spp.lol,http://127.0.0.1:8080
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+StateDirectory=meshlink-demo
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/meshlink-demo
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

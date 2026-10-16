@@ -8,6 +8,7 @@ Priority order: member location awareness, member communications, and later supp
 
 ## Start here
 
+- [Local development](README.local.md): start commands, demo credentials, database dashboard and frontend builds.
 - [Project brief](PROJECT.md): confirmed goals, constraints, and unresolved choices.
 - [Wayfinder map](.scratch/pilot/map.md): decisions needed to reach a small field pilot.
 - [Roadmap](docs/roadmap.md): checkpoints from inventory through deployment and reporting.

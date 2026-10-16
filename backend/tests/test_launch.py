@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import launch
-import manage
+import demo_database as manage
 
 
 @unittest.skipUnless(sys.platform != 'win32', 'POSIX process groups required')
@@ -38,7 +38,7 @@ class LauncherTests(unittest.TestCase):
     def test_missing_setup_does_not_initialize_data(self):
         self.requirements()
         manage.CREDENTIALS.unlink()
-        with self.assertRaisesRegex(RuntimeError, 'init-demo'):
+        with self.assertRaisesRegex(RuntimeError, 'demo_database.py init'):
             launch.preflight()
         self.assertFalse(manage.CREDENTIALS.exists())
 

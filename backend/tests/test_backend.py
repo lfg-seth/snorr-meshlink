@@ -19,6 +19,38 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_position_quality_stays_with_its_fix_across_duplicates_delay_and_restart(self):
+        coordinates = {'latitude': 36.2, 'longitude': -115.6}
+        newest = packet('d1', 'position', {**coordinates, 'pdop': 1.83, 'satellites': 9}, 1)
+        self.assertEqual(self.ingest(newest)['outcome'], 'accepted')
+        first = self.state()['trackers'][0]['position']
+        self.assertEqual(first['pdop'], 1.83)
+        self.assertEqual(first['satellites'], 9)
+        self.assertEqual(self.ingest({**newest, 'gatewayId': 'b2', 'receivedAt': at()})['outcome'], 'duplicate')
+        for minutes in [25, None, -5]:
+            self.ingest(packet('d1', 'position', {**coordinates, 'pdop': 8, 'satellites': 5}, minutes))
+            self.assertEqual(self.state()['trackers'][0]['position'], first)
+        history = self.state()['trackers'][0]['history']
+        self.assertEqual([(p['pdop'], p['satellites']) for p in history], [(8, 5), (1.83, 9)])
+        for data in [{'pdop': -1}, {'pdop': '1.83'}, {'pdop': True}, {'pdop': 42949673},
+                     {'satellites': -1}, {'satellites': 1.5}, {'satellites': '9'},
+                     {'satellites': 4294967296}]:
+            self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest',
+                        packet('d1', 'position', {**coordinates, **data}))
+        self.assertEqual(self.state()['trackers'][0]['position'], first)
+        self.stop()
+        self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual(self.state()['trackers'][0]['position'], first)
+        self.assertEqual(self.state()['trackers'][0]['history'], history)
+        for quality in [{}, {'pdop': None, 'satellites': None}, {'pdop': 0, 'satellites': 0}]:
+            item = packet('d1', 'position', {**coordinates, **quality})
+            self.assertEqual(self.ingest(item)['outcome'], 'accepted')
+            current = self.state()['trackers'][0]['position']
+            self.assertEqual(current['measuredAt'], item['measuredAt'])
+            self.assertIsNone(current['pdop'])
+            self.assertIsNone(current['satellites'])
+
     def test_member_map_shortname_is_validated_persisted_and_only_changes_self(self):
         route = '/api/meshlink/profile'
         for client in [Client(self.url), self.worker]:

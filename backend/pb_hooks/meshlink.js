@@ -462,6 +462,27 @@ function nameJob(e) {
   });
   return e.json(200, { saved: true });
 }
+function batteryHistory(e) {
+  c.human(e);
+  e.response.header().set('Cache-Control', 'no-store');
+  const device = c.device(e.app, e.request.pathValue('id'));
+  if (device.getString('kind') === 'member')
+    throw new BadRequestError('Infrastructure device required.');
+  const hours = Number(e.request.url.query().get('hours') || '24');
+  if ([24, 168, 720].indexOf(hours) < 0)
+    throw new BadRequestError('Choose 24, 168 or 720 hours.');
+  const end = c.now();
+  const cutoff = new Date(Date.parse(end) - hours * 3600000).toISOString();
+  const rows = c.rows(e.app, 'observations',
+    'deviceId = {:id} && measuredAt >= {:cutoff} && measuredAt <= {:end} && payload.battery > 0',
+    '-measuredAt,-id', { id: device.getString('key'), cutoff, end }, 50001);
+  return e.json(200, {
+    samples: rows.slice(0, 50000).reverse().map(o => ({
+      at: o.getString('measuredAt'), volts: c.object(o, 'payload').battery,
+    })),
+    truncated: rows.length > 50000,
+  });
+}
 function state(e) {
   c.human(e);
   e.response.header().set('Cache-Control', 'no-store');
@@ -616,6 +637,17 @@ function state(e) {
     members,
     assignments,
     infrastructure: infra,
+    links: c.rows(app, 'link_observations', '', '-receivedAt,-id').map((row) => ({
+      id: row.id,
+      observerDeviceId: row.getString('observerDeviceId'),
+      heardDeviceId: row.getString('heardDeviceId') || null,
+      originalSourceDeviceId: row.getString('originalSourceDeviceId') || null,
+      source: row.getString('source'),
+      path: row.getString('path'),
+      ...c.object(row, 'signal'),
+      receivedAt: row.getString('receivedAt'),
+      observedAt: row.getString('observedAt') || null,
+    })),
     incidents: incidentRows,
     warnings,
     rules,
@@ -648,4 +680,5 @@ module.exports = {
   demoFeed,
   nameJob,
   state,
+  batteryHistory,
 };

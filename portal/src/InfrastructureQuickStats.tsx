@@ -1,21 +1,29 @@
 import BatteryCharge from './BatteryCharge';
+import BatteryChart from './BatteryChart';
+import type { LoadBatteryHistory } from './BatteryChart';
 import DeviceSheet from './DeviceSheet';
 import { temperatureLabel } from './temperature';
 import type { Infrastructure } from './demo';
 import { ageLabel, timeLabel } from './demo';
 import { batteryPower } from './battery';
 import { infrastructureLabel } from './infrastructure-map';
+import type { ReactNode } from 'react';
+import { infrastructureMarkerClass } from './map-markers';
 
 export default function InfrastructureQuickStats({
   device,
   now,
   online,
   onClose,
+  relationships,
+  loadBatteryHistory,
 }: {
   device: Infrastructure;
   now: number;
   online: boolean;
   onClose: () => void;
+  relationships?: ReactNode;
+  loadBatteryHistory?: LoadBatteryHistory;
 }) {
   const power = batteryPower(device, now);
   const freshness = (metric: string) => {
@@ -30,7 +38,9 @@ export default function InfrastructureQuickStats({
   };
   return (
     <DeviceSheet label={infrastructureLabel(device)} eyebrow={device.role}
-      className="infrastructure-quick-stats" closeLabel="Close infrastructure stats" onClose={onClose}>
+      className="infrastructure-quick-stats" closeLabel="Close infrastructure stats" onClose={onClose}
+      mapNodes={[{ id: device.id, label: infrastructureLabel(device), markerClassName: infrastructureMarkerClass(true),
+        coordinates: device.longitude != null && device.latitude != null ? [device.longitude, device.latitude] : null }]}>
       <p className="small">{device.name}</p>
       {device.deploymentStatus === 'planned' && (
         <p className="small muted">
@@ -85,6 +95,8 @@ export default function InfrastructureQuickStats({
           </dd>
         </div>
       </dl>
+      <BatteryChart device={device} now={now} loadHistory={loadBatteryHistory} />
+      {relationships}
     </DeviceSheet>
   );
 }

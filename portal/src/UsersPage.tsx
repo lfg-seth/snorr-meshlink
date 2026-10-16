@@ -5,8 +5,6 @@ import { minuteAgeLabel, statusText, trackerMapLabel, trackerStatus } from './tr
 import TrackerDetail from './TrackerDetail';
 import MapShortName from './MapShortName';
 import {
-  initialTrackers as demoTrackers,
-  members as demoMembers,
   timeLabel,
 } from './demo';
 import type { Assignment, NameJob, Tracker, Member } from './demo';
@@ -16,8 +14,8 @@ export default function UsersPage({
   assignments,
   connected = false,
   simulation = true,
-  trackers = demoTrackers,
-  members = demoMembers,
+  trackers = [],
+  members = [],
   selfMemberId = 'm5',
   nameJobs,
   admin,
@@ -146,6 +144,7 @@ export default function UsersPage({
         </div>
       </section>
       {inspected && <TrackerDetail key={inspected.id} selected={inspected} label={trackerLabel(inspected)}
+        mapLabel={trackerMapLabel(inspected, assignments, members)}
         now={now} showTrail={trailId === inspected.id}
         onTrailChange={(visible) => onTrailChange(visible ? inspected.id : null)}
         onClose={() => setInspectedId(null)} />}

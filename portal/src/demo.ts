@@ -1,6 +1,12 @@
 import type { Position } from './position';
 
-export type Fix = Position & { longitude: number; latitude: number; areaName?: string | null };
+export type Fix = Position & {
+  longitude: number;
+  latitude: number;
+  areaName?: string | null;
+  pdop?: number | null;
+  satellites?: number | null;
+};
 export type Tracker = {
   id: string;
   number: string;
@@ -133,6 +139,9 @@ export const initialTrackers: Tracker[] = [1, 3, 8, 17, null, undefined].map(
           : {
               longitude,
               latitude,
+              // Fictional quality examples belong only to the standalone demo.
+              pdop: [1.8, 4.5, 8, null, null][i],
+              satellites: [9, 7, 5, null, null][i],
               measuredAt: minutes === null ? null : minutesAgo(minutes),
               receivedAt: minutesAgo(0.3),
             },

@@ -65,6 +65,13 @@ function ingest(e) {
         number(data.latitude, 'latitude', -90, 90);
         if (data.battery !== null && data.battery !== undefined)
           number(data.battery, 'battery percent', 0, 100);
+        if (data.pdop !== null && data.pdop !== undefined)
+          number(data.pdop, 'GPS dilution of precision', 0, 42949672.95);
+        if (data.satellites !== null && data.satellites !== undefined) {
+          number(data.satellites, 'satellite count', 0, 4294967295);
+          if (!Number.isInteger(data.satellites))
+            throw new BadRequestError('Satellite count must be an integer.');
+        }
       }
       if (b.kind === 'telemetry') {
         const keys = Object.keys(data);
@@ -139,6 +146,8 @@ function ingest(e) {
         measuredAt: time.measuredAt,
         receivedAt,
         timestampQuality: time.quality,
+        pdop: data.pdop > 0 ? data.pdop : null,
+        satellites: data.satellites > 0 ? data.satellites : null,
       };
       c.create(app, 'positions', {
         packetKey,

@@ -10,7 +10,8 @@ import tarfile
 import tempfile
 
 DESTINATION = Path('/var/backups/meshlink')
-SERVICES = ['meshlink-worker.service', 'meshlink-api.service']
+SERVICES = ['meshlink-demo-worker.service', 'meshlink-demo-api.service',
+            'meshlink-worker.service', 'meshlink-api.service']
 
 
 def main():
@@ -39,6 +40,11 @@ def main():
             # Live adapter configuration/key and buffered receipts are private
             # recovery state too. Worker has already stopped before archiving.
             for source, name in [('/etc/meshlink', 'worker-config'),
+                                 ('/var/lib/meshlink-demo', 'demo-state'),
+                                 ('/opt/meshlink-demo/bin', 'demo-bin'),
+                                 ('/etc/nginx/sites-available/meshlink', 'services/nginx.conf'),
+                                 ('/etc/systemd/system/meshlink-demo-api.service', 'services/meshlink-demo-api.service'),
+                                 ('/etc/systemd/system/meshlink-demo-worker.service', 'services/meshlink-demo-worker.service'),
                                  ('/var/lib/meshlink-worker', 'worker-state'),
                                  ('/etc/systemd/system/meshlink-api.service', 'services/meshlink-api.service'),
                                  ('/etc/systemd/system/meshlink-api.service.d', 'services/meshlink-api.service.d'),

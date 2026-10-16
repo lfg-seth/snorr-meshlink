@@ -17,5 +17,8 @@ build/
 .DS_Store
 Thumbs.db
 *.tmp
+*.db-wal
+*.db-shm
+backend/demo/*.db-journal
 
 # .scratch/ is the tracked local issue tracker. Do not ignore it.

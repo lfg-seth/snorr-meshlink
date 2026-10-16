@@ -1,18 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import type { GeoJSONSource, StyleSpecification } from 'maplibre-gl';
-import {
-  infrastructure as demoInfrastructure,
-} from './demo';
+import type { GeoJSONSource } from 'maplibre-gl';
 import type { Fix, Tracker, Infrastructure } from './demo';
 import { minuteAgeLabel, trackerStatus } from './tracker';
 import { infrastructureMarkers } from './infrastructure-map';
 import { recordedTrailConnections } from './recorded-session';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-
-// Vite bundles the worker and its shared imports for both dev and production.
-maplibregl.setWorkerUrl(workerUrl);
+import type { MappedSignalConnection } from './signal-links';
+import './map-runtime';
+import { mapStyle, services } from './map-style';
+import { useBasemap } from './MapPreferences';
+import { trackerMarkerClass, infrastructureMarkerClass } from './map-markers';
 
 type Props = {
   trackers: Tracker[];
@@ -26,57 +23,24 @@ type Props = {
   selectedInfrastructureId: string | null;
   onInfrastructureSelect: (id: string) => void;
   onSelect: (id: string) => void;
+  signalConnections: MappedSignalConnection[];
+  omittedSignals: number;
+  showSignals: boolean;
+  onSignalsChange: (visible: boolean) => void;
+  selectedSignalId: string | null;
+  onSignalSelect: (id: string) => void;
 };
-const services = { Topo: 'USGSTopo', 'Aerial imagery': 'USGSImageryOnly' };
-function mapStyle(basemap: keyof typeof services): StyleSpecification {
-  return {
-    version: 8,
-    sources: {
-      basemap: {
-        type: 'raster',
-        tiles: [
-          `https://basemap.nationalmap.gov/arcgis/rest/services/${services[basemap]}/MapServer/tile/{z}/{y}/{x}`,
-        ],
-        tileSize: 256,
-        maxzoom: 16,
-        attribution:
-          '<a href="https://www.usgs.gov/programs/national-geospatial-program/national-map">USGS · The National Map</a>',
-      },
-      trail: {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      },
-    },
-    layers: [
-      {
-        id: 'background',
-        type: 'background',
-        paint: { 'background-color': '#dde1d3' },
-      },
-      { id: 'basemap', type: 'raster', source: 'basemap' },
-      {
-        id: 'trail-lines',
-        type: 'line',
-        source: 'trail',
-        paint: {
-          'line-color': '#153f49',
-          'line-width': 3,
-          'line-dasharray': [2, 2],
-        },
-      },
-    ],
-  };
-}
 export default function TrackingMap(props: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const markers = useRef(new Map<string, maplibregl.Marker>());
   const current = useRef(props);
   current.current = props;
-  const [basemap, setBasemap] = useState<keyof typeof services>('Topo');
+  const [basemap, setBasemap] = useBasemap();
   const [retry, setRetry] = useState(0);
   const [ready, setReady] = useState(0);
   const [error, setError] = useState('');
+  const [signalInfo, setSignalInfo] = useState(false);
 
   useEffect(() => {
     if (!container.current) return;
@@ -122,6 +86,14 @@ export default function TrackingMap(props: Props) {
       );
     });
     instance.on('load', () => setReady((value) => value + 1));
+    instance.on('click', 'signal-hit-area', (event) => {
+      const target = event.originalEvent?.target;
+      if (target instanceof HTMLElement && target.closest('.map-pin, .infrastructure-pin')) return;
+      const id = event.features?.[0]?.properties?.id;
+      if (current.current.showSignals && typeof id === 'string') current.current.onSignalSelect(id);
+    });
+    instance.on('mouseenter', 'signal-hit-area', () => { instance.getCanvas().style.cursor = 'pointer'; });
+    instance.on('mouseleave', 'signal-hit-area', () => { instance.getCanvas().style.cursor = ''; });
     const resize = new ResizeObserver(() => instance.resize());
     resize.observe(container.current);
     return () => {
@@ -152,7 +124,10 @@ export default function TrackingMap(props: Props) {
       if (!pin) {
         const element = document.createElement(action ? 'button' : 'div');
         if (element instanceof HTMLButtonElement) element.type = 'button';
-        if (action) element.addEventListener('click', action);
+        if (action) element.addEventListener('click', (event) => {
+          event.stopPropagation();
+          action();
+        });
         pin = new maplibregl.Marker({ element })
           .setLngLat(coordinates)
           .addTo(instance!);
@@ -172,15 +147,15 @@ export default function TrackingMap(props: Props) {
       marker(
         tracker.id,
         [tracker.position.longitude, tracker.position.latitude],
-        `map-pin ${status.kind} ${props.selectedId === tracker.id ? 'selected-pin' : ''}`,
+        trackerMarkerClass(tracker, props.now, props.selectedId === tracker.id),
         props.markerLabels[tracker.id] || tracker.shortName,
         `${props.labels[tracker.id]} · ${tracker.shortName} · ${status.label} · GPS age ${minuteAgeLabel(tracker.position.measuredAt, props.now)}`,
         () => current.current.onSelect(tracker.id),
       );
     });
-    infrastructureMarkers(props.infrastructureNodes ?? demoInfrastructure).forEach(({ device, label, offset }) => {
+    infrastructureMarkers(props.infrastructureNodes ?? []).forEach(({ device, label, offset }) => {
       marker(`infra-${device.id}`, [device.longitude!, device.latitude!],
-        `infrastructure-pin ${props.selectedInfrastructureId === device.id ? 'selected-pin' : ''}`,
+        infrastructureMarkerClass(props.selectedInfrastructureId === device.id),
         label, `${label} · ${device.name} · ${device.role} · select for quick stats`,
         () => current.current.onInfrastructureSelect(device.id), offset);
     });
@@ -193,6 +168,16 @@ export default function TrackingMap(props: Props) {
         pin.remove();
         markers.current.delete(id);
       }
+    });
+    // Missing sources are populated on load, including after basemap changes.
+    const signals = instance.getSource('signals') as GeoJSONSource | undefined;
+    signals?.setData({
+      type: 'FeatureCollection',
+      features: props.showSignals ? props.signalConnections.map(connection => ({
+        type: 'Feature',
+        properties: { id: connection.id, color: connection.color, width: props.selectedSignalId === connection.id ? 6 : 4 },
+        geometry: { type: 'LineString', coordinates: connection.nodes.map(node => node.coordinates) },
+      })) : [],
     });
     const source = instance.getSource('trail') as GeoJSONSource | undefined;
     if (source) {
@@ -256,6 +241,21 @@ export default function TrackingMap(props: Props) {
         >
           Fit area
         </button>
+        <button className="signal-toggle" aria-pressed={props.showSignals}
+          onClick={() => props.onSignalsChange(!props.showSignals)}>
+          {props.showSignals ? 'Hide signal strength' : 'Show signal strength'}
+        </button>
+        {props.showSignals && <div className="signal-legend" aria-label="Signal strength legend">
+          <strong>Recorded SNR</strong>
+          <span><i style={{ background: '#237346' }} /> ≥5 dB</span>
+          <span><i style={{ background: '#a15c00' }} /> 0–&lt;5 dB</span>
+          <span><i style={{ background: '#b42318' }} /> &lt;0 dB</span>
+          <span><i style={{ background: '#6b756f' }} /> Unknown</span>
+          <button className="signal-info-button" aria-label="About signal strength" aria-expanded={signalInfo}
+            aria-controls="signal-legend-help" onClick={() => setSignalInfo(!signalInfo)}>i</button>
+          {signalInfo && <small id="signal-legend-help">{props.signalConnections.length ? 'Weakest known latest reading · tap a line or a relationship in a node card for details' : 'No neighbor connections with known endpoints and locations'}
+            {props.omittedSignals > 0 && ` · ${props.omittedSignals} observations without distinct mapped endpoints omitted`}</small>}
+        </div>}
       </div>
       {!props.online && <p className="map-feed-status" role="status">Feed offline · showing last recorded positions</p>}
       {error && (

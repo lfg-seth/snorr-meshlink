@@ -12,10 +12,10 @@ import time
 import urllib.error
 import urllib.request
 
-import manage
+import demo_database as manage
 
 PORTAL = manage.ROOT / 'portal'
-API_PORT = 8090
+API_PORT = manage.API_PORT
 PORTAL_PORT = 5173
 
 
@@ -24,7 +24,7 @@ def preflight():
         raise RuntimeError('Use this launcher in Linux, macOS or WSL. Native Windows is not supported.')
     required = [
         (manage.BINARY, 'Run python3 backend/manage.py install first.'),
-        (manage.CREDENTIALS, 'Run python3 backend/manage.py init-demo once for a new local backend.'),
+        (manage.CREDENTIALS, 'Run python3 backend/demo_database.py init once for a new local demo.'),
         (manage.LOCAL / 'pb_data' / 'data.db', 'Backend initialization is incomplete; inspect the private setup log.'),
         (PORTAL / 'node_modules' / 'vite' / 'bin' / 'vite.js', 'Run npm ci from portal/ first.'),
     ]
@@ -91,7 +91,9 @@ def supervise(node, logs):
             log = files.enter_context((logs / f'{name}.log').open('x'))
             processes[name] = subprocess.Popen(
                 argv, cwd=cwd, stdout=log, stderr=subprocess.STDOUT,
-                env={**os.environ, 'MESHLINK_SIMULATION': '1', 'PYTHONUNBUFFERED': '1'},
+                env={**os.environ, 'MESHLINK_SIMULATION': '1', 'PYTHONUNBUFFERED': '1',
+                     'MESHLINK_API_URL': f'http://127.0.0.1:{API_PORT}',
+                     'MESHLINK_WORKER_CREDENTIALS': str(manage.LOCAL / 'worker.json')},
                 start_new_session=True,
             )
             return processes[name]
@@ -106,7 +108,8 @@ def supervise(node, logs):
             portal = spawn('portal', [node, str(PORTAL / 'node_modules' / 'vite' / 'bin' / 'vite.js'),
                                     '--host', '127.0.0.1', '--port', str(PORTAL_PORT), '--strictPort'], PORTAL)
             wait_http(f'http://127.0.0.1:{PORTAL_PORT}/', portal)
-            print(f'Portal: http://127.0.0.1:{PORTAL_PORT} — choose Backend sign in.', flush=True)
+            print(f'Portal: http://127.0.0.1:{PORTAL_PORT} — demo reads its own PocketBase.', flush=True)
+            print(f'Demo database dashboard: http://127.0.0.1:{API_PORT}/_/', flush=True)
             print('Ctrl+C stops all three processes. Simulation is enabled.', flush=True)
             while True:
                 for name, process in processes.items():

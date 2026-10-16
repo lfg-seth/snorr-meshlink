@@ -103,9 +103,16 @@ class Adapter:
                 raise PacketRejected('invalid GPS millisecond adjustment')
             measured = (at(position.timestamp + position.timestamp_millis_adjust / 1000)
                         if position.timestamp else None)
+            quality = {}
+            # Non-optional protobuf scalars default to zero when absent. Neither
+            # absent nor zero means perfect quality or a known satellite count.
+            if position.PDOP:
+                quality['pdop'] = position.PDOP / 100
+            if position.sats_in_view:
+                quality['satellites'] = position.sats_in_view
             # Gateway-independent content identity prevents packet-ID reuse from
             # silently discarding a new fix after reboot; exact replays deduplicate.
             return {**common, 'deviceId': self.members[source], 'kind': 'position', 'measuredAt': measured,
-                    'data': {'latitude': latitude, 'longitude': longitude}}
+                    'data': {'latitude': latitude, 'longitude': longitude, **quality}}
         except (DecodeError, OverflowError, OSError):
             raise PacketRejected('malformed packet') from None

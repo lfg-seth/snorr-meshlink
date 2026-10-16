@@ -24,8 +24,10 @@ NOW = 1792010000
 
 
 def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c2ed8,
-            port=portnums_pb2.POSITION_APP, coordinates=True):
+            port=portnums_pb2.POSITION_APP, coordinates=True, quality=None):
     position = mesh_pb2.Position(time=NOW, timestamp=measured)
+    for key, value in (quality or {}).items():
+        setattr(position, key, value)
     if coordinates:
         position.latitude_i, position.longitude_i = 362000000, -1156000000
     data = mesh_pb2.Data(portnum=port, payload=position.SerializeToString())
@@ -114,6 +116,22 @@ class AdapterTests(unittest.TestCase):
         self.assertIsNone(self.decode(measured=0)['measuredAt'])
         # Future clocks stay future for ingestion validation, never become receipt clocks.
         self.assertGreater(self.decode(measured=NOW + 60)['measuredAt'], self.decode()['receivedAt'])
+
+    def test_position_quality_scaling_absence_and_gateway_duplicates(self):
+        for raw, expected in [(183, 1.83), (282, 2.82), (300, 3), (601, 6.01)]:
+            quality = {'PDOP': raw, 'sats_in_view': 9}
+            first = self.decode(quality=quality)
+            second = self.decode(quality=quality, gateway='!849ad7a0')
+            self.assertEqual(first['data'], {'latitude': 36.2, 'longitude': -115.6,
+                                            'pdop': expected, 'satellites': 9})
+            self.assertEqual(first['data'], second['data'])
+            self.assertEqual(first['packetId'], second['packetId'])
+            self.assertEqual(first['measuredAt'], self.decode()['measuredAt'])
+        for quality in [None, {'PDOP': 0, 'sats_in_view': 0}, {'HDOP': 150}]:
+            self.assertEqual(self.decode(quality=quality)['data'],
+                             {'latitude': 36.2, 'longitude': -115.6})
+        self.assertNotEqual(self.decode(quality={'PDOP': 183})['packetId'],
+                            self.decode(quality={'PDOP': 282})['packetId'])
 
     def test_recent_transmit_clock_never_refreshes_old_gps_solution(self):
         packet = self.decode(measured=NOW - 3600)

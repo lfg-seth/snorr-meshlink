@@ -1,32 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  assignDevice,
-  initialAssignments,
-  initialEvents,
-  initialIncidents,
-  initialMessages,
-  demoTrackersAt,
-  infrastructure as demoInfrastructure,
-  members as demoMembers,
-} from './demo';
-import type {
-  Assignment,
-  AuditEvent,
-  BatteryRule,
-  Incident,
-  Message,
-  NameJob,
-} from './demo';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './style.css';
 import snorrLogo from './assets/snorr-logo.png';
 import Badge from './Badge';
 import MapPage from './MapPage';
+import { MapPreferences } from './MapPreferences';
 import UsersPage from './UsersPage';
 import MessagesPage from './MessagesPage';
 import InfrastructurePage from './InfrastructurePage';
 import BackendLogin from './BackendLogin';
-import { BackendError, request, savedToken, saveToken } from './backend';
+import { BackendError, login, request, savedToken, saveToken } from './backend';
 import type { BackendSession, BackendState } from './backend';
+import type { LoadBatteryHistory } from './BatteryChart';
 type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure';
 const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure'];
 const icons = { Map: '◎', Users: '♙', Messages: '☷', Infrastructure: '⌁' };
@@ -37,16 +21,13 @@ function pageFromHash(): Page {
   );
 }
 export default function App() {
+  return <MapPreferences><Portal /></MapPreferences>;
+}
+
+function Portal() {
   const liveBuild = import.meta.env.VITE_PORTAL_MODE === 'live';
-  const [demoMode, setDemoMode] = useState(!liveBuild);
   const [page, setPage] = useState<Page>(pageFromHash);
   const [now, setNow] = useState(Date.now());
-  const [demoFeedOnline, setFeedOnline] = useState(true);
-  const [demoAdmin, setAdmin] = useState(true);
-  const [demoAssignments, setAssignments] =
-    useState<Assignment[]>(initialAssignments);
-  const [demoNameJobs, setNameJobs] = useState<NameJob[]>([]);
-  const demoTrackers = demoTrackersAt(now);
   const [selectedId, setSelectedId] = useState('d1');
   const [trailId, setTrailId] = useState<string | null>(null);
   const [session, setSession] = useState<BackendSession | null>(null);
@@ -54,44 +35,62 @@ export default function App() {
   const [restoreAttempt, setRestoreAttempt] = useState(0);
   const [snapshot, setSnapshot] = useState<BackendState | null>(null);
   const [backendConnected, setBackendConnected] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [backendError, setBackendError] = useState('');
   const seenMessages = useRef<string[] | null>(null);
   const activeToken = useRef('');
   activeToken.current = session?.token ?? '';
 
-  const [demoMessages, setMessages] = useState<Message[]>(initialMessages);
   const [draft, setDraft] = useState('');
   const [unread, setUnread] = useState(0);
   const [notice, setNotice] = useState('');
-  const [demoIncidents, setIncidents] = useState<Incident[]>(initialIncidents);
-  const [demoEvents, setEvents] = useState<AuditEvent[]>(initialEvents);
-  const [demoRules, setRules] = useState<Record<string, BatteryRule>>({});
-  const simulation = !session || snapshot?.simulation === true;
-  const trackers = snapshot?.trackers ?? (session ? [] : demoTrackers);
-  const [localMembers, setLocalMembers] = useState(demoMembers);
-  const members = snapshot?.members ?? (session ? [] : localMembers);
-  const infrastructureNodes =
-    snapshot?.infrastructure ?? (session ? [] : demoInfrastructure);
-  const assignments = snapshot?.assignments ?? (session ? [] : demoAssignments);
-  const nameJobs = snapshot?.nameJobs ?? (session ? [] : demoNameJobs);
-  const messages = snapshot?.messages ?? (session ? [] : demoMessages);
-  const incidents = snapshot?.incidents ?? (session ? [] : demoIncidents);
-  const events = snapshot?.events ?? (session ? [] : demoEvents);
-  const rules = snapshot?.rules ?? (session ? {} : demoRules);
-  const admin = session ? session.account.role === 'admin' : demoAdmin;
-  const feedOnline = session
-    ? Boolean(snapshot?.feedOnline && backendConnected)
-    : demoFeedOnline;
-  const selfMemberId = session?.account.memberId ?? 'm5';
-  const accountName =
-    session?.account.name ?? (admin ? 'Demo Dispatch' : 'Demo Casey');
+  const [openingDemo, setOpeningDemo] = useState(!liveBuild && !restoreToken);
+  const demoAttempt = useRef(0);
+  const loadBatteryHistory = useCallback<LoadBatteryHistory>((id, hours, signal) =>
+    request(`/api/meshlink/battery-history/${encodeURIComponent(id)}?hours=${hours}`,
+      session?.token ?? '', undefined, signal, session?.demo), [session]);
+  const demoMode = session?.demo === true;
+  const simulation = snapshot?.simulation === true;
+  const trackers = snapshot?.trackers ?? [];
+  const members = snapshot?.members ?? [];
+  const infrastructureNodes = snapshot?.infrastructure ?? [];
+  const assignments = snapshot?.assignments ?? [];
+  const nameJobs = snapshot?.nameJobs ?? [];
+  const messages = snapshot?.messages ?? [];
+  const incidents = snapshot?.incidents ?? [];
+  const events = snapshot?.events ?? [];
+  const rules = snapshot?.rules ?? {};
+  const admin = session?.account.role === 'admin';
+  const feedOnline = Boolean(snapshot?.feedOnline && backendConnected);
+  const selfMemberId = session?.account.memberId ?? '';
+  const accountName = session?.account.name ?? '';
+  async function openDemo() {
+    const attempt = ++demoAttempt.current;
+    setOpeningDemo(true);
+    try {
+      const next = await login('meshlink-admin', 'fictional-demo-only-password', true);
+      const state = await request<BackendState>('/api/meshlink/state', next.token, undefined, undefined, true);
+      if (!state.simulation) throw new Error('The demo address must point to a separate simulation database.');
+      if (attempt !== demoAttempt.current) return;
+      startSession(next);
+      setSnapshot(state);
+      setBackendConnected(true);
+      window.location.hash = '#map';
+    } catch (error) {
+      if (attempt === demoAttempt.current)
+        setBackendError(error instanceof Error ? error.message : 'Demo database unavailable.');
+      throw error;
+    } finally {
+      if (attempt === demoAttempt.current) setOpeningDemo(false);
+    }
+  }
+  useEffect(() => {
+    if (!liveBuild && !restoreToken) void openDemo().catch(() => {});
+    return () => { demoAttempt.current++; };
+  }, []);
   function startSession(value: BackendSession) {
-    saveToken(value.token);
+    if (!value.demo) saveToken(value.token);
     setRestoreToken('');
     seenMessages.current = null;
-    setDemoMode(false);
-    setShowLogin(false);
     setSession(value);
     setDraft('');
     setUnread(0);
@@ -124,7 +123,7 @@ export default function App() {
     if (!session) return;
     const next = await request<BackendState>(
       '/api/meshlink/state',
-      session.token,
+      session.token, undefined, undefined, session.demo,
     );
     if (session.token !== activeToken.current) return;
     setNow(Date.now());
@@ -134,7 +133,7 @@ export default function App() {
   async function saveBackend(path: string, body: object) {
     if (!session) return false;
     try {
-      await request(path, session.token, body);
+      await request(path, session.token, body, undefined, session.demo);
       await refreshBackend();
       setBackendError('');
       return true;
@@ -157,7 +156,7 @@ export default function App() {
           '/api/meshlink/state',
           session!.token,
           undefined,
-          abort.signal,
+          abort.signal, session!.demo,
         );
         if (!active) return;
         const inbound = next.messages.filter(
@@ -225,71 +224,10 @@ export default function App() {
   }
   const labels = Object.fromEntries(trackers.map((t) => [t.id, carrier(t.id)]));
   function assign(deviceId: string, memberId: string) {
-    if (session) {
-      void saveBackend('/api/meshlink/assign', { deviceId, memberId });
-      return;
-    }
-    const at = new Date().toISOString();
-    const next = assignDevice(assignments, deviceId, memberId, at, admin);
-    if (next === assignments) return;
-    setAssignments(next);
-    const assignment = next[next.length - 1];
-    const device = trackers.find((t) => t.id === deviceId)!;
-    const name = members.find((m) => m.id === memberId)!.name;
-    const released = assignments.filter(
-      (a) => !a.endedAt && a.memberId === memberId && a.deviceId !== deviceId,
-    );
-    setNameJobs((old) => [
-      ...old,
-      ...released.map((a) => ({
-        assignmentId: `release-${a.id}-${at}`,
-        deviceId: a.deviceId,
-        longName: `Device [${trackers.find((t) => t.id === a.deviceId)!.number}]`,
-        status: 'pending' as const,
-      })),
-      {
-        assignmentId: assignment.id,
-        deviceId,
-        longName: `${name} [${device.number}]`,
-        status: 'pending',
-      },
-    ]);
+    void saveBackend('/api/meshlink/assign', { deviceId, memberId });
   }
   function release(deviceId: string) {
-    if (session) {
-      void saveBackend('/api/meshlink/release', { deviceId });
-      return;
-    }
-    const at = new Date().toISOString();
-    setAssignments((old) =>
-      old.map((a) =>
-        !a.endedAt && a.deviceId === deviceId ? { ...a, endedAt: at } : a,
-      ),
-    );
-    setNameJobs((old) => [
-      ...old,
-      {
-        assignmentId: `release-${at}`,
-        deviceId,
-        longName: `Device [${trackers.find((t) => t.id === deviceId)!.number}]`,
-        status: 'pending',
-      },
-    ]);
-  }
-  function incomingMessage() {
-    if (!feedOnline) return;
-    setMessages((old) => [
-      ...old,
-      {
-        id: crypto.randomUUID(),
-        author: 'Demo Avery',
-        text: 'Training update: team at the next checkpoint.',
-        at: new Date().toISOString(),
-        evidence: 'Simulated inbound',
-      },
-    ]);
-    if (page !== 'Messages') setUnread((value) => value + 1);
-    setNotice('Demo Avery: Training update received in the shared channel.');
+    void saveBackend('/api/meshlink/release', { deviceId });
   }
   const warningCount =
     incidents.filter((i) => !i.resolvedAt).length +
@@ -300,8 +238,8 @@ export default function App() {
     setSession(null);
     setSnapshot(null);
     setBackendConnected(false);
-    setDemoMode(!liveBuild);
-    setShowLogin(false);
+    demoAttempt.current++;
+    setOpeningDemo(false);
     setDraft('');
     setUnread(0);
     setNotice('');
@@ -315,7 +253,9 @@ export default function App() {
       {backendError && <button onClick={() => setRestoreAttempt(value => value + 1)}>Try again</button>}
       <button onClick={signOut}>Sign out</button>
     </main>;
-  if (liveBuild && !session && !demoMode)
+  if (openingDemo)
+    return <main className="workspace"><p role="status">Opening the demo database…</p><button onClick={signOut}>Cancel</button></main>;
+  if (!session)
     return (
       <main
         className="workspace"
@@ -323,11 +263,10 @@ export default function App() {
       >
         <h1>SNORR MeshLink</h1>
         <p>Sign in to view recorded device positions.</p>
+        {backendError && <p role="status">{backendError}</p>}
         <BackendLogin
-          onDemo={() => {
-            setDemoMode(true);
-            window.location.hash = '#map';
-          }}
+          demo={!liveBuild}
+          onDemo={openDemo}
           onLogin={startSession}
         />
       </main>
@@ -348,14 +287,11 @@ export default function App() {
         <div className="brand-row">
         <a className="brand" href="#map">
           <img className="brand-logo" src={snorrLogo} alt="SNORR" width={3797} height={1418} />
-          <strong>MeshLink{!session && <small className="demo-mode-label">Demo</small>}</strong>
+          <strong>MeshLink{demoMode && <small className="demo-mode-label">Demo</small>}</strong>
         </a>
-        <button className="access-button" onClick={() => {
-          if (session || liveBuild) signOut();
-          else setShowLogin(true);
-        }}>{session ? 'Sign out' : liveBuild ? 'Exit demo' : 'Sign in'}</button>
+        <button className="access-button" onClick={signOut}>{demoMode ? 'Exit demo' : 'Sign out'}</button>
         </div>
-        <p className="nav-label">{session ? 'Dispatch workspace' : 'Demo workspace'}</p>
+        <p className="nav-label">{demoMode ? 'Demo workspace' : 'Dispatch workspace'}</p>
         <nav aria-label="Portal pages">
           {pages.map((item) => (
             <a
@@ -393,11 +329,7 @@ export default function App() {
             <span>
               <strong>{accountName}</strong>
               <small>
-                {session
-                  ? `${session.account.role} · authenticated`
-                  : admin
-                    ? 'Admin preview'
-                    : 'Member preview · Demo Casey'}
+                {session.account.role} · authenticated
               </small>
             </span>
           </div>
@@ -407,45 +339,10 @@ export default function App() {
         {page !== 'Map' && <div className="demo-banner">
           <span>
             <strong>
-              {session
-                ? simulation
-                  ? 'Connected backend · synthetic scenario'
-                  : 'Connected backend · real devices'
-                : 'Standalone synthetic prototype'}
-            </strong>{' '}
-            ·{' '}
-            {session
-              ? 'Assignments and observations are saved on the server.'
-              : 'Local demo actions reset on refresh.'}
+              {simulation ? 'Connected backend · synthetic scenario' : 'Connected backend · real devices'}
+            </strong>{' '}· Assignments and observations are saved on the server.
           </span>
-          {!session && (
-            <label>
-              Role preview{' '}
-              <select
-                value={admin ? 'admin' : 'member'}
-                onChange={(event) => setAdmin(event.target.value === 'admin')}
-              >
-                <option value="admin">Admin</option>
-                <option value="member">Member</option>
-              </select>
-            </label>
-          )}
-          <button
-            onClick={() => {
-              if (session) {
-                signOut();
-              } else setShowLogin((value) => !value);
-            }}
-          >
-            {session ? 'Sign out of backend' : 'Backend sign in'}
-          </button>
         </div>}
-        {showLogin && !session && (
-          <BackendLogin
-            onClose={() => setShowLogin(false)}
-            onLogin={startSession}
-          />
-        )}
         {backendError && (
           <div className="backend-error" role="status">
             {backendError}
@@ -455,35 +352,22 @@ export default function App() {
           <span>
             <span className={`feed-dot ${feedOnline ? '' : 'off'}`} />
             <strong>
-              {session
-                ? feedOnline
-                  ? simulation
-                    ? 'Simulation worker connected'
-                    : 'MQTT worker connected'
-                  : 'Worker / backend feed unavailable'
-                : feedOnline
-                  ? 'Demo feed available'
-                  : 'Simulated feed outage'}
+              {feedOnline
+                ? simulation ? 'Simulation worker connected' : 'MQTT worker connected'
+                : 'Worker / backend feed unavailable'}
             </strong>
             <span className="feed-explanation">
               {feedOnline
-                ? session
-                  ? simulation
-                    ? 'Persisted observations; no live radios connected.'
-                    : 'GPS ingestion active; check each position’s measurement age.'
-                  : 'Fixture observations age with time; no live nodes connected.'
+                ? simulation ? 'Persisted observations; no live radios connected.'
+                  : 'GPS ingestion active; check each position’s measurement age.'
                 : 'Showing last observations. Health is uncertain; drafts stay unsent. Use local Meshtastic for field viewing.'}
             </span>
           </span>
           {simulation && (
           <button
-            disabled={Boolean(session && !admin)}
+            disabled={!admin}
             onClick={() => {
-              if (session)
-                void saveBackend('/api/meshlink/demo/feed', {
-                  online: !feedOnline,
-                });
-              else setFeedOnline((value) => !value);
+              void saveBackend('/api/meshlink/demo/feed', { online: !feedOnline });
             }}
           >
             {feedOnline ? 'Simulate outage' : 'Restore demo feed'}
@@ -521,11 +405,12 @@ export default function App() {
                     : `${infrastructureNodes.length} ${simulation ? 'demo ' : ''}devices`}
             </Badge>
           </div>}
-          {session && !snapshot && (
+          {!snapshot && (
             <p className="empty">Loading authenticated backend records…</p>
           )}
-          {(!session || snapshot) && page === 'Map' && (
+          {snapshot && page === 'Map' && (
             <MapPage
+              loadBatteryHistory={loadBatteryHistory}
               trailId={trailId}
               onTrailChange={setTrailId}
               online={feedOnline}
@@ -538,20 +423,17 @@ export default function App() {
               onSelect={setSelectedId}
               labels={labels}
               infrastructureNodes={infrastructureNodes}
+              links={snapshot.links}
             />
           )}
-          {(!session || snapshot) && page === 'Users' && (
+          {snapshot && page === 'Users' && (
             <UsersPage
               trailId={trailId}
               onTrailChange={setTrailId}
               now={now}
               online={feedOnline}
-              onShortNameSave={session?.account.memberId || !session ? async (shortName) => {
-                if (session) return saveBackend('/api/meshlink/profile', { shortName });
-                setLocalMembers((previous) => previous.map((member) => member.id === selfMemberId
-                  ? { ...member, shortName } : member));
-                return true;
-              } : undefined}
+              onShortNameSave={session.account.memberId ? async (shortName) =>
+                saveBackend('/api/meshlink/profile', { shortName }) : undefined}
               key={session?.account.id ?? 'demo'}
               assignments={assignments}
               trackers={trackers}
@@ -559,32 +441,17 @@ export default function App() {
               nameJobs={nameJobs}
               simulation={simulation}
               selfMemberId={selfMemberId}
-              connected={Boolean(session)}
+              connected={true}
               admin={admin}
               onAssign={assign}
               onRelease={release}
               onJob={(deviceId, status) => {
-                if (session) {
-                  const job = nameJobs.findLast((j) => j.deviceId === deviceId);
-                  void saveBackend('/api/meshlink/demo/name-job', {
-                    deviceId,
-                    jobId: job?.id,
-                    status,
-                  });
-                  return;
-                }
-                setNameJobs((old) => {
-                  const latestIndex = old.findLastIndex(
-                    (job) => job.deviceId === deviceId,
-                  );
-                  return old.map((job, index) =>
-                    index === latestIndex ? { ...job, status } : job,
-                  );
-                });
+                const job = nameJobs.findLast((j) => j.deviceId === deviceId);
+                void saveBackend('/api/meshlink/demo/name-job', { deviceId, jobId: job?.id, status });
               }}
             />
           )}
-          {(!session || snapshot) && page === 'Messages' && (
+          {snapshot && page === 'Messages' && (
             <MessagesPage
               key={session?.account.id ?? 'demo'}
               messages={messages}
@@ -596,40 +463,20 @@ export default function App() {
               admin={admin}
               onSend={async () => {
                 if (!feedOnline || !draft.trim()) return;
-                if (session) {
-                  const submittedDraft = draft;
-                  if (
-                    await saveBackend('/api/meshlink/messages', {
-                      text: submittedDraft.trim(),
-                    })
-                  )
-                    setDraft((current) =>
-                      current === submittedDraft ? '' : current,
-                    );
-                  return;
-                }
-                const author = accountName;
-                setMessages((old) => [
-                  ...old,
-                  {
-                    id: crypto.randomUUID(),
-                    author,
-                    text: `${author}: ${draft.trim()}`,
-                    at: new Date().toISOString(),
-                    evidence:
-                      'Simulated gateway submission · radio and human receipt unconfirmed',
-                  },
-                ]);
-                setDraft('');
+                const submittedDraft = draft;
+                if (await saveBackend('/api/meshlink/messages', { text: submittedDraft.trim() }))
+                  setDraft(current => current === submittedDraft ? '' : current);
               }}
-              onIncoming={session ? undefined : incomingMessage}
             />
           )}
-          {(!session || snapshot) && page === 'Infrastructure' && (
+          {snapshot && page === 'Infrastructure' && (
             <InfrastructurePage
+              loadBatteryHistory={loadBatteryHistory}
               key={session?.account.id ?? 'demo'}
               now={now}
               infrastructureNodes={infrastructureNodes}
+              links={snapshot?.links ?? []}
+              trackers={trackers}
               warnings={snapshot?.warnings}
               onAckWarning={
                 session
@@ -638,72 +485,25 @@ export default function App() {
                     }
                   : undefined
               }
-              connected={Boolean(session)}
+              connected={true}
               online={feedOnline}
               admin={admin}
               incidents={incidents}
               events={events}
               rules={rules}
               onRule={(id, rule) => {
-                if (session) {
-                  void saveBackend('/api/meshlink/rules', {
-                    deviceId: id,
-                    ...rule,
-                  });
-                  return;
-                }
-                setRules((old) => ({ ...old, [id]: rule }));
-                setEvents((old) => [
-                  ...old,
-                  {
-                    id: crypto.randomUUID(),
-                    deviceId: id,
-                    at: new Date().toISOString(),
-                    text: `Demo Dispatch changed illustrative battery thresholds: ${rule.trigger} V trigger / ${rule.recovery} V recovery.`,
-                  },
-                ]);
+                void saveBackend('/api/meshlink/rules', { deviceId: id, ...rule });
               }}
               onIncident={(id, note) => {
-                if (session) {
-                  void saveBackend(`/api/meshlink/incidents/${id}`, {
-                    action: note ? 'resolve' : 'acknowledge',
-                    ...(note ? { note } : {}),
-                  });
-                  return;
-                }
-                const at = new Date().toISOString();
-                setIncidents((old) =>
-                  old.map((i) =>
-                    i.id === id
-                      ? note
-                        ? { ...i, resolvedAt: at, note }
-                        : { ...i, acknowledgedAt: at }
-                      : i,
-                  ),
-                );
-                const incident = incidents.find((i) => i.id === id)!;
-                setEvents((old) => [
-                  ...old,
-                  {
-                    id: crypto.randomUUID(),
-                    deviceId: incident.deviceId,
-                    at,
-                    text: note
-                      ? `Demo Dispatch resolved intrusion: ${note}`
-                      : `${admin ? 'Demo Dispatch' : 'Demo Casey'} acknowledged incident; still open.`,
-                  },
-                ]);
+                void saveBackend(`/api/meshlink/incidents/${id}`, {
+                  action: note ? 'resolve' : 'acknowledge', ...(note ? { note } : {}),
+                });
               }}
             />
           )}
         </main>
         <footer>
-          <span>SNORR MeshLink · {session ? simulation ? 'Test mode' : 'Live tracking' : 'Demo'}</span>
-          {!session && (
-            <button disabled={!feedOnline} onClick={incomingMessage}>
-              Simulate incoming message
-            </button>
-          )}
+          <span>SNORR MeshLink · {demoMode ? 'Demo' : simulation ? 'Test mode' : 'Live tracking'}</span>
         </footer>
       </div>
       <div className="toast-region" role="status" aria-live="polite">

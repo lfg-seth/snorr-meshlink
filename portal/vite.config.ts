@@ -4,6 +4,10 @@ import { portalBuildMode } from './build-mode.ts';
 
 const proxy = {
   '/api': { target: 'http://127.0.0.1:8090', changeOrigin: false },
+  '/demo-api': {
+    target: 'http://127.0.0.1:8092', changeOrigin: false,
+    rewrite: (path: string) => path.replace(/^\/demo-api/, ''),
+  },
 };
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd());

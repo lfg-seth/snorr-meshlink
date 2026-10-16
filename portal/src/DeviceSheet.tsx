@@ -1,9 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import type { MiniMapNode } from './CardMiniMap';
+
+const CardMiniMap = lazy(() => import('./CardMiniMap'));
 
 // Native dialogs provide focus containment, Escape and an inert background on mobile.
 // Desktop uses the same content as a nonmodal panel above the map.
-export default function DeviceSheet({ label, eyebrow, status, className, closeLabel, onClose, children }: {
+export default function DeviceSheet({ label, eyebrow, status, className, closeLabel, onClose, children, mapNodes, mapColor }: {
   label: string;
   eyebrow: string;
   status?: ReactNode;
@@ -11,6 +14,8 @@ export default function DeviceSheet({ label, eyebrow, status, className, closeLa
   closeLabel: string;
   onClose: () => void;
   children: ReactNode;
+  mapNodes?: MiniMapNode[];
+  mapColor?: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const gestureStart = useRef<number | null>(null);
@@ -62,7 +67,12 @@ export default function DeviceSheet({ label, eyebrow, status, className, closeLa
           <button autoFocus aria-label={closeLabel} onClick={onClose}>Close</button>
         </div>
       </div>
-      <div className="device-sheet-content">{children}</div>
+      <div className="device-sheet-content">
+        {mapNodes && <Suspense fallback={<div className="mini-map-loading">Loading map…</div>}>
+          <CardMiniMap nodes={mapNodes} color={mapColor} />
+        </Suspense>}
+        {children}
+      </div>
     </dialog>
   );
 }

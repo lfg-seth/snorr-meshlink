@@ -2,10 +2,12 @@ import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
 import BatteryHistory from './BatteryHistory';
+import type { LoadBatteryHistory } from './BatteryChart';
+import NeighborTable from './NeighborTable';
+import type { LinkObservation } from './NeighborTable';
 import { batteryPower } from './battery';
 import {
   ageLabel,
-  infrastructure as demoInfrastructure,
   telemetryState,
   timeLabel,
 } from './demo';
@@ -13,7 +15,10 @@ import type { AuditEvent, BatteryRule, Incident } from './demo';
 export default function InfrastructurePage({
   now,
   connected = false,
-  infrastructureNodes = demoInfrastructure,
+  loadBatteryHistory,
+  infrastructureNodes = [],
+  links = [],
+  trackers = [],
   warnings = [],
   onAckWarning,
   online,
@@ -26,7 +31,10 @@ export default function InfrastructurePage({
 }: {
   now: number;
   connected?: boolean;
+  loadBatteryHistory?: LoadBatteryHistory;
   infrastructureNodes?: import('./demo').Infrastructure[];
+  links?: LinkObservation[];
+  trackers?: import('./demo').Tracker[];
   warnings?: {
     id: string;
     deviceId: string;
@@ -160,6 +168,7 @@ export default function InfrastructurePage({
             );
           })}
       </div>
+      <NeighborTable links={links} infrastructure={infrastructureNodes} trackers={trackers} now={now} online={online} />
       <section className="panel">
         <div className="panel-heading">
           <div>
@@ -309,7 +318,7 @@ export default function InfrastructurePage({
             )}
           </div>
         )}
-        <BatteryHistory key={`battery-${selected.id}`} device={selected} now={now} online={online} connected={connected} />
+        <BatteryHistory loadHistory={loadBatteryHistory} key={`battery-${selected.id}`} device={selected} now={now} online={online} />
         <div className="infra-detail-columns">
           <div>
             <h3>Declared hardware configuration</h3>

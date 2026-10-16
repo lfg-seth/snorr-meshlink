@@ -14,7 +14,7 @@ Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare T
 
 ## Owner access
 
-Open the portal and sign in on the landing page. **View demo** opens fictional browser-only devices without an account; **Exit demo** returns to sign-in. View generated admin/member credentials privately in your own terminal:
+Open the portal and sign in on the landing page. **View demo** opens a separate synthetic database using public demo-only credentials; **Exit demo** returns to sign-in. Its shared fictional workspace has no MQTT connection. View generated live admin/member credentials privately in your own terminal:
 
 ```sh
 ssh root@meshlink.int.spp.lol
@@ -52,6 +52,16 @@ Public probes use curl without credentials and retain HTTPS certificate/hostname
 The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `/opt/meshlink`. It installs dependencies, builds/tests the frontend, prepares state/services and initializes fictional records only when both database and credentials are absent. It does not authorize or replace a Cloudflare connector. For a new host, configure a remotely managed tunnel route to loopback 8080 after installation using [Cloudflare's setup instructions](https://developers.cloudflare.com/tunnel/get-started/).
 
 For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
+
+## GPS, neighbor maps, battery history and database demo release — 2026-10-16
+
+Owner requests pushing and deploying all local changes. Release contains the shared GPS quality pill and same-fix metadata, neighbor table/map connections and endpoint navigation, assignment-aware card mini maps with shared basemap/marker styling, and infrastructure voltage history with 24hr/7day/30day windows. Live neighbor rows remain empty until a separate real-ingestion integration; the synthetic demo supplies ten illustrative rows and 30 days of fictional battery patterns. No radio firmware is flashed or monitoring stack installed.
+
+Two additive migrations create the locked signal collection and index battery history queries. Verify them first against a private consistent copy of the live database; preserve existing operational rows and identities. Take and verify a pre-release backup before replacing backend code, stop the live worker/API for migration and source replacement, and retain matching prior source/static/configuration for rollback. Publish hashed frontend assets before replacing the index; keep old assets for open tabs. Code rollback does not reverse schema changes.
+
+The separate demo API/worker run as `meshlink-demo` with state under `/var/lib/meshlink-demo`, using a root-owned copy of the pinned binary under `/opt/meshlink-demo`. `enable-demo.py` copies only the checked synthetic checkpoint, rebases scenario timestamps once and refuses to overwrite an existing runtime. API binds to loopback 8092. Nginx permits portal/authentication routes through `/demo-api`; dashboard/raw collections and worker ingestion remain local. Live services/configuration stay on their existing independent paths. Public demo credentials must never become live operational credentials. All viewers share the fictional demo workspace and its mutations. [Demo guide](../../backend/demo/README.md).
+
+Backups now quiesce both sets of services and include demo state/binary/service definitions plus Nginx configuration alongside the existing private live state and MQTT queue/configuration. After release, run `verify.py --public`, `verify-demo.py`, and `verify-mqtt-archive.py`. The demo verifier checks all three history windows, simulation identity, demo-token rejection by live routes, denied OS access to live secrets/state, and isolated synthetic database/API/history recovery. These checks do not establish field performance or native browser/WebGL behavior. Deployment evidence follows after release verification.
 
 ## Sign-in refresh fix — 2026-10-16
 

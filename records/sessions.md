@@ -1,5 +1,187 @@
 # Session log
 
+## 2026-10-16 — Publish and deploy accumulated local changes
+
+- Owner requests pushing and deploying all local changes. Include GPS quality, separate database demo, neighbor table/signal map, card mini maps/labels, battery history, research and tracker records, and the existing clean stock-firmware submodule pointer. No hardware flash or monitoring-stack implementation is part of this release.
+- Frontend tests/typecheck/live production build and all 52 backend checks pass locally. The initial restricted backend run could not open localhost sockets; the authorized rerun passes. Existing MapLibre bundle-size warning and one Python resource warning remain. Native browser/WebGL review remains outstanding.
+- Add separate hosted-demo API/synthetic-worker service definitions, provisioning and Nginx routing; preserve live/demo database, token, OS-user and MQTT-configuration separation. Extend private backups to include demo state/services/binary and proxy configuration; add a reusable demo separation/history/isolated-recovery verifier. Review the additive live migrations against a private database copy before deployment, retain rollback source/assets and verify pre/post-release backups.
+
+Next useful step: push the coherent release, run the staged server checks, deploy to the owner-authorized LXC and append measured deployment/recovery results. Keep raw state, credentials and tracks outside Git.
+
+## 2026-10-16 — Explore private Meshtastic monitoring and recording
+
+- Owner invokes Wayfinder to investigate current Meshtastic monitoring/Grafana projects and setup requirements. Claimed [Check Meshtastic monitoring and recording stacks for the pilot](../.scratch/pilot/issues/19-meshtastic-monitoring-research.md); research completed in an isolated worktree/branch, preserving all unrelated staged and unstaged changes. Resolved the research only; no implementation decision is resolved.
+- Primary-source comparison identifies MeshMonitor's standalone subscribe-only MQTT, Prometheus/Grafana assets and Proxmox LXC template as the leading packaged trial; tcivie's encrypted MQTT/TimescaleDB/Grafana bundle is the SQL alternative. MeshView/Malla need TLS adaptation in inspected clients; hacktegic's exporter skips encrypted packets. Source findings are not runtime compatibility tests.
+- Record a [proposed private setup](../docs/research/meshtastic-monitoring-setup.md): preserve exact PocketBase archiving and portal GPS semantics, distinguish numeric metrics from logs, evaluate a private read-only collector, and verify dual-gateway receipt/dedup behavior and timestamps. Existing 4-CPU/8-GiB/64-GiB allocations are recorded; current free headroom is unmeasured. Loki/Alloy can follow metrics; retention/access/hosting remain proposals.
+- Push the primary-source report on `research/meshtastic-monitoring-20261016`, commit `f69b6a4`; no PR/merge. Create [Choose a private monitoring scope and pilot stack](../.scratch/pilot/issues/20-monitoring-scope-stack.md) as the owner decision after the research. No radio, firmware, MQTT ACL, production service, inventory, expense or notification integration changed; parked wishlist and fork work remain parked.
+
+Next useful step: choose whether to evaluate MeshMonitor plus Prometheus/Grafana first, or a narrow exporter on the existing worker, and whether log search belongs in that initial evaluation. Research-branch publication status is recorded in the research ticket; the main-worktree setup/tracker/session edits remain uncommitted. No application or hardware tests run; documentation/link and whitespace checks only.
+
+## 2026-10-16 — Attempt to inspect legacy MQTT messages
+
+- Owner requested a quick private inspection for the latest old messages and timestamps. SSH to the broker succeeds using the recorded port, but root-only archive inspection stops at `sudo: a password is required`. No archived file metadata, logs or payloads were read; no live broker changes made.
+- Network sandbox required an approved external SSH call; the default local SSH configuration also has a permissions error, bypassed with `-F /dev/null`. Archive content and recoverable timestamps remain unknown.
+- Owner supplied a privileged listing and latest-log tail: archived `mosquitto.db` is 47 bytes; logs include the current file, `.1`, and six compressed rotations. Mosquitto 2.0.18's [persistence writer](https://github.com/eclipse-mosquitto/mosquitto/blob/v2.0.18/src/persist_write.c) and [fixed structures](https://github.com/eclipse-mosquitto/mosquitto/blob/v2.0.18/src/persist.h) make 47 bytes consistent with header/configuration only, indicating no saved message records (inferred from size, not a binary parse). Supplied tail contains saves, failed connections, restarts and the audit rejection, with no successful message receipts. Final shutdown/save was October 13 at 13:44:08 Pacific; this is not a last-message timestamp. No remote IPs or raw log lines copied into Git.
+
+Next useful step: search all archived log rotations for successful client connections or any PUBLISH logging to establish the latest recorded legitimate activity; ordinary log levels may not establish last-message time or contents. Existing unrelated edits preserved; no commit or push requested/performed.
+
+## 2026-10-16 — Clarify legacy Mosquitto archive and message history
+
+- Confirmed from the recorded October 13 reset and its installer that legacy configuration, data and logs were moved to the broker's private `/root/meshlink-archive/mqtt-legacy-20261013T204408Z` after stopping Mosquitto to flush persistence. Archive contents and recoverable message counts remain uninspected; this review did not access the server.
+- Checked the official Mosquitto configuration/MQTT manuals: retained messages and persistent-session queues can preserve limited message state; broker persistence is not a complete traffic history. The fresh broker installer enables persistence. Separate full-payload worker archiving began October 15 and only covers delivered traffic, subject to broker ACLs and delivery gaps.
+
+Next useful step if historical recovery is requested: inspect the legacy archive's file metadata and any persistence database privately, without changing the live broker. Existing unrelated edits preserved; no commit or push requested/performed.
+
+## 2026-10-16 — Minimal battery history on repeater and gateway cards
+
+- Add a compact voltage chart to repeater/gateway map cards and reuse it in Infrastructure battery detail. Provide 24hr/7day/30day buttons, small axis values and a single smooth monotone line without dots, grid, area fill or cursor. Curves stay within adjacent readings and leave battery missing-timeout gaps disconnected. Keep unknown/invalid/future readings out of the plot; preserve current/stale/offline indications and recent exact readings in the detail disclosure.
+- Add an authenticated, no-store, on-demand history route and device/time index migration. Admin/member access follows the existing infrastructure snapshot; worker/anonymous access is denied. Bound each period to the latest 50,000 observations with explicit truncation. Refresh selected history once a minute, merge recent snapshots, abort obsolete device/period requests and retain loaded readings on refresh failure. The ordinary two-second state snapshot remains small.
+- Rebuild the synthetic checkpoint with 17,283 timed voltage examples covering 30 days: Demo ridge relay recovers daily with sun cycles, Demo canyon relay shows daily charging but a roughly 0.51 V monthly deficit, and Demo dispatch gateway stays nearly steady. Update the simulation worker to continue all three patterns from a persisted/rebased scenario clock. These are fictional examples, not solar sufficiency diagnoses or measured runtime.
+- Back up the running local demo privately, refresh only its illustrative voltage history/configuration, and restart its verified launcher so the new route and worker are active at localhost:5173. Through the actual frontend proxy, verify all three periods, separate simulation identity and online feed. Saved members, assignments and neighbor observations exactly match the pre-refresh backup; synthetic checkpoint checksum and SQLite integrity pass.
+- Frontend checks/typecheck/default live build and all 52 backend checks pass, including real-database history windows/access, solar cycles/deficit, curved bounds/outage gaps and rapid period/device switches. Native browser visual review remains unavailable (empty browser inventory); existing MapLibre bundle-size warning remains. Preserve prior staged/unstaged edits; no production deployment, hardware change, commit or push requested/performed.
+
+Next useful step: review repeater/gateway cards in the running local demo, comparing 24hr with 7day/30day on the two relays. Deploy the history hook and index migration with the frontend when a release is requested.
+
+## 2026-10-16 — Match mini-map marker styles and states to the main map
+
+- Replace the generic mini-map badge with the main map's shared marker classes/CSS. Share class selection for client GPS age and infrastructure type; tracker and infrastructure node cards retain the matching selected outline. Relationship endpoints use their own current status and update as time or position records change. Preserve assigned member shortnames, map framing, signal lines and button-free mini maps.
+- Regression checks compare actual main/mini marker classes and computed colors, dimensions, shape, borders, shadows and selected outlines. Cover Active/Recent/Stale/No Location transitions in relationship and node cards, plus Users and gateway styling. Frontend tests, typecheck, production build and whitespace checks pass; the existing bundle-size warning remains. Native WebGL/visual review remains unverified. Preserve unrelated edits; no deployment, database/radio change, commit or push performed.
+
+Next useful step: visually review matching marker states in local node and relationship cards.
+
+## 2026-10-16 — Assigned member shortnames on card mini maps
+
+- Reproduce the owner's reported mismatch in the actual Map card: the main marker displays the assigned member shortname ALIAS while its mini map displays S001. The tracker mini map directly used the device shortname, and relationship mini maps used device-labeled endpoints. Reuse the existing assignment-aware map-label function for Map/Users tracker cards and client endpoints in relationship mini maps. Device shortnames remain the fallback when no active member shortname exists.
+- Add regression checks for assigned clients, relationship endpoint labels, assignment release restoring the device label and Users cards. Observe the ALIAS-versus-S001 assertion fail before the fix. Frontend tests, typecheck and production build pass; whitespace checks pass. DOM adapters verify labels; native visual review remains unverified and the existing bundle-size warning remains. Preserve unrelated edits; no database/radio change, deployment, commit or push performed.
+
+Next useful step: review assigned client markers in the local node and relationship cards.
+
+## 2026-10-16 — Minimal maps in node and relationship cards
+
+- Add a lazy-loaded mini map to tracker/member-client and infrastructure detail sheets, including gateway/router cards and tracker cards opened from Users. Each shows only its node. Relationship cards show just the two endpoints and their existing signal-colored connection, independently of the main signal overlay. Reuse the main map style and worker setup; share Topo/Aerial imagery selection across cards and page navigation for the current app session.
+- Center single nodes and fit both relationship endpoints with padding and a zoom cap, including on sheet resize. Keep panning/touch zoom available, omit map buttons, preserve visible USGS attribution and allow card scrolling over maps. Separate labels for co-located endpoints. Unknown/invalid positions remain explicit; missing endpoints never produce invented locations or lines. Existing planned/recorded-location details remain available.
+- Frontend tests, typecheck and production build pass, including marker isolation, framing, line geometry/color updates, synchronized basemap changes, gateway cards, Map-to-Users navigation and unknown positions. DOM/MapLibre adapters verify behavior; browser inventory is empty, so native WebGL, tiles and desktop/mobile visual review remain unverified. Existing bundle-size warning remains. Preserve unrelated staged/unstaged work; no deployment, database/firmware change, commit or push performed.
+
+Next useful step: visually review single-node and relationship mini maps in the local demo on desktop/mobile.
+
+## 2026-10-16 — Restore assigned-device map shortnames in the database demo
+
+- Reproduce the S00X fallback against the tracked synthetic database and the actual map-label function: all five saved member shortnames were blank after replacing browser fixtures with database-backed demo state. Assignment lookup and marker rendering still worked; existing UI tests supplied their own member shortnames and missed the checkpoint omission.
+- Seed AVERY/JORD/MORG/RILEY/CASEY in the demo generator and rebuild its synthetic checkpoint/manifest. Restore only blank shortnames for matching fictional members through the running local demo API; preserve saved assignments and signal edits. Verify the frontend's `/demo-api` proxy now yields AVERY/JORD/MORG/RILEY for assigned devices and S005/S006 for unassigned ones. No production or radio changes.
+- Add a regression test that reads saved members/assignments/devices from the actual checkpoint and runs the map-label function. Observe the exact failure before fixing it. All 41 frontend tests, typecheck/build and three demo-database integration checks pass; whitespace checks pass. Existing MapLibre bundle-size warning remains. Native browser visual review remains unverified. Preserve unrelated staged/unstaged work; no commit or push requested/performed.
+
+Next useful step: review the restored names in the running local map; its normal polling reads the corrected saved records.
+
+## 2026-10-16 — Rename node-card list to Neighbors
+
+- Replace the map node-card heading and accessible section label Relationships with Neighbors, and align the empty-state message, existing test expectation and portal guide. Text-only change; whitespace checks pass. No tests rerun, deployment, commit or push performed; unrelated edits preserved.
+
+Next useful step: review the Neighbors list in the local demo.
+
+## 2026-10-16 — Relationship card endpoint buttons
+
+- Extend [Show neighbor signal connections on the map](../.scratch/pilot/issues/18-map-neighbor-signals.md) with two Open [node] buttons at the top of each relationship card. Each opens its tracker or infrastructure card in place; its relationship row can return to the relationship card. Reuse tracker marker-selection behavior, including parent selection and trail clearing, and retain exactly one open card with the overlay either on or off.
+- Frontend tests, typecheck and default live build pass, including navigation through both endpoint buttons and back through relationship rows on desktop/mobile dialog APIs. Whitespace checks pass; native browser visual review remains unverified and the existing MapLibre bundle warning remains. Preserve unrelated edits; no service start, deployment, database/firmware change, commit or push performed.
+
+Next useful step: review node → relationship → either node navigation visually in the local demo.
+
+## 2026-10-16 — Simplify signal lines and add node relationships
+
+- Refine [Show neighbor signal connections on the map](../.scratch/pilot/issues/18-map-neighbor-signals.md) at the owner's request: remove all line labels, retain colored/selectable lines, hide legend explanations behind an accessible info button and place the legend outside toolbar flow so only its own box expands. Align toolbar controls at the top to prevent stretched buttons.
+- Preserve tracker/infrastructure marker selection above line targets by stopping marker click propagation and ignoring marker-originated layer clicks. Map node cards now show only a relationship and colored SNR pill per relationship row; selecting the row opens the full relationship sheet. Lists and details work with the overlay off and with known endpoints lacking coordinates. Turning the layer off changes visibility without dismissing cards. No readings or explanatory copy are added to the compact rows.
+- Frontend tests, typecheck, default live build and explicit demo build pass, covering no map labels, collapsed/revealed legend help and isolated CSS layout, marker click precedence, compact tracker/infrastructure relationship rows, relationship selection on desktop/mobile, retained offline/live updates and access without GPS or the overlay. Existing grouping/timestamp/unknown-value checks remain passing. Native visual/WebGL review remains unverified; existing MapLibre bundle warning remains. Preserve prior edits; no database/firmware change, service start, deployment, commit or push performed.
+
+Next useful step: review the simplified map and node-to-relationship interaction visually in the database demo.
+
+## 2026-10-16 — Map neighbor signal overlay
+
+- Implement [Show neighbor signal connections on the map](../.scratch/pilot/issues/18-map-neighbor-signals.md): Show/Hide signal strength toggle beside and styled like Fit area, colored geographic lines, directional SNR label buttons and selectable responsive detail sheets. Use the existing authenticated/demo API link records; preserve unrelated edits.
+- Group one connection per known mapped pair, retaining both directions/report sources without inventing reverse reception. Color by the weakest finite SNR among latest readings per direction/source (green ≥5 dB, amber 0–<5 dB, red <0 dB, neutral unknown); these are display bands, not receiver limits or delivery guarantees. Known hearing times order delayed reports; a newer missing reading never borrows an older SNR. Unknown final-hop identity never becomes an original-source connection.
+- Cards show SNR/RSSI including zero/missing readings, separate hearing and report timestamps with ages, path/original source, loaded observation count and recorded/configured/planned endpoint context. Labels support keyboard activation, lines have wider pointer targets, selection replaces existing cards, feed loss retains observations and basemap changes preserve the overlay. Lines depict displayed endpoint locations, not measured RF paths or historical endpoint positions.
+- Full frontend tests, TypeScript/default live build and explicit demo build pass; focused grouping and React interaction checks cover missing identities/coordinates, delayed reception, weaker reverse SNR, live updates, line/label selection, empty state, toggle cleanup and mobile/desktop sheet API behavior. Whitespace checks pass. Native browser/WebGL visual review is unavailable (browser inventory empty); existing MapLibre bundle-size warning remains. No service start, deployment, database/firmware change, commit or push requested/performed.
+
+Next useful step: review the overlay visually with the database demo; existing real signal ingestion remains a separate integration task before live observations can populate it.
+
+## 2026-10-16 — Simple local development README
+
+- Add root `README.local.md` with startup, one-time setup, portal/dashboard URLs, public demo credentials, member sign-in, stop behavior, build/check commands and writable/checkpoint database paths. Link it from the main README. Check local documentation links and whitespace; no source or runtime changes, tests rerun, commit or deployment. Preserve existing edits and keep local services stopped as requested.
+
+Next useful step: follow the short README when local development resumes.
+
+## 2026-10-16 — Stop local demo services
+
+- Owner requests stopping local development. Confirm the demo PocketBase on localhost:8092 and its synthetic worker are running; the frontend on 5173 is already stopped. Stop the identified worker first, then its demo server supervisor, and verify neither 5173 nor 8092 accepts connections. Preserve the demo database and all working-tree edits; no production service, commit or deployment changes.
+
+Next useful step: run `python3 backend/launch.py` when local development resumes.
+
+## 2026-10-16 — Local launch and build commands clarified
+
+- Confirm existing `python3 backend/launch.py` supervises the separate demo PocketBase (8092), simulation worker and Vite (5173), preserving the writable demo database and stopping its children on Ctrl+C. It requires initialized demo state/dependencies and refuses occupied ports.
+- Confirm repository-root frontend commands: `npm --prefix portal run build` for the default live production build, `VITE_PORTAL_MODE=demo npm --prefix portal run build` for the explicit database-demo build, and `npm --prefix portal run check` for frontend tests plus build. First-time setup remains in the demo guide. No service, source-code, database, deployment or commit changes performed; existing edits preserved.
+
+Next useful step: use the launcher after stopping existing local services, or run the documented build/check command as needed.
+
+## 2026-10-16 — Database-backed demo and neighbor signal table
+
+- Owner keeps the fork proposal parked and requests a neighbor table populated from a separate inspectable PocketBase with its synthetic database tracked in Git. Complete [Serve the demo and neighbor table from a separate PocketBase](../.scratch/pilot/issues/17-database-demo-neighbor-table.md). [Demo guide and public demo-only credentials](../backend/demo/README.md).
+- Generate `backend/demo/data.db` solely from fictional fixtures in a fresh disposable PocketBase; retain a checksum manifest and synthetic marker. Initialize an ignored writable copy at `local-data/demo/pb_data/data.db`, rebasing scenario timestamps once in the DB, preserving later edits and refusing overwrite. Seed six trackers, five members, four infrastructure devices and ten directional link observations alongside saved scenario records. Production stays on the VM with operational data/secrets outside Git.
+- Replace application memory-only demo data/mutations with separate PocketBase API reads/writes. Keep live/demo request origins and token persistence separate, reject a non-simulation demo response and remove page-level sample fallbacks. Add Infrastructure receiver-filtered Neighbor signals table and a locked additive `link_observations` collection exposed through authenticated state. Preserve signal zeros, unknown values/relay identities, original-source separation and independent report/hearing times. No sample rows enter ordinary migrations; live signal ingestion and fork firmware remain unimplemented.
+- All 51 backend checks pass in the existing `.venv` against real disposable databases, including checkpoint/runtime isolation, record edits reaching state, restart persistence and authorization. Frontend tests, typecheck, default live build and explicit demo build pass, including API separation, unavailable/misdirected demo rejection, table filtering and unknown/zero readings. Verify the actual Vite `/demo-api` response matches all ten SQLite signal records and the synthetic worker is online. Existing MapLibre bundle warning remains; no browser surfaces are available for native desktop/mobile visual review.
+- Existing frontend occupies 5173, so do not stop it. Start the new demo API on 8092 and its synthetic worker alongside it; portal is `http://127.0.0.1:5173`, dashboard `http://127.0.0.1:8092/_/`. Preserve prior GPS-quality, firmware, cadence-research and other edits. Add only the synthetic checkpoint/manifest/guide to Git tracking; no commit, push, VM deployment or hardware change requested/performed.
+
+Next useful step: owner opens Infrastructure and the demo dashboard to inspect/edit the same rows. Before public release, provision a separate demo API service/proxy and apply the signal migration with its state hook; native visual review and real signal ingestion remain outstanding.
+
+## 2026-10-16 — Fork neighbor reporting improvements explored
+
+- Owner asks whether our fork can improve NeighborInfo for project needs. Extend [node and neighbor telemetry](../docs/research/node-neighbor-telemetry.md#follow-up-tailoring-our-fork) and the existing [research answer](../.scratch/pilot/issues/16-node-neighbor-telemetry.md#fork-customization-follow-up) with passive infrastructure collection of RSSI/SNR, actual hearing age and optional bounded window summaries. Member trackers can keep ordinary GPS broadcasts; only instrumented observers/export paths need the new feature.
+- Propose independent gateway MQTT/repeater LoRa schedules, separate expiry and publication, bounded local capacity covering the planned node set and capped/batched radio summaries. Suggested intervals/capacity remain bench hypotheses. Preserve standard NeighborInfo with a versioned private companion payload, GPS priority, airtime gates and gateway silence. Explain duplicate filtering, relay-identity ambiguity and incomplete snapshots; no delivery-rate or complete-topology claim.
+- Read-only source/design research and documentation checks only. Local firmware remains at the upstream pin, two commits behind the locally recorded fork branch; reconcile the latest fork before coding. No fetch, firmware change, setting change, build, flash, deployment or commit requested/performed. Existing working-tree changes preserved.
+
+Next useful step: when implementation is requested, define the first report payload and bench acceptance checks, then implement one infrastructure observer/export path before changing the fleet.
+
+## 2026-10-16 — Node and neighbor signal capture reviewed
+
+- Owner asks what else nodes can report and whether neighbor signal strength from repeaters/gateways can be captured in a table. Complete [Check node telemetry and directional neighbor signal reporting](../.scratch/pilot/issues/16-node-neighbor-telemetry.md), with pinned Meshtastic source and official documentation in [node and neighbor telemetry](../docs/research/node-neighbor-telemetry.md).
+- Gateway envelopes can include final-hop RSSI/SNR; optional NeighborInfo provides directional neighbor SNR without RSSI or transmitted per-neighbor hearing time. Keep origin/observer/heard-node identities separate, preserve gateway copies and unknown values, and avoid implying reverse connectivity or delivery reliability. Pinned NeighborInfo defaults to six-hour reports, minimum four hours, with ten neighbors; enabling/exporting it requires configuration/build/path verification.
+- Record proposed table columns and directional history storage, plus uptime, airtime/channel use, diagnostic counters, transmitted GPS context and fitted sensors as additional candidates. Recommend receive-only gateway metadata extraction first. Exact raw MQTT receipts are already archived privately, but neighbor/signal normalization and portal display are not implemented.
+- Documentation only; no live archive inspection, device setting readback/change, firmware change, implementation, deployment, hardware test or commit requested/performed. Check documentation links/whitespace; preserve all pre-existing working-tree edits, including the local GPS-quality feature.
+
+Next useful step: implement gateway receipt signal capture and an Infrastructure table when requested; verify NeighborInfo module/configuration and actual delivery before adding repeater-reported rows.
+
+## 2026-10-16 — Plain-language GPS quality pill
+
+- Owner requests a visual confidence/quality indication without technical abbreviations or invented metre accuracy. Complete [Show plain-language GPS quality in tracker cards](../.scratch/pilot/issues/15-gps-quality-pill.md): green Good / amber Limited / red Poor / neutral Unknown, with bars and text. Tap/click or keyboard-activate for a plain-language explanation about the recorded fix, environmental limitations and separate Last GPS age. Reported satellite count is secondary context; no raw quality score, probability or accuracy radius is displayed.
+- Extend MQTT decoding and validated PocketBase ingestion with optional PDOP/satellite values stored on each historical/latest position in existing JSON fields. Absent/zero remains unknown; newer missing quality clears prior quality, and delayed/duplicate/unknown/future packets retain existing ordering and freshness behavior. No migration, archive replay/backfill or firmware/settings change. Demo-only fixtures illustrate the quality categories. Provisional thresholds and primary-source rationale are recorded in the ticket answer and linked contract.
+- All 48 backend tests pass against disposable actual PocketBase instances; the initial sandbox run could not open localhost sockets and the permitted rerun passes. Frontend tests/typecheck/default and live builds pass, including wire scaling, metadata validation, duplicate/delayed/restart association, missing-quality replacement, disclosure interaction and Map/Users rendering independently of age. Whitespace checks pass; existing MapLibre bundle warning remains. Browser inventory is empty, so native visual/mobile/keyboard review is unverified.
+- No live deployment, hardware/field test or commit requested/performed; preserve unrelated firmware, GPS cadence research and prior session-log edits.
+
+Next useful step: review the pill visually on desktop/mobile, then release worker, backend hook and frontend together when deployment is authorized. Live historical points without quality remain Unknown until a new quality-bearing position arrives.
+
+## 2026-10-16 — GPS quality in location reports checked
+
+- Owner asks whether nodes report GPS accuracy with location. Stock Meshtastic position packets support optional DOP and satellite count ([official configuration](https://meshtastic.org/docs/configuration/radio/position/#position-flags)); pinned `v2.7.26.54e0d8d` PositionModule includes these when enabled, but does not populate `gps_accuracy` in normal node-originated position broadcasts. DOP is a satellite-geometry quality indicator, not a measured error radius in metres.
+- Saved private B001/B002 GPS snapshots have position flags 939 (DOP and satellite count enabled, HVDOP disabled). The retained TEST-004 capture contains PDOP 183/282, corresponding to 1.83/2.82, and satellite counts 9/8, with duplicate gateway receipts. These are historical bench observations, not current device readback or field accuracy measurements. Raw locations and identities stay private.
+- The current MQTT adapter normalizes coordinates and GPS measurement time but does not expose DOP/satellite count to the portal. No implementation, configuration change, hardware test or commit performed; preserve unrelated edits.
+- Follow-up: owner asks whether all position flags are enabled. Decode saved member value 939 against the pinned schema: enabled ALTITUDE, ALTITUDE_MSL, DOP, SATINVIEW, TIMESTAMP, HEADING and SPEED; disabled GEOIDAL_SEPARATION, HVDOP and SEQ_NO. HVDOP selects separate horizontal/vertical DOP instead of PDOP. Saved configuration only; no live readback or setting change.
+
+Next useful step: if GPS quality display is requested, carry received DOP/satellite values through ingestion and label them as quality indicators; a trustworthy metre-radius estimate needs separate receiver/error-model evidence.
+
+### Portal GPS quality integration discussed
+
+- Owner accepts the existing position flags unchanged and asks how to include reported data, especially quality, in the portal. Inspect the adapter, PocketBase ingestion/snapshot and shared tracker detail card. Recommend extending the normalized position with PDOP and satellite count first, retaining these on each historical position and its matching latest-position object. Existing JSON payload/latest-position fields and snapshot forwarding support an additive change without a new collection.
+- Proposed presentation: a GPS quality row showing PDOP and a separate satellite count, with a short explanation that lower DOP indicates better satellite geometry, not metre accuracy. Keep quality attached to the same GPS measurement as the coordinates; missing/zero DOP remains unknown and older points without quality stay valid. Preserve position-age/stale behavior separately. Other already-transmitted altitude, speed and course data can follow the same ingestion path, with pinned-source units checked before use.
+- This is an integration recommendation, not implemented or deployed behavior or a newly resolved tracker decision. No firmware/settings change, tests or commit performed; unrelated edits preserved.
+
+Next useful step: when implementing, cover wire scaling (183 → 1.83), missing indicators, matching historical/latest measurements and unchanged two-gateway deduplication, then add the quality fields to the shared Map/Users card.
+
+### Accuracy in metres checked
+
+- Owner asks whether metre accuracy is possible. Current stock broadcasts do not provide a per-fix metre-error estimate; PDOP alone cannot supply one without an additional error model. The pinned V4 target assumes L76K, and [Heltec's compatible module](https://heltec.org/project/l76-gnss-module/) lists 2.5 m CEP as a product specification, not each fix's error. Exact installed GPS modules remain unverified in the inventory.
+- A possible receiver-native route merits bench verification before any firmware promise: [GPSD's CASIC driver](https://gitlab.com/gpsd/gpsd/-/blob/master/drivers/driver_casic.c) decodes NAV-PV horizontal/vertical error variances into metre estimates. Its header explicitly notes the L76K public protocol document does not document NAV messages; this does not establish support on our units. Some other receivers explicitly expose horizontal accuracy, e.g. [u-blox NAV-PVT](https://content.u-blox.com/sites/default/files/products/documents/u-blox7-V14_ReceiverDescriptionProtocolSpec_%28GPS.G7-SW-12001%29_Public.pdf).
+- Recommend first identifying/probing the existing fitted module for a documented per-fix error estimate, then, if supported, implementing firmware reading/transmission and portal storage/display with explicit estimate/confidence semantics. No hardware purchase, firmware/configuration change, actual probe, implementation or commit performed. Do not substitute the advertised specification or an arbitrary PDOP multiplier for observed metre accuracy.
+
+Next useful step: verify the installed module and supported accuracy messages on one owned V4 before deciding whether metre estimates can be added without hardware changes.
+
 ## 2026-10-16 — Deploy sign-in refresh fix
 
 - Owner authorizes deployment. Commit and push source `ee5e57e`; build/test it in an isolated LXC release directory with dependencies from the lockfile. The initial shared dependency folder lacked jsdom; isolated installation resolves that without changing the running services. Frontend tests/typecheck/production build pass locally and on the pinned server Node runtime.
@@ -43,6 +225,15 @@ Next useful step: review Avery's solid green battery and Active pill in the demo
 Next useful step: review the refined battery in the tracker card at mobile/desktop sizes.
 
 
+## 2026-10-15 — Stock member GPS timing options reviewed
+
+- Owner asks whether stock firmware can report faster and whether movement-based reporting is better. Check official position/device documentation and pinned stock `2.7.26.54e0d8d` source; capture findings in [member GPS cadence](../docs/research/member-gps-cadence.md). Private-channel configuration permits explicit 60/30-second periodic intervals; GPS acquisition, periodic broadcasts and movement distance/minimum-time settings are separate controls. Default-channel interval enforcement must not be confused with this private profile.
+- Recommend comparing a 60-second periodic / 30-second GPS profile with a hybrid: retain 120-second periodic reports, enable smart broadcasting, explicitly set 30-second minimum and 50-metre displacement with 30-second GPS acquisition. These are proposed bench profiles, not approved/applied device settings or measured delivery/runtime claims. Movement requires both displacement and elapsed time; periodic fallback remains useful for stationary/slow searches. Faster reporting increases offered radio traffic; measure freshness, congestion and battery runtime against the existing four-hour minimum/twelve-hour target.
+- Source caveat: GPS publication calls `handleNewPosition()` without the smart-enable check, and that handler tests distance/time independently of the toggle. Thus the recorded smart-off setting does not establish strictly fixed-only transmissions. Current documentation also contains inconsistent defaults; use explicit values and reboot/readback. No bug fix or hardware/configuration change performed.
+- No ticket decision, deployment or commit requested/performed. Preserve all unrelated working-tree edits.
+
+Next useful step: compare the proposed profiles using actual source measurement/receipt gaps, transmission counts and battery runtime before selecting an operational cadence.
+
 ## 2026-10-15 — Session clock clarity, distance and battery sizing
 
 - Owner questions First Seen 99 minutes ago versus Time Active 1h 27m for Demo Morgan. Clarify that the first is age since the first GPS point and the second is the observed first-to-last span (99 minus 12 minutes since the latest point = 87 minutes). Keep Time Active and change First Seen to clock time only, with Unknown retained when unavailable. Last GPS/Last Heard age behavior remains separate.
@@ -52,6 +243,13 @@ Next useful step: review the refined battery in the tracker card at mobile/deskt
 
 Next useful step: visually review the larger battery and session summary; full session/distance completeness still needs the deferred backend snapshot aggregation work.
 
+
+## 2026-10-15 — Current member GPS cadence checked
+
+- Owner asks the currently configured location-reporting cadence. Saved/reboot-verified B001/B002 Heltec V4 profiles in TEST-001 use 120-second periodic position broadcasts, 60-second GPS acquisition and smart broadcasting disabled. No later recorded member cadence change found; TEST-004/005 establish automatic GPS reception/ingestion, not a sustained two-minute delivery guarantee.
+- Read-only records review; no device readback, radio configuration, hardware test, ticket change or commit performed. Preserve existing working-tree edits.
+
+Next useful step: if actual delivery cadence is needed, measure GPS measurement/receipt gaps from retained observations and compare with the saved profile.
 
 ## 2026-10-15 — Compact battery/copy indicators and latest recorded trail
 
@@ -113,6 +311,14 @@ Next useful step: admin selects the installed LiPo type/capacity for each tracke
 
 Next useful step: let the archive collect real traffic; broker admin can expand the worker read ACL to `snorr/pilot/#` if topics outside the existing encrypted subtree are needed. Review stored packet types when the owner brings interpretation forward.
 
+## 2026-10-15 — Last-heard ingestion semantics reviewed
+
+- Owner asks whether last heard can use the latest MQTT packet from a node. Inspect adapter, worker and ingestion: live worker subscribes to the configured encrypted channel, filters registered sources/gateways, and currently normalizes member positions plus infrastructure voltage/environment telemetry. Other application packets are counted as ignored, not archived. Rejected adapter packets are counted, while backend validation failures retain bounded receipts.
+- Accepted/duplicate normalized receipts update the originating device's lastContactAt using original worker receipt time, independently of sensor/GPS measurement clocks. Snapshot and map stats already expose that field; demo infrastructure fixtures currently omit receipt timestamps. Queued API ingestion preserves original arrival time.
+- Recommend extending last heard to validated packets originating from a registered node regardless of application kind, retaining only needed contact metadata. Keep gateway latest MQTT uplink activity separate: forwarding another node's packet proves gateway activity, not a fresh packet originating from the gateway or each relay. Keep sensor/GPS measurement ages independent. No catch-all ingestion, raw-payload archive or last-heard behavior change implemented in this review.
+
+Next useful step: choose all-valid-origin-packet contact tracking plus separate gateway uplink age, then implement/test the adapter/receipt contract without refreshing telemetry/GPS timestamps.
+
 ## 2026-10-15 — RAK charging and solar specifications checked
 
 - Owner asks about published RAK4631 charge/discharge/cutoff/solar behavior. Inventory identifies RAK19007 base boards; per-unit revision remains unverified. Read the official RAK19007 datasheet and RAK support explanations, and inspect the pinned Meshtastic source without modifying firmware.
@@ -137,6 +343,14 @@ Next useful step: review the approximate percentages locally, then compare telem
 - No estimate curve, new hardware, backend/frontend implementation, field measurement or ticket resolution in this discussion.
 
 Next useful step: identify cell make/model or nominal/full-charge voltage and confirm per-device parallel packs/measurement path, then choose an explicitly approximate UI profile.
+
+## 2026-10-15 — RAK4631 small dummy-load guidance
+
+- Owner asks about a conservative resistor load and chip GPIO limits. Reviewed [Nordic GPIO specifications](https://docs.nordicsemi.com/r/bundle/ps_nrf52840/page/gpio.html), [Nordic support's package-current guidance](https://devzone.nordicsemi.com/f/nordic-q-a/82106/nrf52840-gpio-drive-capability), and [RAK4631 electrical documentation](https://docs.rakwireless.com/product-categories/wisblock/rak4631/datasheet/).
+- Standard-drive logic levels are specified at 0.5 mA; high drive at 5 mA with VDD >= 2.7 V (3 mA at lower supply). Nordic support gives 15 mA total GPIO sink/source ceiling for the package; table values of 14/15 mA are not conservative per-pin design targets. Suggested starting at 10 kOhm GPIO-to-ground (~0.33 mA at 3.3 V), with an unused output verified first. A 2.2 kOhm load (~1.5 mA) requires explicit high-drive configuration for this guidance.
+- A power-rail resistor, optionally switched by a MOSFET, better suits a larger battery dummy load; exact rail, baseboard wiring/regulator budget and firmware pin use must be checked before wiring. No hardware connected, firmware changed, load/current measured, ticket resolved or commit requested. Existing working-tree edits preserved.
+
+Next useful step: identify the exact baseboard and whether the intended test is battery drain or processor work, then select the load and connection accordingly.
 
 ## 2026-10-15 — Linux infrastructure battery UI
 

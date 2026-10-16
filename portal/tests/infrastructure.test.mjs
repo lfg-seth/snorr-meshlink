@@ -46,6 +46,265 @@ registerHooks({
   },
 });
 
+test('unlabelled signal lines, independent legend help and node relationships preserve node selection', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.ResizeObserver = class { observe() {} disconnect() {} };
+  const stylesheet = document.createElement('style');
+  stylesheet.textContent = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8');
+  document.head.append(stylesheet);
+  let mobile = false;
+  window.matchMedia = () => ({ matches: mobile, addEventListener() {}, removeEventListener() {} });
+  const dialog = window.HTMLDialogElement.prototype;
+  dialog.showModal = function () { this.open = true; this.dataset.mode = 'modal'; };
+  dialog.show = function () { this.open = true; this.dataset.mode = 'panel'; };
+  dialog.close = function () { this.open = false; };
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const { createRoot } = await import('react-dom/client');
+  const { default: MapPage } = await import('../src/MapPage.tsx');
+  const { MapPreferences } = await import('../src/MapPreferences.tsx');
+  const { infrastructure, initialTrackers } = await import('../src/demo.ts');
+  const now = Date.now();
+  const at = new Date(now - 120000).toISOString();
+  const links = [{ id: 'forward', observerDeviceId: 'r1', heardDeviceId: 'd1', originalSourceDeviceId: 'd2',
+    path: 'relayed', source: 'gateway', snrDb: 0, rssiDbm: -112, observedAt: at, receivedAt: at },
+  { id: 'reverse', observerDeviceId: 'd1', heardDeviceId: 'r1', originalSourceDeviceId: null,
+    path: 'direct', source: 'neighbor', snrDb: -2, rssiDbm: null, observedAt: null, receivedAt: at },
+  { id: 'unknown', observerDeviceId: 'r1', heardDeviceId: null, originalSourceDeviceId: 'd3',
+    path: 'unknown', source: 'gateway', snrDb: 9, rssiDbm: -80, observedAt: null, receivedAt: at }];
+  const root = createRoot(document.getElementById('root'));
+  const render = (rows = links, online = true, trackers = initialTrackers, assignments = [], members = []) => act(async () => root.render(createElement(MapPreferences, null, createElement(MapPage, {
+    trackers, infrastructureNodes: infrastructure, links: rows, online, now, assignments, members,
+    labels: Object.fromEntries(initialTrackers.map(t => [t.id, t.shortName])), selectedId: '', onSelect() {}, trailId: null, onTrailChange() {},
+  }))));
+  const toggle = () => document.querySelector('.signal-toggle');
+  const canvas = () => document.querySelector('.map-canvas');
+  const features = () => JSON.parse(canvas().dataset.signals).features;
+  try {
+    await render();
+    assert.equal(toggle().previousElementSibling.textContent.trim(), 'Fit area');
+    assert.equal(toggle().getAttribute('aria-pressed'), 'false');
+    assert.equal(features().length, 0);
+    assert.equal(document.querySelector('.signal-map-label'), null);
+    await act(async () => document.querySelector('button.map-pin').click());
+    const mini = () => document.querySelector('.mini-map-canvas');
+    const miniPins = () => [...mini().querySelectorAll('.mini-map-pin')];
+    const miniLines = () => JSON.parse(mini().dataset.signals).features;
+    const assertMarkerStyle = (main, preview) => {
+      // Compare the recorded state after moving the pointer off the clicked marker.
+      document.body.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true }));
+      const classes = element => [...element.classList].filter(name => !['maplibregl-marker', 'mini-map-pin'].includes(name)).sort();
+      assert.deepEqual(classes(preview), classes(main), 'mini map shares node type, status and selection state');
+      const mainStyle = window.getComputedStyle(main);
+      const previewStyle = window.getComputedStyle(preview);
+      for (const property of ['backgroundColor', 'color', 'height', 'minWidth', 'borderRadius', 'borderColor', 'boxShadow', 'outline', 'outlineOffset'])
+        assert.equal(previewStyle[property], mainStyle[property], `mini marker matches main ${property}`);
+    };
+    assert.equal(miniPins().length, 1, 'node card shows only its node');
+    assert.equal(miniPins()[0].textContent, 'S001');
+    assertMarkerStyle(canvas().querySelector('button.map-pin'), miniPins()[0]);
+    assert.equal(miniLines().length, 0, 'node mini map has no trails or relationships');
+    assert.deepEqual(JSON.parse(mini().dataset.camera).center, [initialTrackers[0].position.longitude, initialTrackers[0].position.latitude]);
+    assert.equal(mini().dataset.controls, '0', 'no map controls are added');
+    assert.equal(document.querySelector('.card-mini-map button'), null, 'pins and attribution add no buttons');
+    assert.match(JSON.parse(mini().dataset.style).sources.basemap.tiles[0], /USGSTopo/);
+    assert.match(document.querySelector('.node-relationship').textContent, /S001 ↔ R001.*-2 dB/);
+    assert.equal(document.querySelectorAll('.node-relationship').length, 1);
+    assert.equal(document.querySelector('.node-relationship').children.length, 2, 'relationship and pill only');
+    assert.equal(document.querySelectorAll('.signal-reading').length, 0, 'readings stay in the relationship card');
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.ok(document.querySelector('.signal-link-detail'), 'relationship works with the overlay off');
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['S001', 'R001']);
+    assertMarkerStyle(canvas().querySelector('button.map-pin'), miniPins()[0]);
+    assertMarkerStyle(canvas().querySelector('button.infrastructure-pin'), miniPins()[1]);
+    assert.equal(miniLines().length, 1);
+    assert.equal(miniLines()[0].properties.color, '#b42318');
+    assert.deepEqual(miniLines()[0].geometry.coordinates, miniPins().map(pin => JSON.parse(pin.dataset.coordinates)));
+    const points = miniPins().map(pin => JSON.parse(pin.dataset.coordinates));
+    assert.deepEqual(JSON.parse(mini().dataset.camera).bounds, [
+      [Math.min(...points.map(p => p[0])), Math.min(...points.map(p => p[1]))],
+      [Math.max(...points.map(p => p[0])), Math.max(...points.map(p => p[1]))],
+    ]);
+    assert.equal(JSON.parse(mini().dataset.camera).maxZoom, 14);
+    assert.equal(features().length, 0);
+    assert.deepEqual([...document.querySelectorAll('.signal-node-buttons button')].map(button => button.textContent), ['Open S001', 'Open R001']);
+    await act(async () => document.querySelector('[aria-label="Open S001 node card"]').click());
+    assert.ok(document.querySelector('.tracker-detail'));
+    assert.equal(document.querySelectorAll('.device-sheet').length, 1, 'endpoint replaces the relationship card');
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => document.querySelector('[aria-label="Open R001 node card"]').click());
+    assert.ok(document.querySelector('.infrastructure-quick-stats'));
+    assert.ok(document.querySelector('.infrastructure-quick-stats .battery-mini-chart path'));
+    assert.equal(document.querySelector('.battery-mini-chart circle'), null);
+    assert.equal(document.querySelector('.device-sheet h2').textContent, 'R001');
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['R001']);
+    assertMarkerStyle(canvas().querySelector('button.infrastructure-pin'), miniPins()[0]);
+    assert.equal(miniLines().length, 0);
+    assert.deepEqual(JSON.parse(mini().dataset.camera).center, [infrastructure[0].longitude, infrastructure[0].latitude]);
+    assert.equal(document.querySelectorAll('.device-sheet').length, 1);
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => document.querySelector('.device-sheet-header button').click());
+    await act(async () => toggle().click());
+    assert.equal(toggle().getAttribute('aria-pressed'), 'true');
+    assert.equal(features().length, 1, 'reverse observations share one geographic line');
+    assert.equal(document.querySelectorAll('.signal-map-label').length, 0);
+    const legend = document.querySelector('.signal-legend');
+    const info = document.querySelector('.signal-info-button');
+    assert.equal(legend.querySelector('small'), null, 'explanation starts hidden');
+    assert.equal(window.getComputedStyle(legend).position, 'absolute', 'legend expansion is outside button layout');
+    assert.equal(window.getComputedStyle(document.querySelector('.map-tools')).alignItems, 'flex-start');
+    const fitStyle = window.getComputedStyle(toggle().previousElementSibling).cssText;
+    assert.equal(info.getAttribute('aria-expanded'), 'false');
+    await act(async () => info.click());
+    assert.equal(info.getAttribute('aria-expanded'), 'true');
+    assert.match(legend.querySelector('small').textContent, /1 observations.*omitted/);
+    assert.equal(window.getComputedStyle(toggle().previousElementSibling).cssText, fitStyle);
+    await act(async () => info.click());
+    assert.equal(legend.querySelector('small'), null);
+    const line = features()[0];
+    assert.equal(line.properties.color, '#b42318');
+    const style = JSON.parse(canvas().dataset.style);
+    assert.ok(style.layers.find(layer => layer.id === 'signal-hit-area').paint['line-width'] >= 20);
+    await act(async () => canvas().dispatchEvent(new window.CustomEvent('test-map-click', {
+      detail: { layer: 'signal-hit-area', id: line.properties.id },
+    })));
+    let sheet = document.querySelector('.signal-link-detail');
+    assert.equal(sheet.dataset.mode, 'panel');
+    assert.equal(document.querySelectorAll('.signal-reading').length, 2);
+    assert.match(sheet.textContent, /0 dB/);
+    assert.match(sheet.textContent, /-112 dBm/);
+    assert.match(sheet.textContent, /S001 → R001/);
+    assert.match(sheet.textContent, /R001 → S001/);
+    assert.match(sheet.textContent, /No hearing timestamp supplied/);
+    assert.match(sheet.textContent, /Original packet sourceS002/);
+    assert.equal(sheet.querySelector('time').dateTime, at);
+    assert.equal(features()[0].properties.width, 6);
+    await render(links, false);
+    assert.match(document.querySelector('.signal-link-detail').textContent, /Feed offline/);
+    const updated = [{ ...links[0], id: 'new-forward', snrDb: 10, observedAt: new Date(now - 60000).toISOString() }, links[0]];
+    await render(updated);
+    assert.equal(document.querySelectorAll('.signal-reading').length, 1);
+    assert.equal(document.querySelector('.signal-map-label'), null);
+    assert.equal(features()[0].properties.color, '#237346');
+    assert.equal(miniLines()[0].properties.color, '#237346', 'card line follows updated signal readings');
+    await act(async () => [...document.querySelectorAll('.segmented button')].find(b => b.textContent === 'Aerial imagery').click());
+    assert.equal(features().length, 1, 'signal source survives basemap recreation');
+    assert.match(JSON.parse(mini().dataset.style).sources.basemap.tiles[0], /USGSImageryOnly/);
+    assert.equal(miniPins().length, 2, 'basemap change retains both endpoints');
+    assert.equal(miniLines().length, 1, 'basemap change retains the card line');
+    assert.equal(document.querySelector('.signal-map-label'), null);
+    let bubbled = 0;
+    const onCanvasClick = () => { bubbled++; };
+    canvas().addEventListener('click', onCanvasClick);
+    const trackerPin = document.querySelector('button.map-pin');
+    await act(async () => trackerPin.click());
+    assert.equal(bubbled, 0, 'node clicks do not bubble into map line selection');
+    canvas().removeEventListener('click', onCanvasClick);
+    await act(async () => canvas().dispatchEvent(new window.CustomEvent('test-map-click', {
+      detail: { layer: 'signal-hit-area', id: line.properties.id, target: trackerPin },
+    })));
+    assert.equal(document.querySelectorAll('.device-sheet').length, 1);
+    assert.ok(document.querySelector('.tracker-detail'));
+    assert.match(JSON.parse(mini().dataset.style).sources.basemap.tiles[0], /USGSImageryOnly/, 'new cards inherit main map selection');
+    assert.match(document.querySelector('.node-relationship').textContent, /S001 → R001.*10 dB/);
+    await act(async () => document.querySelector('button.infrastructure-pin').click());
+    const infraPin = document.querySelector('button.infrastructure-pin');
+    await act(async () => canvas().dispatchEvent(new window.CustomEvent('test-map-click', {
+      detail: { layer: 'signal-hit-area', id: line.properties.id, target: infraPin },
+    })));
+    assert.ok(document.querySelector('.infrastructure-quick-stats'), 'infrastructure marker wins over overlapping line');
+    assert.equal(document.querySelectorAll('.device-sheet').length, 1);
+    assert.match(document.querySelector('.node-relationship').textContent, /S001 → R001.*10 dB/);
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.ok(document.querySelector('.signal-link-detail'));
+    await act(async () => trackerPin.click());
+    await act(async () => toggle().click());
+    assert.ok(document.querySelector('.tracker-detail'), 'hiding signals preserves a tracker selection');
+    assert.equal(features().length, 0);
+    assert.equal(document.querySelector('.signal-map-label'), null);
+    mobile = true;
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.equal(document.querySelector('.signal-link-detail').dataset.mode, 'modal');
+    await act(async () => document.querySelector('[aria-label="Open S001 node card"]').click());
+    assert.equal(document.querySelector('.tracker-detail').dataset.mode, 'modal');
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => document.querySelector('[aria-label="Open R001 node card"]').click());
+    assert.equal(document.querySelector('.infrastructure-quick-stats').dataset.mode, 'modal');
+    assert.equal(document.querySelectorAll('.device-sheet').length, 1);
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => document.querySelector('.device-sheet').dispatchEvent(new window.Event('cancel', { cancelable: true })));
+    assert.equal(document.querySelector('.device-sheet'), null);
+    await act(async () => infraPin.click());
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => toggle().click());
+    await act(async () => toggle().click());
+    assert.ok(document.querySelector('.signal-link-detail'), 'hiding the layer preserves relationship details');
+    await act(async () => toggle().click());
+    await render(updated, true, initialTrackers.map(t => ({ ...t, position: null })));
+    assert.equal(features().length, 0);
+    assert.ok(document.querySelector('.signal-link-detail'), 'missing GPS does not hide the recorded relationship');
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['R001']);
+    assert.equal(miniLines().length, 0, 'missing coordinates never invent a line');
+    assert.match(document.querySelector('.card-mini-map').textContent, /S001: location unknown/);
+    await act(async () => infraPin.click());
+    assert.equal(document.querySelectorAll('.node-relationship').length, 1);
+    await act(async () => document.querySelector('.node-relationship').click());
+    await act(async () => document.querySelector('.signal-location-details summary').click());
+    assert.match(document.querySelector('.signal-location-details').textContent, /Location unknown/);
+    await act(async () => document.querySelector('.signal-info-button').click());
+    assert.match(document.querySelector('#signal-legend-help').textContent, /No neighbor connections/);
+    await render([]);
+    assert.equal(document.querySelector('.signal-map-label'), null, 'empty live data never creates fixture lines');
+    await act(async () => document.querySelector('button.infrastructure-pin').click());
+    assert.equal(document.querySelector('.node-relationship'), null);
+    assert.match(document.querySelector('.node-relationships').textContent, /No recorded neighbors/);
+    const assigned = [{ id: 'assigned', deviceId: 'd1', memberId: 'm1', startedAt: at, endedAt: null }];
+    const members = [{ id: 'm1', name: 'Demo Member', initials: 'DM', shortName: 'ALIAS' }];
+    await render(links, true, initialTrackers, assigned, members);
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.equal(document.querySelector('button.map-pin').textContent, 'ALIAS');
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['ALIAS'], 'assigned client mini map matches the main marker');
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['ALIAS', 'R001'], 'relationship mini map also uses the assigned member shortname');
+    await render();
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['S001', 'R001'], 'releasing an assignment restores the device label');
+    for (const [minutes, state] of [[1, 'recent'], [5, 'aging'], [20, 'stale'], [180, 'unknown']]) {
+      const trackers = initialTrackers.map((tracker, index) => index ? tracker : { ...tracker,
+        position: { ...tracker.position, measuredAt: new Date(now - minutes * 60000).toISOString() } });
+      await render(links, true, trackers);
+      assert.ok(miniPins()[0].classList.contains(state), `relationship endpoint follows ${state} status`);
+      assertMarkerStyle(canvas().querySelector('button.map-pin'), miniPins()[0]);
+      await act(async () => canvas().querySelector('button.map-pin').click());
+      assertMarkerStyle(canvas().querySelector('button.map-pin'), miniPins()[0]);
+      assert.ok(miniPins()[0].classList.contains('selected-pin'), 'node card preserves the selected outline');
+      await act(async () => document.querySelector('.node-relationship').click());
+    }
+    const { default: UsersPage } = await import('../src/UsersPage.tsx');
+    await act(async () => root.render(createElement(MapPreferences, null, createElement(UsersPage, {
+      trackers: initialTrackers, now, assignments: assigned, members, nameJobs: [], admin: true,
+      online: true, trailId: null, onTrailChange() {}, onAssign() {}, onRelease() {}, onJob() {},
+    }))));
+    await act(async () => document.querySelector('.users-trackers .tracker-row').click());
+    assert.match(JSON.parse(mini().dataset.style).sources.basemap.tiles[0], /USGSImageryOnly/, 'main map selection survives navigation to Users');
+    assert.deepEqual(miniPins().map(pin => pin.textContent), ['ALIAS'], 'Users card uses the assigned member shortname');
+    assert.ok(miniPins()[0].classList.contains('map-pin'));
+    assert.ok(miniPins()[0].classList.contains('recent'));
+    assert.ok(miniPins()[0].classList.contains('selected-pin'));
+    await act(async () => document.querySelector('.device-sheet-header button').click());
+    const userRows = document.querySelectorAll('.users-trackers .tracker-row');
+    await act(async () => userRows[userRows.length - 1].click());
+    assert.equal(mini(), null, 'never-seen nodes do not show a fabricated location');
+    assert.match(document.querySelector('.mini-map-missing').textContent, /No recorded location/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    for (const key of ['window', 'document', 'HTMLElement', 'HTMLButtonElement', 'ResizeObserver', 'IS_REACT_ACT_ENVIRONMENT']) delete globalThis[key];
+  }
+});
+
 test('switching repeaters and backhauls retains exactly one selected device detail', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;
@@ -54,12 +313,14 @@ test('switching repeaters and backhauls retains exactly one selected device deta
   const { createRoot } = await import('react-dom/client');
   const { default: InfrastructurePage } =
     await import('../src/InfrastructurePage.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
   const root = createRoot(document.getElementById('root'));
   try {
     await act(async () =>
       root.render(
         createElement(InfrastructurePage, {
           now: Date.now(),
+          infrastructureNodes: infrastructure,
           online: true,
           admin: true,
           incidents: [],
@@ -86,12 +347,12 @@ test('switching repeaters and backhauls retains exactly one selected device deta
         'one battery rule form',
       );
       assert.equal(
-        document.querySelectorAll('.panel').length,
+        document.querySelectorAll('.panel:not(.neighbor-panel)').length,
         2,
         'one device panel and one audit panel',
       );
       assert.equal(
-        document.querySelector('.panel h2').textContent,
+        document.querySelector('.panel:not(.neighbor-panel) h2').textContent,
         cards[index].querySelector('strong').textContent,
       );
     }
@@ -173,6 +434,9 @@ test('map selections and device sheets keep infrastructure always visible withou
     await act(async () => markers[1].click());
     assert.equal(document.querySelectorAll('.device-sheet').length, 1);
     assert.equal(document.querySelector('.device-sheet h2').textContent, 'G001');
+    assert.deepEqual([...document.querySelectorAll('.mini-map-pin')].map(pin => pin.textContent), ['G001'], 'gateway card shows only the gateway');
+    assert.ok(document.querySelector('.mini-map-pin').classList.contains('infrastructure-pin'));
+    assert.ok(document.querySelector('.mini-map-pin').classList.contains('selected-pin'));
     assert.doesNotMatch(document.querySelector('.device-sheet').textContent, /Relative humidity/);
     await render(false);
     assert.match(document.querySelector('.device-sheet').textContent, /Feed offline/);
@@ -208,6 +472,8 @@ test('map selections and device sheets keep infrastructure always visible withou
     assert.equal(document.querySelector('.tracker-detail').textContent, beforeTrail, 'checking the box adds no card UI or copy');
     assert.equal(document.querySelectorAll('.history-detail, .point-buttons, .history-controls, .tracker-detail select').length, 0);
     assert.match(document.querySelector('.trail-control').textContent, /Show Recorded Trail/);
+    assert.match(document.querySelector('.tracker-gps-quality').textContent, /GPS quality/);
+    assert.match(document.querySelector('.gps-quality-pill').textContent, /Good/);
     const trail = JSON.parse(document.querySelector('.map-canvas').dataset.trail);
     assert.equal(trail.features.length, document.querySelectorAll('.trail-pin').length - 1);
     await closeSheet();
@@ -241,6 +507,8 @@ test('map selections and device sheets keep infrastructure always visible withou
     assert.equal(document.querySelectorAll('.map-pin').length, 1, 'No Location keeps its last pin');
     await act(async () => document.querySelector('.map-pin').click());
     assert.equal(document.querySelector('.sheet-title .badge').textContent, 'No Location');
+    assert.match(document.querySelector('.gps-quality-pill').textContent, /Good/,
+      'quality describes the saved fix independently of its age');
     assert.match(document.querySelector('.tracker-detail').textContent, /Demo area/);
     assert.equal((document.querySelector('[aria-label="Location"]').textContent.match(/\+2hrs/g) || []).length, 2);
     const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
@@ -278,10 +546,12 @@ test('map selections and device sheets keep infrastructure always visible withou
     assert.equal(userTrackers.length, initialTrackers.length);
     await act(async () => userTrackers[userTrackers.length - 1].click());
     assert.match(document.querySelector('.tracker-detail').textContent, /No recorded position/);
+    assert.match(document.querySelector('.gps-quality-pill').textContent, /Unknown/);
     assert.doesNotMatch(document.querySelector('.tracker-detail').textContent, /Save battery configuration/);
     await closeSheet();
     await act(async () => userTrackers[0].click());
     assert.match(document.querySelector('.tracker-detail').textContent, /Coordinates/);
+    assert.match(document.querySelector('.gps-quality-pill').textContent, /Good/);
     assert.equal(document.querySelectorAll('.device-sheet').length, 1);
     const { default: TrackerBatteryIcon } = await import('../src/TrackerBatteryIcon.tsx');
     for (const [battery, tone, digits] of [[0, 'red', '00'], [9, 'red', '09'], [19, 'red', '19'],
@@ -308,5 +578,106 @@ test('map selections and device sheets keep infrastructure always visible withou
     await act(async () => root.unmount());
     dom.window.close();
     for (const key of ['window', 'document', 'HTMLElement', 'HTMLButtonElement', 'ResizeObserver', 'IS_REACT_ACT_ENVIRONMENT']) delete globalThis[key];
+  }
+});
+
+test('neighbor rows preserve direction, zero readings, unknown hearing times and receiver filtering', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const { createRoot } = await import('react-dom/client');
+  const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
+  const root = createRoot(document.getElementById('root'));
+  const now = Date.now();
+  const at = new Date(now - 5 * 60000).toISOString();
+  const links = [
+    { id: 'n', observerDeviceId: 'r1', heardDeviceId: 'r2', originalSourceDeviceId: null,
+      source: 'neighbor', path: 'direct', snrDb: 0, rssiDbm: null, receivedAt: at, observedAt: null },
+    { id: 'g', observerDeviceId: 'g1', heardDeviceId: null, originalSourceDeviceId: 'd1',
+      source: 'gateway', path: 'relayed', snrDb: -3.5, rssiDbm: -118, receivedAt: at, observedAt: at },
+  ];
+  try {
+    await act(async () => root.render(createElement(NeighborTable, {
+      links, now, online: false, trackers: [{ id: 'd1', shortName: 'S001' }],
+      infrastructure: [{ id: 'r1', name: 'Demo repeater' }, { id: 'r2', name: 'Demo other repeater' }, { id: 'g1', name: 'Demo gateway' }],
+    })));
+    assert.equal(document.querySelectorAll('tbody tr').length, 2);
+    assert.match(document.querySelector('tbody').textContent, /0 dB/);
+    assert.match(document.querySelector('tbody').textContent, /-118 dBm/);
+    assert.match(document.querySelector('tbody').textContent, /S001/);
+    assert.match(document.querySelector('[role="status"]').textContent, /saved observations/);
+    const neighbor = document.querySelector('tbody tr');
+    assert.equal(neighbor.querySelectorAll('time')[0].textContent, 'Unknown');
+    assert.equal(neighbor.querySelectorAll('time')[1].textContent, '5m ago');
+    const select = document.querySelector('select');
+    await act(async () => { select.value = 'g1'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
+    assert.equal(document.querySelectorAll('tbody tr').length, 1);
+    assert.match(document.querySelector('tbody').textContent, /Relayed/);
+    assert.doesNotMatch(document.querySelector('tbody').textContent, /Demo other repeater/);
+    await act(async () => { select.value = 'r2'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
+    assert.equal(document.querySelector('table'), null);
+    assert.match(document.querySelector('.empty').textContent, /No signal observations/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    delete globalThis.window;
+    delete globalThis.document;
+    delete globalThis.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
+
+test('minimal battery charts load each period, retain outages, and reject obsolete requests', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const { createRoot } = await import('react-dom/client');
+  const { default: BatteryChart } = await import('../src/BatteryChart.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.now();
+  const requests = [];
+  const loadHistory = (id, hours, signal) => new Promise(resolve => requests.push({ id, hours, signal, resolve }));
+  const root = createRoot(document.getElementById('root'));
+  const device = { ...infrastructure[0], samples: [] };
+  const render = (value = device) => act(async () => root.render(createElement(BatteryChart, { device: value, now, loadHistory })));
+  const series = (hours) => Array.from({ length: hours * 6 + 1 }, (_, i) => ({
+    at: new Date(now - (hours * 6 - i) * 600000).toISOString(), volts: 3.9 + .2 * Math.sin(i * Math.PI / 72),
+  }));
+  const buttons = () => [...document.querySelectorAll('.battery-periods button')];
+  try {
+    await render();
+    assert.deepEqual(buttons().map(b => b.textContent), ['24hr', '7day', '30day']);
+    assert.equal(requests[0].hours, 24);
+    await act(async () => requests[0].resolve({ samples: series(24), truncated: false }));
+    let path = document.querySelector('.battery-mini-chart path').getAttribute('d');
+    assert.ok(path.includes('C'));
+    assert.equal(document.querySelectorAll('.battery-mini-chart circle, .battery-mini-chart line, .battery-mini-chart polyline').length, 0);
+    assert.equal(document.querySelectorAll('.battery-mini-chart text').length, 6, 'only small axis values');
+    await act(async () => buttons()[1].click());
+    assert.equal(requests[1].hours, 168);
+    assert.equal(requests[0].signal.aborted, true);
+    await act(async () => buttons()[2].click());
+    assert.equal(requests[2].hours, 720);
+    assert.equal(requests[1].signal.aborted, true);
+    await act(async () => requests[2].resolve({ samples: series(720), truncated: false }));
+    path = document.querySelector('.battery-mini-chart path').getAttribute('d');
+    assert.ok(path.length > 100000, 'full month of cycles is plotted');
+    assert.match(document.querySelector('svg').getAttribute('aria-label'), /30 days/);
+    await act(async () => requests[1].resolve({ samples: [], truncated: false }));
+    assert.equal(document.querySelector('.battery-mini-chart path').getAttribute('d'), path, 'stale range response is ignored');
+    await render({ ...device, id: 'b1', name: 'Gateway' });
+    assert.equal(requests.at(-1).id, 'b1');
+    await act(async () => requests.at(-1).resolve({ samples: [], truncated: false }));
+    assert.equal(document.querySelector('svg'), null, 'empty history never fabricates readings');
+    assert.match(document.querySelector('.battery-mini-empty').textContent, /Not enough battery history/);
+  } finally {
+    await act(async () => root.unmount());
+    assert.equal(requests.at(-1).signal.aborted, true);
+    dom.window.close();
+    delete globalThis.window;
+    delete globalThis.document;
+    delete globalThis.IS_REACT_ACT_ENVIRONMENT;
   }
 });
