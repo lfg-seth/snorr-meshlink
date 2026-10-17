@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-16 — Record an out-of-circuit shunt resistance reading
+
+- Owner removes an R100 sensor shunt and measures 0.45 Ω out of circuit. Record the component removal in inventory and the audit, without assuming the board allocation, probe-short baseline, true resistance or reinstallation. Two-wire lead/contact resistance remains part of the reading until corrected; request the same-range probe-short value.
+- Calculate the discriminating prediction: a true 0.45 Ω shunt with 0.1 Ω firmware calibration would report 4.5× current, turning the owner's 8–16 mA into 36–72 mA, not roughly one amp. No calibration/configuration change, flash or new sensor reading is performed. Preserve concurrent sniffer records.
+
+Next useful step: establish the shorted-probe resistance or null the meter, then remeasure the removed component and confirm which sensor was altered and whether its shunt is restored. The original high-current discrepancy remains unresolved.
+
 ## 2026-10-16 — Build and flash a dedicated Heltec V3 airtime sniffer
 
 - Owner requests dedicated V3 capture, Windows/Linux GUI/script, every observed message including undecryptable traffic/repeats, useful decoded data and per-run logs; flashing authorized. Identify MC00 `!9ea0432c` on COM6, distinct from G001/G002. Preserve original full flash/profile/keys privately, then verify CLIENT_MUTE/TX/Wi-Fi/Bluetooth/MQTT off through reboot.

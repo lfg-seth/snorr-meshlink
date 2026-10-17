@@ -1,5 +1,7 @@
 # Hardware inventory
 
+2026-10-16 shunt inspection — Owner reports removing an R100 sensor shunt and measuring 0.45 Ω out of circuit. Exact sensor/board allocation, shorted-probe baseline, corrected resistance and reinstallation are unconfirmed. Record an altered sensor assembly, without treating 0.45 Ω as calibrated or changing stock/purchase totals. [INA219 audit](../docs/operations/ina219-audit.md).
+
 2026-10-16 INA219 audit — Owner confirms R100 shunt markings and reports a desk-multimeter battery-only R004 draw of 8–16 mA, despite roughly one amp reported by the sensor. R100 is compatible with the RAK driver's 0.1 Ω calibration. Fresh USB-connected R004 readings are −5.9/−5.8 mA; these are different supply conditions, not a calibration result. [Audit and source fix](../docs/operations/ina219-audit.md). No stock, purchase, wiring or fitted-board allocation change inferred.
 
 2026-10-16 R005 power-check follow-up — Owner replaces the disconnected battery assembly with one reportedly fully charged cell and inserts a USB input meter reading 0.08 A. Cell chemistry/capacity and allocation from existing stock remain unspecified; no purchase or quantity change. Total USB input is separate from INA219 branch current and does not establish dummy-load draw. [Readings](../docs/operations/r005-preparation.md#sensor-evidence).
