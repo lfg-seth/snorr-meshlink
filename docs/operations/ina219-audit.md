@@ -2,6 +2,8 @@
 
 Owner reports R004 displaying roughly one amp despite a battery-only desk-multimeter measurement of **8–16 mA**, and confirms the sensors' resistors are marked **R100**. R004 has the ordinary release, without R005's dummy-load target. The one-amp discrepancy remains unresolved; the channel fix below does not explain its magnitude.
 
+Owner follow-up confirms the current meter is **in series between the battery and INA219** and the reading is **8–16 mA**; `8016 mA` was a typo. No usable physical shunt-voltage reading is available: the owner reports unstable millivolt readings with open leads. This alone does not establish a meter fault or validate its low-voltage accuracy. The series-current result remains owner-reported evidence, without a simultaneous raw INA219 register capture under the same battery-only conditions.
+
 ## Calibration and configuration
 
 - Both RAK targets inherit Adafruit INA219 **1.2.3**. Its `begin()` selects `setCalibration_32V_2A()`: **0.1 Ω**, calibration register **4096 / 0x1000**, current divider **10**, or **0.1 mA per current-register count**. Config register is **0x399f**, including ±320 mV shunt range. These are compatible with R100. The 2 A preset is a measurement range, not an imposed load or a minimum reading. [Pinned library implementation](https://github.com/adafruit/Adafruit_INA219/blob/1.2.3/Adafruit_INA219.cpp).

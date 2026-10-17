@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-16 — Clarify the R004 series-current measurement
+
+- Owner confirms **8–16 mA**, measured in series between the battery and INA219; `8016 mA` was a typo. Record the precise measurement path in the [INA219 audit](../docs/operations/ina219-audit.md). The owner reports unstable open-lead millivolt readings, so no usable physical R100 voltage-drop measurement is established. Open-lead behavior alone does not establish meter failure or low-voltage accuracy.
+- No additional firmware/configuration/hardware operation is performed. The historical roughly one-amp discrepancy remains unresolved, and the tested source fixes remain unflashed.
+
+Next useful step: check the meter's DC-millivolt zero with voltage-mode leads shorted, then obtain a usable R100 voltage drop or explicitly scope a diagnostic firmware build/flash exposing raw shunt/current/config/calibration registers on battery power. Preserve the owner's 8–16 mA result as reported evidence.
+
 ## 2026-10-16 — Audit INA219 current against R100 and the owner's meter
 
 - Owner reports R004 showing about one amp without R005's dummy load, confirms R100 shunts and measures 8–16 mA on battery with a desk multimeter. Verify pinned Adafruit 1.2.3 calibration (0.1 Ω, calibration 4096, current divider 10), both RAK targets' default 1× multiplier, saved power/900-second telemetry settings, and signed unchanged MQTT/frontend units. No mismatched R100 calibration or portal scaling found. [Audit and evidence](../docs/operations/ina219-audit.md).
