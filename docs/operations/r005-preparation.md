@@ -81,6 +81,16 @@ calibrated accuracy remain unverified. Local reports include:
   consistent with charging having contributed, but near-zero current does
   not demonstrate the expected 50 mA load. Load supply/path after battery
   removal remains to clarify; physical current verification stays false.
+- Follow-up setup: owner installs one reportedly fully charged cell and a
+  USB input meter, which reads **0.08 A**. This is an owner-observed total
+  USB-input reading, not an independently measured dummy-load or battery-
+  branch current. Cell capacity/chemistry and USB voltage are unspecified.
+  Fresh post-request PowerMetrics at epoch `1792206853` reports **4.200 V /
+  −323.1 mA** on the observed channel 3; device voltage is 4.177 V. Raw
+  evidence: `private/bench/R005-full-cell-usb-meter.json`. This is distinct
+  from the previous disconnected-battery reading. The USB meter and INA219
+  readings do not establish a calibrated common path or isolate load draw;
+  no 50 mA verification or charging-rate claim is made.
 
 The inherited INA219 writer fills the legacy EnvironmentMetrics union even
 when called by PowerTelemetry; channel 3 encoding is observed, not a verified

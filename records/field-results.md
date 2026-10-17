@@ -10,6 +10,8 @@
 
 Startup opens INA219/AHT drivers. Local and fresh G001 environmental reports carry temperature/humidity; portal weather normalization passes. With batteries connected, INA219 reports roughly −1.1 A; after owner disconnects batteries, fresh local measurements are −0.4 / −0.3 mA at 4.180 / 4.188 V. Owner confirms R100 and expects roughly 50 mA from the dummy load; that load draw is not verified. Normalized current ingestion remains unsupported. Exact samples/checksums: [R005 preparation](../docs/operations/r005-preparation.md). Sustained cadence/runtime, fresh G002 delivery, field placement and calibration remain unverified. Raw data/keys remain private.
 
+Follow-up: owner installs one reportedly fully charged cell and observes 0.08 A on a USB input meter. A new post-request INA219 PowerMetrics sample reports −323.1 mA at 4.200 V. These are separate measurement paths without verified sign/calibration or simultaneous common-path power accounting; the expected 50 mA dummy-load draw remains unverified. No firmware/configuration change; serial time refreshed for valid measurement timestamps.
+
 ## TEST-011 — R002 released firmware update without external sensors
 
 2026-10-16 Pacific; owner authorizes R002 update and confirms no external sensors.

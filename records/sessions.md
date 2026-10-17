@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-16 — Recheck R005 with one full cell and a USB meter
+
+- Owner reports replacing the disconnected batteries with one fully charged cell and observing 0.08 A on an inline USB input meter. Identify R005 on COM19, verify debug API remains off, refresh serial time and request fresh sensor data without a firmware/profile change.
+- New PowerMetrics sample at epoch `1792206853` reports 4.200 V / −323.1 mA on the inherited observed channel 3; device voltage is 4.177 V. Preserve raw packet evidence separately from prior battery-disconnected captures. Record the USB reading as owner-observed total input; it does not isolate dummy-load draw or validate INA219 sign/calibration/common-path accounting.
+
+Next useful step: establish the actual charger/INA219/load branch wiring and compare calibrated same-path measurements or a controlled load-on/load-off baseline. Expected 50 mA remains unverified; no charging-rate, endurance or calibration result claimed. Documentation/whitespace checks only; no build, flash or database schema change.
+
 ## 2026-10-16 — Build, flash and register R005 with an always-on dummy load
 
 - Owner requests a one-off latest-project RAK build asserting the fitted dummy load while operating, then flashing the connected RAK as R005 and registering it at R001's saved location with INA219/temperature sensors. Read handoff/source instructions, synchronize clean repositories, preserve unrelated battery-box model. Identify RAK4631 `!f95b5501` on COM19; privately back up complete original configuration/keys. Owner confirms 2 kΩ base resistor to 2N2222 on RAK19007 AIN1.
