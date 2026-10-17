@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-16 — Apply the reported probe resistance baseline
+
+- Owner reports 0.16 Ω with the probe tips shorted on the same resistance range. Subtract from the removed shunt's 0.45 Ω reading to obtain an estimated 0.29 Ω; meter resolution/accuracy and changing contact resistance prevent treating this as calibrated. Update inventory and the INA219 audit.
+- A true 0.29 Ω shunt with the firmware's 0.1 Ω calibration would scale current by 2.9×: 8–16 mA becomes 23.2–46.4 mA, still insufficient to explain roughly one amp. No calibration/configuration change, firmware flash or new assembled-board measurement performed.
+
+Next useful step: establish actual shunt resistance and restored sensor state, then compare raw INA219 shunt/current/config/calibration registers under the same battery-only conditions. The original high-current cause remains unresolved.
+
 ## 2026-10-16 — Record an out-of-circuit shunt resistance reading
 
 - Owner removes an R100 sensor shunt and measures 0.45 Ω out of circuit. Record the component removal in inventory and the audit, without assuming the board allocation, probe-short baseline, true resistance or reinstallation. Two-wire lead/contact resistance remains part of the reading until corrected; request the same-range probe-short value.
