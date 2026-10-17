@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Dedicated airtime debug receiver (2026-10-16): existing V3 MC00 runs receive-only `2.7.26.f95a443`, preserving identity/keys on US channel 35. [Windows/Linux GUI and console tool](scripts/airtime-sniffer/README.md) retains raw/decoded frames, repeats and per-run airtime logs. Ten live receptions/seven duplicates, opaque/keyed/GUI replay and Windows/Linux core checks pass; Linux GUI/USB and high-load completeness remain unverified. [Hardware and limits](docs/operations/airtime-sniffer.md). Operational gateways/repeaters are unchanged.
+
 - INA219 audit (2026-10-16): R100 matches the RAK driver's 0.1 Ω calibration; source fixes power-union channel selection and multiplier consistency. R004 history confirms +0.94–1.07 A versus owner-metered battery-only 8–16 mA, while fresh USB samples are roughly −5.8 mA. The magnitude discrepancy remains unresolved; source tests do not establish sensor accuracy. Existing flashed/released binaries are unchanged. [Audit](docs/operations/ina219-audit.md).
 
 - RAK portal integration (2026-10-16, deployed `bed40dd`): strict SNNS/standard neighbor decoding now fills directional tables/map relationships; channel-preserving signed sensor power appears on Infrastructure and node cards. Live archive recovery plus fresh R005 G001 receipt normalization pass, with all nine devices and prior records preserved. 57 backend/45 frontend checks, public assets/boundaries and isolated live/demo backup recovery pass. Current calibration/polarity, fresh G002 delivery and authenticated native/mobile visual review remain unverified. [Contract and release evidence](docs/operations/radio-report-ingestion.md).

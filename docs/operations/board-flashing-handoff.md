@@ -1,5 +1,7 @@
 # Board flashing and configuration handoff
 
+Dedicated debug receiver (2026-10-16): [Heltec V3 MC00 airtime sniffer](airtime-sniffer.md), `!9ea0432c` / last COM6, runs custom **`2.7.26.f95a443`** / `heltec-v3-sniffer`, separate from G001/G002. It exports every handled raw receive before routing/duplicate filtering and inhibits RF TX at compile time. Keep its receive-only profile and keys; stop the Windows/Linux sniffer before API/flashing operations. An ordinary V3 image removes that dedicated capture behavior. This image precedes the later INA219 source commit pinned by the shared submodule; preserve that newer project pin.
+
 Updated 2026-10-16. Start here when a new chat is asked to flash boards, configure radios or verify their portal data. Read the repository's session-start instructions first. This document records the current handoff; a request to prepare notes does not itself authorize a hardware update.
 
 INA219 audit: [R100 calibration, source defects and measurement evidence](ina219-audit.md). RAK calibration matches 0.1 Ω; the source fix corrects the environment/power union and multiplier consistency. Existing released/flashed images still write power channel 3. R004's historical +0.94–1.07 A versus owner-metered battery-only 8–16 mA remains unresolved; fresh USB readings near −5.8 mA do not validate the battery-only path. No corrective scaling or flash is implied.

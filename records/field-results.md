@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## TEST-014 — Dedicated Heltec V3 airtime sniffer
+
+2026-10-16 Pacific; owner authorizes conversion/flash of connected V3 MC00 `!9ea0432c`, separate from G001/G002. Original full flash/configuration/keys are privately backed up. Dedicated app `2.7.26.f95a443` / source `f95a443bb`, SHA256 `b2291f0fb3e350ef35a25365c06dc5b709f6823384e931239e8df8cc16e26e7b`, flashes only at 0x10000 with vendor hash verification. Independent post-boot identity/key/channel/RF readback passes; CLIENT_MUTE, TX/Wi-Fi/Bluetooth/MQTT off, US channel 35 / 910.625 MHz / BW250 / SF11 / CR4/5.
+
+Planned criteria: retain every exported receive/repeat, reconstruct exact raw bytes, show known-channel useful data and unknown-key ciphertext, create fresh per-run logs, preserve identity/profile and avoid RF transmit. This is a bench diagnostic test, not field-coverage acceptance.
+
+Measured over 180.118 seconds: **10 receptions, seven duplicates**, seven B002 POSITION_APP copies and three R005 PRIVATE_APP/SNNS copies. All ten reconstruct/decode with **zero reported stream gaps**, and final observed receive airtime is 10.27%. Keyless replay retains/prints the same ten raw frames as opaque; keyed/GUI replay preserves all raw frames/annotations and complete decoded fields. Automatic UART status observes TX0/RX3/bad0; no Packet TX log appears. An optional later local-stat request times out and is not counted as a fresh final counter. No external RF-silence measurement, real read-error event, 58% recurrence or sustained high-load completeness claim.
+
+Twelve Windows checks (including Tk interaction), eleven Linux checks (GUI explicitly skipped for missing Tk/display), Linux launcher syntax and portable C++ address/undefined-behavior sanitizer checks pass. No native Linux USB/GUI or field/runtime validation. [Operation/limits](../docs/operations/airtime-sniffer.md), [run the tool](../scripts/airtime-sniffer/README.md). Raw traffic/configuration remains ignored; all serial handles close after verification.
+
 ## TEST-013 — RAK neighbor and sensor power portal integration
 
 2026-10-16 Pacific; owner requests database/portal support for the flashed RAK firmware and sensors. Application source `bed40dd` is deployed; hardware and radio profiles are unchanged.
