@@ -2,7 +2,12 @@
 setlocal
 cd /d "%~dp0\..\.."
 if not exist "local-data\sniffer-venv\Scripts\python.exe" (
-  py -3 -m venv local-data\sniffer-venv
+  if exist ".venv\Scripts\python.exe" (
+    .venv\Scripts\python.exe -m venv local-data\sniffer-venv
+  ) else (
+    py -3 -m venv local-data\sniffer-venv
+    if errorlevel 1 python -m venv local-data\sniffer-venv
+  )
   if errorlevel 1 goto failed
 )
 local-data\sniffer-venv\Scripts\python.exe -m pip install -r scripts\airtime-sniffer\requirements.txt

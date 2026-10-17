@@ -4,7 +4,7 @@ Use the dedicated **Heltec V3 sniffer firmware**, connected by USB. Capture ever
 
 ## Windows
 
-Install Python 3.10+ with Tk and the Python launcher. Double-click **`run-windows.cmd`** in this directory. It creates an isolated environment under ignored `local-data/sniffer-venv`, installs the pinned dependencies, and opens the GUI. Select the V3's current COM port and click **Start capture**. **Stop** flushes and closes the session; the next Start creates new files. Close other serial monitors/Meshtastic clients before starting.
+Install Python 3.10+ with Tk. Double-click **`run-windows.cmd`** in this directory. It uses an existing project `.venv` to bootstrap when available, otherwise tries `py -3` then `python`; it creates an isolated environment under ignored `local-data/sniffer-venv`, installs the pinned dependencies, and opens the GUI. Select the V3's current COM port and click **Start capture**. **Stop** flushes and closes the session; the next Start creates new files. Close other serial monitors/Meshtastic clients before starting.
 
 From a terminal, with dependencies installed in your chosen environment:
 
