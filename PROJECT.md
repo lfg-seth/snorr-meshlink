@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- RAK prerelease (2026-10-16): cached `2.7.26.0b65f2e` UF2/OTA ZIP plus manifest/checksums are [published for download](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Routine flashing uses verified released assets, with no rebuild. The source submodule pins release-tooling commit `8fe47325e`; binary source stays `0b65f2e84`. Public asset/cache verification and the fork release job pass; upstream publishing jobs are skipped. [Download and flash handoff](docs/operations/board-flashing-handoff.md). No hardware update claimed.
+
 - RAK neighbor firmware (2026-10-16): owner activates the parked passive-report proposal. Branch `snorr/rak-survey`, source `0b65f2e84`, now adds bounded direct-neighbor RSSI/SNR, hearing age and observation counts in background companion reports while retaining the AHT fix and standard GPS/NeighborInfo behavior. Portable collector/module checks pass; flashing, both-gateway delivery and portal companion decoding remain follow-ups. [Source and rollout boundary](docs/operations/rak-neighbor-signals.md).
 
 - Demo-first entry (2026-10-16, deployed source `60ea977`): anonymous visitors automatically open the separate database demo in production builds too, with **Sign in** in the top header for live account access. Saved live sessions retain server-validated refresh behavior. Demo/API isolation remains intact; sign-in inputs use a minimum 16px font to address iPhone focus zoom. Server checks, public assets and live/demo recovery pass; native iPhone behavior remains to verify. [Release evidence](docs/operations/portal-lxc.md#demo-first-entry-and-iphone-login-fields--2026-10-16).

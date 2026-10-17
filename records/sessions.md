@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Publish cached RAK prerelease and download-first flashing
+
+- Owner authorizes fixing inherited release automation, publishing the cached RAK build on their firmware fork and making future chats download it. Claim/resolve [Publish the cached RAK build as a fork prerelease](../.scratch/pilot/issues/22-rak-prerelease.md). Verify retained UF2/OTA ZIP against recorded sizes/hashes; reuse the exact tested bytes without rebuilding. Owner signs into GitHub to enable the authorized asset upload; no credentials are exposed or committed.
+- Publish firmware release-only commit `8fe47325e38b82c8b2358293484ff845320d1be6` and tag `snorr-rak4631-2.7.26.0b65f2e-pre.1` on `snorr/rak-survey`. Gate all six upstream release jobs to `meshtastic/firmware`; add a read-only SNORR asset verifier, tracked manifest, integrity tests and release notes. Cached binary source remains `0b65f2e8444ea2dd3566f61ba2614d6eb33d3fd2`; the verifier rejects additional firmware/build-input changes between that source and the tag. No history rewritten.
+- Publish [the RAK4631 prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1) with UF2, Nordic OTA ZIP, build-manifest.json and SHA256SUMS, explicit bench/hardware-unverified status and source provenance. Public download/byte/hash/manifest checks and repeat-run cache reuse pass. [GitHub run 38994730691](https://github.com/lfg-seth/firmware/actions/runs/38994730691) succeeds: SNORR verification passes; Docker/PPA/OBS/COPR/upstream website/version-bump jobs all skip.
+- Update the firmware pin, AGENTS/project/operation/handoff notes and add `scripts/bench/download-rak-release.py`. Routine flashing downloads/checks pinned assets into ignored private cache; it does not rebuild or flash. Six verifier regressions and YAML repository/permission checks pass; use pinned Black 26.5.1 with Trunk unavailable. Verify documentation links/whitespace; preserve the unrelated battery-box file. No binaries, private profiles, raw logs/tracks or credentials enter Git.
+
+Next useful step: use the download helper in a named-board flashing chat, preserve identity/configuration and verify new RF/MQTT/portal evidence separately. No hardware flash, device configuration, sensor calibration, field/runtime test or portal deployment performed.
+
 ## 2026-10-16 — Save a reusable board flashing and configuration handoff
 
 - Owner clarifies INA219 placement inline between battery and RAK and asks whether a new chat can recover the flashing/configuration notes. Record that owner-reported wiring in inventory without inventing sensor counts, per-board allocation, charger junction, polarity/calibration or measured current. Treat the sensor as battery/load-path sensing; total battery charging/discharging interpretation awaits the actual charge path, and solar-input measurement is unsupported by this placement.

@@ -15,11 +15,19 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 
 | Board/function | Source and last verified hardware state | Configuration reference |
 | --- | --- | --- |
-| RAK4631 repeater, including R001/R002/R003 | New build **2.7.26.0b65f2e**, published on `snorr/rak-survey`, pinned by this project's firmware submodule. Includes AHT detection fix, INA219 driver and custom passive neighbor reporting. **Not yet flashed.** Last measured state: R001/R002 stock 2.7.26.54e0d8d; R003 AHT build 2.7.26.cc5907b. | [New build, tests, checksums and rollout limits](rak-neighbor-signals.md); [saved RAK profile](rak-pilot-setup.md); [R003 update/recovery evidence](r003-aht-build.md). |
+| RAK4631 repeater, including R001/R002/R003 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and custom passive neighbor reporting. **Not yet flashed.** Last measured state: R001/R002 stock 2.7.26.54e0d8d; R003 AHT build 2.7.26.cc5907b. | [Build, asset checksums and rollout limits](rak-neighbor-signals.md); [saved RAK profile](rak-pilot-setup.md); [R003 update/recovery evidence](r003-aht-build.md). |
 | Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
 | Heltec V3 gateways G001/G002 | Last verified stock 2.7.26.54e0d8d. Both currently receive-only. One future transmitting gateway is authorized in the design, not yet provisioned for live portal downlink. | [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
 
-Retained RAK images/logs/checksums are local to the Windows desktop under `private/bench/rak-neighbors-0b65f2e/`. On another machine, rebuild the exact pinned source with the documented toolchain and record new artifact hashes; do not assume a rebuild has the retained binary's checksum. Build success establishes neither successful flashing nor live data delivery.
+For routine RAK flashing on any machine, **download and verify the published binaries; do not rebuild them**. After initializing the pinned submodule, run from the project root:
+
+```sh
+python scripts/bench/download-rak-release.py
+```
+
+The helper downloads the exact tagged UF2, Nordic OTA ZIP, manifest and checksums into ignored `private/bench/releases/snorr-rak4631-2.7.26.0b65f2e-pre.1/`. It checks the complete asset set, sizes and SHA256 against the Git-tracked manifest before reporting success. A subsequent run verifies and reuses that cache. A partial/corrupt cache fails closed; inspect it rather than flashing or silently rebuilding. Choose UF2 or OTA only after identifying the board and matching its update procedure; the helper never builds, flashes or resets devices. Use the verified image directly with its appropriate update procedure; avoid build-first upload wrappers for routine released-image flashing.
+
+The binary source is `0b65f2e8444ea2dd3566f61ba2614d6eb33d3fd2`; the release tag/submodule tooling commit `8fe47325e38b82c8b2358293484ff845320d1be6` adds release automation/verification only. Do not rebuild at that later commit and call it the cached `0b65f2e` binary. Source development or a new target/build is a separate task, producing a new verified release. Original build logs remain desktop-local under `private/bench/rak-neighbors-0b65f2e/`. Neither asset verification nor build success establishes successful flashing or live data delivery.
 
 ### RAK neighbor update
 
@@ -64,6 +72,6 @@ Source references: [MQTT adapter](../../backend/mqtt_adapter.py), [ingestion val
 
 ## Suggested new-chat request
 
-> Read `docs/operations/board-flashing-handoff.md` and the normal session-start files. Identify connected R003, back up its profile/keys, then flash and configure the pinned RAK neighbor build while preserving its identity, private channel and existing AHT telemetry. Enable neighbor reporting over LoRa and verify new packets through both gateways. Record any portal-ingestion limits separately. Do not factory-reset it or change other boards.
+> Read `docs/operations/board-flashing-handoff.md` and the normal session-start files. Download and verify the pinned RAK prerelease without rebuilding. Identify connected R003, back up its profile/keys, then flash and configure that released image while preserving its identity, private channel and existing AHT telemetry. Enable neighbor reporting over LoRa and verify new packets through both gateways. Record any portal-ingestion limits separately. Do not factory-reset it or change other boards.
 
 Replace R003 with the actual requested device. Starting a separate chat does not transfer ignored artifacts, credentials or serial access. Keep one active hardware writer per physical board.

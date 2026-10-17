@@ -35,6 +35,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Decisions so far
 
+- [Publish the cached RAK build as a fork prerelease](issues/22-rak-prerelease.md) — Exact cached UF2/OTA binaries are published with checksums; routine flashing downloads verified assets, and fork release checks skip all upstream publishing jobs.
+
 - [Improve passive neighbor signal reporting in the RAK fork](issues/21-rak-neighbor-signals.md) — Published firmware adds bounded direct-neighbor RSSI/SNR, hearing age and background companion reports; RAK build and portable checks pass, with flashing and portal ingestion still to verify.
 
 - [Check Meshtastic monitoring and recording stacks for the pilot](issues/19-meshtastic-monitoring-research.md) — Current projects/templates compared; a private read-only MeshMonitor trial leads the shortlist, with stack choice and compatibility checks still open.

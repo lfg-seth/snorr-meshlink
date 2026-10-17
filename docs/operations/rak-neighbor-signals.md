@@ -4,6 +4,8 @@
 
 ## Source and behavior
 
+For flashing, download [prerelease `snorr-rak4631-2.7.26.0b65f2e-pre.1`](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1), not a new local build. Run `python scripts/bench/download-rak-release.py` from the project root to download/check the four assets and cache them privately. [Complete flashing handoff](board-flashing-handoff.md).
+
 Firmware commit [`0b65f2e84`](https://github.com/lfg-seth/firmware/commit/0b65f2e84), branch `snorr/rak-survey`, adds a separate passive collector compiled into the `rak4631` target. The AHT fix remains. [Full implementation, byte contract and reproducible tests](../../firmware/SNORR_NEIGHBORS.md).
 
 - Store up to 32 direct neighbors, configurable at build time, with full node ID, latest RSSI/SNR, monotonic hearing age and accepted observation count. Accept zero dB SNR; reject self/zero senders, MQTT origin, relayed/unknown hops, other channels and invalid signal values. Collector sees decoded primary-channel packets that survive normal duplicate filtering; it does not count every RF reception.
@@ -30,6 +32,14 @@ Artifacts, full log and `checksums.json` are retained under ignored `private/ben
 | `firmware-rak4631-2.7.26.0b65f2e.zip` | 760,213 | `2658def06a179c49ea77e872f7815a7794d8ca54768d0b9208e964c49842867f` |
 
 Owner explicitly authorizes publication to their `lfg-seth/firmware` fork after an initial automatic-review rejection. Push succeeds on `snorr/rak-survey`, and the SNORR MeshLink submodule pins the published source. No keys, profiles or raw tracks are committed. No history rewritten; temporary alternative patch packaging was removed before publication.
+
+## Published cached prerelease — 2026-10-16
+
+The two binary files above are now published unchanged with `build-manifest.json` and `SHA256SUMS`. The binary source remains **0b65f2e8444ea2dd3566f61ba2614d6eb33d3fd2**. Release tag/tooling commit **8fe47325e38b82c8b2358293484ff845320d1be6** adds only workflow guards, the manifest, verification tests/tooling and release documentation; no firmware/build input changed and no rebuild was performed. This project's submodule now pins that release-tooling commit. The prerelease is not a stable/latest release or a claim of hardware verification.
+
+Fresh public download, exact size/SHA256 comparison, manifest/checksum comparison and repeat-run cache reuse all pass. Six integrity regressions cover valid files, same-length corruption, missing/unexpected assets and altered manifest/checksum files. YAML policy checks verify repository guards and the fork job's read-only permissions. Black 26.5.1 formats the new Python scripts; Trunk remains unavailable. No firmware/hardware tests are rerun for these release-only changes.
+
+[GitHub release workflow run 38994730691](https://github.com/lfg-seth/firmware/actions/runs/38994730691) succeeds: `verify-snorr-rak` passes, and all six upstream Docker/PPA/OBS/COPR/website/version-bump jobs are skipped. Fork prereleases perform read-only asset verification and no firmware rebuild, upstream publishing or inherited-secret work.
 
 ## Rollout boundary and next step
 

@@ -2,6 +2,8 @@
 
 Built and flashed 2026-10-14 at the owner's request. **R003 now supplies temperature and humidity through both V3 gateways.** R001/R002 remain on their previously prepared stock firmware; the original two-repeater field allocation is unchanged.
 
+For a new RAK update, use the [current released-image flashing handoff](board-flashing-handoff.md) and download its pinned prerelease. The build commands and cc5907b artifacts below are historical reproduction/recovery evidence, not the default for routine flashing. The newer release retains this AHT fix and adds neighbor reporting; no newer hardware flash is claimed here.
+
 ## Source and scope
 
 - Release baseline: `54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb` (`2.7.26.54e0d8d`).

@@ -8,7 +8,7 @@ This repository is the durable project record. Preserve the user's priority orde
 
 ## When doing work
 
-- Board flashing or radio configuration: read `docs/operations/board-flashing-handoff.md` for board/source selection, preserved profiles, portal gaps and verification criteria before hardware work.
+- Board flashing or radio configuration: read `docs/operations/board-flashing-handoff.md` for board/source selection, preserved profiles, portal gaps and verification criteria. Routine RAK flashing downloads and verifies the pinned prerelease; rebuilding is a separate development task.
 - Wishlist: read `records/wishlist.md` when capturing a wishlist request or discussing a related topic. Record requested ideas as deferred, outside the active ticket frontier. Mention relevant parked ideas when useful to the current conversation; mentioning one does not activate it. Research, design, implementation, and testing wait until the owner explicitly brings it forward.
 - Inventory or hardware changes: update `records/inventory.md`; distinguish confirmed quantities, estimates, and unknowns.
 - Spending, donations, or funding: update `records/finances.md` with dated amounts and evidence references. Never invent balances, prices, or donated values.
