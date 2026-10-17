@@ -1,5 +1,9 @@
 # Define an owned-hardware field pilot
 
+**Tracking migration — 2026-10-17:** [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) now owns current work status. This map and its tickets preserve decision history; historical open/claimed fields do not define today's frontier. See [tracking rules](../../docs/operations/github-tracking.md) and the [current roadmap](../../docs/roadmap.md).
+
+Formerly open questions: [private monitoring scope](https://github.com/lfg-seth/snorr-meshlink/issues/10), [held repeater survey](https://github.com/lfg-seth/snorr-meshlink/issues/11), and [deferred WebSockets alternative](https://github.com/lfg-seth/snorr-meshlink/issues/12). Their original questions remain below and in the linked decision files.
+
 2026-10-16 R004 follow-up — Owner-authorized fourth RAK preparation completes on released `2.7.26.0b65f2e`, preserving device keys and verifying pilot/sensor/neighbor configuration through reboot. Live R004 registration shares R001's private planned site. Fresh G001 battery/weather ingestion and archived SNNS reception pass; INA219 interpretation, normalized current/neighbor decoding and fresh G002 delivery remain limited. [Evidence](../../docs/operations/r004-preparation.md). No tracker decision or field installation is implied.
 
 2026-10-14 owner expands provisioning to R001/R002/R003 at two private planned sites. All three equipment/location records and live voltage reports now reach PocketBase/portal; R003 also delivers actual temperature/humidity. Four reports × two gateways deduplicate correctly. Planned sites/assemblies remain unverified and warnings disabled pending activation. [Operations](../../docs/operations/repeater-telemetry.md), [TEST-009](../../records/field-results.md#test-009--live-repeater-provisioning-and-telemetry). Survey/wishlist work remains deferred.
@@ -36,7 +40,7 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 - For research, use primary sources and capture a linked report. Firmware changes are a possibility to investigate, not a settled requirement.
 - Owned hardware comes first; no speculative purchase list.
 - Future ideas are parked in the [deferred feature wishlist](../../records/wishlist.md), outside the active ticket frontier. Do not begin work on them until the owner explicitly brings them forward.
-- Child tickets live in `issues/`; find the frontier using the tracker conventions rather than duplicating open questions here.
+- Historical child tickets live in `issues/`; use GitHub for the current work queue.
 - Owner resumed endpoint testing under [Check Heltec MQTT over WebSockets for Tunnel hosting](issues/09-heltec-websocket-research.md) on 2026-10-14. Public TLS 8883 through Nginx to source-restricted private Mosquitto 1883 passes authentication/delivery checks; Mike handles certificates. The persistent portal worker now decodes actual encrypted GPS through both V3 gateways and saves deduplicated positions. No WebSockets implementation or research-ticket resolution is claimed; that ticket stays open/unassigned.
 
 ## Decisions so far

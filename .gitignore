@@ -21,4 +21,4 @@ Thumbs.db
 *.db-shm
 backend/demo/*.db-journal
 
-# .scratch/ is the tracked local issue tracker. Do not ignore it.
+# .scratch/ is the tracked decision archive. Do not ignore it.

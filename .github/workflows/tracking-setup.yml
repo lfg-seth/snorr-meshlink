@@ -1,0 +1,43 @@
+name: Tracking setup
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/tracking.json', '.github/workflows/tracking-setup.yml', 'scripts/github/bootstrap-tracking.py']
+  pull_request:
+    paths: ['.github/tracking.json', '.github/workflows/tracking-setup.yml', 'scripts/github/bootstrap-tracking.py']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tracking-setup
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - run: python3 scripts/github/bootstrap-tracking.py
+
+  provision:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'lfg-seth/snorr-meshlink'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Provision labels, milestones and initial milestone assignments
+        run: python3 scripts/github/bootstrap-tracking.py --apply
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

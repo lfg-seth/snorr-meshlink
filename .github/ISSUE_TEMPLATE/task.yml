@@ -1,0 +1,25 @@
+name: Task or decision
+description: Capture a bounded task, research question or decision.
+labels: [task, 'status:triage']
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome or question
+      description: Describe one concrete outcome and why it matters to the pilot.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Distinguish implementation, deployment, hardware checks and field evidence where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Evidence, dependencies and authorized scope
+      description: Link existing decisions and prerequisite issues. Include relevant holds and remaining owner choices. Keep secrets and identifiable operational data private.
+    validations:
+      required: true

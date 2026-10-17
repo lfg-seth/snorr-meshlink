@@ -6,6 +6,9 @@ Status: open
 Assignee: unassigned
 Parent: ../map.md
 Blocked by: 19
+GitHub: https://github.com/lfg-seth/snorr-meshlink/issues/10
+
+Migration 2026-10-17: GitHub owns current work status. Metadata above is a historical snapshot; preserve the discussion and decision evidence below.
 
 ## Question
 

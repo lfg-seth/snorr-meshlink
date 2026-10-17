@@ -1,0 +1,117 @@
+{
+  "labels": [
+    {
+      "name": "bug",
+      "color": "d73a4a",
+      "description": "Observed failure or discrepancy requiring diagnosis"
+    },
+    {
+      "name": "feature",
+      "color": "a2eeef",
+      "description": "Requested capability; captured ideas default to deferred"
+    },
+    {
+      "name": "task",
+      "color": "0075ca",
+      "description": "Bounded task or decision"
+    },
+    {
+      "name": "research",
+      "color": "7057ff",
+      "description": "Primary-source investigation with a scoped answer"
+    },
+    {
+      "name": "field-test",
+      "color": "008672",
+      "description": "Planned measured bench or field acceptance check"
+    },
+    {
+      "name": "blocked",
+      "color": "b60205",
+      "description": "Prerequisite issue or external condition is named in the issue"
+    },
+    {
+      "name": "priority:high",
+      "color": "d93f0b",
+      "description": "Important within the owner priority order; not extra authorization"
+    },
+    {
+      "name": "priority:normal",
+      "color": "fbca04",
+      "description": "Normal priority within the agreed scope"
+    },
+    {
+      "name": "status:triage",
+      "color": "ededed",
+      "description": "Scope, priority, prerequisites or acceptance criteria need review"
+    },
+    {
+      "name": "status:ready",
+      "color": "0e8a16",
+      "description": "Bounded next step subject to stated authorization and blockers"
+    },
+    {
+      "name": "status:in-progress",
+      "color": "1d76db",
+      "description": "Claimed by the named active session or person"
+    },
+    {
+      "name": "status:verify",
+      "color": "5319e7",
+      "description": "Preparation exists; scoped acceptance checks remain"
+    },
+    {
+      "name": "status:deferred",
+      "color": "c5def5",
+      "description": "Parked; explicit owner activation required before work"
+    },
+    {
+      "name": "area:portal",
+      "color": "bfdadc",
+      "description": "Work concerning portal"
+    },
+    {
+      "name": "area:firmware",
+      "color": "bfdadc",
+      "description": "Work concerning firmware"
+    },
+    {
+      "name": "area:hardware",
+      "color": "bfdadc",
+      "description": "Work concerning hardware"
+    },
+    {
+      "name": "area:backhaul",
+      "color": "bfdadc",
+      "description": "Work concerning backhaul"
+    },
+    {
+      "name": "area:project",
+      "color": "bfdadc",
+      "description": "Work concerning project"
+    }
+  ],
+  "milestones": [
+    {
+      "title": "Reliable bench tracking",
+      "description": "Evidence gate: sustained phone-free GPS freshness/runtime, forced relay and outage/local viewing, both-gateway delivery, trustworthy power diagnosis and off-host recovery. Four-hour minimum, 12-hour runtime target; 15-minute stale threshold. Counts are not readiness scores."
+    },
+    {
+      "title": "Measured field pilot",
+      "description": "After bench evidence: confirmed available devices, owner-agreed route/access and stale/missing delivery criteria, measured coverage/GPS age/runtime/recovery. Candidate sites are not installation permission; no promised date."
+    },
+    {
+      "title": "Repeatable member rollout",
+      "description": "After accepted field evidence and owner activation: confirmed stock, repeatable provisioning/assignment, handout/training, maintenance/support and verified procedure. No purchases or distribution authorized by this milestone."
+    }
+  ],
+  "initial_issue_milestones": {
+    "2": "Reliable bench tracking",
+    "3": "Reliable bench tracking",
+    "4": "Reliable bench tracking",
+    "5": "Reliable bench tracking",
+    "7": "Reliable bench tracking",
+    "18": "Measured field pilot",
+    "20": "Repeatable member rollout"
+  }
+}

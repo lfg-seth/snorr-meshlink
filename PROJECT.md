@@ -4,6 +4,8 @@ Project name: **SNORR MeshLink** — Search and Rescue Tracking & Communications
 
 Recorded from the project owner's instructions on 2026-10-12.
 
+Current execution status is tracked in [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) under the [tracking workflow](docs/operations/github-tracking.md), adopted 2026-10-17. The [roadmap](docs/roadmap.md) summarizes evidence checkpoints; the brief and historical notes below preserve decisions and may describe earlier states superseded by dated evidence.
+
 ## Mission and priorities
 
 Support SNORR Search and Rescue operations on Mount Charleston, Nevada.

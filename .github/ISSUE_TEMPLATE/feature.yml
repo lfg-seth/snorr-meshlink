@@ -1,0 +1,25 @@
+name: Feature or wishlist idea
+description: Capture an idea as deferred until the owner explicitly activates it.
+labels: [feature, 'status:deferred']
+body:
+  - type: markdown
+    attributes:
+      value: Capturing or mentioning an idea does not start research, design, implementation or tests. Passive member GPS tracking remains the first priority.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Desired behavior and use case
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Owner request, wishlist reference and open questions
+      description: Link the durable wishlist record and any relevant decisions. Keep credentials and identifiable operational data private.
+    validations:
+      required: true
+  - type: textarea
+    id: activation
+    attributes:
+      label: Activation and acceptance
+      value: Deferred pending explicit owner activation. Define the first bounded outcome and acceptance criteria when activated.

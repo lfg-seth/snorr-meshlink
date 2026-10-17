@@ -1,0 +1,25 @@
+name: Field or bench test
+description: Plan a measured check without implying that it passed.
+labels: [field-test, 'status:triage']
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and participating hardware
+      description: Use confirmed inventory; distinguish candidate sites and planned devices from available or installed equipment.
+    validations:
+      required: true
+  - type: textarea
+    id: plan
+    attributes:
+      label: Planned method and acceptance criteria
+      description: Define measurement clocks, duration, thresholds and failure handling before the run. Preserve the agreed 15-minute stale threshold and runtime goals where applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Prerequisites, permissions and evidence destination
+      description: Link dependencies and authorized scope. Put measured summaries in records/field-results.md; keep raw tracks, keys and precise private locations out of GitHub.
+    validations:
+      required: true

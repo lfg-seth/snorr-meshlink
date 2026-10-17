@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Current work and tracking rules
+    url: https://github.com/lfg-seth/snorr-meshlink/blob/main/docs/operations/github-tracking.md
+    about: Read the workflow and search existing issues before adding work.

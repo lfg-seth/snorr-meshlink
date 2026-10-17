@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-17 — Migrate progress tracking to GitHub
+
+- Owner adopts the proposed GitHub workflow. The authenticated GitHub MCP server creates the migration issue and 19 scoped work/verification/deferred issues, with type, area, priority, status and blocker labels. Preserve the 20 resolved historical questions as decision evidence; migrate the three unresolved questions with monitoring in triage and survey/WebSockets deferred. All three wishlist ideas remain deferred; future communications/rollout remain parked.
+- GitHub Issues now owns current status and session claims; Markdown retains decisions, measurements and operating records. Update AGENTS.md, tracker/map entry points, successor links, README, project brief, development handoff, wishlist and evidence-based roadmap. Add public-safe bug/task/feature/test forms and a PR handoff template. Labels supply working status views without duplicate local queue maintenance.
+- Add a narrowly scoped repository workflow to provision label metadata, three evidence-based milestones and initial issue assignments using the built-in issues-write token. Configuration validation, YAML parsing, Python compilation, local documentation links and isolated bootstrap simulation pass; the simulation verifies existing owner milestone preservation, no status writes and a zero-write rerun. Hosted provisioning awaits the first published run.
+- No Project management tools are exposed by the MCP server; no authenticated CLI or browser is available. [Finish GitHub Project board setup](https://github.com/lfg-seth/snorr-meshlink/issues/19) records this access gap and exact acceptance checklist. Filtered issue views are available meanwhile. No board, readiness percentage, deployment, hardware change, purchase or deferred-feature activation is claimed.
+- Preserve pre-existing demo/application/test edits and earlier uncommitted session entries. Publish only the coherent tracking migration paths and this entry; application checks are outside this documentation/metadata change. Existing main is synchronized with origin before publication.
+
+Next useful step: verify the hosted Tracking setup run and milestone assignments, then use the ready phone-free tracking and relay/outage issues for owner-agreed measured trials. Finish the Project board when a management surface is available.
+
 ## 2026-10-16 — Apply the reported probe resistance baseline
 
 - Owner reports 0.16 Ω with the probe tips shorted on the same resistance range. Subtract from the removed shunt's 0.45 Ω reading to obtain an estimated 0.29 Ω; meter resolution/accuracy and changing contact resistance prevent treating this as calibrated. Update inventory and the INA219 audit.

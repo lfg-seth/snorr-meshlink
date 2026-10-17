@@ -11,7 +11,7 @@ git pull --ff-only origin main
 git submodule update --init --recursive
 ```
 
-If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Read `AGENTS.md`, `PROJECT.md`, the newest session entries and `.scratch/pilot/map.md` at session start.
+If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Read `AGENTS.md`, `PROJECT.md`, the newest session entries and `.scratch/pilot/map.md` at session start. Inspect relevant GitHub issues using the [tracking workflow](github-tracking.md); update the issue's claim, evidence and next action before switching machines.
 
 Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`. Reinstall dependencies locally from the pinned versions/lockfiles; do not copy `.venv`, `node_modules` or built binaries between machines. Frontend checks are `npm ci` then `npm run check` inside `portal/`. Backend setup/check commands are in [backend/README.md](../../backend/README.md). Native local development uses fictional data; do not reinitialize the hosted database.
 

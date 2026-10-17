@@ -1,14 +1,12 @@
-# Local issue tracker
+# Progress tracker
 
-This repository uses the Wayfinder local Markdown tracker. `.scratch/` is committed to Git.
+On 2026-10-17 the owner migrated the active work queue to [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues). Read [the GitHub tracking workflow](../docs/operations/github-tracking.md) before creating, claiming, blocking or closing work.
 
-- Map: `.scratch/<effort>/map.md`, labelled `wayfinder:map`.
-- Tickets: `.scratch/<effort>/issues/NN-title.md`, one question per file.
-- Ticket metadata: `Type: research|prototype|grilling|task`; `Status: open|claimed|resolved`; `Assignee: unassigned` or the claiming session; `Parent: ../map.md`; `Blocked by: none` or comma-separated ticket numbers.
-- A ticket is unblocked when all listed blockers have `Status: resolved`. The frontier is open, unblocked, unassigned tickets in number order.
-- Claim before work by setting status and assignee. A session awaiting owner input may retain its claim; record that state in comments. Release the claim explicitly if handing off.
-- Resolve by appending an `## Answer`, marking resolved, and adding a title-link with a one-line gist to the map. Keep answer details in the ticket.
-- Append discussion under `## Comments`; do not erase useful decision history.
-- Create ticket files first, then wire blockers once the referenced files exist.
+- GitHub issue state, status labels, assignees and dependencies own current execution status.
+- `.scratch/pilot/issues/` preserves historical Wayfinder questions, discussion and decision answers. Existing `Status`, `Assignee` and `Blocked by` fields are migration-time snapshots, not the current frontier.
+- The [pilot map](pilot/map.md) indexes durable decisions. Resolved questions remain resolved only within their stated scope; they do not establish implementation, deployment or field acceptance.
+- The three formerly open tickets link to their successor GitHub issues. Keep later decision answers here when they extend those discussions, and link the answer from the GitHub issue.
+- Put new work in GitHub. Create a repository decision note only when there is a durable decision to preserve; link it from the issue and map as appropriate.
+- If GitHub is unavailable, record a dated pending update in `records/sessions.md`, identify the issue and reconcile on the next connected session. Keep deferred work parked while offline.
 
-Find state with `rg '^(Status|Assignee|Blocked by):' .scratch/pilot/issues`. Use ticket titles in human-facing references. The current map is [Define an owned-hardware field pilot](pilot/map.md).
+Historical format: one question per `.scratch/<effort>/issues/NN-title.md`; `Type: research|prototype|grilling|task`; `Status: open|claimed|resolved`; a session assignee; parent map; numbered blockers; discussion under `## Comments`; resolution under `## Answer`. Preserve useful history and refer to questions by title.

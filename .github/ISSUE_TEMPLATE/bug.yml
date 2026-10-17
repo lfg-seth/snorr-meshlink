@@ -1,0 +1,28 @@
+name: Bug report
+description: Report observed behavior that needs investigation or a fix.
+labels: [bug, 'status:triage']
+body:
+  - type: markdown
+    attributes:
+      value: This repository is public. Keep credentials, raw tracks and identifiable operational data in private storage; link a sanitized summary.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed and expected behavior
+      description: Separate the observed symptom from a suspected cause.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction or next capture
+      description: Include steps, frequency, device/software versions and a sanitized evidence reference. State what is still unknown.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What observation would establish that this scoped bug is resolved?
+    validations:
+      required: true

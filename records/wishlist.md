@@ -2,9 +2,13 @@
 
 These are owner-requested future ideas, recorded on 2026-10-12. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
+Current status is maintained in the linked GitHub issues under the [tracking workflow](../docs/operations/github-tracking.md). This file preserves the owner's requested ideas and deferral decisions.
+
 Keep these ideas available as context: mention a parked item when it is relevant and useful in a future conversation. Mentioning it does not activate it or authorize work.
 
 ## Known Wi-Fi networks with automatic MQTT backhaul
+
+GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/15).
 
 Status: deferred by owner.
 
@@ -14,6 +18,8 @@ Exact supported devices, network selection/retry behavior, credential provisioni
 
 ## Browser-based firmware flashing for member-owned devices
 
+GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/16).
+
 Status: deferred by owner.
 
 Desired behavior: a member who purchases a supported device can flash the project's own firmware from a web browser. Support a small, preselected subset of devices; exact models and revisions remain to be selected later.
@@ -21,6 +27,8 @@ Desired behavior: a member who purchases a supported device can flash the projec
 The owner cites Meshtastic's website flashing experience as the reference. Browser/device compatibility, firmware delivery, and any initial configuration or enrollment steps remain unspecified and unverified. No flasher technology, supported-device list, or onboarding process is selected now.
 
 ## Slack integration
+
+GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/17).
 
 Status: deferred by owner. Added 2026-10-12.
 
