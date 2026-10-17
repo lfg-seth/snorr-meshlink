@@ -35,6 +35,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Decisions so far
 
+- [Improve passive neighbor signal reporting in the RAK fork](issues/21-rak-neighbor-signals.md) — Published firmware adds bounded direct-neighbor RSSI/SNR, hearing age and background companion reports; RAK build and portable checks pass, with flashing and portal ingestion still to verify.
+
 - [Check Meshtastic monitoring and recording stacks for the pilot](issues/19-meshtastic-monitoring-research.md) — Current projects/templates compared; a private read-only MeshMonitor trial leads the shortlist, with stack choice and compatibility checks still open.
 
 - [Serve the demo and neighbor table from a separate PocketBase](issues/17-database-demo-neighbor-table.md) — Local demo pages now read a separate inspectable database with a Git-tracked synthetic checkpoint and ten sample directional signal rows. Production remains on the VM; fork work stays parked. Checks and public deployment pass with application release `3ca3a94`; real signal ingestion remains outstanding.

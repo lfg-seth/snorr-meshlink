@@ -47,6 +47,8 @@ Proposed first implementation: extract existing gateway signal metadata into per
 
 Owner keeps this proposal parked on 2026-10-16. The separately authorized sample table/database work does not activate firmware changes.
 
+Later on 2026-10-16 the owner explicitly brings this fork work forward. The first passive phase is now implemented in `snorr/rak-survey`; [source, checks and rollout boundary](../operations/rak-neighbor-signals.md). The proposal below remains the original research context. Hardware flashing, gateway delivery and portal decoding of the new companion report remain unverified/separate follow-ups.
+
 **Yes.** A small infrastructure collector/exporter could better serve placement and tracking diagnostics while keeping standard GPS and NeighborInfo messages intact. This is a proposal, not implemented firmware; reconcile with the fork's newer branch before coding.
 
 First phase: passively collect **verified direct receptions** already reaching the module, storing observer/full neighbor ID, latest RSSI/SNR with presence, monotonic last-heard age and optional bounded window count/mean. The SX126x driver already populates both radio values; the existing collector already stores hearing time but exports only SNR. Keep reporting cadence separate from neighbor expiration, so a slow summary does not imply a recently heard link. [Radio values](https://github.com/meshtastic/firmware/blob/54e0d8d0ab2ff56b3a9ce967e53f79e49af560fb/src/mesh/SX126xInterface.cpp#L288-L302), [collector](../../firmware/src/modules/NeighborInfoModule.cpp).
