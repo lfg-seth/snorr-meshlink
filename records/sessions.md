@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Update sensor-free R002 to released RAK firmware
+
+- Owner connects R002 and requests update, confirming no external sensors. Preserve unrelated battery-box model; repository main is current. Identify COM9 RAK4631 `!b456f760`, snapshot entire current stock profile/keys privately, verify cached pinned UF2, match COM11/F: bootloader identity and install released `2.7.26.0b65f2e`. No rebuild/reset/key replacement, region or other-board change.
+- Preserve exact original local configuration, channels, owner and hardware identity. Keep 900-second device telemetry; disable all external-sensor measurements and enable NeighborInfo/LoRa reporting at standard six-hour interval. Independent full readback passes before and after clock synchronization/explicit reboot. [Operation](../docs/operations/r002-release-update.md).
+- Back up live portal, update only R002 firmware/no-sensor metadata through the local-only administration API and private provisioning manifest, preserving identity/site/equipment/other records. Authenticated portal and final backup recovery/public/proxy/authentication checks pass. No source/schema/frontend/worker identity change.
+- Fresh R002 4.202 V device report reaches G001/MQTT and live normalized battery observation; fresh 40-byte SNNS v1 reaches G001/archive. No external-sensor report expected. G002 fresh delivery and normalized custom-neighbor decoding remain unverified. [TEST-011](field-results.md#test-011--r002-released-firmware-update-without-external-sensors).
+
+Next useful step: verify the second gateway path and sustained reporting, or update the next explicitly requested board. No runtime/field coverage/calibration claim. Publish sanitized records; raw keys/settings/captures stay private.
+
 ## 2026-10-16 — Flash, configure and register R004
 
 - Owner requests newly connected RAK as R004, latest firmware per notes, temperature sensor/INA219, and same location as R001. Read session/hardware instructions, preserve the unrelated untracked battery-box model, and fast-forward-check main (already current). Discover COM17 RAK4631 `!77fdb9f1`, formerly MR03/`2.7.17.36133d29d`, and privately back up the complete configuration/keys.

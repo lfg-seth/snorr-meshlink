@@ -7,7 +7,7 @@ Current follow-up: a third board, R003, now runs an owner-authorized targeted AH
 | Label | Current Windows port | Meshtastic ID | Installed firmware |
 | --- | --- | --- | --- |
 | R001 | COM8 | `!a65601b3` | `2.7.26.54e0d8d` |
-| R002 | COM9 | `!b456f760` | `2.7.26.54e0d8d` |
+| R002 | COM9 | `!b456f760` | `2.7.26.0b65f2e` (released; no external sensors) |
 | R003 | COM14 | `!05237743` | `2.7.26.cc5907b` (AHT patch) |
 | R004 | COM17 | `!77fdb9f1` | `2.7.26.0b65f2e` (released AHT/INA219/neighbors) |
 

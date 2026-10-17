@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## TEST-011 — R002 released firmware update without external sensors
+
+2026-10-16 Pacific; owner authorizes R002 update and confirms no external sensors.
+
+- Identify RAK4631 `!b456f760` on COM9, privately snapshot complete profile/keys, verify cached UF2 and bootloader board/USB identity, flash released `2.7.26.0b65f2e` without rebuild/reset/key replacement. Original local configuration, channels, owner and hardware identity match exactly before/after explicit reboot.
+- Device/battery telemetry remains enabled at 900 seconds; environment, power, air-quality and health measurement flags are off. NeighborInfo enabled with LoRa transmission and standard 21,600-second interval. Other module settings remain unchanged.
+- Live portal firmware/no-external-sensor metadata and private manifest updated; location/equipment and other device configurations preserved. Eight-device authenticated state, public/proxy/authentication checks and final isolated backup recovery pass. [Details/checksums](../docs/operations/r002-release-update.md).
+- Fresh post-reboot device packet `2575628823` reaches G001/MQTT at 02:43:29.464 UTC October 17 (October 16 Pacific), measurement 02:43:26 UTC: 4.202 V, level 101, uptime 66. It normalizes into live R002 battery telemetry. Fresh `926194200` reaches G001 at 02:43:36.491 UTC: 40-byte SNNS v1 report archived; normalized custom-neighbor decoding unsupported.
+
+Limits: no fresh G002/two-gateway result, calibrated battery voltage, sustained cadence/runtime, forced relay, native browser review or field/site acceptance. No external sensor data expected or enabled. Raw captures/settings/keys remain private.
+
 ## TEST-010 — R004 released firmware and live registration
 
 2026-10-16 Pacific, USB bench plus live portal. Owner authorizes R004 flashing/configuration and registration at R001's location with temperature sensor and INA219.

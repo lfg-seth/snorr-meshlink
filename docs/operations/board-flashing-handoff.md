@@ -4,6 +4,8 @@ Updated 2026-10-16. Start here when a new chat is asked to flash boards, configu
 
 Latest hardware evidence: [R004 preparation](r004-preparation.md) flashes the released prerelease, preserves device keys, enables/readbacks neighbor and 900-second device/environment/power telemetry, and verifies fresh G001 battery/weather portal ingestion plus archived SNNS delivery. INA219 local reports need wiring/calibration/channel interpretation; normalized current/neighbor decoding and fresh G002 delivery remain unverified. R001/R002/R003 are unchanged.
 
+Subsequent [R002 update](r002-release-update.md): released prerelease installed with original local/channel/identity preservation verified through reboot. Owner confirms no external sensors; only device telemetry remains enabled at 900 seconds, with neighbor transmission enabled. Fresh G001 battery normalization/SNNS archive delivery and portal metadata/backup checks pass. R001/R003 are unchanged.
+
 ## Identify the requested board
 
 1. Check project and firmware Git status, preserving unrelated edits. With clean checkouts, pull the project with `--ff-only` and initialize its pinned submodules. Use the pinned commit rather than `git submodule update --remote`.
@@ -17,7 +19,7 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 
 | Board/function | Source and last verified hardware state | Configuration reference |
 | --- | --- | --- |
-| RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R004 flashed/verified**; R001/R002 remain stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
+| RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R002/R004 flashed/verified**; R001 remains stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R002 update](r002-release-update.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
 | Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
 | Heltec V3 gateways G001/G002 | Last verified stock 2.7.26.54e0d8d. Both currently receive-only. One future transmitting gateway is authorized in the design, not yet provisioned for live portal downlink. | [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
 
