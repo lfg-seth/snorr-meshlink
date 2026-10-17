@@ -1,5 +1,7 @@
 # Candidate sites and backhaul
 
+2026-10-17 private monitoring — Owner authorizes MeshMonitor on the separate existing Ubuntu LXC, reusing existing Grafana and Prometheus. Native MeshMonitor 4.17.0 now subscribes read-only to the encrypted MQTT feed; internal-only authenticated access, 30-day server-wide Prometheus retention, a separate Grafana dashboard, service restart persistence and isolated backup boot/row preservation pass. No packet/history pruning, public route, broker/radio configuration or field installation. Backups remain local; two-gateway/native-browser/storage-growth checks remain open. [Deployment and recovery](../docs/operations/meshmonitor-lxc.md).
+
 2026-10-16 R005 planned location — Owner assigns R005 to R001's existing planned site (SITE-006). Authenticated live configuration verifies exact equality with R001's private coordinates. Sharing a location does not copy equipment or establish installation, permission or coverage. [Preparation](../docs/operations/r005-preparation.md).
 
 2026-10-16 R004 planned location — Owner assigns R004 to R001's existing planned location (SITE-006). Live authenticated configuration verifies exact equality with R001's private coordinates; no coordinates enter Git. Installation/site permission/coverage remain unverified. Location sharing does not copy R001's battery, antenna or solar equipment. [Preparation](../docs/operations/r004-preparation.md).

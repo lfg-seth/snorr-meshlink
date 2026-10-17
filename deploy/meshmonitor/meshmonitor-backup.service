@@ -1,0 +1,9 @@
+[Unit]
+Description=Consistent private MeshMonitor database and configuration backup
+After=meshmonitor.service
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /root/meshmonitor-install/config/backup.py

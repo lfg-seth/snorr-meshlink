@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily private MeshMonitor backup
+
+[Timer]
+OnCalendar=*-*-* 02:45:00 America/Los_Angeles
+Persistent=true
+
+[Install]
+WantedBy=timers.target

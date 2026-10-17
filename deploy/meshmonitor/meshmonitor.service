@@ -1,0 +1,30 @@
+[Unit]
+Description=SNORR private MeshMonitor (MQTT subscribe only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=meshmonitor
+Group=meshmonitor
+WorkingDirectory=/opt/meshmonitor
+EnvironmentFile=/etc/meshmonitor/meshmonitor.env
+ExecStart=/opt/meshmonitor-runtime/node /opt/meshmonitor/dist/server/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=45
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/data
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryHigh=3G
+MemoryMax=4G
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target
