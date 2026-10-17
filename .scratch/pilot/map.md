@@ -1,5 +1,7 @@
 # Define an owned-hardware field pilot
 
+2026-10-16 R004 follow-up — Owner-authorized fourth RAK preparation completes on released `2.7.26.0b65f2e`, preserving device keys and verifying pilot/sensor/neighbor configuration through reboot. Live R004 registration shares R001's private planned site. Fresh G001 battery/weather ingestion and archived SNNS reception pass; INA219 interpretation, normalized current/neighbor decoding and fresh G002 delivery remain limited. [Evidence](../../docs/operations/r004-preparation.md). No tracker decision or field installation is implied.
+
 2026-10-14 owner expands provisioning to R001/R002/R003 at two private planned sites. All three equipment/location records and live voltage reports now reach PocketBase/portal; R003 also delivers actual temperature/humidity. Four reports × two gateways deduplicate correctly. Planned sites/assemblies remain unverified and warnings disabled pending activation. [Operations](../../docs/operations/repeater-telemetry.md), [TEST-009](../../records/field-results.md#test-009--live-repeater-provisioning-and-telemetry). Survey/wishlist work remains deferred.
 
 Label: wayfinder:map

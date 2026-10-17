@@ -1,5 +1,7 @@
 # Live repeater provisioning and telemetry
 
+2026-10-16 follow-up: R004 is now the fourth registered repeater, sharing R001's private planned coordinates. Verified released `2.7.26.0b65f2e`, preserved keys/profile, 900-second sensor telemetry and neighbor transmission pass readback. Fresh G001 battery/weather reports normalize; INA219 current and SNNS decoding remain unsupported. Private provisioning/worker mappings and eight-device backup recovery pass; G002's fresh path remains unverified. R004 equipment stays unknown. [Preparation/evidence](r004-preparation.md).
+
 Deployed and verified 2026-10-14 Pacific. R001, R002 and R003 are registered in the authenticated PocketBase/portal alongside the existing two trackers and two gateways. Exact owner-provided planned coordinates stay in private provisioning and authenticated device configuration, outside Git. R002/R003 share a site; the map groups their marker while retaining separate device cards and true coordinates. Installation and coverage remain unverified.
 
 Recorded equipment: R001/R002 Muzi whip, R003 fiberglass; each planned for four 18650 cells rated 2550 mAh per cell and a 160 mA solar cell. Chemistry, pack wiring/capacity, panel voltage/wattage and solar-input sensing are unknown. Do not infer a 10.2 Ah pack or measured solar output. Monitoring warnings remain disabled for the planned deployments pending activation and verified thresholds; telemetry ingestion/display is enabled.

@@ -9,6 +9,9 @@ Current follow-up: a third board, R003, now runs an owner-authorized targeted AH
 | R001 | COM8 | `!a65601b3` | `2.7.26.54e0d8d` |
 | R002 | COM9 | `!b456f760` | `2.7.26.54e0d8d` |
 | R003 | COM14 | `!05237743` | `2.7.26.cc5907b` (AHT patch) |
+| R004 | COM17 | `!77fdb9f1` | `2.7.26.0b65f2e` (released AHT/INA219/neighbors) |
+
+2026-10-16: R004 now runs the verified released prerelease with matching pilot profile, preserved device keys, enabled 900-second device/environment/power telemetry and neighbor transmission. Fresh G001 battery/weather ingestion passes; INA219 interpretation, G002 and custom-neighbor decoding remain limited. Registered at R001's private planned site; equipment is not copied. [Complete preparation](r004-preparation.md).
 
 Ports can change; verify hardware identity before writing settings. Physically label the boards R001/R002 before separating them. Owner confirms suitable 915 MHz antennas attached. Exact antenna model/gain, radio frequency SKU markings, fitted sensors and battery assembly are not independently inspected.
 

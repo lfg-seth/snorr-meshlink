@@ -43,7 +43,7 @@ Fresh public download, exact size/SHA256 comparison, manifest/checksum compariso
 
 ## Rollout boundary and next step
 
-**No node has been flashed or reconfigured for this feature.** R003's recorded running AHT build and R001/R002's stock build remain the last verified hardware state. No inventory, sites, sensors, broker ACLs or production services changed.
+2026-10-16 follow-up: [R004](r004-preparation.md) now runs this released build with neighbor transmission enabled/read back through reboot. A fresh 40-byte SNNS v1 report reaches G001/MQTT and is archived; normalized portal decoding and fresh G002 delivery remain unverified. R003's AHT build and R001/R002's stock builds are unchanged. The source-implementation session itself did not flash hardware.
 
 The current portal worker archives unsupported MQTT payloads but does not decode `SNNS`; live neighbor rows do not become available just by building this source. Before rollout, separately implement/test ingestion against the byte contract, preserve gateway receipt provenance and reject malformed/version/provenance mismatches. Then identity-check and snapshot a bench RAK, flash with owner authorization, explicitly enable/read back reporting and verify both stock gateway paths. Private-port forwarding and broker delivery depend on normal configuration; `CORE_PORTNUMS_ONLY` rejects this traffic.
 

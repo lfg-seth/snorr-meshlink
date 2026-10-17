@@ -1,5 +1,18 @@
 # Field testing and tangible results
 
+## TEST-010 — R004 released firmware and live registration
+
+2026-10-16 Pacific, USB bench plus live portal. Owner authorizes R004 flashing/configuration and registration at R001's location with temperature sensor and INA219.
+
+- Identify RAK4631 `!77fdb9f1`, privately back up its older MR03 profile/keys, verify released UF2 checksum, match its DFU board/USB identity and flash `2.7.26.0b65f2e` without reset or rebuild. Independent profile readback before/after explicit reboot verifies preserved keys, pilot channel/radio at 10 dBm, ROUTER/local-only, 900-second device/environment/power telemetry, enabled neighbor transmission, debug API off and cleared old fixed position.
+- Local sensor packets include 4.087 V device voltage, 26.567078°C / 21.399498% RH and INA219 legacy 0.008 V / 1.6 mA. Power report encodes channel 3 at 0.008 V / 1.7 mA; the legacy writer/PowerMetrics union mapping and USB/wiring path require investigation before interpreting these as battery current. No calibrated accuracy, charge direction or solar reading claimed.
+- Guarded manual migration passes isolated invalid-identity rejection, idempotence and existing-device preservation. Live registration/mapping preserves prior seven devices/history and adds R004 at R001's private planned coordinates. Authenticated state verifies identity, fitted-weather/INA219 metadata, unknown R004-specific equipment and disabled planned-site warnings.
+- Fresh automatic device packet `56599808` reaches G001/MQTT at 02:35:35.802 UTC October 17 (October 16 Pacific), with valid measurement clock, 4.143 V and uptime 66. Environment packet `104352002` reaches G001 at 02:36:00.451 UTC: 26.510239°C / 21.435547% RH. Both normalize into live R004 observations; current remains unsupported. New port-256 packet `2408390913` reaches G001/MQTT: 40-byte `SNNS` v1 companion archived, custom-neighbor decoding unsupported.
+- G002's last recorded receipt remains October 15 at 14:38:41.170 UTC. No fresh second-gateway receipt, two-gateway dedup result or gateway reconfiguration claimed. Buffered/pre-registration packets excluded from successful-ingestion evidence.
+- Pre/post-registration backup recovery, eight-device restored state/history, proxy authentication/throttling, public HTTPS/certificates and live-mode checks pass. [Operation details/checksums](../docs/operations/r004-preparation.md).
+
+Limits: INA219 wiring/calibration/power-channel mapping, fresh G002 delivery, portal current/neighbor decoding, native browser visuals, sustained cadence, runtime, forced relaying, site installation and field coverage remain unverified. Private raw/configuration evidence stays outside Git.
+
 2026-10-14 TEST-009 correction — Owner's browser check caught standalone demo after successful live API/telemetry checks: frontend build omitted live mode. Records remained intact. Fresh public browser reproduces demo; corrected production default/mode marker/deployment guard restore sign-in. Ten frontend tests/typecheck/build pass; public boundaries and isolated restore pass. API success did not establish correct browser entry. [Root cause](../docs/operations/repeater-telemetry.md#frontend-mode-correction).
 
 ## TEST-009 — Live repeater provisioning and telemetry

@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- R004 preparation (2026-10-16): fourth inventoried RAK4631 now runs checksum-verified released `2.7.26.0b65f2e`, with preserved keys, saved pilot profile, 900-second device/environment/power telemetry and enabled neighbor transmission verified through reboot. Registered at R001's private planned location; new G001 battery/weather reports reach the live portal and SNNS reaches the archive. INA219 current interpretation, normalized current/neighbor decoding and fresh G002 delivery remain unverified. [Preparation/evidence](docs/operations/r004-preparation.md).
+
 - RAK prerelease (2026-10-16): cached `2.7.26.0b65f2e` UF2/OTA ZIP plus manifest/checksums are [published for download](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Routine flashing uses verified released assets, with no rebuild. The source submodule pins release-tooling commit `8fe47325e`; binary source stays `0b65f2e84`. Public asset/cache verification and the fork release job pass; upstream publishing jobs are skipped. [Download and flash handoff](docs/operations/board-flashing-handoff.md). No hardware update claimed.
 
 - RAK neighbor firmware (2026-10-16): owner activates the parked passive-report proposal. Branch `snorr/rak-survey`, source `0b65f2e84`, now adds bounded direct-neighbor RSSI/SNR, hearing age and observation counts in background companion reports while retaining the AHT fix and standard GPS/NeighborInfo behavior. Portable collector/module checks pass; flashing, both-gateway delivery and portal companion decoding remain follow-ups. [Source and rollout boundary](docs/operations/rak-neighbor-signals.md).
