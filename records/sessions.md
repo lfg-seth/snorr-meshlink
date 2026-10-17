@@ -8,7 +8,7 @@
 - Twelve Windows checks including Tk interaction pass; eleven Linux checks pass with GUI explicitly skipped for missing Tk/display; Linux launcher syntax and portable C++ sanitizer framing checks pass. Three-minute hardware capture has ten receptions/seven duplicates, all B002 GPS/R005 SNNS copies decoded, zero reported stream gaps, final receive airtime 10.27%. Keyless, keyed and GUI replays preserve exactly all ten frames; opaque full hex printing passes. [TEST-014](field-results.md#test-014--dedicated-heltec-v3-airtime-sniffer).
 - UART status observes TX0/RX3/bad0; no Packet TX log appears. An optional later self-stat request times out, is not used by the capture tool and changes no setting. No external RF-silence measurement, high-load completeness, real RF-error event, 58% recurrence or native Linux USB/GUI claim. Close capture/API handles afterward; COM6 is free. Resolve [Build a dedicated Heltec V3 airtime sniffer](../.scratch/pilot/issues/23-airtime-sniffer.md).
 
-Next useful step: run the GUI during a utilization spike and compare a deliberately scoped one-router bench run. Preserve the dedicated sniffer image/profile and existing gateway/repeater roles; raw logs/keys remain private.
+Next useful step: run the GUI during a utilization spike and compare a deliberately scoped one-router bench run. Preserve the dedicated sniffer image/profile and existing gateway/repeater roles; raw logs/keys remain private. Git attributes keep the Linux launcher LF-only even in Windows checkouts.
 
 ## 2026-10-16 — Clarify the R004 series-current measurement
 
