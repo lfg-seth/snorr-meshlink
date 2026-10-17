@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-16 — Diagnose a reported 58% channel-utilization spike
+
+- Owner connects a Heltec V4 and reports 58% on both gateway/client OLEDs. Identify COM5 as stock `2.7.26.54e0d8d` B001 CLIENT. Save approximately 3.4 minutes of private serial/protocol evidence and local-destination statistics without flashing, rebooting or changing saved settings; close serial access afterward. Preserve unrelated battery-box model.
+- Fresh utilization samples are 4.00%, 4.81%, 0%, 13.74% and 8.09%; B001 hourly transmit utilization is 0.515–0.535%. Observe two GPS transmissions and 19 receptions, 16 duplicates (84%), zero new bad receptions, zero B001 relay transmissions and three canceled pending forwards. B001 positions return through three/four routers; R005 environment/power/private reports each arrive directly and through three routers. [Sanitized readout and limits](../docs/operations/channel-utilization-diagnostic.md).
+- Multiple reachable ROUTER nodes demonstrably amplify airtime. A transient repeated-traffic burst leads the explanation, but the earlier 58% event is not reproduced or precisely attributed; gateway logs and interference at the event time remain unobserved. Raw configuration, tracks and logs remain ignored under `private/bench/v4-util-20261016/`. No radio configuration or firmware fix is claimed.
+
+Next useful step: capture an actual recurrence on client/gateway and compare a deliberately scoped one-router bench run. Documentation/whitespace verification only; no field coverage, sustained load or hardware configuration change.
+
 ## 2026-10-16 — Add RAK neighbor and sensor power ingestion
 
 - Owner requests database/portal support for flashed RAK neighbor reports and INA219 sensors. Synchronize main, preserve the unrelated untracked battery-box model and retain the firmware pin. Add strict SNNS v1 and bounded standard NeighborInfo decoding, transactional private report/link storage and per-gateway receipt deduplication. Preserve unknown radio IDs, hearing ages/counts, boot/sequence/coverage metadata and unknown absolute hearing clocks.
