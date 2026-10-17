@@ -12,6 +12,7 @@ Priority order: member location awareness, member communications, and later supp
 - [Local development](README.local.md): start commands, demo credentials, database dashboard and frontend builds.
 - [Project brief](PROJECT.md): confirmed goals, constraints, and unresolved choices.
 - [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues): current work, bugs, verification and deferred ideas.
+- [Project board](https://github.com/users/lfg-seth/projects/2): owner-private status board and saved work/verification/bug/wishlist views.
 - [Tracking workflow](docs/operations/github-tracking.md): status views, session handoffs and completion criteria.
 - [Decision map](.scratch/pilot/map.md): historical pilot questions and durable decision answers.
 - [Roadmap](docs/roadmap.md): checkpoints from inventory through deployment and reporting.

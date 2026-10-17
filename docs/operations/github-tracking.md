@@ -4,6 +4,14 @@ Adopted by the owner on 2026-10-17. [GitHub Issues](https://github.com/lfg-seth/
 
 ## Find work
 
+- [Project board — All work](https://github.com/users/lfg-seth/projects/2/views/1) (owner-private)
+- [Project — Current work](https://github.com/users/lfg-seth/projects/2/views/2)
+- [Project — Verification](https://github.com/users/lfg-seth/projects/2/views/3)
+- [Project — Bugs](https://github.com/users/lfg-seth/projects/2/views/4)
+- [Project — Deferred wishlist](https://github.com/users/lfg-seth/projects/2/views/5)
+
+The Project retains its default private visibility; repository issues remain public. The issue filters below work without Project access.
+
 - [Ready and unblocked](https://github.com/lfg-seth/snorr-meshlink/issues?q=is%3Aissue%20is%3Aopen%20label%3Astatus%3Aready%20-label%3Ablocked)
 - [In progress](https://github.com/lfg-seth/snorr-meshlink/issues?q=is%3Aissue%20is%3Aopen%20label%3Astatus%3Ain-progress)
 - [Awaiting verification](https://github.com/lfg-seth/snorr-meshlink/issues?q=is%3Aissue%20is%3Aopen%20label%3Astatus%3Averify)
@@ -32,11 +40,11 @@ Label names/colors and checkpoint definitions live in [tracking configuration](.
 
 ## During a session
 
-1. Read the startup records and relevant GitHub issues. Search for existing work before creating an issue. Check blockers, owner holds and another session's claim; preserve unfinished local edits.
+1. Read the startup records and relevant GitHub issues. Run `python3 scripts/github/sync-project.py --apply` when CLI Project access is available to reconcile the board. Search for existing work before creating an issue. Check blockers, owner holds and another session's claim; preserve unfinished local edits.
 2. Capture one concrete outcome per issue, with acceptance criteria, evidence links, dependencies and scope. Bugs include observed/expected behavior, reproduction or capture steps, versions and uncertainty. Field tests distinguish planned criteria from measured results. Feature suggestions default to Deferred until the owner activates them.
 3. Claim authorized work by setting In progress, assigning the responsible GitHub user when appropriate, and recording the actual agent session/machine in the body or a short comment. Keep at most one or two issues in progress. The assignee alone is not a unique session lock; reconcile concurrent claims before changing shared work.
 4. Link commits and PRs. Record implementation, tests, deployment, hardware readback and field evidence separately. Use `Refs #N` for changes whose merge does not meet every acceptance criterion. Reserve automatic closing references for issues fully completed by that merge.
-5. Move prepared work to Verify while acceptance checks remain. Record what passed, what remains, blockers and the next useful action at handoff. Release a session claim when handing off; a retained claim must say what it awaits.
+5. Move prepared work to Verify while acceptance checks remain. After issue creation or status changes, run `python3 scripts/github/sync-project.py --apply` to update the derived board. Record what passed, what remains, blockers and the next useful action at handoff. Release a session claim when handing off; a retained claim must say what it awaits.
 6. Close only when the issue's scoped acceptance criteria pass, linking the decision/evidence and published source as applicable. Use `completed`, `not_planned` or `duplicate` accurately. For a verified implementation with a genuinely separate remaining test scope, create/link that follow-up before closing the implementation issue. Remove the open status label when closing; restore the appropriate status when reopening.
 7. Update `records/sessions.md` and affected durable records, commit explicit coherent paths and push completed commits. If GitHub is unavailable, record the pending issue update locally and reconcile next session. Report failed publication or unverified acceptance explicitly.
 
@@ -60,9 +68,19 @@ Formerly open questions now have these live records:
 
 Milestones group scoped issues under **Reliable bench tracking**, **Measured field pilot**, and **Repeatable member rollout**, without invented dates. Their issue-completion percentage counts closed work; it is not an operational readiness score. The [roadmap](../roadmap.md) states the evidence required to pass each checkpoint. A prerequisite test can expose more work, so review evidence before accepting a milestone.
 
-The desired Project has Triage, Ready, In progress, Verify, Done and Deferred columns, plus Current work, Verification, Bugs and Deferred wishlist views. At migration the MCP server exposes no Project management tools and no browser is connected. [Finish board setup](https://github.com/lfg-seth/snorr-meshlink/issues/19) records the exact access gap and acceptance checklist. Until then the filtered issue links above provide the working views.
+The [SNORR MeshLink Project](https://github.com/users/lfg-seth/projects/2) is linked to this repository, with Triage, Ready, In progress, Verify, Done and Deferred columns. All work, Current work and Verification are boards grouped by Status; Bugs and Deferred wishlist are filtered tables. The seven owner-held/deferred issues remain Deferred. [Board setup evidence](https://github.com/lfg-seth/snorr-meshlink/issues/19) records configuration and verification.
 
-Status labels are authoritative until a deliberate cutover. When a Project is available, either derive its status from these labels with verified automation, or document a one-time switch to the Project Status field and retire the status labels/templates that set them. Avoid requiring manual edits to two status systems. Built-in Project workflows can add matching items and mark closed issues Done; they do not establish hardware verification.
+Issue status labels remain authoritative; Project Status is derived. Change an issue's label rather than dragging its card to request a status change. `python3 scripts/github/sync-project.py` checks alignment without writes; add `--apply` to import missing repository issues and update their board statuses. Closed issues map to Done, and open issues must have exactly one recognized status label. The command leaves issue labels, assignees, holds and evidence unchanged, preserves unrelated Project items and verifies updates with bounded read retries for API consistency. Project identifiers and label mapping live in [project configuration](../../.github/project.json).
+
+The native Item closed → Done and Auto-add sub-issues workflows remain enabled. Newly created default Auto-close issue, Item added, Pull request linked and Pull request merged rules were removed to keep status changes under the label workflow and prevent board moves/PR activity from closing unverified work. No application deployment automation is added.
+
+Full-repository native auto-add cannot be configured through the exposed CLI/GraphQL controls; its creation/toggle requires a GitHub UI. The sync command supplies issue import and reconciliation during sessions. There is no unattended full-repository auto-add or continuous label-to-board synchronization configured; a future request can add that with separately reviewed access. Record a pending board update in the session log if CLI access is unavailable.
+
+## Management tooling
+
+GitHub CLI 2.102.0 was downloaded from the [official release](https://github.com/cli/cli/releases/tag/v2.102.0), verified against published SHA-256 checksums and installed at `/home/setheth/.local/bin/gh` on this workstation. The owner authorized a separate CLI login with Project scope; credentials are in the system keyring, outside Git. Check access with `gh auth status` and `gh project view 2 --owner lfg-seth`; never print or copy the token into project records.
+
+On another machine, install official GitHub CLI and complete its own `gh auth login --hostname github.com --git-protocol ssh --skip-ssh-key --scopes project --web` if Project access is absent. This preserves existing SSH keys. The MCP connection remains available for issue operations but exposes no Project-management tools. Board API readback and saved-view definitions were verified; native browser visual review was unavailable in this session.
 
 ## Publication boundaries
 

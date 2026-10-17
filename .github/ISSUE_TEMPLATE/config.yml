@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Project board
+    url: https://github.com/users/lfg-seth/projects/2
+    about: Owner-private board with current work, verification, bugs and deferred views; public issue filters are in the tracking rules.
   - name: Current work and tracking rules
     url: https://github.com/lfg-seth/snorr-meshlink/blob/main/docs/operations/github-tracking.md
     about: Read the workflow and search existing issues before adding work.

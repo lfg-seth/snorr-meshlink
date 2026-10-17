@@ -1,0 +1,16 @@
+{
+  "owner": "lfg-seth",
+  "number": 2,
+  "id": "PVT_kwHOB9OAJs4Bnho_",
+  "url": "https://github.com/users/lfg-seth/projects/2",
+  "repository": "lfg-seth/snorr-meshlink",
+  "status_field_id": "PVTSSF_lAHOB9OAJs4Bnho_zhmF1-4",
+  "status_labels": {
+    "status:triage": "Triage",
+    "status:ready": "Ready",
+    "status:in-progress": "In progress",
+    "status:verify": "Verify",
+    "status:deferred": "Deferred"
+  },
+  "closed_status": "Done"
+}

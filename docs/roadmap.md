@@ -4,7 +4,7 @@ Updated 2026-10-17 from recorded evidence, not a new live-service or hardware in
 
 | Checkpoint | Recorded state | Evidence still needed |
 | --- | --- | --- |
-| Project record and tracking | Repository records and local decisions established; active work migrated to GitHub Issues | Project board access/setup is tracked separately; preserve evidence and claims at each handoff |
+| Project record and tracking | Repository records and local decisions established; active work migrated to GitHub Issues with a linked private Project board | Preserve evidence and claims at each handoff; synchronize the derived board from issue labels during sessions |
 | Inventory and pilot requirements | First inventory and pilot needs decisions complete; two member trackers used in bench integration | Confirm condition/availability of additions before treating the planned six-member set as ready; reuse stock first |
 | Network and firmware evaluation | Meshtastic pilot baseline; real GPS/MQTT path and selected RAK fork work recorded | Broader readiness depends on measured relay, outage, freshness and power evidence; protocols remain distinct |
 | Reliable bench tracking | Two-tracker/two-gateway GPS ingestion, worker restart and isolated recovery recorded; neighbor/power portal integration deployed | Sustained phone-free freshness/runtime; forced relaying; local viewing/outage recovery; fresh G002 neighbor/power path; accurate power diagnosis; off-host recovery |
