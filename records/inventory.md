@@ -1,5 +1,7 @@
 # Hardware inventory
 
+2026-10-16 INA219 wiring clarification — Owner reports the INA219 inline between the battery and RAK: battery → INA219 → RAK. Record battery/load-path voltage/current sensing, not solar-input measurement. Exact board allocation/fitted quantity, charger connection point, shunt orientation/current sign, calibration and live telemetry remain unverified. The branch current is not automatically total battery charge/discharge current; identify the charger path before making that claim. No quantity, purchase or measured result added. [Flashing/configuration handoff](../docs/operations/board-flashing-handoff.md).
+
 2026-10-15 INA219 plan — Owner intends INA219 current/power sensors (HW-006) on repeaters and gateways. Fitted quantities, installation, wiring/current direction and live mA telemetry remain unverified; no stock count or purchase change. Portal shows unavailable current until measured data is supplied.
 
 2026-10-15 member battery support — Owner identifies the purchase-list 1000/3000 mAh member packs as LiPo and requests configurable type/capacity with voltage-derived charge estimates. Preserve HW-009's earlier owner-reported 1100 mAh label alongside the source's 1000 mAh description; no quantity or installed-per-device capacity changes. Portal suggestions include 1000, 1100 and 3000 mAh. Generic 3.7/4.2 V 1S profile remains uncalibrated; exact pack labels, protection and actual capacity/runtime need verification. [Profile and sources](../docs/research/member-battery-charge.md).

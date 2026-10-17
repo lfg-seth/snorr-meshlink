@@ -1,0 +1,69 @@
+# Board flashing and configuration handoff
+
+Updated 2026-10-16. Start here when a new chat is asked to flash boards, configure radios or verify their portal data. Read the repository's session-start instructions first. This document records the current handoff; a request to prepare notes does not itself authorize a hardware update.
+
+## Identify the requested board
+
+1. Check project and firmware Git status, preserving unrelated edits. With clean checkouts, pull the project with `--ff-only` and initialize its pinned submodules. Use the pinned commit rather than `git submodule update --remote`.
+2. Discover connected hardware and read node/USB identities. Match the requested device number, actual board revision, firmware target and fitted sensors. Old COM/tty names are hints only. Finish identification before selecting an image or opening a writer.
+3. Privately back up its complete configuration, channel keys, security identity and current firmware/version. Record the image checksum and recovery method. Keep backups and raw observations under ignored `private/bench/`; another machine needs its own private material or an authorized transfer.
+4. State the selected board/image and intended configuration changes. Carry out a user-requested normal firmware update and necessary reboot within that request; do not ask again solely because the operation was already authorized. A factory reset, identity/key replacement, changed regulatory region, changed target or additional board needs its own explicit scope. Never start flashing merely because this handoff exists.
+
+For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.md) and their canonical `.github/copilot-instructions.md` before hardware work. Prefer the documented MCP tools when available; sequence all serial operations on each port. Older setup records containing factory resets describe recovery history, not the default update procedure.
+
+## Select source and profile
+
+| Board/function | Source and last verified hardware state | Configuration reference |
+| --- | --- | --- |
+| RAK4631 repeater, including R001/R002/R003 | New build **2.7.26.0b65f2e**, published on `snorr/rak-survey`, pinned by this project's firmware submodule. Includes AHT detection fix, INA219 driver and custom passive neighbor reporting. **Not yet flashed.** Last measured state: R001/R002 stock 2.7.26.54e0d8d; R003 AHT build 2.7.26.cc5907b. | [New build, tests, checksums and rollout limits](rak-neighbor-signals.md); [saved RAK profile](rak-pilot-setup.md); [R003 update/recovery evidence](r003-aht-build.md). |
+| Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
+| Heltec V3 gateways G001/G002 | Last verified stock 2.7.26.54e0d8d. Both currently receive-only. One future transmitting gateway is authorized in the design, not yet provisioned for live portal downlink. | [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
+
+Retained RAK images/logs/checksums are local to the Windows desktop under `private/bench/rak-neighbors-0b65f2e/`. On another machine, rebuild the exact pinned source with the documented toolchain and record new artifact hashes; do not assume a rebuild has the retained binary's checksum. Build success establishes neither successful flashing nor live data delivery.
+
+### RAK neighbor update
+
+Preserve the private channel/key, security identity, radio profile and visible ROUTER role. Existing bench profile is recorded in the RAK setup reference; reread actual settings rather than applying historical defaults wholesale.
+
+- Explicitly enable `neighbor_info.enabled` for the companion collector. An isolated RAK requires `neighbor_info.transmit_over_lora=true` to send its observations through a gateway. Read both back after the configuration reboot.
+- The new companion reports use private port 256 (`SNNS` v1), minimum five-minute radio cadence plus jitter/airtime deferral; local mode uses a one-minute minimum. They collect passive direct receptions, not active ping/pong. Standard NeighborInfo remains separate, with its six-hour default/four-hour minimum.
+- Verify gateway handling of private-port packets; `CORE_PORTNUMS_ONLY` prevents their delivery. Stock gateways need no custom collector merely to forward a RAK report. Do not enable gateway radio transmission to solve an uplink-only task.
+- The live worker still needs custom-report decoding. Radio/MQTT receipt can pass while the portal neighbor table remains empty. Use [the wire contract](../../firmware/SNORR_NEIGHBORS.md) and preserve hearing age separately from receipt time.
+
+### Sensors and battery interpretation
+
+The [inventory's INA219 wiring record](../../records/inventory.md) is authoritative for owner-reported placement: **battery → INA219 → RAK**. Treat it as battery/load-path sensing, not solar-input measurement. Exact board allocation, charger junction, shunt polarity and calibration still need identification. A series sensor measures current through that branch; do not claim whole-battery net charging current until the charge path is established. USB power can change the observed path.
+
+INA219 detection/driver inclusion is confirmed by the RAK build. Actual voltage/current readings and the PowerMetrics channel mapping remain unverified. Inspect both the legacy EnvironmentMetrics writer and PowerTelemetry caller before assuming which channel carries the readings. Enable the appropriate fitted-sensor telemetry deliberately and verify the received packet's units/sign/channel against measurements. Do not derive current from voltage slope or label battery watts as solar watts.
+
+Device battery-voltage reporting uses `telemetry.device_telemetry_enabled` and its interval. AHT reporting uses `telemetry.environment_measurement_enabled` and its interval; R003's last verified device/environment settings are 900 seconds. Power reporting has its own enable/interval options. Use fitted sensors only and preserve valid measurement timestamps; match portal health timeouts to verified cadence. The portal's battery type/capacity fields are metadata, not radio settings or measured remaining runtime.
+
+## Portal gaps to carry into a new chat
+
+This is an assessment from source inspection, not an instruction to implement every item during a flash:
+
+| Feature | Current boundary / follow-up |
+| --- | --- |
+| Neighbor table/map | Add/test live custom-report decoding and gateway reception observations; current normalized adapter does not ingest them. Keep unknown identities/readings explicit. |
+| INA219 mA / charging display | Adapter, ingestion validation and snapshot need current support. Current sign/channel and timestamps need bench evidence; displaying current is not enabled merely by compiling its driver. |
+| Solar display | The reported INA219 placement does not measure solar input. Leave solar unavailable unless a verified measurement path exists. |
+| GPS quality | Adapter supports PDOP and satellite count. Verify actual V4 position flags include the required fields and GPS measurement timestamp. HVDOP selects separate HDOP/VDOP instead of PDOP in the pinned build. Existing flags were deliberately preserved; configuration changes require the current task's scope. |
+| Battery/weather health | Voltage and temperature/humidity ingestion exist. Verify fitted capabilities, calibration, valid/unknown clocks, saved intervals and corresponding missing-report/recovery rules. |
+| Messages / remote names | Live worker remains receive-only; radio text and remote-admin execution are not integrated. Preserve receive-only gateways unless explicitly bringing downlink forward. Portal assignment labels remain independent of radio names. |
+| Intrusion | Needs fitted input hardware, selected device configuration and an event-to-portal mapping; UI capability alone does not supply events. |
+| Gateway MQTT | Pinned gateway source logs credentials and uses `setInsecure()` for direct TLS. Keep logs private and address that gateway firmware issue before field rollout; the RAK neighbor build does not fix the stock V3 images. |
+
+Source references: [MQTT adapter](../../backend/mqtt_adapter.py), [ingestion validation](../../backend/pb_hooks/ingest.js), [current display](../../portal/src/battery.ts), and the pinned firmware's INA219/PowerTelemetry/Position/MQTT implementations. Current source governs behavior; older operational notes may describe superseded integration stages.
+
+## Finish the requested hardware task
+
+1. After update/reboot, independently read back node identity, firmware version, complete intended profile and keys privately. Confirm preserved fields match the backup and only intended configuration differs. Keep debug API/logging in its intended final state.
+2. Observe **new** packets after the update through each required gateway; exclude buffered startup/history packets. Verify values, source/observer/gateway identity and measurement/report/receipt clocks. Check the live portal separately from RF/MQTT receipt; unsupported data cannot pass a portal test.
+3. Report actual results and limits: flashed/configured, local sensor read, direct RF receipt, MQTT receipt and portal ingestion are separate evidence. Short bench success does not measure runtime, solar sufficiency, field coverage or sustained GPS freshness.
+4. Update [inventory](../../records/inventory.md), [field results](../../records/field-results.md), affected operation notes and [session log](../../records/sessions.md). Record exact source/image hashes, saved profile changes, verification and next step; publish coherent records while keeping raw data private.
+
+## Suggested new-chat request
+
+> Read `docs/operations/board-flashing-handoff.md` and the normal session-start files. Identify connected R003, back up its profile/keys, then flash and configure the pinned RAK neighbor build while preserving its identity, private channel and existing AHT telemetry. Enable neighbor reporting over LoRa and verify new packets through both gateways. Record any portal-ingestion limits separately. Do not factory-reset it or change other boards.
+
+Replace R003 with the actual requested device. Starting a separate chat does not transfer ignored artifacts, credentials or serial access. Keep one active hardware writer per physical board.

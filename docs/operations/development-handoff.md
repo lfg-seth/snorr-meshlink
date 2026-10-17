@@ -17,6 +17,7 @@ Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`
 
 ## Current state
 
+- For a new chat tasked with flashing or configuring boards, start with [the board flashing handoff](board-flashing-handoff.md). It links exact builds, distinguishes built source from running hardware, records battery-path INA219 placement and carries the portal integration gaps forward.
 - RAK neighbor source (2026-10-16): the owner-authorized `lfg-seth/firmware` branch `snorr/rak-survey` and this project's submodule pin now use `0b65f2e8444ea2dd3566f61ba2614d6eb33d3fd2`. Build `2.7.26.0b65f2e` and portable collector/module checks pass. Adds passive RSSI/SNR, hearing age and bounded background companion reports, retaining the AHT fix. This is **built source only**: R003's running `cc5907b` and the stock R001/R002 hardware state below remain the last verified device builds. No flash, gateway delivery or portal companion decoding performed. [Build/rollout details](rak-neighbor-signals.md).
 
 - Sign-in refresh fix `ee5e57e` is deployed (2026-10-16). Authenticated refresh restores the tab's saved token after server validation; sign-out/rejected authentication clear it and temporary outages offer retry. Demo refresh still returns to sign-in. Frontend checks pass locally/on the LXC; public assets match the tested build and loopback token reuse/heartbeat/protection checks pass. Native browser verification remains outstanding. [Release evidence](portal-lxc.md#sign-in-refresh-fix--2026-10-16).

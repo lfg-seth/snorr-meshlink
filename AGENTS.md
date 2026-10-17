@@ -8,6 +8,7 @@ This repository is the durable project record. Preserve the user's priority orde
 
 ## When doing work
 
+- Board flashing or radio configuration: read `docs/operations/board-flashing-handoff.md` for board/source selection, preserved profiles, portal gaps and verification criteria before hardware work.
 - Wishlist: read `records/wishlist.md` when capturing a wishlist request or discussing a related topic. Record requested ideas as deferred, outside the active ticket frontier. Mention relevant parked ideas when useful to the current conversation; mentioning one does not activate it. Research, design, implementation, and testing wait until the owner explicitly brings it forward.
 - Inventory or hardware changes: update `records/inventory.md`; distinguish confirmed quantities, estimates, and unknowns.
 - Spending, donations, or funding: update `records/finances.md` with dated amounts and evidence references. Never invent balances, prices, or donated values.
@@ -28,4 +29,6 @@ Update `records/sessions.md` with completed work, outstanding questions, and the
 
 The owner has authorized publishing project records to `git@github.com:lfg-seth/snorr-meshlink.git` (remote `origin`). Keep this repository updated and push every completed commit to its corresponding branch on `origin`; report any failed push. Track `main` against `origin/main`. Do not force-push or rewrite remote history without explicit authorization. The local Markdown tracker remains the decision record; GitHub receives it with each push.
 
-Keep secrets, identifiable member rosters, and raw location tracks out of Git using `private/` or `local-data/`. Track sanitized summaries and evidence references. Publication to the GitHub repository above is authorized; other publishing and external outreach require authorization.
+The owner explicitly authorized the Meshtastic firmware fork `git@github.com:lfg-seth/firmware.git` on 2026-10-16. Publish pilot firmware source on its existing `snorr/rak-survey` branch and pin published commits through this repository's `firmware` submodule. Publishing source does not itself authorize flashing hardware.
+
+Keep secrets, identifiable member rosters, and raw location tracks out of Git using `private/` or `local-data/`. Track sanitized summaries and evidence references. Publication to the GitHub repositories above is authorized; other publishing and external outreach require authorization.

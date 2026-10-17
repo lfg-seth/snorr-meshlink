@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Save a reusable board flashing and configuration handoff
+
+- Owner clarifies INA219 placement inline between battery and RAK and asks whether a new chat can recover the flashing/configuration notes. Record that owner-reported wiring in inventory without inventing sensor counts, per-board allocation, charger junction, polarity/calibration or measured current. Treat the sensor as battery/load-path sensing; total battery charging/discharging interpretation awaits the actual charge path, and solar-input measurement is unsupported by this placement.
+- Existing RAK source/build evidence and checksums were already published in project commit `3756b0b` and firmware `0b65f2e84`. Add [Board flashing and configuration handoff](../docs/operations/board-flashing-handoff.md) as the single starting point for future chats, linked from AGENTS.md, README and development handoff. Record the owner-authorized firmware fork destination to prevent repeating the resolved publishing question.
+- Save the previously chat-only portal-gap assessment: neighbor/current ingestion, INA219 packet channel/sign verification, GPS quality flags, sensor cadence/health clocks, live messaging/admin gaps, intrusion mapping and pinned gateway TLS/logging issue. Separate current support from pending integration; link source and measured evidence. Include a scoped example request for R003 that preserves keys/profile, performs the intended normal update and verifies new gateway traffic without a factory reset.
+- Documentation/inventory only: no firmware, configuration, hardware state, source pin, live service, tracker decision or credential changed. Check local documentation links and Git whitespace; preserve the unrelated untracked battery-box model.
+
+Next useful step: in a new chat, request a named board update using the handoff. Rediscover the board, privately snapshot configuration and choose the pinned target before writing; verify RF, MQTT and portal ingestion separately and record measured outcomes.
+
 ## 2026-10-16 — Implement passive RAK neighbor signal reports
 
 - Owner asks whether the RAK branch already has richer neighbor signal information and brings implementation forward if missing. Fetch both remotes; firmware `snorr/rak-survey` remains at `cc5907b1f`, containing the AHT fix only. Claim [Improve passive neighbor signal reporting in the RAK fork](../.scratch/pilot/issues/21-rak-neighbor-signals.md). Preserve the unrelated untracked battery-box model.
