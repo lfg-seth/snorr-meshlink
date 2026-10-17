@@ -47,6 +47,12 @@ export default function SignalLinkDetail({ connection, labels, markerLabels = {}
         <div><dt>Report received</dt><dd><SignalTime at={row.receivedAt} now={now} /></dd></div>
         <div><dt>Packet path</dt><dd>{row.path === 'direct' ? 'Direct' : row.path === 'relayed' ? 'Relayed' : 'Unknown'}</dd></div>
         <div><dt>Original packet source</dt><dd>{label(row.originalSourceDeviceId)}</dd></div>
+        {row.reportType === 'snns-v1' && <>
+          <div><dt>Hearing age at report</dt><dd>{row.hearingAgeSeconds}s<small>Excludes transport delay; absolute hearing time unknown</small></dd></div>
+          <div><dt>Accepted observations</dt><dd>{row.observationCount}<small>Count since collector entry began; delivery reliability unmeasured</small></dd></div>
+          <div><dt>Report coverage</dt><dd>{row.subset ? 'Partial table' : 'Complete current table'} · {row.totalNeighbors} neighbors{row.capacityEvicted && <small>Earlier capacity eviction reported</small>}</dd></div>
+          <div><dt>Report identity</dt><dd>Boot {row.bootId} · sequence {row.sequence}<small>Reporter uptime {row.reportUptimeSeconds}s · via {label(row.transportGatewayId ?? null)}</small></dd></div>
+        </>}
       </dl>
     </section>)}
     <p className="small muted">{connection.observations.length} saved observation{connection.observations.length === 1 ? '' : 's'} in the loaded records. Latest reading per direction and report source shown; missing values stay Unknown.</p>

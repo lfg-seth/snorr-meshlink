@@ -2,6 +2,7 @@ import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
 import BatteryHistory from './BatteryHistory';
+import PowerReadings from './PowerReadings';
 import type { LoadBatteryHistory } from './BatteryChart';
 import NeighborTable from './NeighborTable';
 import type { LinkObservation } from './NeighborTable';
@@ -318,6 +319,7 @@ export default function InfrastructurePage({
             )}
           </div>
         )}
+        <PowerReadings device={selected} now={now} />
         <BatteryHistory loadHistory={loadBatteryHistory} key={`battery-${selected.id}`} device={selected} now={now} online={online} />
         <div className="infra-detail-columns">
           <div>

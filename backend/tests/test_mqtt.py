@@ -41,6 +41,82 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
 
 
 class AdapterTests(unittest.TestCase):
+    def wire_report(self, payload, port=portnums_pb2.PRIVATE_APP, gateway='!9ea13cc0'):
+        source = 0x05237743
+        data = mesh_pb2.Data(portnum=port, payload=payload)
+        packet = mesh_pb2.MeshPacket(id=17)
+        setattr(packet, 'from', source)
+        packet.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(struct.pack('<QI', 17, source) + b'\0' * 4)).encryptor().update(data.SerializeToString())
+        wire = mqtt_pb2.ServiceEnvelope(packet=packet, channel_id='Test', gateway_id=gateway)
+        return Adapter({**CONFIG, 'infrastructure': {'!05237743': 'r003'}}).decode(
+            f'snorr/pilot/2/e/Test/{gateway}', wire.SerializeToString(), NOW)
+
+    def test_snns_wire_values_unknown_nodes_gateway_dedup_and_missing_absolute_time(self):
+        header = struct.pack('<4sBBBBIIII', b'SNNS', 1, 3, 2, 9, 0x05237743, 42, 7, 100)
+        rows = struct.pack('<IIhhI', 0x699c2ed8, 0, -80, 0, 15) + struct.pack('<IIhhI', 1234, 1799, -140, -13, 1)
+        first = self.wire_report(header + rows)
+        second = self.wire_report(header + rows, gateway='!849ad7a0')
+        self.assertEqual(first['kind'], 'neighbors')
+        self.assertEqual(first['packetId'], second['packetId'])
+        self.assertEqual(first['data'], second['data'])
+        self.assertIsNone(first['measuredAt'])
+        report = first['data']
+        self.assertTrue(report['subset'])
+        self.assertTrue(report['capacityEvicted'])
+        self.assertEqual(report['rows'][0], {'heardDeviceId': 'b001', 'heardNodeId': '!699c2ed8',
+            'snrDb': 0, 'rssiDbm': -80, 'hearingAgeSeconds': 0, 'observationCount': 15})
+        self.assertIsNone(report['rows'][1]['heardDeviceId'])
+        self.assertEqual(report['rows'][1]['snrDb'], -3.25)
+        for offset, value in [(4, 2), (5, 4), (6, 9), (7, 1), (8, 0), (12, 0), (16, 0)]:
+            bad = bytearray(header + rows)
+            bad[offset] = value
+            with self.assertRaises(PacketRejected):
+                self.wire_report(bytes(bad))
+        for bad in [b'SNNS', header + rows[:-1], header + rows + b'\0',
+                    header + rows[:16] * 2]:
+            with self.assertRaises(PacketRejected):
+                self.wire_report(bad)
+        valid_header = struct.pack('<4sBBBBIIII', b'SNNS', 1, 0, 1, 1, 0x05237743, 42, 7, 100)
+        for node, age, rssi, snr, count in [(0, 0, -80, 0, 1), (0x05237743, 0, -80, 0, 1),
+                (123, 1800, -80, 0, 1), (123, 0, 0, 0, 1), (123, 0, -80, 401, 1), (123, 0, -80, 0, 0)]:
+            with self.assertRaises(PacketRejected):
+                self.wire_report(valid_header + struct.pack('<IIhhI', node, age, rssi, snr, count))
+        self.assertIsNone(self.wire_report(b'other private application'))
+
+    def test_standard_neighbor_unknown_scalar_zero_and_provenance(self):
+        report = mesh_pb2.NeighborInfo(node_id=0x05237743)
+        report.neighbors.add(node_id=0x699c2ed8, snr=5.5, last_rx_time=NOW)
+        report.neighbors.add(node_id=123, snr=0)
+        decoded = self.wire_report(report.SerializeToString(), portnums_pb2.NEIGHBORINFO_APP)
+        self.assertEqual(decoded['data']['rows'][0]['snrDb'], 5.5)
+        self.assertIsNone(decoded['data']['rows'][0]['rssiDbm'])
+        self.assertIsNone(decoded['data']['rows'][1]['snrDb'])
+        self.assertIsNone(decoded['measuredAt'])
+        report.node_id = 123
+        with self.assertRaises(PacketRejected):
+            self.wire_report(report.SerializeToString(), portnums_pb2.NEIGHBORINFO_APP)
+
+    def test_signed_power_metrics_preserve_channels_zero_presence_and_clocks(self):
+        t = telemetry_pb2.Telemetry(time=NOW - 60)
+        t.power_metrics.ch3_voltage = 4.2
+        t.power_metrics.ch3_current = -323.1
+        t.power_metrics.ch1_current = 0
+        result = self.telemetry(t)
+        self.assertAlmostEqual(result['data']['power3Voltage'], 4.2, places=5)
+        self.assertAlmostEqual(result['data']['power3CurrentMa'], -323.1, places=4)
+        self.assertEqual(result['data']['power1CurrentMa'], 0)
+        self.assertNotIn('power1Voltage', result['data'])
+        self.assertNotIn('battery', result['data'])
+        self.assertEqual(result['packetId'], self.telemetry(t, '!849ad7a0')['packetId'])
+        t.environment_metrics.voltage = 0.008
+        t.environment_metrics.current = -0.4
+        result = self.telemetry(t)
+        self.assertAlmostEqual(result['data']['sensorCurrentMa'], -0.4)
+        self.assertNotIn('power3CurrentMa', result['data'])
+        t.environment_metrics.current = float('nan')
+        with self.assertRaises(PacketRejected):
+            self.telemetry(t)
+
     def telemetry(self, telemetry, gateway='!9ea13cc0'):
         source = 0x05237743
         data = mesh_pb2.Data(portnum=portnums_pb2.TELEMETRY_APP, payload=telemetry.SerializeToString())

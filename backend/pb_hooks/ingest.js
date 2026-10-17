@@ -1,5 +1,7 @@
 const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
+const neighbors = require(`${__hooks}/neighbors.js`);
+const powerMetric = (key) => /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key);
 function timestamp(value, now) {
   if (value === null || value === undefined || value === '')
     return { measuredAt: null, quality: 'unknown' };
@@ -35,7 +37,7 @@ function ingest(e) {
       c.text(b.packetId, 'packet ID', 80);
       c.text(b.deviceId, 'device ID', 80);
       c.text(b.gatewayId, 'gateway ID', 80);
-      if (['position', 'telemetry', 'message'].indexOf(b.kind) < 0)
+      if (['position', 'telemetry', 'message', 'neighbors'].indexOf(b.kind) < 0)
         throw new BadRequestError('Unknown normalized packet kind.');
       packetKey = `${b.kind}:${b.deviceId}:${b.packetId}`;
       device = c.device(app, b.deviceId);
@@ -52,7 +54,9 @@ function ingest(e) {
       )
         throw new BadRequestError('Invalid receipt time.');
       receivedAt = new Date(b.receivedAt).toISOString();
-      time = timestamp(b.measuredAt, Date.now());
+      // Historical replay must retain a clock that was future at reception as
+      // future, even if wall time has since caught up with that device clock.
+      time = timestamp(b.measuredAt, Date.parse(receivedAt));
       data = b.data;
       if (!data || typeof data !== 'object' || Array.isArray(data))
         throw new BadRequestError('Packet data must be an object.');
@@ -81,7 +85,7 @@ function ingest(e) {
           !keys.length ||
           keys.some(
             (key) =>
-              ['battery', 'temperature', 'humidity', 'solar', 'intrusion'].indexOf(key) < 0,
+              ['battery', 'temperature', 'humidity', 'solar', 'intrusion'].indexOf(key) < 0 && !powerMetric(key),
           )
         )
           throw new BadRequestError('Unknown or empty telemetry metrics.');
@@ -93,11 +97,12 @@ function ingest(e) {
             number(
               data[key],
               key,
-              key === 'temperature' ? -100 : 0,
-              key === 'temperature' ? 150 : key === 'humidity' ? 100 : 10000,
+              key === 'temperature' ? -100 : key.endsWith('CurrentMa') ? -100000 : 0,
+              key === 'temperature' ? 150 : key === 'humidity' || key.endsWith('Voltage') ? 100 : key.endsWith('CurrentMa') ? 100000 : 10000,
             );
         });
       }
+      if (b.kind === 'neighbors') neighbors.validate(app, data, b.deviceId);
       if (b.kind === 'message') {
         c.text(data.text, 'inbound text', 400);
         c.text(data.author, 'reported author', 80);
@@ -111,7 +116,7 @@ function ingest(e) {
         ? 'positions'
         : b.kind === 'telemetry'
           ? 'observations'
-          : 'messages';
+          : b.kind === 'neighbors' ? 'neighbor_reports' : 'messages';
     const existing =
       outcome === 'accepted'
         ? c.first(app, collection, 'packetKey = {:key}', { key: packetKey })
@@ -166,6 +171,8 @@ function ingest(e) {
         device.set('latestPosition', position);
         app.save(device);
       }
+    } else if (b.kind === 'neighbors') {
+      neighbors.save(app, packetKey, b, receivedAt);
     } else if (b.kind === 'telemetry') {
       c.create(app, 'observations', {
         packetKey,
@@ -179,7 +186,7 @@ function ingest(e) {
       const config = c.object(device, 'configuration');
       Object.keys(data).forEach((metric) => {
         const supported =
-          metric === 'battery' ||
+          metric === 'battery' || powerMetric(metric) ||
           (config.equipped || {})[
             { solar: 'solar', temperature: 'weather', humidity: 'weather', intrusion: 'intrusion' }[
               metric

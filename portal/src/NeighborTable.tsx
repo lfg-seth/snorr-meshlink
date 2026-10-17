@@ -12,6 +12,17 @@ export type LinkObservation = {
   rssiDbm: number | null;
   receivedAt: string;
   observedAt: string | null;
+  reportType?: 'snns-v1' | 'neighbor-info';
+  heardNodeId?: string;
+  hearingAgeSeconds?: number;
+  observationCount?: number;
+  subset?: boolean;
+  capacityEvicted?: boolean;
+  totalNeighbors?: number;
+  bootId?: number;
+  sequence?: number;
+  reportUptimeSeconds?: number;
+  transportGatewayId?: string;
 };
 
 function age(at: string | null, now: number): string {
@@ -50,7 +61,7 @@ export default function NeighborTable({ links, infrastructure, trackers, now, on
         </select>
       </label>
     </div>
-    <p className="small muted">Each row records one direction, as heard by its receiver. Gateway readings describe the final radio hop. Neighbor reports do not supply signal strength or a last-heard time.</p>
+    <p className="small muted">Each row records one direction, as heard by its receiver. RAK reports include RSSI, SNR, observation count and hearing age when the report was made. Hearing age excludes delivery delay; an absolute hearing time stays unknown. Partial reports and omitted neighbors do not establish a lost link.</p>
     {!online && <p className="small muted" role="status">Feed unavailable · showing saved observations.</p>}
     {rows.length ? <div className="neighbor-table-scroll" tabIndex={0} role="region" aria-label="Neighbor signal observations">
       <table className="neighbor-table">
@@ -59,16 +70,21 @@ export default function NeighborTable({ links, infrastructure, trackers, now, on
           <th scope="col">Receiver</th><th scope="col">Heard node</th><th scope="col">Original source</th>
           <th scope="col"><abbr title="Signal-to-noise ratio; higher is clearer">Signal quality (SNR)</abbr></th>
           <th scope="col"><abbr title="Received signal strength; less negative is stronger">Strength (RSSI)</abbr></th>
-          <th scope="col">Path</th><th scope="col">Last heard</th><th scope="col">Report received</th><th scope="col">Source</th>
+          <th scope="col">Path</th><th scope="col">Last heard</th><th scope="col">Hearing age at report</th><th scope="col">Observations</th><th scope="col">Report received</th><th scope="col">Source</th>
         </tr></thead>
         <tbody>{rows.map(row => <tr key={row.id}>
           <th scope="row">{label(row.observerDeviceId)}</th>
-          <td>{label(row.heardDeviceId)}</td><td>{label(row.originalSourceDeviceId)}</td>
+          <td>{row.heardDeviceId ? label(row.heardDeviceId) : row.heardNodeId ?? 'Unknown'}</td><td>{label(row.originalSourceDeviceId)}</td>
           <td>{signal(row.snrDb, 'dB')}</td><td>{signal(row.rssiDbm, 'dBm')}</td>
           <td>{row.path === 'direct' ? 'Direct' : row.path === 'relayed' ? 'Relayed' : 'Unknown'}</td>
           <td><time dateTime={row.observedAt ?? undefined} title={row.observedAt ?? 'The report supplies no hearing timestamp'}>{age(row.observedAt, now)}</time></td>
+          <td>{row.hearingAgeSeconds == null ? 'Unknown' : `${row.hearingAgeSeconds}s`}</td>
+          <td>{row.observationCount ?? 'Unknown'}</td>
           <td><time dateTime={row.receivedAt} title={row.receivedAt}>{age(row.receivedAt, now)}</time></td>
-          <td>{row.source === 'gateway' ? 'Gateway receipt' : 'Neighbor report'}</td>
+          <td>{row.source === 'gateway' ? 'Gateway receipt' : row.reportType === 'snns-v1' ? 'RAK signal report' : 'Neighbor report'}
+            {row.subset && <small>Partial · {row.totalNeighbors} neighbors in table</small>}
+            {row.capacityEvicted && <small>Earlier capacity eviction reported</small>}
+          </td>
         </tr>)}</tbody>
       </table>
     </div> : <p className="empty">No signal observations recorded for this receiver.</p>}

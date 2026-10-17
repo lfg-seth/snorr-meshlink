@@ -1,4 +1,5 @@
 import BatteryCharge from './BatteryCharge';
+import PowerReadings from './PowerReadings';
 import BatteryChart from './BatteryChart';
 import type { LoadBatteryHistory } from './BatteryChart';
 import DeviceSheet from './DeviceSheet';
@@ -96,6 +97,7 @@ export default function InfrastructureQuickStats({
         </div>
       </dl>
       <BatteryChart device={device} now={now} loadHistory={loadBatteryHistory} />
+      <PowerReadings device={device} now={now} />
       {relationships}
     </DeviceSheet>
   );

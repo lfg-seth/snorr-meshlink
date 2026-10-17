@@ -73,12 +73,20 @@ export function signalConnections(links: LinkObservation[], trackers: Tracker[],
   });
   const relationships = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));
   relationships.forEach(connection => {
-    connection.observations.sort((a, b) => time(b.observedAt ?? b.receivedAt) - time(a.observedAt ?? a.receivedAt) ||
-      time(b.receivedAt) - time(a.receivedAt) || a.id.localeCompare(b.id));
+    const chronological = (a: LinkObservation, b: LinkObservation) =>
+      time(b.observedAt ?? b.receivedAt) - time(a.observedAt ?? a.receivedAt) ||
+      time(b.receivedAt) - time(a.receivedAt) || a.id.localeCompare(b.id);
+    connection.observations.sort(chronological);
     const latest = new Map<string, LinkObservation>();
     connection.observations.forEach(row => {
       const key = JSON.stringify([row.observerDeviceId, row.heardDeviceId, row.source]);
-      if (!latest.has(key)) latest.set(key, row);
+      const previous = latest.get(key);
+      // Compare sequences only within the same direction and boot. Sorting a
+      // mixed list by sequence/time could produce a non-transitive comparator.
+      const sameBoot = previous && row.reportType === 'snns-v1' && previous.reportType === 'snns-v1' &&
+        row.bootId === previous.bootId && row.sequence != null && previous.sequence != null;
+      if (!previous || (sameBoot ? row.sequence! > previous.sequence! : chronological(row, previous) < 0))
+        latest.set(key, row);
     });
     connection.latest = [...latest.values()];
     const snrs = connection.latest.flatMap(row => typeof row.snrDb === 'number' && Number.isFinite(row.snrDb) ? [row.snrDb] : []);

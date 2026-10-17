@@ -19,6 +19,70 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_neighbor_reports_atomic_dedup_private_storage_and_clock_semantics(self):
+        data = {'reportType': 'snns-v1', 'observerNodeId': '!05237743', 'bootId': 42,
+                'sequence': 7, 'reportUptimeSeconds': 100, 'subset': False,
+                'capacityEvicted': True, 'totalNeighbors': 2, 'rows': [
+                    {'heardDeviceId': 'd1', 'heardNodeId': '!699c2ed8', 'snrDb': 0,
+                     'rssiDbm': -80, 'hearingAgeSeconds': 12, 'observationCount': 10},
+                    {'heardDeviceId': None, 'heardNodeId': '!00000123', 'snrDb': -3.25,
+                     'rssiDbm': -120, 'hearingAgeSeconds': 1799, 'observationCount': 1}]}
+        item = packet('r1', 'neighbors', data, None)
+        before = self.state()
+        self.assertEqual(self.ingest(item)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**item, 'gatewayId': 'b2'})['outcome'], 'duplicate')
+        rows = self.state()['links']
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r['heardNodeId'] for r in rows}, {'!699c2ed8', '!00000123'})
+        self.assertTrue(all(r['observerDeviceId'] == 'r1' and r['observedAt'] is None for r in rows))
+        self.assertTrue(all(r['transportGatewayId'] == 'b1' for r in rows))
+        self.assertEqual(len(self.records('neighbor_reports')), 1)
+        self.assertEqual(len(self.records('packet_receipts')), 2)
+        self.assertEqual(self.state()['trackers'], before['trackers'])
+        for bad in [{**data, 'rows': [data['rows'][0], {**data['rows'][1], 'rssiDbm': 0}]},
+                    {**data, 'bootId': 0}, {**data, 'subset': True},
+                    {**data, 'rows': [data['rows'][0], data['rows'][0]]}]:
+            self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest', packet('r1', 'neighbors', bad))
+        self.assertEqual(len(self.records('neighbor_reports')), 1)
+        self.assertEqual(len(self.state()['links']), 2)
+        for client in [self.admin, self.member, self.worker, Client(self.url)]:
+            with self.assertRaises(ApiError):
+                client.request('GET', '/api/collections/neighbor_reports/records')
+        empty = packet('r1', 'neighbors', {'reportType': 'neighbor-info', 'observerNodeId': '!05237743', 'rows': []}, None)
+        self.assertEqual(self.ingest(empty)['outcome'], 'accepted')
+        self.assertEqual(self.ingest(empty)['outcome'], 'duplicate')
+        self.assertEqual(len(self.state()['links']), 2)  # No omission-driven deletion.
+        self.stop()
+        self.process = start(self.data, int(self.url.rsplit(':', 1)[1]), self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual(len(self.state()['links']), 2)
+        self.assertEqual(self.ingest(item)['outcome'], 'duplicate')
+
+    def test_sensor_current_signed_channels_and_latest_reading_independent_of_battery(self):
+        before = self.state()
+        item = packet('r1', 'telemetry', {'power3Voltage': 4.2, 'power3CurrentMa': -323.1,
+                                        'power1CurrentMa': 0}, 1)
+        self.assertEqual(self.ingest(item)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**item, 'gatewayId': 'b2'})['outcome'], 'duplicate')
+        current = next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')
+        self.assertIsNone(current['battery'])
+        readings = {r['metric']: r for r in current['powerReadings']}
+        self.assertEqual(readings['power3CurrentMa']['value'], -323.1)
+        self.assertEqual(readings['power1CurrentMa']['value'], 0)
+        self.assertNotIn('batteryCurrentMa', current)
+        for minutes in [20, None, -10]:
+            self.ingest(packet('r1', 'telemetry', {'power3CurrentMa': 100}, minutes))
+        replay_future = packet('r1', 'telemetry', {'power3CurrentMa': 100}, 2)
+        replay_future['receivedAt'] = at(10)
+        self.ingest(replay_future)  # Future when received remains future on replay.
+        self.assertEqual(next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings'], current['powerReadings'])
+        self.ingest(packet('r1', 'telemetry', {'sensorVoltage': 0.008, 'sensorCurrentMa': -0.4}, None))
+        self.assertEqual(len(next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings']), 5)
+        for data in [{'power9CurrentMa': 1}, {'power3CurrentMa': -100001}, {'sensorVoltage': -1}, {'power1CurrentMa': True}]:
+            self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest', packet('r1', 'telemetry', data))
+        self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest', packet('d1', 'telemetry', {'sensorCurrentMa': 1}))
+        self.assertEqual(before['trackers'], self.state()['trackers'])
+
     def test_position_quality_stays_with_its_fix_across_duplicates_delay_and_restart(self):
         coordinates = {'latitude': 36.2, 'longitude': -115.6}
         newest = packet('d1', 'position', {**coordinates, 'pdop': 1.83, 'satellites': 9}, 1)

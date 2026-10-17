@@ -4,6 +4,16 @@ import type { Infrastructure, Tracker } from './demo.ts';
 import type { LinkObservation } from './NeighborTable.tsx';
 import { signalColor, signalConnections, signalValue } from './signal-links.ts';
 
+test('late SNNS delivery keeps the later report sequence without inventing a hearing time', () => {
+  const early = row({ id: 'early', source: 'neighbor', reportType: 'snns-v1', bootId: 10,
+    sequence: 1, observedAt: null, receivedAt: '2026-10-16T20:05:00.000Z', snrDb: 10 });
+  const late = row({ id: 'late', source: 'neighbor', reportType: 'snns-v1', bootId: 10,
+    sequence: 2, observedAt: null, receivedAt: '2026-10-16T20:00:00.000Z', snrDb: 0 });
+  const result = signalConnections([early, late], [tracker], [receiver]);
+  assert.equal(result.connections[0].snrDb, 0);
+  assert.equal(result.connections[0].latest[0].observedAt, null);
+});
+
 const tracker: Tracker = { id: 'd1', number: '001', shortName: 'S001', battery: null, history: [],
   position: { longitude: -115.65, latitude: 36.27, measuredAt: null, receivedAt: '2026-10-16T12:00:00Z' } };
 const receiver = { id: 'r1', name: 'R001', longitude: -115.66, latitude: 36.28, deploymentStatus: 'planned' } as Infrastructure;

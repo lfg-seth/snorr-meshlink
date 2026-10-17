@@ -65,6 +65,30 @@ class Adapter:
             digest = hashlib.sha256(self.channel.encode() + b'\0' + data.SerializeToString()).hexdigest()[:32]
             common = {'gatewayId': self.gateways[gateway], 'packetId': f'{packet.id:08x}:{digest}',
                       'receivedAt': at(received_at)}
+            device_id = (self.infrastructure if source in self.infrastructure else self.members)[source]
+            if data.portnum == portnums_pb2.PRIVATE_APP:
+                if not data.payload.startswith(b'SNNS'):
+                    return None
+                report = self.neighbor_signals(data.payload, getattr(packet, 'from'))
+                return {**common, 'deviceId': device_id, 'kind': 'neighbors',
+                        'measuredAt': None, 'data': report}
+            if data.portnum == portnums_pb2.NEIGHBORINFO_APP:
+                report = mesh_pb2.NeighborInfo.FromString(data.payload)
+                if report.node_id != getattr(packet, 'from') or len(report.neighbors) > 32:
+                    raise PacketRejected('invalid neighbor report provenance/size')
+                rows = []
+                seen = set()
+                for neighbor in report.neighbors:
+                    if not neighbor.node_id or neighbor.node_id == report.node_id or neighbor.node_id in seen:
+                        raise PacketRejected('invalid neighbor identity')
+                    seen.add(neighbor.node_id)
+                    if not math.isfinite(neighbor.snr) or not -100 <= neighbor.snr <= 100:
+                        raise PacketRejected('invalid neighbor signal')
+                    # Scalar SNR is not optional: absent wire zero is ambiguous.
+                    present = any(field.name == 'snr' for field, _ in neighbor.ListFields())
+                    rows.append(self.neighbor_row(neighbor.node_id, neighbor.snr if present else None, None))
+                return {**common, 'deviceId': device_id, 'kind': 'neighbors', 'measuredAt': None,
+                        'data': {'reportType': 'neighbor-info', 'observerNodeId': source, 'rows': rows}}
             if data.portnum == portnums_pb2.TELEMETRY_APP:
                 telemetry = telemetry_pb2.Telemetry.FromString(data.payload)
                 metrics = {}
@@ -83,6 +107,23 @@ class Adapter:
                             if not math.isfinite(value) or not low <= value <= high:
                                 raise PacketRejected('invalid environmental metric')
                             metrics[key] = value
+                    for field, key, low, high in [('voltage', 'sensorVoltage', 0, 100),
+                                                  ('current', 'sensorCurrentMa', -100000, 100000)]:
+                        if environment.HasField(field):
+                            value = getattr(environment, field)
+                            if not math.isfinite(value) or not low <= value <= high:
+                                raise PacketRejected('invalid sensor power metric')
+                            metrics[key] = value
+                if source in self.infrastructure and telemetry.HasField('power_metrics'):
+                    for channel in range(1, 9):
+                        for field, suffix, low, high in [('voltage', 'Voltage', 0, 100),
+                                                         ('current', 'CurrentMa', -100000, 100000)]:
+                            name = f'ch{channel}_{field}'
+                            if telemetry.power_metrics.HasField(name):
+                                value = getattr(telemetry.power_metrics, name)
+                                if not math.isfinite(value) or not low <= value <= high:
+                                    raise PacketRejected('invalid channel power metric')
+                                metrics[f'power{channel}{suffix}'] = value
                 if not metrics:
                     return None
                 # Small values observed on R003 are uptime, not Unix timestamps.
@@ -116,3 +157,33 @@ class Adapter:
                     'data': {'latitude': latitude, 'longitude': longitude, **quality}}
         except (DecodeError, OverflowError, OSError):
             raise PacketRejected('malformed packet') from None
+
+    def neighbor_row(self, node, snr, rssi, **details):
+        node_id = f'!{node:08x}'
+        mapped = {**self.members, **self.infrastructure, **self.gateways}
+        return {'heardDeviceId': mapped.get(node_id), 'heardNodeId': node_id,
+                'snrDb': snr, 'rssiDbm': rssi, **details}
+
+    def neighbor_signals(self, payload, sender):
+        if len(payload) < 24:
+            raise PacketRejected('truncated SNNS header')
+        magic, version, flags, count, total, observer, boot, sequence, uptime = struct.unpack_from('<4sBBBBIIII', payload)
+        if (version != 1 or flags & ~3 or not 1 <= count <= 8 or not count <= total <= 255
+                or len(payload) != 24 + count * 16 or bool(flags & 1) != (total > count)):
+            raise PacketRejected('invalid SNNS version/size/flags')
+        if observer != sender or not boot or not sequence:
+            raise PacketRejected('invalid SNNS provenance')
+        rows, seen = [], set()
+        for offset in range(24, len(payload), 16):
+            node, age, rssi, snr, observations = struct.unpack_from('<IIhhI', payload, offset)
+            if not node or node == observer or node in seen:
+                raise PacketRejected('invalid SNNS neighbor identity')
+            if not 0 <= age < 1800 or not -200 <= rssi < 0 or not -400 <= snr <= 400 or not observations:
+                raise PacketRejected('invalid SNNS observation')
+            seen.add(node)
+            rows.append(self.neighbor_row(node, snr / 4, rssi, hearingAgeSeconds=age,
+                                          observationCount=observations))
+        return {'reportType': 'snns-v1', 'observerNodeId': f'!{observer:08x}',
+                'bootId': boot, 'sequence': sequence, 'reportUptimeSeconds': uptime,
+                'subset': bool(flags & 1), 'capacityEvicted': bool(flags & 2),
+                'totalNeighbors': total, 'rows': rows}

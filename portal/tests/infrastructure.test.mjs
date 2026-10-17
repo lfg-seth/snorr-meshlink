@@ -46,6 +46,32 @@ registerHooks({
   },
 });
 
+test('reported RAK current preserves sign and channel with separate hearing age and count', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { default: PowerReadings } = await import('../src/PowerReadings.tsx');
+  const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.parse('2026-10-16T20:00:00.000Z');
+  const device = { ...infrastructure[0], powerReadings: [
+    { metric: 'power3CurrentMa', value: -323.1, measuredAt: null, receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'unknown' },
+    { metric: 'power1CurrentMa', value: 0, measuredAt: '2026-10-16T18:00:00.000Z', receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'valid' },
+  ] };
+  const html = renderToStaticMarkup(createElement(PowerReadings, { device, now }));
+  assert.match(html, /Power channel 3/);
+  assert.match(html, /-323.1 mA/);
+  assert.match(html, /0.0 mA/);
+  assert.match(html, /Measurement time unknown/);
+  assert.match(html, /Stale/);
+  assert.match(html, /polarity and calibration are unverified/);
+  const table = renderToStaticMarkup(createElement(NeighborTable, { infrastructure: [device], trackers: [], now, online: true,
+    links: [{ id: 'one', observerDeviceId: device.id, heardDeviceId: null, heardNodeId: '!00000123',
+      originalSourceDeviceId: null, source: 'neighbor', reportType: 'snns-v1', path: 'direct',
+      snrDb: 0, rssiDbm: -90, observedAt: null, receivedAt: '2026-10-16T19:59:00.000Z',
+      hearingAgeSeconds: 12, observationCount: 7, subset: true, totalNeighbors: 9, capacityEvicted: true }] }));
+  for (const value of ['!00000123', '0 dB', '-90 dBm', '12s', 'Partial', 'capacity eviction', 'RAK signal report'])
+    assert.ok(table.includes(value), value);
+});
+
 test('unlabelled signal lines, independent legend help and node relationships preserve node selection', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;

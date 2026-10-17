@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-16 — Add RAK neighbor and sensor power ingestion
+
+- Owner requests database/portal support for flashed RAK neighbor reports and INA219 sensors. Synchronize main, preserve the unrelated untracked battery-box model and retain the firmware pin. Add strict SNNS v1 and bounded standard NeighborInfo decoding, transactional private report/link storage and per-gateway receipt deduplication. Preserve unknown radio IDs, hearing ages/counts, boot/sequence/coverage metadata and unknown absolute hearing clocks.
+- Normalize signed PowerMetrics channels 1–8 and legacy environment sensor voltage/current with independent field presence and original clocks. Future measurement checks use original receipt time, including replay. Show sensor/channel readings in Infrastructure and map node cards; extend neighbor tables/relationship cards and prevent delayed lower sequences from replacing newer same-boot reports. Do not map raw current to charging/discharging, battery voltage or solar output.
+- Add dry-run-first, cutoff-bounded private archive recovery through normal ingestion. An isolated live database copy preserves all nine identities/configurations, accounts, assignments, positions and raw archive. Its 1,570 archived receipts yield 11 reports/15 directional rows and nine power supplements; second replay adds zero records (20 duplicates). R004/R005 power readings appear with literal channel/sign. Only G001 is represented; G002, calibration and field behavior remain unverified. [Contract and evidence](../docs/operations/radio-report-ingestion.md).
+- Staged LXC tests pass 57 backend and 45 frontend checks, TypeScript and production build; local decoder-only checks pass. Windows full checks are limited by missing frontend dependencies and sandbox temp/socket access. Final clock/order regressions are rechecked before deployment. No hardware, profile, site or member data change.
+
+Next useful step: publish the tested application source, take/verify a complete private backup, apply the additive migration to live and separate demo databases, deploy and replay only the newly supported archived data, then verify public/authentication boundaries and backup recovery. No live deployment claimed in this source commit.
+
 ## 2026-10-16 — Recheck R005 with one full cell and a USB meter
 
 - Owner reports replacing the disconnected batteries with one fully charged cell and observing 0.08 A on an inline USB input meter. Identify R005 on COM19, verify debug API remains off, refresh serial time and request fresh sensor data without a firmware/profile change.

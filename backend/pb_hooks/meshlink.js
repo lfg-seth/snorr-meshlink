@@ -564,6 +564,9 @@ function state(e) {
         solar: value('solar'),
         intrusion: value('intrusion'),
         readingTimes: times,
+        powerReadings: Object.keys(readings).filter((key) =>
+          /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key))
+          .map((key) => ({ metric: key, ...readings[key] })),
         samples: c
           .rows(
             app,
@@ -645,6 +648,7 @@ function state(e) {
       source: row.getString('source'),
       path: row.getString('path'),
       ...c.object(row, 'signal'),
+      ...c.object(row, 'details'),
       receivedAt: row.getString('receivedAt'),
       observedAt: row.getString('observedAt') || null,
     })),

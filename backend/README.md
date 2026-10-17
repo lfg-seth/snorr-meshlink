@@ -8,6 +8,8 @@ The owner-authorized [Ubuntu LXC portal](../docs/operations/portal-lxc.md) runs 
 
 The hosted worker uses `MESHLINK_WORKER_CREDENTIALS` to read a separate worker-only JSON credential file, under its own OS account. Native development keeps the existing default private credentials file. No worker or admin credential is sent to the browser.
 
+RAK `SNNS` v1/standard neighbor reports and signed sensor voltage/current are now supported. The additive `1792201000_radio_reports.js` migration creates private report deduplication storage and adds link metadata. [Contract, archive replay and verification](../docs/operations/radio-report-ingestion.md). Current channel/sign is preserved literally; calibration and battery/solar interpretation remain unverified.
+
 ## Start and inspect the database demo
 
 Follow [the tracked demo guide](demo/README.md). From the repository root:
@@ -21,7 +23,7 @@ python3 backend/launch.py
 
 The launcher runs the separate demo PocketBase on localhost:8092, its synthetic worker and Vite on localhost:5173. Local development opens demo viewing automatically; every page reads records from that database. The writable copy is `local-data/demo/pb_data/data.db`; the tracked synthetic checkpoint is `backend/demo/data.db`. Dashboard edits and portal mutations persist across refresh/restart. Initialization verifies/copies the checkpoint and rebases its scenario timestamps once; subsequent launches preserve data. It refuses to replace an existing runtime.
 
-Inspect **http://127.0.0.1:8092/_/** with email `demo-admin@example.invalid` and password `fictional-demo-only-password`. These are deliberately public demo-only credentials; the demo guide lists portal accounts too. `link_observations` contains ten sample neighbor/gateway rows, including unknown values, valid zero SNR, differing gateway readings and unresolved relays. Production's ordinary migrations create an empty collection and never seed sample rows. Real signal ingestion remains unimplemented.
+Inspect **http://127.0.0.1:8092/_/** with email `demo-admin@example.invalid` and password `fictional-demo-only-password`. These are deliberately public demo-only credentials; the demo guide lists portal accounts too. `link_observations` contains ten sample neighbor/gateway rows, including unknown values, valid zero SNR, differing gateway readings and unresolved relays. Production's ordinary migrations create empty collections and never seed sample rows. Live neighbor reporting is separate from these synthetic examples.
 
 The launcher checks for occupied ports/duplicate launches and stops its children on Ctrl+C. Its logs stay in ignored `local-data/demo/logs/`. `npm run dev` alone requires the separate demo API already running; it no longer supplies browser fixtures when the database is unavailable. Vite proxies `/demo-api` to 8092, separately from the existing `/api` development proxy on 8090. A production frontend release needs its own separate demo API route/origin; no live VM deployment is part of this change.
 
