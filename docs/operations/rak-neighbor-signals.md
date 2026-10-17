@@ -1,5 +1,7 @@
 # RAK passive neighbor signal firmware
 
+Portal follow-up (2026-10-16): [application `bed40dd`](radio-report-ingestion.md) now decodes these reports, recovers the newly supported archive data and displays directional signals/hearing ages/counts. Fresh R005/G001 normalization and isolated backup recovery pass; G002 and field/calibration limits remain. The original implementation/rollout history below is retained.
+
 2026-10-16. Owner brings the previously parked richer-neighbor-report proposal forward and requests updating the existing RAK branch if absent. Fetch confirms `snorr/rak-survey` was still at `cc5907b1f`, with only its targeted AHT compatibility change beyond pinned Meshtastic `2.7.26.54e0d8d`.
 
 ## Source and behavior

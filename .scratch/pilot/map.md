@@ -12,6 +12,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
+- 2026-10-16 — [RAK neighbor and sensor power integration](../../docs/operations/radio-report-ingestion.md) deploys SNNS/standard neighbor decoding and signed, channel-preserving voltage/current display in application `bed40dd`. Archive recovery, fresh R005/G001 normalization and isolated live/demo restore pass; G002 freshness and sensor calibration remain unverified. No new pilot decision or hardware configuration change.
+
 - 2026-10-16 — [Show neighbor signal connections on the map](issues/18-map-neighbor-signals.md) adds the local signal-strength toggle and colored lines without labels, independent legend info disclosure, node-card relationship/pill rows and two endpoint buttons on relationship cards for returning to node cards. Known relationships remain accessible without mapped locations; missing identities stay unknown. Deployed in application release `3ca3a94`; native visual review remains outstanding.
 
 - 2026-10-16 — [Show plain-language GPS quality in tracker cards](issues/15-gps-quality-pill.md) is implemented locally: shared Map/Users Good/Limited/Poor/Unknown pill, same-fix quality storage and plain-language expandable help. All 48 backend checks and frontend checks/default/live builds pass; deployment now passes with application release `3ca3a94`; native browser review and field validation remain outstanding. Existing member flags are unchanged; no metre-accuracy guarantee implied.

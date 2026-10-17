@@ -8,7 +8,7 @@ Latest hardware evidence: [R004 preparation](r004-preparation.md) flashes the re
 
 Subsequent [R002 update](r002-release-update.md): released prerelease installed with original local/channel/identity preservation verified through reboot. Owner confirms no external sensors; only device telemetry remains enabled at 900 seconds, with neighbor transmission enabled. Fresh G001 battery normalization/SNNS archive delivery and portal metadata/backup checks pass. R001/R003 are unchanged.
 
-Portal follow-up: [RAK neighbor and sensor power ingestion](radio-report-ingestion.md) implements SNNS/standard neighbor normalization and signed, channel-preserving INA219 data. Historical gap statements below describe the earlier flashing sessions; current polarity/calibration and fresh G002 delivery still need verification.
+Portal follow-up: [RAK neighbor and sensor power ingestion](radio-report-ingestion.md) is deployed in `bed40dd`, with SNNS/standard neighbor normalization and signed, channel-preserving INA219 data. Archive recovery, fresh R005/G001 normalization and isolated backup recovery pass. Historical gap statements below describe the earlier flashing sessions; current polarity/calibration and fresh G002 delivery still need verification.
 
 ## Identify the requested board
 

@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- RAK portal integration (2026-10-16, deployed `bed40dd`): strict SNNS/standard neighbor decoding now fills directional tables/map relationships; channel-preserving signed sensor power appears on Infrastructure and node cards. Live archive recovery plus fresh R005 G001 receipt normalization pass, with all nine devices and prior records preserved. 57 backend/45 frontend checks, public assets/boundaries and isolated live/demo backup recovery pass. Current calibration/polarity, fresh G002 delivery and authenticated native/mobile visual review remain unverified. [Contract and release evidence](docs/operations/radio-report-ingestion.md).
+
 - R005 one-off preparation (2026-10-16): custom `2.7.26.8dd4dac` holds AIN1/GPIO31 HIGH during normal operation for an owner-fitted 2N2222 dummy load through a 2 kΩ base resistor. Flash/profile/key preservation, reboot readback, live registration at R001's planned site, G001 battery/weather ingestion and nine-device backup recovery pass. INA219 reports roughly −1.1 A with batteries, then −0.4 / −0.3 mA after their removal; the expected 50 mA load and its supply path remain unverified. [Evidence](docs/operations/r005-preparation.md).
 
 - R002 update (2026-10-16): owner confirms no external sensors. Released `2.7.26.0b65f2e` is flashed with exact original local/channel/identity preservation through reboot; battery telemetry remains 900 seconds, external sensors disabled and neighbor transmission enabled. Portal metadata and fresh G001 battery/SNNS archive delivery pass; G002 and normalized neighbor decoding remain unverified. [Evidence](docs/operations/r002-release-update.md).

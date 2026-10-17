@@ -53,6 +53,12 @@ The tracked `deploy/portal/install.sh` supports an amd64 Ubuntu source tree at `
 
 For updates, take a verified backup first, stop worker/API before replacing backend source, install the reviewed source/build, apply any intentional schema migration separately and restart/check. The services use `--automigrate=false`; code rollback does not undo database migrations. Keep the source commit and previous release identifiable. No unattended application deployment is configured. The simulation installer now refuses existing live MQTT provisioning; use the live operations guide for this instance.
 
+## RAK neighbor and sensor power ingestion — 2026-10-16
+
+Owner-requested application `bed40dd3204b5ce98ce967468c97d69b5b78d0e5` is deployed. SNNS/standard neighbor reports fill the existing table and map relationships; signed environment/PowerMetrics voltage/current appear with original source/channel and clocks on Infrastructure/node cards. Live archive recovery and fresh R005/G001 normalization pass. All nine identities/configurations and original protected/history/archive records are preserved; demo migration is separate. [Contract, exact backup hashes and release verification](radio-report-ingestion.md).
+
+All 57 backend and 45 frontend checks, TypeScript/live build, nine public assets, authenticated state/feed, six services, proxy/authentication boundaries and complete isolated live/demo backup recovery pass. Post-release backup `meshlink-20261017T033546Z.tar.gz` contains 13 reports/21 link rows; restored API power/link metadata matches stored values exactly, and replay adds zero records (22 duplicates). Current calibration/sign interpretation, fresh G002 delivery, sustained cadence/field performance and authenticated native/mobile visuals remain unverified. Source/static rollback is retained at `/opt/meshlink-rollback-bed40dd-final`; a source rollback does not undo the additive schema.
+
 ## Demo-first entry and iPhone login fields — 2026-10-16
 
 Owner requests pushing and deploying both portal changes. Application source `60ea977f8559cdba61dd93f40f2d0f5f4b3d8f42` opens the separate database demo automatically for anonymous visitors, including production builds, with **Sign in** in the top header. Saved live sessions still validate on refresh; opening Sign in cancels any pending demo load. Demo connection failures leave live sign-in available. Username/password inputs use `max(16px, 1rem)` to address iPhone focus zoom while retaining manual zoom and larger font settings.

@@ -17,6 +17,8 @@ Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`
 
 ## Current state
 
+- Latest portal integration (2026-10-16): deployed application `bed40dd` normalizes SNNS/standard neighbor reports and signed channel-preserving sensor power. Archive recovery, fresh R005/G001 delivery, 57 backend/45 frontend checks, public/authentication boundaries and isolated live/demo restore pass. Nine devices/configurations and original records are preserved. [Current contract and evidence](radio-report-ingestion.md). INA219 calibration/polarity, fresh G002 and authenticated native/mobile visuals remain unverified; historical current/neighbor gaps below are superseded.
+
 - For a new chat tasked with flashing or configuring boards, start with [the board flashing handoff](board-flashing-handoff.md). It links exact builds, distinguishes built source from running hardware, records battery-path INA219 placement and carries the portal integration gaps forward.
 
 - Cached RAK prerelease (2026-10-16): [download 2.7.26.0b65f2e](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1) using `python scripts/bench/download-rak-release.py`. The helper verifies/downloads once and reuses the verified cache; routine flashing no longer rebuilds. Release/tooling pin is `8fe47325e38b82c8b2358293484ff845320d1be6`, with unchanged cached binary source `0b65f2e8444ea2dd3566f61ba2614d6eb33d3fd2`. Public asset checks and GitHub release verification pass; hardware remains unflashed.

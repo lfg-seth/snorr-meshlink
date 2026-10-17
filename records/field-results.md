@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## TEST-013 — RAK neighbor and sensor power portal integration
+
+2026-10-16 Pacific; owner requests database/portal support for the flashed RAK firmware and sensors. Application source `bed40dd` is deployed; hardware and radio profiles are unchanged.
+
+- Strict SNNS wire/provenance/signal validation, transactional report/link deduplication, signed/zero/absent power fields, separate channel/source clocks, delayed/future reports and authorization checks pass in 57 backend tests. All 45 frontend checks, TypeScript and production build pass. An isolated live copy accepts 11 reports and nine power packets; repeat replay adds zero records.
+- Verified backup precedes additive migration of live/separate demo schemas. Live bounded archive recovery accepts 12 reports/ten power supplements; subsequent fresh R005 power and neighbor traffic normalizes through G001. Final backup contains 13 reports, 21 directional link rows and 736 telemetry observations, with R002/R004/R005 neighbor rows. Existing nine identities/configurations and every original protected/history/archive record are preserved.
+- Fresh R005 channel 3 reports 4.044 V / +1,034.6 mA at 03:34:46 UTC October 17 (October 16 Pacific); separate environment sensor data remains separate. Hearing ages/counts and report identities are visible without inventing absolute hearing times. Missing/partial neighbors do not delete links. INA219 sign/channel are reported values, with battery/solar interpretation and calibration unverified.
+- All nine public assets, authenticated live state/feed, six services, HTTPS/protected routes/authentication throttling and live/demo isolation pass. Complete post-release backup recovery verifies exact link/power metadata and 22 duplicate replay outcomes with zero new records. Browser demo navigation/table/empty power state and populated component DOM tests pass.
+
+Limits: no fresh G002/two-gateway field result, sustained reporting/runtime, calibration, installation/coverage or authenticated native/mobile visual acceptance. [Exact contract, backup hashes and evidence](../docs/operations/radio-report-ingestion.md). Private raw packets/configuration remain off Git.
+
 ## TEST-012 — R005 one-off dummy-load build and registration
 
 2026-10-16 Pacific; owner authorizes custom firmware, connected-board flashing and live database registration.
