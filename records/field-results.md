@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## TEST-012 — R005 one-off dummy-load build and registration
+
+2026-10-16 Pacific; owner authorizes custom firmware, connected-board flashing and live database registration.
+
+- Build published source `8dd4dacef1cd7a6545983e3dc000ad533101113f` with explicit `rak4631-r005-load`. UF2/OTA creation passes; GPIO31 HIGH/output calls and startup invocation independently verified in linked disassembly. Ordinary RAK target leaves the load option off.
+- Identify RAK4631 `!f95b5501` and matched normal/bootloader USB serial; privately snapshot original configuration/keys, then flash one-off `2.7.26.8dd4dac` without factory reset. Independent intended pilot-profile/security-key readback passes before and after reboot. Device/environment/power telemetry enabled at 900 seconds; neighbor transmission enabled. Original US region retained; saved pilot channel/profile applied at 10 dBm.
+- Isolated database-copy invalid-identity rejection, registration, idempotence and preservation of existing device rows pass. Live authenticated state confirms nine devices and R005 sharing R001's planned coordinates. Fresh G001 battery ingestion and archived SNNS reception pass. Public HTTPS/proxy/authentication and isolated nine-device backup recovery pass.
+
+Startup opens INA219/AHT drivers. Local and fresh G001 environmental reports carry temperature/humidity; portal weather normalization passes. With batteries connected, INA219 reports roughly −1.1 A; after owner disconnects batteries, fresh local measurements are −0.4 / −0.3 mA at 4.180 / 4.188 V. Owner confirms R100 and expects roughly 50 mA from the dummy load; that load draw is not verified. Normalized current ingestion remains unsupported. Exact samples/checksums: [R005 preparation](../docs/operations/r005-preparation.md). Sustained cadence/runtime, fresh G002 delivery, field placement and calibration remain unverified. Raw data/keys remain private.
+
 ## TEST-011 — R002 released firmware update without external sensors
 
 2026-10-16 Pacific; owner authorizes R002 update and confirms no external sensors.

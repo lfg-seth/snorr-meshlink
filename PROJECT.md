@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- R005 one-off preparation (2026-10-16): custom `2.7.26.8dd4dac` holds AIN1/GPIO31 HIGH during normal operation for an owner-fitted 2N2222 dummy load through a 2 kΩ base resistor. Flash/profile/key preservation, reboot readback, live registration at R001's planned site, G001 battery/weather ingestion and nine-device backup recovery pass. INA219 reports roughly −1.1 A with batteries, then −0.4 / −0.3 mA after their removal; the expected 50 mA load and its supply path remain unverified. [Evidence](docs/operations/r005-preparation.md).
+
 - R002 update (2026-10-16): owner confirms no external sensors. Released `2.7.26.0b65f2e` is flashed with exact original local/channel/identity preservation through reboot; battery telemetry remains 900 seconds, external sensors disabled and neighbor transmission enabled. Portal metadata and fresh G001 battery/SNNS archive delivery pass; G002 and normalized neighbor decoding remain unverified. [Evidence](docs/operations/r002-release-update.md).
 
 - R004 preparation (2026-10-16): fourth inventoried RAK4631 now runs checksum-verified released `2.7.26.0b65f2e`, with preserved keys, saved pilot profile, 900-second device/environment/power telemetry and enabled neighbor transmission verified through reboot. Registered at R001's private planned location; new G001 battery/weather reports reach the live portal and SNNS reaches the archive. INA219 current interpretation, normalized current/neighbor decoding and fresh G002 delivery remain unverified. [Preparation/evidence](docs/operations/r004-preparation.md).

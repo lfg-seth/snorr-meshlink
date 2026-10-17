@@ -1,5 +1,7 @@
 # Candidate sites and backhaul
 
+2026-10-16 R005 planned location — Owner assigns R005 to R001's existing planned site (SITE-006). Authenticated live configuration verifies exact equality with R001's private coordinates. Sharing a location does not copy equipment or establish installation, permission or coverage. [Preparation](../docs/operations/r005-preparation.md).
+
 2026-10-16 R004 planned location — Owner assigns R004 to R001's existing planned location (SITE-006). Live authenticated configuration verifies exact equality with R001's private coordinates; no coordinates enter Git. Installation/site permission/coverage remain unverified. Location sharing does not copy R001's battery, antenna or solar equipment. [Preparation](../docs/operations/r004-preparation.md).
 
 2026-10-14 planned repeater sites — Owner supplies two exact locations, saved only in authenticated PocketBase and root-private provisioning. SITE-006: planned Las Vegas R001 location, Muzi whip. SITE-007: planned shared Las Vegas R002/R003 location, Muzi whip and fiberglass respectively. All three are registered and live bench telemetry reaches the portal; that does not confirm installation at these coordinates, site permission, mountain links or coverage. Each has planned four-cell/160 mA solar equipment. This owner-authorized three-device allocation supersedes earlier two-repeater-only preparation notes. [Operations](../docs/operations/repeater-telemetry.md).

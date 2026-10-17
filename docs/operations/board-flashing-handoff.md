@@ -2,6 +2,8 @@
 
 Updated 2026-10-16. Start here when a new chat is asked to flash boards, configure radios or verify their portal data. Read the repository's session-start instructions first. This document records the current handoff; a request to prepare notes does not itself authorize a hardware update.
 
+R005 exception: [one-off dummy-load build](r005-preparation.md), `2.7.26.8dd4dac`, uses explicit target `rak4631-r005-load` to hold AIN1/GPIO31 HIGH during normal operation. It is flashed only on R005; ordinary released-image flashing remains unchanged. The latest source submodule includes the optional target, but the cached release's source/hash remain unchanged. INA219 reports near-zero current after battery removal, so the expected 50 mA load remains unverified.
+
 Latest hardware evidence: [R004 preparation](r004-preparation.md) flashes the released prerelease, preserves device keys, enables/readbacks neighbor and 900-second device/environment/power telemetry, and verifies fresh G001 battery/weather portal ingestion plus archived SNNS delivery. INA219 local reports need wiring/calibration/channel interpretation; normalized current/neighbor decoding and fresh G002 delivery remain unverified. R001/R002/R003 are unchanged.
 
 Subsequent [R002 update](r002-release-update.md): released prerelease installed with original local/channel/identity preservation verified through reboot. Owner confirms no external sensors; only device telemetry remains enabled at 900 seconds, with neighbor transmission enabled. Fresh G001 battery normalization/SNNS archive delivery and portal metadata/backup checks pass. R001/R003 are unchanged.
