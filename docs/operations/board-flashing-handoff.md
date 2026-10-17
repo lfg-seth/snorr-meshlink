@@ -2,6 +2,8 @@
 
 Updated 2026-10-16. Start here when a new chat is asked to flash boards, configure radios or verify their portal data. Read the repository's session-start instructions first. This document records the current handoff; a request to prepare notes does not itself authorize a hardware update.
 
+INA219 audit: [R100 calibration, source defects and measurement evidence](ina219-audit.md). RAK calibration matches 0.1 Ω; the source fix corrects the environment/power union and multiplier consistency. Existing released/flashed images still write power channel 3. R004's historical +0.94–1.07 A versus owner-metered battery-only 8–16 mA remains unresolved; fresh USB readings near −5.8 mA do not validate the battery-only path. No corrective scaling or flash is implied.
+
 R005 exception: [one-off dummy-load build](r005-preparation.md), `2.7.26.8dd4dac`, uses explicit target `rak4631-r005-load` to hold AIN1/GPIO31 HIGH during normal operation. It is flashed only on R005; ordinary released-image flashing remains unchanged. The latest source submodule includes the optional target, but the cached release's source/hash remain unchanged. INA219 reports near-zero current after battery removal, so the expected 50 mA load remains unverified.
 
 Latest hardware evidence: [R004 preparation](r004-preparation.md) flashes the released prerelease, preserves device keys, enables/readbacks neighbor and 900-second device/environment/power telemetry, and verifies fresh G001 battery/weather portal ingestion plus archived SNNS delivery. INA219 local reports need wiring/calibration/channel interpretation; normalized current/neighbor decoding and fresh G002 delivery remain unverified. R001/R002/R003 are unchanged.

@@ -14,6 +14,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- INA219 audit (2026-10-16): R100 matches the RAK driver's 0.1 Ω calibration; source fixes power-union channel selection and multiplier consistency. R004 history confirms +0.94–1.07 A versus owner-metered battery-only 8–16 mA, while fresh USB samples are roughly −5.8 mA. The magnitude discrepancy remains unresolved; source tests do not establish sensor accuracy. Existing flashed/released binaries are unchanged. [Audit](docs/operations/ina219-audit.md).
+
 - RAK portal integration (2026-10-16, deployed `bed40dd`): strict SNNS/standard neighbor decoding now fills directional tables/map relationships; channel-preserving signed sensor power appears on Infrastructure and node cards. Live archive recovery plus fresh R005 G001 receipt normalization pass, with all nine devices and prior records preserved. 57 backend/45 frontend checks, public assets/boundaries and isolated live/demo backup recovery pass. Current calibration/polarity, fresh G002 delivery and authenticated native/mobile visual review remain unverified. [Contract and release evidence](docs/operations/radio-report-ingestion.md).
 
 - R005 one-off preparation (2026-10-16): custom `2.7.26.8dd4dac` holds AIN1/GPIO31 HIGH during normal operation for an owner-fitted 2N2222 dummy load through a 2 kΩ base resistor. Flash/profile/key preservation, reboot readback, live registration at R001's planned site, G001 battery/weather ingestion and nine-device backup recovery pass. INA219 reports roughly −1.1 A with batteries, then −0.4 / −0.3 mA after their removal; the expected 50 mA load and its supply path remain unverified. [Evidence](docs/operations/r005-preparation.md).
