@@ -16,6 +16,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Private monitoring (2026-10-17): owner-selected MeshMonitor 4.17.0 runs on its separate existing LXC as a read-only encrypted MQTT subscriber, using existing Grafana/Prometheus with internal access and 30-day metrics. Live telemetry comparison, restart persistence and isolated backup recovery pass. No packet/history pruning; exact portal archive, GPS measurement freshness and gateway receipts remain authoritative. Native views, two-gateway behavior, storage growth and off-host recovery remain follow-ups. [Operations](docs/operations/meshmonitor-lxc.md).
+
 - Dedicated airtime debug receiver (2026-10-16): existing V3 MC00 runs receive-only `2.7.26.f95a443`, preserving identity/keys on US channel 35. [Windows/Linux GUI and console tool](scripts/airtime-sniffer/README.md) retains raw/decoded frames, repeats and per-run airtime logs. Ten live receptions/seven duplicates, opaque/keyed/GUI replay and Windows/Linux core checks pass; Linux GUI/USB and high-load completeness remain unverified. [Hardware and limits](docs/operations/airtime-sniffer.md). Operational gateways/repeaters are unchanged.
 
 - INA219 audit (2026-10-16): R100 matches the RAK driver's 0.1 Ω calibration; source fixes power-union channel selection and multiplier consistency. R004 history confirms +0.94–1.07 A versus owner-metered battery-only 8–16 mA, while fresh USB samples are roughly −5.8 mA. The magnitude discrepancy remains unresolved; source tests do not establish sensor accuracy. Existing flashed/released binaries are unchanged. [Audit](docs/operations/ina219-audit.md).
