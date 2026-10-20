@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-016 — R002 CLIENT temperature-only bench reflash
+
+2026-10-19 Pacific; owner connects R002 RAK4631 `!b456f760` and authorizes same CLIENT/temperature profile as R001. Fresh complete private backup saved; USB serial matched between COM9/DFU COM11 and F: bootloader. Reflash checksum-verified pinned neighbor-signal release `2.7.26.0b65f2e` without rebuild/reset/key replacement. [Image/profile/evidence](../docs/operations/r002-client-bench.md).
+
+Planned configuration/preservation criteria **pass** through independent readback and explicit reboot: CLIENT, device/environment measurements 900 seconds, power measurements/display disabled, battery INA address unconfigured, neighbor transmission enabled; identity/keys/channel and other settings preserved, accounting for role-dependent API sleep readback. Other boards untouched.
+
+Local environment request and 45-second observation yield **no temperature/environment metrics**. Local API device metrics show 4.069 V, level 91 and uptime 65 seconds, without proving RF/MQTT/portal reception. Sensor operation, calibration, sustained cadence/utilization reduction, runtime and field coverage remain unverified. Raw evidence stays ignored under `private/bench/R002-client-20261019/`. [Issue #27](https://github.com/lfg-seth/snorr-meshlink/issues/27) retains sensor verification; live portal metadata unchanged.
+
 ## TEST-015 — R001 CLIENT temperature-only bench reflash
 
 2026-10-19 Pacific; owner authorizes reflash of connected R001 and requests CLIENT roles with temperature sensors only/no INA219 configuration for the bench rollout. RAK4631 `!a65601b3`, USB identity matched between COM8 and DFU COM10, receives checksum-verified pinned release `2.7.26.0b65f2e` by UF2. No rebuild/reset/key replacement. [Exact image, profile and evidence](../docs/operations/r001-client-bench.md).

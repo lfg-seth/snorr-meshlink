@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-19 — R002 CLIENT bench reflash
+
+- Owner connects R002 and requests the same CLIENT/temperature-only/no-INA219 configuration as R001. Claim [Reflash R002 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/27); identify RAK4631 `!b456f760` by node/USB serial, save fresh complete private backup, reverify pinned release cache and reflash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. No rebuild/reset/key replacement.
+- CLIENT, device/environment 900-second telemetry, disabled power measurements/display, unconfigured battery INA address and NeighborInfo transmission pass full independent readback through explicit clock synchronization/reboot. Identity/keys/channel/radio profile preserved; account for CLIENT-specific API sleep default. [Operating evidence](../docs/operations/r002-client-bench.md), [TEST-016](field-results.md#test-016--r002-client-temperature-only-bench-reflash).
+- Local environment request and 45-second observation return no temperature. Keep actual sensor operation and fresh gateway/portal delivery unverified. Local device metrics are separate from delivery evidence. Other radios/live portal metadata unchanged; preserve unrelated battery-box model and firmware pin. Documentation link/whitespace checks pass.
+- Release active claim and retain issue in Verify pending fitted-sensor/wiring/detection check and fresh temperature. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: connect the next repeater for the same identity/backup/flash procedure; obtain fresh temperature readings from configured R001/R002 before accepting sensor operation.
+
 ## 2026-10-19 — R001 CLIENT bench reflash
 
 - Owner requests repeater reflashes as CLIENT for bench testing, temperature sensors only and no INA219 configuration; connects R001. Claim [Reflash R001 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/26). Identify RAK4631 `!a65601b3` by node/USB identity, save fresh private complete backup and verify the pinned release cache.
