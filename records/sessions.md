@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-19 — R003 CLIENT bench reflash
+
+- Owner connects R003 for the same authorized CLIENT/temperature-only/no-INA219 rollout. Claim [Reflash R003 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/28); identify RAK4631 `!05237743` by node/USB serial, save fresh complete private backup, verify pinned release cache and flash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. This replaces the earlier `cc5907b` AHT image while retaining its sensor fix; no rebuild/reset/key replacement.
+- Independent full profile/identity/key/channel comparison passes through clock synchronization/explicit reboot: CLIENT, device/environment 900-second telemetry, disabled power measurements/display, unconfigured battery INA address and NeighborInfo over LoRa. Account for CLIENT-specific API sleep readback. [Operating evidence](../docs/operations/r003-client-bench.md), [TEST-017](field-results.md#test-017--r003-client-temperature-only-bench-reflash).
+- Local environment request plus 45-second observation returns no temperature. Sensor operation remains unverified on the updated image; cached device metrics and historical sensor results are excluded as fresh evidence. Other radios/live portal unchanged. Preserve firmware pin and unrelated battery-box model. Documentation link/whitespace checks pass.
+- Release claim and leave issue Verify pending fitted-sensor/wiring/detection check and fresh temperature. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: connect the next repeater for individual identification/backup/update; obtain fresh temperature evidence from the updated bench nodes before accepting sensor operation.
+
 ## 2026-10-19 — R002 CLIENT bench reflash
 
 - Owner connects R002 and requests the same CLIENT/temperature-only/no-INA219 configuration as R001. Claim [Reflash R002 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/27); identify RAK4631 `!b456f760` by node/USB serial, save fresh complete private backup, reverify pinned release cache and reflash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. No rebuild/reset/key replacement.
