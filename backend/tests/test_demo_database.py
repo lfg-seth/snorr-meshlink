@@ -2,6 +2,7 @@
 import hashlib
 from contextlib import closing
 import json
+import os
 from pathlib import Path
 import socket
 import sqlite3
@@ -44,17 +45,73 @@ class DemoDatabaseTests(unittest.TestCase):
             self.process.terminate()
             self.process.wait(timeout=10)
 
+    def assert_feature_examples(self):
+        state = self.admin.request('GET', '/api/meshlink/state')
+        trackers = {row['id']: row for row in state['trackers']}
+        infra = {row['id']: row for row in state['infrastructure']}
+        with self.subTest(feature='member battery voltage and configured pack'):
+            self.assertEqual(trackers['d1']['batteryProfile'], 'lipo-1s')
+            self.assertEqual(trackers['d1']['batteryCapacityMah'], 3000)
+            self.assertGreater(trackers['d1']['batteryVoltage'], 3)
+            self.assertEqual(trackers['d1']['batteryTimestampQuality'], 'valid')
+            self.assertIsNone(trackers['d6']['batteryVoltage'])
+        with self.subTest(feature='infrastructure charge estimate'):
+            self.assertEqual(infra['r1']['batteryProfile'], 'eve-26v-1s')
+        with self.subTest(feature='weather humidity'):
+            self.assertEqual(infra['r1']['humidity'], 42)
+            self.assertIsNone(infra['r2']['humidity'])
+        with self.subTest(feature='signed sensor power and channel identity'):
+            readings = {r['metric']: r for r in infra['r1']['powerReadings']}
+            self.assertGreater(readings['power1CurrentMa']['value'], 0)
+            self.assertLess(readings['power3CurrentMa']['value'], 0)
+            self.assertEqual(readings['sensorCurrentMa']['value'], 0)
+            self.assertTrue(all(r['timestampQuality'] == 'valid' for r in readings.values()))
+            self.assertEqual(infra['b2']['powerReadings'], [])
+        with self.subTest(feature='SNNS hearing age, counts and report coverage'):
+            rows = [r for r in state['links'] if r.get('reportType') == 'snns-v1']
+            self.assertGreaterEqual(len(rows), 3)
+            self.assertEqual({r['subset'] for r in rows}, {True, False})
+            self.assertTrue(any(r['capacityEvicted'] for r in rows))
+            self.assertTrue(any(r['snrDb'] == 0 for r in rows))
+            for row in rows:
+                self.assertIsNotNone(row['rssiDbm'])
+                self.assertIsNone(row['observedAt'])
+                self.assertGreater(row['observationCount'], 0)
+                self.assertGreaterEqual(row['hearingAgeSeconds'], 0)
+                self.assertIn(row['transportGatewayId'], ['b1', 'b2'])
+
+    def test_checkpoint_has_examples_for_current_portal_features(self):
+        self.assert_feature_examples()
+
+    def test_simulation_keeps_new_telemetry_fresh(self):
+        before = self.admin.request('GET', '/api/meshlink/state')
+        subprocess.run([sys.executable, str(demo.BACKEND / 'worker.py'), '--once'], check=True,
+                       env={**os.environ, 'MESHLINK_API_URL': self.url,
+                            'MESHLINK_WORKER_CREDENTIALS': str(self.runtime / 'worker.json')},
+                       stdout=subprocess.DEVNULL)
+        self.assert_feature_examples()
+        state = self.admin.request('GET', '/api/meshlink/state')
+        self.assertEqual(len(state['links']), 13)  # Worker must not duplicate saved reports.
+        for key in ['d1', 'd2', 'd3']:
+            old = next(t for t in before['trackers'] if t['id'] == key)
+            new = next(t for t in state['trackers'] if t['id'] == key)
+            self.assertGreater(new['batteryMeasuredAt'], old['batteryMeasuredAt'])
+        old = next(d for d in before['infrastructure'] if d['id'] == 'r1')
+        new = next(d for d in state['infrastructure'] if d['id'] == 'r1')
+        for metric in ['humidity', 'power1CurrentMa', 'power3CurrentMa', 'sensorCurrentMa']:
+            self.assertGreater(new['readingTimes'][metric], old['readingTimes'][metric])
+
     def test_frontend_snapshot_reads_saved_links_and_dashboard_edits_survive_restart(self):
         seed_digest = hashlib.sha256((demo.SEED / 'data.db').read_bytes()).hexdigest()
         state = self.admin.request('GET', '/api/meshlink/state')
         self.assertTrue(state['simulation'])
-        self.assertEqual(len(state['links']), 10)
+        self.assertEqual(len(state['links']), 13)
         self.assertEqual(len(state['trackers']), 6)
         self.assertEqual(len(state['infrastructure']), 4)
         self.assertTrue(any(row['snrDb'] == 0 for row in state['links']))
         self.assertTrue(any(row['heardDeviceId'] is None and row['path'] == 'relayed' for row in state['links']))
         self.assertTrue(all(row['rssiDbm'] is None and row['observedAt'] is None
-                            for row in state['links'] if row['source'] == 'neighbor'))
+                            for row in state['links'] if row['source'] == 'neighbor' and row.get('reportType') != 'snns-v1'))
         self.assertEqual(next(t for t in state['trackers'] if t['id'] == 'd1')['battery'], 100)
         row = state['links'][0]
         self.owner.request('PATCH', f'/api/collections/link_observations/records/{row["id"]}',
@@ -82,7 +139,7 @@ class DemoDatabaseTests(unittest.TestCase):
             Client(self.url).request('GET', '/api/meshlink/state')
         member = Client(self.url)
         member.login('meshlink-member', demo.DEMO_PASSWORD)
-        self.assertEqual(len(member.request('GET', '/api/meshlink/state')['links']), 10)
+        self.assertEqual(len(member.request('GET', '/api/meshlink/state')['links']), 13)
         worker = Client(self.url)
         worker.login('meshlink-worker', demo.DEMO_PASSWORD)
         with self.assertRaises(ApiError):
