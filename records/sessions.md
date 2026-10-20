@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-19 — Update production infrastructure locations
+
+- Owner authorizes replacement database locations for R001–R005 and G001–G002. Claim [Update seven production infrastructure locations](https://github.com/lfg-seth/snorr-meshlink/issues/32); no matching existing location-update issue found. Preserve unrelated battery-box model and firmware submodule.
+- Existing production backup completes with archive validation and SHA-256 (`meshlink-20261020T022820Z.tar.gz`). Patch only latitude/longitude in the seven device configuration objects through the loopback superuser API, preserving other configuration and device identities. Exact readback matches all seven owner inputs; authenticated live portal state independently matches and confirms non-simulation mode. All nine devices remain present. Root-private before/request/after/verification evidence: `/root/meshlink-maintenance/location-update-20261020T022905Z`.
+- Record sanitized site update; exact coordinates stay outside Git. Historical provisioning inputs are unchanged. No radio configuration, installation or field verification performed. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: owner reviews the updated live map; installation, permission and coverage remain separately unverified.
+
 ## 2026-10-19 — Check post-reflash gateway delivery
 
 - Owner repairs DNS; retry succeeds. Read-only live archive/normalized receipts at 19:19 Pacific confirm **all five through G001**: R001 19:15:37, R002 19:15:22, R003 19:17:04, R004 19:15:28, R005 19:15:08. Fresh normalized temperature also passes for R003/R004/R005 (24.769783/27.470970/26.064301°C), with unknown measurement clocks. Actual worker/API services active; initial nonexistent service-name probe is not a failure finding. Earlier access and short-window limits below are superseded. R001/R002 temperature, G002, calibration and sustained cadence remain unverified. Publish receipt evidence and update scoped hardware issues; off-host/field acceptance unchanged.
