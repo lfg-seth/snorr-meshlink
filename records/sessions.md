@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-19 — R005 CLIENT bench reflash completes five-radio rollout
+
+- Owner connects R005 for the same CLIENT/temperature-only/no-INA219 configuration. Claim [Reflash R005 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/30); identify RAK4631 `!f95b5501` by node/USB serial, save fresh complete private backup, verify pinned cache and replace dummy-load `2.7.26.8dd4dac` with ordinary released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. This removes GPIO31 HIGH startup override; no rebuild/reset/key replacement or physical load measurement.
+- Full independent identity/key/channel/profile comparison passes through explicit clock synchronization/reboot: CLIENT, device/environment 900-second telemetry, disabled power measurements/display, unconfigured battery INA address, NeighborInfo transmission enabled. Preserve radio profile/Fahrenheit preference and account for API role-dependent sleep readback. [Operating evidence](../docs/operations/r005-client-bench.md), [TEST-019](field-results.md#test-019--r005-ordinary-release-client-temperature-only-reflash).
+- Local environment request plus 45 seconds yields no temperature. Sensor operation remains unverified; cached device values with uptime 1,453,310 seconds excluded. No gateway/portal delivery, utilization improvement or physical INA219/load removal/current-discrepancy resolution claimed. Other radios/live portal metadata unchanged; preserve firmware pin/unrelated battery-box model. Documentation links/whitespace checks pass.
+- R001–R005 now share the verified ordinary release/CLIENT/temperature measurement policy. Update current project brief/flashing handoff and mark old R005 load preparation historical. Release claim and leave issue Verify pending fitted-sensor/wiring/detection check and fresh temperature. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: verify fresh temperature reports from updated bench radios and fresh per-gateway/portal delivery, keeping local readback distinct from measured sensor/network operation. Historical load/current investigations remain separate.
+
 ## 2026-10-19 — R004 CLIENT bench reflash
 
 - Owner connects R004 and requests same authorized CLIENT/temperature-only/no-INA219 configuration. Claim [Reflash R004 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/29); identify RAK4631 `!77fdb9f1` by node/USB serial, save fresh private complete backup, verify pinned release cache and reflash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. No rebuild/reset/key replacement.

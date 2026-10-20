@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-019 — R005 ordinary-release CLIENT temperature-only reflash
+
+2026-10-19 Pacific; owner connects R005 RAK4631 `!f95b5501` for the same authorized CLIENT/temperature-only rollout. Match USB identity on COM19/DFU COM20 and E: RAK4631 bootloader; fresh private complete backup saved. Replace one-off dummy-load `2.7.26.8dd4dac` with checksum-verified ordinary neighbor-signal `2.7.26.0b65f2e`, removing GPIO31 HIGH startup override without rebuild/reset/key replacement. Physical load behavior/current unmeasured. [Image/profile/evidence](../docs/operations/r005-client-bench.md).
+
+Planned configuration/preservation criteria **pass** through full independent readback and explicit reboot: CLIENT, device/environment 900 seconds, formerly enabled power measurements now disabled, power display disabled, battery INA address unconfigured, neighbor transmission enabled. Identity/keys/channel/radio profile/Fahrenheit preference preserved, accounting for role-dependent API sleep readback. Other radios/live portal metadata unchanged.
+
+Local environment request plus 45 seconds returns **no temperature/environment metrics**. API device values with uptime 1,453,310 seconds excluded as cached pre-reboot evidence. Sensor operation, fresh RF/MQTT/portal delivery, calibration, sustained cadence/utilization reduction, runtime and field coverage remain unverified. No physical INA219/load removal or resolution of earlier current/load discrepancies claimed. Raw evidence stays ignored under `private/bench/R005-client-20261019/`. [Issue #30](https://github.com/lfg-seth/snorr-meshlink/issues/30) retains sensor verification.
+
 ## TEST-018 — R004 CLIENT temperature-only bench reflash
 
 2026-10-19 Pacific; owner connects R004 RAK4631 `!77fdb9f1` for the same authorized CLIENT/temperature-only rollout. Match USB identity on COM17/DFU COM18 and D: RAK4631 bootloader; fresh complete private backup saved. Reflash checksum-verified released neighbor-signal `2.7.26.0b65f2e` without rebuild/reset/key replacement. [Image/profile/evidence](../docs/operations/r004-client-bench.md).

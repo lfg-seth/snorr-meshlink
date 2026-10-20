@@ -16,6 +16,8 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Repeater bench rollout (2026-10-19): R001–R005 run verified released neighbor-signal firmware `2.7.26.0b65f2e` as **CLIENT**, with device/environment telemetry at 900 seconds, power telemetry disabled and no battery INA address configured. Independent identity/key/channel/profile checks pass through reboot. R005's former GPIO31 HIGH dummy-load override is removed. Fresh temperature operation and gateway/portal delivery remain unverified; no utilization/runtime/field-readiness result claimed. [Current flashing handoff](docs/operations/board-flashing-handoff.md).
+
 - Private monitoring (2026-10-17): owner-selected MeshMonitor 4.17.0 runs on its separate existing LXC as a read-only encrypted MQTT subscriber, using existing Grafana/Prometheus with internal access and 30-day metrics. Live telemetry comparison, restart persistence and isolated backup recovery pass. No packet/history pruning; exact portal archive, GPS measurement freshness and gateway receipts remain authoritative. Native views, two-gateway behavior, storage growth and off-host recovery remain follow-ups. [Operations](docs/operations/meshmonitor-lxc.md).
 
 - Dedicated airtime debug receiver (2026-10-16): existing V3 MC00 runs receive-only `2.7.26.f95a443`, preserving identity/keys on US channel 35. [Windows/Linux GUI and console tool](scripts/airtime-sniffer/README.md) retains raw/decoded frames, repeats and per-run airtime logs. Ten live receptions/seven duplicates, opaque/keyed/GUI replay and Windows/Linux core checks pass; Linux GUI/USB and high-load completeness remain unverified. [Hardware and limits](docs/operations/airtime-sniffer.md). Operational gateways/repeaters are unchanged.

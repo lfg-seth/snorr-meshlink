@@ -1,5 +1,7 @@
 # R005 dummy-load preparation — 2026-10-16
 
+Superseded hardware profile on 2026-10-19: owner requests the same ordinary release/CLIENT/temperature-only configuration as the other bench repeaters. [R005 reflash evidence](r005-client-bench.md) replaces this one-off image and removes the GPIO31 HIGH startup override. Preserve the following as historical development/measurement evidence, not the current flashed state.
+
 Owner requests a one-off build of the latest project RAK source, with the
 dummy load on during normal board operation, then flashing the connected
 RAK as R005 and registering it at R001's saved planned location. Owner
