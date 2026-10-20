@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-19 — Check post-reflash gateway delivery
+
+- Owner repairs DNS; retry succeeds. Read-only live archive/normalized receipts at 19:19 Pacific confirm **all five through G001**: R001 19:15:37, R002 19:15:22, R003 19:17:04, R004 19:15:28, R005 19:15:08. Fresh normalized temperature also passes for R003/R004/R005 (24.769783/27.470970/26.064301°C), with unknown measurement clocks. Actual worker/API services active; initial nonexistent service-name probe is not a failure finding. Earlier access and short-window limits below are superseded. R001/R002 temperature, G002, calibration and sustained cadence remain unverified. Publish receipt evidence and update scoped hardware issues; off-host/field acceptance unchanged.
+
+- Owner asks whether R001–R005 reach the gateway, then changes desktop networks and requests retry. Existing portal SSH hostname returns NXDOMAIN before/after change, including direct queries to both configured local DNS servers; alternate existing SSH host times out. Ask owner for current portal hostname/IP without changing DNS/network configuration.
+- Two independent read-only TLS MQTT observations, 19:14:39–19:15:35 and 19:16:18–19:17:13 Pacific, confirm seven fresh non-retained G001 deliveries from R003/R004/R005 with matching topic/envelope identities and recent radio-receipt timestamps. All three send SNNS; R004 sends device telemetry; R003 sends **24.769783°C**. [Evidence/limits](../docs/operations/repeater-gateway-check-20261019.md), [TEST-020](field-results.md#test-020--fresh-post-reflash-gateway-receipts).
+- R001/R002 and G002 not observed in short windows; no offline conclusion. R003 temperature operation now passes RF/MQTT observation, while its telemetry wall-clock time remains invalid. One first-window decode error remains unclassified. Portal normalization, sustained cadence, calibration and forced relay remain unverified. No radio/broker/DNS changes; preserve ignored private evidence, firmware pin and unrelated battery-box model.
+
+Next useful step: observe a full reporting cycle with all five powered, verify R001/R002 temperature hardware if expected, and check fresh G002 delivery under its existing follow-up. CLI Project reconciliation remains pending authenticated management host.
+
 ## 2026-10-19 — R005 CLIENT bench reflash completes five-radio rollout
 
 - Owner connects R005 for the same CLIENT/temperature-only/no-INA219 configuration. Claim [Reflash R005 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/30); identify RAK4631 `!f95b5501` by node/USB serial, save fresh complete private backup, verify pinned cache and replace dummy-load `2.7.26.8dd4dac` with ordinary released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. This removes GPIO31 HIGH startup override; no rebuild/reset/key replacement or physical load measurement.

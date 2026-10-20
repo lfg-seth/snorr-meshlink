@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-020 — Fresh post-reflash gateway receipts
+
+After owner repairs DNS, read-only portal archive inspection at **19:19 Pacific** confirms normalized G001 receipts for **all five**: R001 19:15:37, R002 19:15:22, R003 19:17:04, R004 19:15:28, R005 19:15:08. Recent raw envelopes are non-retained with matching topic/gateway identity and recent radio-receipt clocks. Normalized temperature observations: R003 **24.769783°C**, R004 **27.470970°C**, R005 **26.064301°C**; measurement clocks unknown. Actual `meshlink-worker` and API are active; initial probe of nonexistent `meshlink-mqtt-worker` was not a service failure. No recent G002 copy or R001/R002 temperature found. This supersedes the initial short-window/access limits below; calibration, sustained cadence and direct-versus-relayed path remain unverified.
+
+2026-10-19 Pacific, two read-only MQTT windows at 19:14:39–19:15:35 and 19:16:18–19:17:13. Owner asks whether the five reflashed radios reach a gateway and requests retry after changing desktop networks. Both TLS broker subscriptions pass; seven non-retained repeater deliveries match G001 topic/envelope identity with recent gateway radio-receipt clocks. **R003/R004/R005 reach G001/MQTT**: all three send SNNS; R004 also sends device telemetry; R003 sends **24.769783°C**. No R001/R002 or G002 copies observed in these short windows; absence does not establish failure. [Packets, clocks and limits](../docs/operations/repeater-gateway-check-20261019.md).
+
+R003 temperature operation now observed after reflash; sensor calibration and wall-clock measurement time remain unverified (`time=151`, separate from fresh gateway/desktop receipt). First window has one unclassified decode error. No forced-relay, complete-reporting-cycle, utilization/runtime or portal-normalization result claimed. Portal hostname returns NXDOMAIN even through both local DNS servers; current address requested. Private summaries ignored under `private/bench/repeater-gateway-check-20261019*.json`; raw locations/keys not published.
+
 ## TEST-019 — R005 ordinary-release CLIENT temperature-only reflash
 
 2026-10-19 Pacific; owner connects R005 RAK4631 `!f95b5501` for the same authorized CLIENT/temperature-only rollout. Match USB identity on COM19/DFU COM20 and E: RAK4631 bootloader; fresh private complete backup saved. Replace one-off dummy-load `2.7.26.8dd4dac` with checksum-verified ordinary neighbor-signal `2.7.26.0b65f2e`, removing GPIO31 HIGH startup override without rebuild/reset/key replacement. Physical load behavior/current unmeasured. [Image/profile/evidence](../docs/operations/r005-client-bench.md).

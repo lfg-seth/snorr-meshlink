@@ -1,5 +1,7 @@
 # R003 CLIENT bench reflash — 2026-10-19
 
+Later verification on the same evening: fresh R003 SNNS and **24.769783°C** environment packets reach G001/MQTT and the environment report normalizes into the live portal. [Receipt evidence and timestamp limits](repeater-gateway-check-20261019.md). This establishes live temperature operation despite the earlier local request yielding no reading; calibration and sustained cadence remain unverified.
+
 Owner connects R003 during the authorized repeater rollout. Apply the same CLIENT/temperature-only configuration as [R001](r001-client-bench.md) and [R002](r002-client-bench.md), with no INA219 configuration. This supersedes the earlier ROUTER profile; historical [AHT build evidence](r003-aht-build.md) remains separate.
 
 Identify RAK4631 **R003 `!05237743`**, COM14, USB serial `397EBE4F36E1F126`, initially `2.7.26.cc5907b`. Save fresh complete owner/local/module/channel/security backup under ignored `private/bench/R003-client-20261019/before.json`. Match the same USB serial on DFU COM16 and D: RAK4631, bootloader 0.4.3 / S140 6.1.1 / `WisBlock-RAK4631-Board`.

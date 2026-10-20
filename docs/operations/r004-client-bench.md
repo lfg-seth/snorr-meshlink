@@ -1,5 +1,7 @@
 # R004 CLIENT bench reflash — 2026-10-19
 
+Later same-evening verification: fresh R004 device telemetry and SNNS packets reach G001/MQTT; the live portal normalizes **27.470970°C** at 19:15:28 Pacific. [Receipt evidence and clock limits](repeater-gateway-check-20261019.md). Calibration, sustained cadence and G002 remain unverified.
+
 Owner connects R004 during the authorized repeater rollout and requests the same CLIENT/temperature-only configuration as [R001](r001-client-bench.md), [R002](r002-client-bench.md) and [R003](r003-client-bench.md), with no INA219 configuration. This supersedes the earlier ROUTER/enabled-power profile. Historical [preparation](r004-preparation.md) and [INA219 audit](ina219-audit.md) remain separate evidence.
 
 Identify RAK4631 **R004 `!77fdb9f1`**, COM17, USB serial `820C9B4F0C2D7675`, already on `2.7.26.0b65f2e`. Save fresh complete owner/local/module/channel/security backup under ignored `private/bench/R004-client-20261019/before.json`. Match the same USB serial on DFU COM18 and D: RAK4631, bootloader 0.4.3 / S140 6.1.1 / `WisBlock-RAK4631-Board`.

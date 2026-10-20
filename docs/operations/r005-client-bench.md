@@ -1,5 +1,7 @@
 # R005 CLIENT bench reflash — 2026-10-19
 
+Later same-evening verification: fresh R005 SNNS reaches G001/MQTT; the live portal has a post-flash **26.064301°C** observation at 19:07:12 Pacific and normalized G001 receipts through 19:15:08. [Receipt evidence and clock limits](repeater-gateway-check-20261019.md). Calibration, sustained cadence and G002 remain unverified.
+
 Owner connects R005 during the authorized repeater rollout and requests the same CLIENT/temperature-only profile as R001–R004, with no INA219 configuration. Replace the historical [one-off dummy-load image](r005-preparation.md) with the ordinary pinned RAK release. Its GPIO31 HIGH startup override is removed; this does not measure physical load state/current or establish removal of the fitted circuit.
 
 Identify RAK4631 **R005 `!f95b5501`**, COM19, USB serial `E93C5FF0F97DD76B`, initially `2.7.26.8dd4dac`. Save fresh complete owner/local/module/channel/security backup under ignored `private/bench/R005-client-20261019/before.json`. Match the same USB serial on DFU COM20 and E: RAK4631, bootloader 0.4.3 / S140 6.1.1 / `WisBlock-RAK4631-Board`.
