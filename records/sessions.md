@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-10-20 — Publish all saved local changes
+
+- Owner requests pushing all local changes. Fetch origin and fast-forward main from `b108cf3` to `b55bb33`, temporarily stashing/restoring every local edit. Resolve the session-log conflict by preserving both histories and synchronize the clean firmware checkout to the already published `473a9ed41` pin; no new firmware change.
+- Publish demo generator/worker/checkpoint, tests/docs and verifier as `8264b45` (Refs #9), and minimap navigation plus all saved infrastructure-test edits as `3c4f592` (Refs #21), on `codex/publish-local-demo-minimap-20261020`. [Draft PR #38](https://github.com/lfg-seth/snorr-meshlink/pull/38) targets main under the repository PR workflow. This session-record commit accompanies that publication; main remains at the fetched remote tip.
+- Verification: all 59 backend integration checks pass outside the sandbox (sandbox sockets are denied); TypeScript/production build and whitespace checks pass. All 45 portal checks pass outside the sandbox with `--test-skip-pattern='unlabelled signal lines'`. The full portal run times out after 55 seconds, matching the recorded broad interaction stall. Preserve its unfinished endpoint-location assertions, which still disagree with the retained location section; no full-suite pass or native browser/WebGL review claimed. Existing bundle-size warning remains.
+- Return #9/#21 to Verify with publication evidence and release both session claims. Initial Project reconciliation checks 36 issues and applies 17 updates, including importing newer issues without activating deferred work; handoff reconciliation checks 36 issues and applies the two Verify transitions. Preserve all prior local session notes. No merge, deployment, hosted demo refresh, hardware operation or private-data publication.
+
+Next useful step: resolve the broad interaction check and endpoint-location expectations, complete native review and finish draft PR #38. A hosted demo release still requires its separate backup, refresh, isolation and recovery procedure.
+
+## 2026-10-20 — Check local changes against production
+
+- Owner asks whether local changes remain outside production. Working tree has 13 modified files and untracked `backend/demo_scenario.py`: demo feature-data refresh, neighbor minimap device selection, associated tests/docs and existing session notes. Preserve all edits.
+- Read production release markers over SSH: application `bed40dd3204b5ce98ce967468c97d69b5b78d0e5`, records `09e959056fad589b8afdd40b8feb6c33b762a0a3`. Checksums confirm the edited demo generator/worker/checkpoint and four portal source files differ from hosted source; the new demo scenario module is absent there. These local application changes are not deployed.
+- Local HEAD `b108cf3` matches the cached origin/main ref, but live GitHub main is `b55bb330e4534512bbcd07d6c2ddf8cd0f64de30`; the cached ref is stale. No pull, commit, push, deployment, tests or hardware changes performed.
+
+Next useful step: reconcile the newer GitHub changes while preserving this working tree, then finish release verification before publishing/deploying the pending application work.
+
 ## 2026-10-19 — Defer manual GPS tracking session controls
 
 - Owner adds a request to start, stop and restart member GPS tracking sessions while devices stay powered on. Search existing issues; create [Allow starting, stopping and restarting member GPS tracking sessions while devices stay on](https://github.com/lfg-seth/snorr-meshlink/issues/37) and link the requested behavior in [the wishlist](wishlist.md#member-gps-tracking-session-controls).
@@ -127,6 +144,23 @@ Next useful step: resume phone-free GPS freshness/runtime and relay/outage verif
 
 Next useful step: open the two internal UIs with the private admin/existing Grafana login, review the views, then observe both gateways and measure storage growth under the scoped verification issue. Keep member GPS tracking first and existing archive/freshness semantics authoritative.
 
+## 2026-10-17 — Open neighbor devices from minimap icons
+
+- Owner requests removal of the neighbor card's separate Open device buttons, using the minimap endpoint icons instead. Search existing issues and claim [Open neighbor devices through minimap icons](https://github.com/lfg-seth/snorr-meshlink/issues/21). Thread optional selection through DeviceSheet to CardMiniMap; neighbor endpoints become named native buttons that select by persistent device identity and stop click propagation. Other device-card minimaps retain their current behavior. Remove the separate button group and unused styles.
+- Add focused interaction coverage for both endpoint selections, assigned shortnames, updated callbacks, colocated icons, button/tab semantics and missing coordinates. Update the existing broad interaction check to expect minimap buttons. Preserve its pre-existing unfinished Endpoint locations assertions and all unrelated demo/application/session edits; do not remove the location section as part of this request.
+- Verification: focused interaction check passes; 45 portal checks pass with the broad map/legend interaction test excluded. That broader test stalls in sandboxed and unsandboxed runs and is stopped; a previous session recorded the same test stall, so no full-suite pass is claimed. Typecheck/production build and Git whitespace checks pass. No browser surfaces are available for native keyboard, WebGL or visual review. Existing bundle-size warning remains.
+- Local implementation only; no commit, push, deployment, hardware work or change to deferred priorities. Hand off the issue to Verify without retaining a session claim.
+
+Next useful step: visually review the neighbor minimap icons and confirm each opens the matching device card; resolve the existing broad-test stall and unfinished endpoint-location expectations before a complete portal release check. Commit/publish the scoped UI changes when requested, preserving the unrelated work.
+
+## 2026-10-17 — Recommend the next work from the live queue
+
+- Owner asks what to work on next. Read the startup records and live GitHub issue queue, including acceptance criteria for phone-free tracking/runtime, forced relay/outage viewing, INA219 diagnosis and the unfinished demo release. Reconcile the Project from authoritative issue labels: 20 issues checked, zero changes needed; no active session claims appear in the open issue list.
+- Recommend agreeing the B001/B002 battery-only trial plan first, then measuring automatic phone-free GPS freshness, both-gateway receipts and runtime against the 15-minute stale threshold, four-hour minimum and 12-hour target. Follow with controlled relay/outage verification. If radios are unavailable, review and finish the existing local demo work as a bounded software alternative. INA219 accuracy remains unresolved before power-design conclusions.
+- Preserve all existing application/test/session edits. Recommendation only: no issue claimed, test run, hardware operation, deployment, commit or push performed.
+
+Next useful step: agree the configuration, stale/missing acceptance rate and available hardware for [Measure B001/B002 phone-free GPS freshness and battery runtime](https://github.com/lfg-seth/snorr-meshlink/issues/2).
+
 ## 2026-10-17 — Install GitHub CLI and configure the Project board
 
 - Owner requests management tooling and Project setup, then completes the separate CLI device authorization. Install official GitHub CLI 2.102.0 at `/home/setheth/.local/bin/gh`, already on PATH, after verifying archive SHA-256 `bb766f710eef8ede859c18578c72c327597cd4c8a85b06001b1f3843c6019386` against both release metadata and the published manifest (digest `afe49e9affa232faa8212aed035417166f6ade9b9470acb53d4dbd28c0504e8d`). Version and authenticated Project access pass; credentials are in the system keyring. No token/device code is published. [Official release](https://github.com/cli/cli/releases/tag/v2.102.0).
@@ -149,6 +183,47 @@ Next useful step: use the board's Current work and Verification views during aut
 [Migration issue](https://github.com/lfg-seth/snorr-meshlink/issues/1) is closed with published verification evidence; the separate board follow-up remains blocked. All pre-migration session-log changes are preserved exactly.
 
 Next useful step: use the ready phone-free tracking and relay/outage issues for owner-agreed measured trials. Finish the Project board when a management surface is available.
+
+## 2026-10-17 — Test the newly added GitHub MCP server
+
+- Owner requests connection testing after adding the GitHub MCP server and completing device authorization. The new `mcp_server_github` connection successfully authenticates as `lfg-seth`, lists project issues and pull requests (both empty), and reads the main-branch workflow directory containing backend and portal CI definitions.
+- Read access is verified through the new server rather than the existing GitHub app connector. Write access is untested; no GitHub records or settings changed. No Projects or milestone tools are exposed by the new server in this session. Preserve all existing local edits; no tests, deployment, hardware operation or commit performed.
+
+Next useful step: use the authenticated server for the proposed issue workflow when adopted; separately establish Project/milestone management access if needed.
+
+## 2026-10-17 — Fill demo data for current portal features
+
+- Owner reports missing demo values for newer portal features. Reproduce through the real demo state endpoint: member voltage/pack settings, infrastructure battery profiles, humidity, sensor-power channels and SNNS report details are absent from the tracked checkpoint. Add shared fictional scenario values to the generator and simulation worker, then rebuild the synthetic checkpoint/manifest with the current schema. Preserve existing GPS-quality/history and unknown/stale/never-reported examples.
+- Add 3000/1100/1000 mAh LiPo member examples, EVE 26V repeater profiles, humidity, signed/zero sensor readings on distinct channels and three SNNS observations demonstrating hearing age/counts and complete/partial coverage with capacity eviction. Keep radio signs independent of battery charging claims. Expand demo integration checks and let hosted recovery verification accept additional saved signal rows; restored row counts still match the backup. Update demo refresh documentation.
+- Gracefully stop the identified local launcher, preserve its complete prior workspace as ignored `local-data/demo-before-feature-refresh-20261017-130037`, initialize the updated demo and restart the launcher. Local portal/API readiness, synthetic marker, thirteen signal rows, member voltage and humidity pass. Reload the local browser to obtain a fresh demo token. The old workspace and saved edits remain available in the backup.
+- Verification: six demo integration checks pass, including worker refresh, saved-edit persistence, history windows and authentication boundaries. The broader system-Python suite passes 42 checks but cannot import MQTT tests without cryptography; run the 17 MQTT checks successfully using the existing project virtual environment (59 checks combined). Python compilation and Git whitespace checks pass. No hosted deployment or native visual review performed; the hosted demo keeps its existing database until deliberately refreshed after backup. Preserve the unrelated infrastructure-test edit and concurrent session notes. No hardware, tracker decision, commit or push performed.
+
+Next useful step: reload the local portal and inspect member batteries, Infrastructure sensor power/humidity and neighbor relationship details; when releasing, refresh the separately backed-up hosted demo and run its proxy/isolation/recovery checks.
+
+## 2026-10-17 — Review GitHub progress-tracking workflow
+
+- Owner requests an assessment of current progress tracking and a suggested GitHub workflow. Review the local tracker, pilot map, project brief, session history, roadmap, wishlist and existing CI workflows; read GitHub issue/PR collections through the connected account. The local tracker has 23 tickets (20 resolved, three open), while GitHub returns no issues or pull requests. Local resolution includes design/research completion and must not be read as field-readiness completion. The roadmap still describes the October 12 snapshot.
+- Recommend GitHub Issues and one Project board for execution status, with a distinct verification stage, deferred wishlist view, a small label set and evidence-based bench/field milestones. Keep local Markdown authoritative for decisions and measured evidence; link records rather than maintaining duplicate narrative histories. Preserve passive tracking first, communications second and later law-enforcement expansion. Parked ideas require explicit owner activation.
+- Proposed session workflow: reconcile relevant issue/record state, claim authorized work, link implementation and validation evidence, distinguish code/deployment/hardware verification, and update the issue and session record at handoff. Establish the convention in repository instructions if adopted. Existing backend/frontend CI can support linked pull requests; code merges must not imply field-test acceptance.
+- Suggestion only: no GitHub issues, board, labels, milestones, pull requests, tracker states or repository instructions changed. Milestone enumeration was unsupported by the connector, and account-level Projects were not inspected. Preserve all pre-existing local edits, including this session log. Read-only review and documentation update only; no tests, deployment, hardware operation or commit performed.
+
+Next useful step: adopt the workflow, reconcile current work and verification gaps into a small initial issue queue, and refresh the roadmap from the current evidence before configuring the board. Avoid importing all historical decisions as active work.
+
+## 2026-10-17 — Summarize project readiness and remaining work
+
+- Owner asks for project state and what needs work. Review project brief, session history, pilot map/tracker, terminology, inventory, deferred wishlist and latest INA219 evidence. Recorded bench GPS/MQTT ingestion and deployed portal are working; six-member field readiness, sustained freshness/runtime, forced relaying and outage/local viewing remain unverified.
+- Prioritize a measured two-tracker pilot using existing hardware, reliable power measurements and repeatable radio/load tests before wider rollout. Fresh G002 neighbor/power delivery, authenticated mobile review and off-host backups remain follow-ups; outbound messaging/remote administration, monitoring selection and the custom survey tool remain separate unfinished scope. Preserve deferred ideas.
+- Local main tracks origin/main with pre-existing edits to this session log and the infrastructure test. Preserve both; do not treat the unfinished test expectation as implemented behavior. No live service/hardware inspection, tests, tracker changes, deployment or commit performed for this status review.
+
+Next useful step: define and run a logged B001/B002 battery-only tracking trial, measuring GPS measurement age, delivery through both gateways, runtime and relay/outage behavior against the agreed 15-minute stale threshold and four-hour minimum runtime (12-hour target). Resolve sensor state/accuracy before using INA219 readings for power-design conclusions.
+
+## 2026-10-17 — Review project state and pull desktop changes
+
+- Owner requests repository/project status and a pull. Fetch origin and fast-forward `main` by 18 commits from `0e3d8dc` to `5c9c76a`; main matches `origin/main`. Initialize/update recursive submodules to the recorded firmware pin `d929b800909a6ee48254dbcb6d104d9c7f54ce5f`. Temporarily stash and then restore the existing infrastructure-test edit and automatic-deployment session note without conflicts.
+- Latest records describe deployed RAK neighbor/signed-power ingestion (`bed40dd`), R002/R004 released firmware, the R005 dummy-load build and a dedicated V3 airtime sniffer. INA219 magnitude/calibration, fresh G002 delivery, sustained GPS/runtime/outage behavior and field readiness remain unverified. The later shunt estimate does not resolve the current discrepancy. Monitoring selection and direct-link survey work remain open/deferred.
+- The pre-existing local test edit expects endpoint locations to be removed, while `SignalLinkDetail.tsx` still renders that section. Preserve the unfinished edit; no application fix is part of this sync. Start the targeted infrastructure test, but stop it after it produces only the TAP header and no test results; no test pass/failure established. Git whitespace and branch/submodule checks pass. No hosted-service inspection, deployment, hardware operation or new commit performed.
+
+Next useful step: decide whether to finish the local neighbor-card change, or resume bench verification of the INA219 discrepancy and fresh G002 delivery. Preserve the existing local edits; source synchronization does not change the hosted portal or radio firmware.
 
 ## 2026-10-16 — Apply the reported probe resistance baseline
 
@@ -272,6 +347,14 @@ Next useful step: separately implement/test portal `SNNS` decoding and arrange a
 - Native browser inventory is empty; iPhone focus/keyboard and visual behavior remain unverified. Preserve the concurrently added branch-build/automatic-deployment session note outside these commits. Existing bundle-size warning remains; no fresh radio reception or field-performance verification claimed.
 
 Next useful step: open the public site on iPhone, confirm automatic demo entry and top-header sign-in, then focus/dismiss both login fields and verify manual pinch zoom. Publish deployment evidence separately from the application release.
+
+## 2026-10-16 — Review branch builds and automatic deployment requirements
+
+- Owner asks whether branch pushes can build/deploy automatically. Inspect both tracked GitHub Actions workflows: relevant pushes to `main` and pull requests run frontend tests/typecheck/build or backend integration checks; manual dispatch is available. The portal workflow saves a seven-day build artifact only for pushes to `main`. Direct pushes to other branches without a pull request do not trigger these workflows. No automatic application deployment workflow is tracked, consistent with the LXC operations record.
+- Explain a proposed setup: branch CI, a designated deployment branch/environment, a secure deployment connection to the existing private LXC, and a repeatable update script gated on successful checks for the same commit. Reuse backup/recovery verification, preserve independent live/demo state and private credentials, publish tested assets, serialize deployments and record source/rollback releases. PocketBase uses `--automigrate=false`; migration execution and schema-compatible rollback need explicit handling. The simulation installer refuses live provisioning and is not the live update command.
+- Verify GitHub trigger, self-hosted runner and deployment-environment capabilities against [workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [runner documentation](https://docs.github.com/en/actions/concepts/runners/self-hosted-runners) and [environment documentation](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments). No branch policy is accepted, pipeline implemented, server accessed or application deployed. GitHub settings, runner availability and latest hosted run results were not inspected. Documentation-only session note; no application tests run and no commit requested.
+
+Next useful step: choose the automatic deployment branch and whether other branches need an isolated staging portal, then implement the deployment workflow and live update script with the selected private connection.
 
 ## 2026-10-16 — Default to the database demo in production builds
 
