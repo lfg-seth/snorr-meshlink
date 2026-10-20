@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-19 — Verify production portal is current
+
+- Owner requests checking production currency and updating/redeploying if behind. Claim [Verify production portal matches latest published application](https://github.com/lfg-seth/snorr-meshlink/issues/33). Fetch origin; main remains `c267942`. There are no changes between deployed application `bed40dd3204b5ce98ce967468c97d69b5b78d0e5` and origin/main in `portal`, `backend` or `deploy/portal`, and no newer application on published remote branches. Project-record commits do not require application redeployment.
+- Production SOURCE_COMMIT matches that release. All 91 retained backend/frontend source files match production; all nine retained build files match installed files and public HTTPS responses byte-for-byte. Index SHA-256: `b2afae242c946c0054825c545696aa687e791f86d154ef3d453e3c394519457c`. All six services are active. Public health returns 200, anonymous live state 401, and admin/raw-device/worker routes 404. No credentials sent through public HTTPS.
+- No redeployment needed or performed. Existing demo/minimap work (#9/#21) remains separate; this Windows checkout has no pending application edits. No native browser review, new build, backup recovery or field verification performed. Preserve unrelated battery-box model and firmware. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: continue the scoped portal/demo review when requested; production already serves the latest published application.
+
 ## 2026-10-19 — Update production infrastructure locations
 
 - Owner authorizes replacement database locations for R001–R005 and G001–G002. Claim [Update seven production infrastructure locations](https://github.com/lfg-seth/snorr-meshlink/issues/32); no matching existing location-update issue found. Preserve unrelated battery-box model and firmware submodule.
