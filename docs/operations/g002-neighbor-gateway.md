@@ -1,6 +1,8 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
-Owner activates the same richer passive neighbor measurements on the gateways, with G002 connected. [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31) tracks rollout; [firmware PR](https://github.com/lfg-seth/firmware/pull/1) is merged into the existing `snorr/rak-survey` branch. G001 remains stock and awaits its own connection/backup/update.
+Subsequent same-day rollout: [G001 now runs the same verified image](g001-neighbor-gateway.md), with its own profile/keys preserved through reboot and fresh own-observer measurements accepted by the authenticated portal. Both gateway collector rollout checks pass. The G002 build and initial deployment evidence below remain unchanged.
+
+Owner activates the same richer passive neighbor measurements on the gateways, with G002 connected. [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31) tracks rollout; [firmware PR](https://github.com/lfg-seth/firmware/pull/1) is merged into the existing `snorr/rak-survey` branch. G001 was still stock during this initial G002 run; the subsequent update is linked above.
 
 ## Source, image and preservation
 
@@ -42,4 +44,4 @@ Pre-change private backup: `meshlink-20261020T024151Z.tar.gz`, SHA256 `5f884a058
 
 Private build/image/manifest, original full flash/profile, replacement Wi-Fi, console, exact MQTT envelopes and portal evidence remain ignored under `private/bench/G002-neighbors-20261019/`. Remote original worker config is root-private under `/root/gateway-neighbors-20261019/`. The V3 image is cached locally, not published as a binary release; the RAK prerelease is not a V3 image. On another machine, use the exact binary source and gateway target with a new verified build, or an explicitly transferred matching image.
 
-G001 has not been flashed/configured and is the next hardware step when connected. Preserve its own identity/profile and check its Wi-Fi rather than copying G002's full configuration. Sustained cadence/freshness, outage recovery, radio-silence instrumentation, native authenticated visuals, runtime, calibration and field coverage remain unmeasured. A short console sample contains no Packet TX entries; saved TX-disable readback is not an independent RF-silence measurement.
+G001 was unchanged at the end of this initial run; its subsequent board-specific backup/update is linked above. Preserve each gateway's own identity/profile and check its Wi-Fi rather than cloning the other board's full configuration. Sustained cadence/freshness, outage recovery, radio-silence instrumentation, native authenticated visuals, runtime, calibration and field coverage remain unmeasured. A short console sample contains no Packet TX entries; saved TX-disable readback is not an independent RF-silence measurement.

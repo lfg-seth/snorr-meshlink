@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## TEST-022 — G001 completes passive gateway neighbor rollout
+
+2026-10-19 Pacific. Owner connects identified G001 `!9ea13cc0` for the same authorized collector update. Full private profile/flash backup, exact cached image/partition comparison, application-only **2.7.26.9d2fd8f** flash/hash verification and complete intended profile comparison pass through explicit reboot. CLIENT/TX disabled and Wi-Fi/MQTT preserved; neighbor enabled/local-only. No rebuild, reset or other-board write.
+
+First 180.3-second validating-TLS window records six G001 deliveries/no decoder errors. At **19:57:55.391**, non-retained own-observer SNNS packet **a1a5ea71**, sequence 1 / boot 1325647066 / uptime 72 seconds, is normalized/accepted with three direct rows: R005 −43 dBm/6.00 dB, R002 −62/6.25, R004 −81/5.50; hearing ages 48/36/33 seconds at encoding, counts 1. Independent authenticated snapshot matches every value/provenance field, preserves null absolute hearing clocks, all nine devices and 13 existing G002 reports. Fresh forwarded GPS/telemetry/neighbors and expected duplicate gateway receipts also pass. [Full image/backup/evidence](../docs/operations/g001-neighbor-gateway.md).
+
+Passive continuation reaches six rows at **19:59:10** / sequence 2 and all seven bench senders (**R001–R005/B001/B002**) at **20:00:25** / sequence 3. R002/R004/B002 counts increase to 2 with updated readings/hearing ages. No active probe or further serial connection is used for this continuation.
+
+Both gateway collector rollout checks pass. Sustained cadence/freshness, calibration, independent RF silence, runtime, coverage and the separate disabled-power-telemetry follow-up remain unverified.
+
 ## TEST-021 — G002 gateway-originated passive neighbor reports
 
 2026-10-19 Pacific. Owner activates richer measurements on the V3 gateways. Identified/backed-up G002 `!849ad7a0` receives app-only `heltec-v3-gateway` **2.7.26.9d2fd8f**, with partition/hash verification and complete intended profile/keys preserved through explicit reboot. CLIENT, TX disabled, collector enabled/local-only; owner-authorized replacement Wi-Fi restores backhaul after repeated no-access-point reason 201. Existing MQTT settings unchanged.

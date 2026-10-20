@@ -1,6 +1,6 @@
 # RAK neighbor and sensor power ingestion
 
-2026-10-19 gateway follow-up: [G002's dedicated V3 collector](g002-neighbor-gateway.md) now delivers its own richer SNNS measurements plus fresh repeater copies to MQTT/archive/normalized portal. Live worker infrastructure source mapping now includes both already registered gateway node IDs, preserving their transport mappings and all other settings. G001 hardware remains unchanged; current repeaters have power telemetry disabled, so the historical sensor-power follow-up remains separate. Earlier G002-unverified statements below describe the original release.
+2026-10-19 gateway follow-up: [G001](g001-neighbor-gateway.md) and [G002](g002-neighbor-gateway.md) now deliver their own richer SNNS measurements plus fresh repeater copies to MQTT/archive/normalized and authenticated portal state. Live worker infrastructure source mapping includes both already registered gateway node IDs, preserving their transport mappings and all other settings. Both V3s retain LoRa TX disabled/local-only reporting. Current repeaters have power telemetry disabled, so the historical sensor-power follow-up remains separate. Earlier G002-unverified statements below describe the original release.
 
 2026-10-16 Pacific. The owner requests database/portal support for the flashed RAK neighbor firmware and INA219 sensors. Application source `bed40dd3204b5ce98ce967468c97d69b5b78d0e5` is deployed at `meshlink.spp.lol`, with normalization, an additive migration and display in the existing Infrastructure table, map relationships and node cards.
 
