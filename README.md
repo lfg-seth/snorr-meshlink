@@ -14,6 +14,7 @@ Priority order: member location awareness, member communications, and later supp
 - [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues): current work, bugs, verification and deferred ideas.
 - [Project board](https://github.com/users/lfg-seth/projects/2): owner-private status board and saved work/verification/bug/wishlist views.
 - [Tracking workflow](docs/operations/github-tracking.md): status views, session handoffs and completion criteria.
+- [Private monitoring](docs/operations/meshmonitor-lxc.md): internal MeshMonitor and the existing Grafana/Prometheus integration, credentials handoff, retention and recovery.
 - [Decision map](.scratch/pilot/map.md): historical pilot questions and durable decision answers.
 - [Roadmap](docs/roadmap.md): checkpoints from inventory through deployment and reporting.
 - [Protocol baseline](docs/research/protocol-baseline.md): official-source comparison of LoRaWAN, Meshtastic, and MeshCore; Meshtastic is selected for pilot evaluation, with hardware verification still pending.

@@ -16,6 +16,8 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 ## Notes
 
+- 2026-10-17 — Owner resolves [private monitoring scope](issues/20-monitoring-scope-stack.md): internal-only MeshMonitor, existing Grafana/Prometheus, 30-day metrics and no automatic packet/history pruning; searchable logs deferred. [Deployment](../../docs/operations/meshmonitor-lxc.md) verifies live values, private access, restart persistence and isolated recovery. [Remaining verification](https://github.com/lfg-seth/snorr-meshlink/issues/23) covers native views, two-gateway behavior and growth; portal freshness/archive remain authoritative.
+
 - 2026-10-16 — [Build a dedicated Heltec V3 airtime sniffer](issues/23-airtime-sniffer.md) completes: MC00 runs receive-only `2.7.26.f95a443`; Windows/Linux GUI/CLI logs raw/decoded packets, repeats and airtime. Ten live receptions/seven duplicates, byte-identical opaque/keyed replay, Windows GUI and portable framing pass; Linux GUI/USB and high-load completeness remain unverified. Gateway/repeater roles are unchanged.
 
 - 2026-10-16 — [RAK neighbor and sensor power integration](../../docs/operations/radio-report-ingestion.md) deploys SNNS/standard neighbor decoding and signed, channel-preserving voltage/current display in application `bed40dd`. Archive recovery, fresh R005/G001 normalization and isolated live/demo restore pass; G002 freshness and sensor calibration remain unverified. No new pilot decision or hardware configuration change.

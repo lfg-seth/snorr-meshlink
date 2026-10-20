@@ -1,5 +1,7 @@
 # Proposed private monitoring setup for SNORR MeshLink
 
+2026-10-17 update: owner selects and authorizes internal-only MeshMonitor with the existing Grafana/Prometheus hosts, 30-day metrics and no automatic packet/history pruning. The bounded deployment and its verification limits are recorded in [operations](../operations/meshmonitor-lxc.md). Searchable logs and a custom MeshLink exporter are separate work. The proposal below remains the historical research context.
+
 2026-10-16. Planning for [Check Meshtastic monitoring and recording stacks for the pilot](../../.scratch/pilot/issues/19-meshtastic-monitoring-research.md). This is a recommendation, not an accepted stack or authorization to deploy. [Project comparison](https://github.com/lfg-seth/snorr-meshlink/blob/f69b6a4/docs/research/meshtastic-monitoring-projects.md) contains the Meshtastic-specific shortlist and source evidence.
 
 ## Recommended direction
