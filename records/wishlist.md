@@ -1,6 +1,6 @@
 # Deferred feature wishlist
 
-These are owner-requested future ideas, recorded on 2026-10-12. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
+These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
 Current status is maintained in the linked GitHub issues under the [tracking workflow](../docs/operations/github-tracking.md). This file preserves the owner's requested ideas and deferral decisions.
 
@@ -35,3 +35,27 @@ Status: deferred by owner. Added 2026-10-12.
 Desired direction: integrate SnorrMesh with Slack, which the owner reports SNORR uses heavily. The owner suggests a dedicated channel or an app/plugin as possible forms and is unfamiliar with Slack's API; these are ideas, not selected approaches.
 
 Exact use cases, information shared, message direction, channel creation behavior, access permissions, and integration mechanism remain unspecified. Capture only for now; investigate Slack capabilities when the owner explicitly brings this item forward.
+
+## Overlapping map nodes
+
+GitHub: [Keep overlapping map nodes separately visible and selectable](https://github.com/lfg-seth/snorr-meshlink/issues/34).
+
+Status: deferred by owner. Added 2026-10-19.
+
+Owner reports that nodes at the same location stack on the map, preventing access to both. Keep their markers side by side until zoom provides enough separation; exactly co-located nodes must still each be accessible. Display separation must preserve stored coordinates. Report captured without independent reproduction or browser/build details; implementation and verification wait for activation.
+
+## Selected-node neighbor signals on desktop
+
+GitHub: [Show only the selected node's neighbor signals on the desktop main map](https://github.com/lfg-seth/snorr-meshlink/issues/35).
+
+Status: deferred by owner. Added 2026-10-19.
+
+Desired behavior: clicking a node on desktop shows only its neighbor signal connections on the main map, including when Show signal is off. Selecting another node switches the connections to that node. Behavior after deselection remains to define when activated; mobile changes are outside this request.
+
+## Map default centered on all nodes
+
+GitHub: [Default the map to the center of all node locations](https://github.com/lfg-seth/snorr-meshlink/issues/36).
+
+Status: deferred by owner. Added 2026-10-19.
+
+Desired behavior: stop defaulting to Mount Charleston and instead default to the center of mass of all nodes with usable locations. Exact calculation, initial zoom, empty-location fallback and saved-view interaction remain to define when activated.

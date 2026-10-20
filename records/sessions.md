@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-19 — Capture three deferred map changes
+
+- Owner requests three portal map issues for later. Search existing issues; capture [Keep overlapping map nodes separately visible and selectable](https://github.com/lfg-seth/snorr-meshlink/issues/34), [Show only the selected node's neighbor signals on the desktop main map](https://github.com/lfg-seth/snorr-meshlink/issues/35), and [Default the map to the center of all node locations](https://github.com/lfg-seth/snorr-meshlink/issues/36). Verify creation responses: all open with exactly `status:deferred`, `area:portal` and one type label, without assignee or milestone.
+- Extend [the durable wishlist](wishlist.md) with requested behavior and remaining questions. Capture only; no feature research, design, implementation, testing or deployment. Preserve unrelated untracked battery-box model and firmware submodule.
+- Fetch origin and confirm main matches origin/main before record edits. GitHub CLI is unavailable on this desktop, so derived Project synchronization remains pending the authenticated management host.
+
+Next useful step: keep these issues deferred until owner activation; reconcile Project cards with `scripts/github/sync-project.py --apply` on the management host.
+
 ## 2026-10-19 — G002 richer passive gateway neighbor collection
 
 - Owner connects G002 and activates the same richer measurements on gateways. Claim [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31); add dedicated `heltec-v3-gateway` target using the existing collector, keeping ordinary V3/MC00 targets unchanged. Source `9d2fd8fd0`, documentation-format follow-up `473a9ed41`, published through [merged firmware PR](https://github.com/lfg-seth/firmware/pull/1) on `snorr/rak-survey`; project pins published follow-up. Collector capacities 32/10 and actual-module sanitizer checks pass; full pinned ESP32 build succeeds. Trunk unavailable locally; pinned Prettier corrects initial Markdown-only CI failure, and final Trunk/label/Semgrep checks pass.
