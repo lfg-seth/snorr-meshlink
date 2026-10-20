@@ -59,3 +59,11 @@ GitHub: [Default the map to the center of all node locations](https://github.com
 Status: deferred by owner. Added 2026-10-19.
 
 Desired behavior: stop defaulting to Mount Charleston and instead default to the center of mass of all nodes with usable locations. Exact calculation, initial zoom, empty-location fallback and saved-view interaction remain to define when activated.
+
+## Member GPS tracking session controls
+
+GitHub: [Allow starting, stopping and restarting member GPS tracking sessions while devices stay on](https://github.com/lfg-seth/snorr-meshlink/issues/37).
+
+Status: deferred by owner. Added 2026-10-19.
+
+Desired behavior: provide a way to start, stop and restart member-node (client) GPS tracking sessions even when a device remains powered on throughout. Session boundaries must be independent of device uptime or reboot boundaries. Control location, authorized roles, whether restart resumes a session or creates a new one, and treatment of reports outside active sessions remain to define when activated. No radio-broadcasting or raw-data-retention changes are selected by this request.

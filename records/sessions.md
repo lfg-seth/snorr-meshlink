@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-19 — Defer manual GPS tracking session controls
+
+- Owner adds a request to start, stop and restart member GPS tracking sessions while devices stay powered on. Search existing issues; create [Allow starting, stopping and restarting member GPS tracking sessions while devices stay on](https://github.com/lfg-seth/snorr-meshlink/issues/37) and link the requested behavior in [the wishlist](wishlist.md#member-gps-tracking-session-controls).
+- Creation response verifies an open issue with `feature`, `area:portal` and exactly `status:deferred`, without assignee or milestone. No research, design, implementation, testing or deployment. Fetch origin and confirm main is current; preserve existing records, firmware and unrelated untracked battery-box model. Project synchronization remains pending authenticated CLI access on the management host.
+
+Next useful step: keep session controls deferred until owner activation, then define session semantics and controls; reconcile the derived Project with the existing sync script when CLI access is available.
+
 ## 2026-10-19 — G001 completes richer gateway neighbor rollout
 
 - Owner connects G001 for the existing authorized rollout; reclaim [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31). Identify HELTEC_V3 `!9ea13cc0`, COM6 / ESP32-S3 / 8 MB; privately back up complete own profile and all flash bytes. Recheck exact cached V3 image/hash and original app0 partition/OTA selection; flash only verified **2.7.26.9d2fd8f** application with esptool hash verification. No rebuild/source change/reset/profile clone or other-board write; project firmware pin remains `473a9ed41`.
