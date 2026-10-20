@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-19 — Cancel content work and merge MeshMonitor publication
+
+- Owner cancels [Create a local SNORR MeshLink brag video](https://github.com/lfg-seth/snorr-meshlink/issues/25). Remove both local compositions, assets, caches, dedicated tooling and pending content/session entries; verify neither preview is running. Close the issue as not planned and release its assignment.
+- Owner explicitly authorizes [MeshMonitor PR #24](https://github.com/lfg-seth/snorr-meshlink/pull/24). Merge the unchanged published head `a35e00f` with a merge commit, `f17a1e097d0d2230cef05e6cc3634d79452bb34b`, and close [deployment issue #22](https://github.com/lfg-seth/snorr-meshlink/issues/22) as completed. Preserve verification follow-ups [#23](https://github.com/lfg-seth/snorr-meshlink/issues/23) and [#7](https://github.com/lfg-seth/snorr-meshlink/issues/7).
+- Fast-forward local main and retain its origin/main tracking. Preserve the unrelated battery-box model and firmware. No application or hardware changes; no new service/runtime acceptance claimed. GitHub CLI Project access remains unavailable on this Windows host; issue closures use the verified native Done workflow, with a full board reconciliation pending the authenticated management host.
+
+Next useful step: resume phone-free GPS freshness/runtime and relay/outage verification; monitoring browser, second-gateway, growth and off-host recovery checks remain open.
+
 ## 2026-10-17 — Deploy private MeshMonitor with existing Grafana/Prometheus
 
 - Owner authorizes MeshMonitor on its separate existing Ubuntu LXC, then supplies the existing Grafana/Prometheus hosts and selects internal access only, proposed retention and deployment. Resolve the one monitoring scope decision; claim [deployment](https://github.com/lfg-seth/snorr-meshlink/issues/22). [Operating evidence](../docs/operations/meshmonitor-lxc.md) records the exact release, private credentials handoff, boundaries and recovery.
