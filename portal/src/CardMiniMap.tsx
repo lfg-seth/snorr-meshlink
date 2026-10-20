@@ -12,7 +12,11 @@ export type MiniMapNode = {
   coordinates: [number, number] | null;
 };
 
-export default function CardMiniMap({ nodes: suppliedNodes, color }: { nodes: MiniMapNode[]; color?: string }) {
+export default function CardMiniMap({ nodes: suppliedNodes, color, onNodeSelect }: {
+  nodes: MiniMapNode[];
+  color?: string;
+  onNodeSelect?: (id: string) => void;
+}) {
   const nodes = suppliedNodes.map(node => ({ ...node, coordinates: node.coordinates &&
     node.coordinates.every(Number.isFinite) && Math.abs(node.coordinates[0]) <= 180 && Math.abs(node.coordinates[1]) <= 90
     ? node.coordinates : null }));
@@ -77,11 +81,19 @@ export default function CardMiniMap({ nodes: suppliedNodes, color }: { nodes: Mi
     const visible = nodes.filter(node => node.coordinates !== null);
     const colocated = visible.length === 2 && visible[0].coordinates!.every((value, i) => value === visible[1].coordinates![i]);
     const markers = visible.map((node, index) => {
-      const element = document.createElement('div');
+      const element = document.createElement(onNodeSelect ? 'button' : 'div');
       element.className = `mini-map-pin ${node.markerClassName}`;
       element.textContent = node.label;
-      element.title = node.label;
-      element.setAttribute('aria-label', node.label);
+      const label = onNodeSelect ? `Open ${node.label} node card` : node.label;
+      element.title = label;
+      element.setAttribute('aria-label', label);
+      if (onNodeSelect) {
+        (element as HTMLButtonElement).type = 'button';
+        element.addEventListener('click', event => {
+          event.stopPropagation();
+          onNodeSelect(node.id);
+        });
+      }
       return new maplibregl.Marker({ element }).setLngLat(node.coordinates!)
         .setOffset(colocated ? [index === 0 ? -30 : 30, 0] : [0, 0]).addTo(instance);
     });
@@ -94,7 +106,7 @@ export default function CardMiniMap({ nodes: suppliedNodes, color }: { nodes: Mi
       }] : [],
     });
     return () => markers.forEach(marker => marker.remove());
-  }, [nodeKey, color, ready, basemap, hasLocation]);
+  }, [nodeKey, color, ready, basemap, hasLocation, onNodeSelect]);
 
   useEffect(() => {
     if (map.current) fit(map.current);

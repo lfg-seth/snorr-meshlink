@@ -6,7 +6,7 @@ const CardMiniMap = lazy(() => import('./CardMiniMap'));
 
 // Native dialogs provide focus containment, Escape and an inert background on mobile.
 // Desktop uses the same content as a nonmodal panel above the map.
-export default function DeviceSheet({ label, eyebrow, status, className, closeLabel, onClose, children, mapNodes, mapColor }: {
+export default function DeviceSheet({ label, eyebrow, status, className, closeLabel, onClose, children, mapNodes, mapColor, onMapNodeSelect }: {
   label: string;
   eyebrow: string;
   status?: ReactNode;
@@ -16,6 +16,7 @@ export default function DeviceSheet({ label, eyebrow, status, className, closeLa
   children: ReactNode;
   mapNodes?: MiniMapNode[];
   mapColor?: string;
+  onMapNodeSelect?: (id: string) => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const gestureStart = useRef<number | null>(null);
@@ -69,7 +70,7 @@ export default function DeviceSheet({ label, eyebrow, status, className, closeLa
       </div>
       <div className="device-sheet-content">
         {mapNodes && <Suspense fallback={<div className="mini-map-loading">Loading map…</div>}>
-          <CardMiniMap nodes={mapNodes} color={mapColor} />
+          <CardMiniMap nodes={mapNodes} color={mapColor} onNodeSelect={onMapNodeSelect} />
         </Suspense>}
         {children}
       </div>

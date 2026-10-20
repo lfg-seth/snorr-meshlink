@@ -23,13 +23,7 @@ export default function SignalLinkDetail({ connection, labels, markerLabels = {}
   return <DeviceSheet label={connection.nodes.map(node => node.label).join(' / ')}
     eyebrow="Neighbor signal" className="signal-link-detail" closeLabel="Close signal details" onClose={onClose}
     mapNodes={connection.nodes.map(node => ({ ...node, label: markerLabels[node.id] ?? node.label,
-      markerClassName: markerClasses[node.id] }))} mapColor={connection.color}>
-    <div className="signal-node-buttons" aria-label="Relationship nodes">
-      {connection.nodes.map(node => <button key={node.id} type="button"
-        aria-label={`Open ${node.label} node card`} onClick={() => onNodeSelect(node.id)}>
-        Open {node.label}
-      </button>)}
-    </div>
+      markerClassName: markerClasses[node.id] }))} mapColor={connection.color} onMapNodeSelect={onNodeSelect}>
     {!online && <p className="small muted">Feed offline · showing saved observations</p>}
     <p className="signal-summary" style={{ borderColor: connection.color }}>
       <strong>{signalValue(connection.snrDb, 'dB SNR')}</strong>
