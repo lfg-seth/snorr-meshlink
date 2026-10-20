@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-19 — R004 CLIENT bench reflash
+
+- Owner connects R004 and requests same authorized CLIENT/temperature-only/no-INA219 configuration. Claim [Reflash R004 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/29); identify RAK4631 `!77fdb9f1` by node/USB serial, save fresh private complete backup, verify pinned release cache and reflash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. No rebuild/reset/key replacement.
+- Full independent profile/identity/key/channel comparison passes through explicit clock synchronization/reboot: CLIENT, device/environment 900-second telemetry, formerly enabled power measurements now disabled, power display disabled, battery INA address unconfigured, NeighborInfo transmission enabled. Preserve radio profile/Fahrenheit preference and account for role-dependent API sleep readback. [Operating evidence](../docs/operations/r004-client-bench.md), [TEST-018](field-results.md#test-018--r004-client-temperature-only-bench-reflash).
+- Local environment request plus 45 seconds returns no temperature. Sensor operation remains unverified; cached device values with uptime 3,065 seconds excluded. No gateway/portal delivery, physical INA219 removal or resolution of historical current discrepancy claimed. Other radios/live portal unchanged; preserve firmware pin/unrelated battery-box model. Local documentation links and whitespace checks pass.
+- Release claim and leave issue Verify pending fitted-sensor/wiring/detection check and fresh temperature. CLI Project reconciliation remains pending the authenticated management host.
+
+Next useful step: identify/back up the next connected repeater before updating; R005 has a historical dummy-load image exception to account for. Obtain fresh temperature reports from updated nodes before accepting sensor operation.
+
 ## 2026-10-19 — R003 CLIENT bench reflash
 
 - Owner connects R003 for the same authorized CLIENT/temperature-only/no-INA219 rollout. Claim [Reflash R003 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/28); identify RAK4631 `!05237743` by node/USB serial, save fresh complete private backup, verify pinned release cache and flash released neighbor-signal `2.7.26.0b65f2e` through matched UF2 bootloader. This replaces the earlier `cc5907b` AHT image while retaining its sensor fix; no rebuild/reset/key replacement.

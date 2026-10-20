@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-018 — R004 CLIENT temperature-only bench reflash
+
+2026-10-19 Pacific; owner connects R004 RAK4631 `!77fdb9f1` for the same authorized CLIENT/temperature-only rollout. Match USB identity on COM17/DFU COM18 and D: RAK4631 bootloader; fresh complete private backup saved. Reflash checksum-verified released neighbor-signal `2.7.26.0b65f2e` without rebuild/reset/key replacement. [Image/profile/evidence](../docs/operations/r004-client-bench.md).
+
+Planned configuration/preservation criteria **pass** through independent full readback and explicit reboot: CLIENT, device/environment 900 seconds, previously enabled power measurements now disabled, power display disabled, battery INA address unconfigured and neighbor transmission enabled. Identity/keys/channel/radio profile and Fahrenheit display preference preserved; account for role-dependent API sleep readback. Other boards/live portal metadata unchanged.
+
+Local environment request plus 45-second observation returns **no temperature/environment metrics**. API device metrics with uptime 3,065 seconds are excluded as cached pre-reboot evidence. Sensor operation, fresh RF/MQTT/portal delivery, calibration, sustained cadence/utilization reduction, runtime and field coverage remain unverified. No physical INA219 removal or resolution of its historical discrepancy claimed. Raw evidence stays ignored under `private/bench/R004-client-20261019/`. [Issue #29](https://github.com/lfg-seth/snorr-meshlink/issues/29) retains sensor verification.
+
 ## TEST-017 — R003 CLIENT temperature-only bench reflash
 
 2026-10-19 Pacific; owner connects R003 RAK4631 `!05237743` for the same authorized CLIENT/temperature-only rollout. Match USB identity on COM14/DFU COM16 and D: RAK4631 bootloader; fresh complete private backup saved. Upgrade AHT image `2.7.26.cc5907b` to checksum-verified released neighbor-signal `2.7.26.0b65f2e`, retaining AHT support, without rebuild/reset/key replacement. [Image/profile/evidence](../docs/operations/r003-client-bench.md).
