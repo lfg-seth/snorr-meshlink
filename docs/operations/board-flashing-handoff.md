@@ -1,5 +1,7 @@
 # Board flashing and configuration handoff
 
+2026-10-19 owner override for the current bench rollout: program repeaters as **CLIENT**, with temperature/environment telemetry and **power telemetry disabled; no INA219 configuration**. [R001 reflash](r001-client-bench.md) is completed locally with reboot/profile verification; other boards have not yet been updated. Apply this request when each subsequent board is identified, preserving its keys/channel/radio profile. Historical ROUTER and INA219 settings below describe earlier runs.
+
 Dedicated debug receiver (2026-10-16): [Heltec V3 MC00 airtime sniffer](airtime-sniffer.md), `!9ea0432c` / last COM6, runs custom **`2.7.26.f95a443`** / `heltec-v3-sniffer`, separate from G001/G002. It exports every handled raw receive before routing/duplicate filtering and inhibits RF TX at compile time. Keep its receive-only profile and keys; stop the Windows/Linux sniffer before API/flashing operations. An ordinary V3 image removes that dedicated capture behavior. This image precedes the later INA219 source commit pinned by the shared submodule; preserve that newer project pin.
 
 Updated 2026-10-16. Start here when a new chat is asked to flash boards, configure radios or verify their portal data. Read the repository's session-start instructions first. This document records the current handoff; a request to prepare notes does not itself authorize a hardware update.

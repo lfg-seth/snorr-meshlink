@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-19 — R001 CLIENT bench reflash
+
+- Owner requests repeater reflashes as CLIENT for bench testing, temperature sensors only and no INA219 configuration; connects R001. Claim [Reflash R001 for CLIENT bench operation with temperature telemetry only](https://github.com/lfg-seth/snorr-meshlink/issues/26). Identify RAK4631 `!a65601b3` by node/USB identity, save fresh private complete backup and verify the pinned release cache.
+- Flash released `2.7.26.0b65f2e` directly through matched UF2 bootloader; preserve identity/keys/channel/radio profile without reset/rebuild. Save CLIENT, device/environment telemetry 900 seconds, power telemetry/display disabled and NeighborInfo over LoRa. Independent full readback passes after explicit reboot. API reports a role-dependent sleep default (300 seconds for CLIENT); other profile fields match the expected original plus intended changes. [Operating evidence](../docs/operations/r001-client-bench.md), [TEST-015](field-results.md#test-015--r001-client-temperature-only-bench-reflash).
+- A local environment request and 45-second observation yield no temperature. Keep sensor operation, fresh gateway/portal delivery, cadence and utilization improvement unverified. Historical/cached battery/utilization data are not accepted as fresh evidence. Other boards and live portal metadata remain unchanged. Preserve unrelated battery-box model and firmware pin.
+- GitHub CLI/Project access is unavailable on this Windows host; reconcile the derived board on the authenticated management host. Issue remains Verify with no retained active claim, pending fitted-sensor/detection check and fresh temperature evidence.
+
+Next useful step: connect the next repeater for the same identity/backup/flash workflow; separately confirm R001's fitted temperature sensor/wiring and obtain a fresh report. No stock quantities, purchase, installation or field acceptance changed.
+
 ## 2026-10-19 — Cancel content work and merge MeshMonitor publication
 
 - Owner cancels [Create a local SNORR MeshLink brag video](https://github.com/lfg-seth/snorr-meshlink/issues/25). Remove both local compositions, assets, caches, dedicated tooling and pending content/session entries; verify neither preview is running. Close the issue as not planned and release its assignment.

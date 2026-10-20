@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-015 — R001 CLIENT temperature-only bench reflash
+
+2026-10-19 Pacific; owner authorizes reflash of connected R001 and requests CLIENT roles with temperature sensors only/no INA219 configuration for the bench rollout. RAK4631 `!a65601b3`, USB identity matched between COM8 and DFU COM10, receives checksum-verified pinned release `2.7.26.0b65f2e` by UF2. No rebuild/reset/key replacement. [Exact image, profile and evidence](../docs/operations/r001-client-bench.md).
+
+Planned criteria: preserve identity/keys/channel/radio profile, save CLIENT, enable device/environment telemetry at 900 seconds, disable power telemetry, verify independent full readback through reboot, then request local temperature. Profile and reboot checks **pass**, including security/channel preservation and enabled NeighborInfo over LoRa. The API's sleep value changes from ROUTER 86,400 to CLIENT 300 seconds by its role-dependent readback implementation.
+
+Local environment request plus 45-second observation returns **no temperature/environment reading**. Sensor operation is unverified; cached device metrics are excluded from fresh post-reboot evidence. No RF/MQTT/portal delivery, sustained telemetry/utilization improvement, runtime, calibration or field-coverage result claimed. Only R001 updated. Raw backups/readbacks are ignored under `private/bench/R001-client-20261019/`; [issue #26](https://github.com/lfg-seth/snorr-meshlink/issues/26) retains fresh sensor verification as the next action.
+
 ## TEST-014 — Dedicated Heltec V3 airtime sniffer
 
 2026-10-16 Pacific; owner authorizes conversion/flash of connected V3 MC00 `!9ea0432c`, separate from G001/G002. Original full flash/configuration/keys are privately backed up. Dedicated app `2.7.26.f95a443` / source `f95a443bb`, SHA256 `b2291f0fb3e350ef35a25365c06dc5b709f6823384e931239e8df8cc16e26e7b`, flashes only at 0x10000 with vendor hash verification. Independent post-boot identity/key/channel/RF readback passes; CLIENT_MUTE, TX/Wi-Fi/Bluetooth/MQTT off, US channel 35 / 910.625 MHz / BW250 / SF11 / CR4/5.
