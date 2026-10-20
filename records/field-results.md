@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## TEST-021 — G002 gateway-originated passive neighbor reports
+
+2026-10-19 Pacific. Owner activates richer measurements on the V3 gateways. Identified/backed-up G002 `!849ad7a0` receives app-only `heltec-v3-gateway` **2.7.26.9d2fd8f**, with partition/hash verification and complete intended profile/keys preserved through explicit reboot. CLIENT, TX disabled, collector enabled/local-only; owner-authorized replacement Wi-Fi restores backhaul after repeated no-access-point reason 201. Existing MQTT settings unchanged.
+
+Live worker source mapping gains the two existing gateway node IDs after private backup. At **19:42:36**, fresh non-retained G002-originated SNNS packet **b92f2bfd**, sequence 1 / uptime 70 seconds, is normalized/accepted with five direct rows: R002 −45 dBm/6.25 dB, R004 −69/6.50, R001 −50/6.75, B002 −49/5.75, R005 −45/6.00. Hearing ages 28–62 seconds at encoding, counts 1; original observer and gateway both correctly G002. Fresh R005/R002/R001 neighbor copies through G002 are recorded as duplicates without losing gateway receipts. See [full evidence, build/hash and limits](../docs/operations/g002-neighbor-gateway.md).
+
+G001 unmodified; power telemetry, sustained cadence, calibrated readings, RF-silence instrumentation, runtime and field coverage remain unverified. Configuration/source/bench acceptance does not establish field readiness.
+
 ## TEST-020 — Fresh post-reflash gateway receipts
 
 After owner repairs DNS, read-only portal archive inspection at **19:19 Pacific** confirms normalized G001 receipts for **all five**: R001 19:15:37, R002 19:15:22, R003 19:17:04, R004 19:15:28, R005 19:15:08. Recent raw envelopes are non-retained with matching topic/gateway identity and recent radio-receipt clocks. Normalized temperature observations: R003 **24.769783°C**, R004 **27.470970°C**, R005 **26.064301°C**; measurement clocks unknown. Actual `meshlink-worker` and API are active; initial probe of nonexistent `meshlink-mqtt-worker` was not a service failure. No recent G002 copy or R001/R002 temperature found. This supersedes the initial short-window/access limits below; calibration, sustained cadence and direct-versus-relayed path remain unverified.
