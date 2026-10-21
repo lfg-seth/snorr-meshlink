@@ -1,5 +1,13 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
+## Gateway battery reporting diagnosis ? 2026-10-21
+
+Owner asks why gateways lack battery metrics. Read-only production SQLite query finds zero `observations` for G001/G002, while original-source receipts are current: G001 `2026-10-21T17:12:38.986Z` (702 receipts), G002 `2026-10-21T17:12:01.741Z` (681). These counts describe the inspection checkpoint, not continuing totals. Production infrastructure mappings include both node IDs.
+
+Parse saved profiles using actual protobuf defaults: both have `telemetry.device_telemetry_enabled=false` and `device_update_interval=2147483647` seconds. G002 evidence is today's independent Wi-Fi readback; G001 evidence is its October 19 preserved profile, not a fresh attached-board read. DeviceTelemetry's periodic mesh/MQTT path requires the enabled flag; its local phone-only path does not publish to MQTT. The dedicated SNNS neighbor module is separately enabled, so gateway neighbor reports can arrive without battery telemetry. These disabled settings predate today's Wi-Fi-only update.
+
+The portal adapter already accepts positive device voltage from either mapped gateway and ingestion supports battery observations for infrastructure. It does not currently normalize the firmware's battery percentage/USB indicator into portal battery metrics. No firmware, radio, production configuration or application change performed. Restoring periodic device telemetry with a practical interval and verifying fresh voltage end to end is follow-up work; preserve LoRa TX disabled and independently verify MQTT delivery. No battery-pack presence or voltage accuracy inferred.
+
 ## Wi-Fi replacement ? 2026-10-21
 
 Owner requests replacement Wi-Fi on connected G002. COM6 independently identifies HELTEC_V3 `!849ad7a0`, still running **2.7.26.9d2fd8f**. Complete profile backed up privately before changing only owner-supplied SSID/password and Wi-Fi enablement. Credentials remain ignored under `private/bench/G002-wifi-20261021/`; network name/password are omitted here.

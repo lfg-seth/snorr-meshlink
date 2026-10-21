@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 ? Explain missing gateway battery metrics
+
+- Owner asks why G001/G002 lack battery readings. Read-only production inspection confirms zero gateway observations but fresh own-source receipts, with both node IDs mapped for infrastructure telemetry.
+- Parse saved profiles with protobuf defaults: both disable device telemetry and set interval `2147483647` seconds. G002 uses today's independent readback; G001's saved October 19 profile is historical. Firmware requires enabled device telemetry for periodic publication; custom neighbor reporting is independent. Portal already accepts gateway voltage. [Diagnosis and limits](../docs/operations/g002-neighbor-gateway.md#gateway-battery-reporting-diagnosis--2026-10-21).
+- Explanation only; no hardware/application/server settings changed. Disabled fields predate the Wi-Fi update. No new claim or closure of #40's sustained reconnect verification.
+
+Next useful step: when authorized, enable gateway device telemetry at a practical interval, retain LoRa TX disabled and verify fresh voltage through MQTT and portal.
+
 ## 2026-10-21 ? G002 Wi-Fi replacement
 
 - Owner supplies replacement Wi-Fi for connected G002. Inspect/claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40) for bounded follow-up; synchronize main and preserve unrelated battery-box model.
