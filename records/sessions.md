@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Check current firmware support for neighbor expiry
+
+- Owner asks whether current firmware supports the proposed correction. Inspect the pinned custom SNNS encoder/module and router/MQTT source, plus sanitized timing fields in live archived reports. Custom RAK/V3 reporters provide hearing age, boot/sequence/uptime and thirty-minute collector expiry; standard reports lack per-entry hearing time. Neither payload carries an absolute source hearing/encoding clock.
+- Both gateway-own live SNNS packets have plausible packet clocks. Correct an initial interpretation that these certify report creation: router broadcast processing overwrites `rx_time` after encoding, and forwarded reports receive the transport gateway's clock. Do not substitute that field universally for source encoding time. [Compatibility evidence and required boundary](../docs/operations/neighbor-signal-visibility.md#current-firmware-compatibility-check).
+- Convert [PR #50](https://github.com/lfg-seth/snorr-meshlink/pull/50) to draft: its passing visibility checks remain valid, but hiding every current live signal is not a complete useful solution. Source-timestamp reporting and ingestion support are prerequisites for reliable delayed-delivery expiry. No firmware, device, backend, application behavior or production changes in this review; preserve the existing branch and unrelated battery-box model. Production remains fa03550.
+
+Next useful step: prepare a compatible source-timestamp report/ingestion extension before treating the portal correction as release-ready; any hardware rollout needs explicit board scope and authorization. Release the compatibility-review claim on #47 with this prerequisite recorded.
+
 ## 2026-10-21 - Correct misleading neighbor freshness and enforce two-hour visibility
 
 - Owner activates portal correction after B002/G001 diagnosis and requests no signals two or more hours old anywhere on the portal. Reopen/claim [Hide stale neighbor signals and prevent cached reports refreshing link activity](https://github.com/lfg-seth/snorr-meshlink/issues/47). Activate only #43's cutoff; preserve its deferred name/strength/distance layout.
