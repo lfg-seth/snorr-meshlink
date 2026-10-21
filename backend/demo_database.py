@@ -15,8 +15,9 @@ import tempfile
 
 import manage as backend_manage
 from client import Client
-from fixtures import DEVICES, initial_packets, provision, at
+from fixtures import DEVICES, initial_packets, provision, at, packet
 from demo_power import seed_history
+from demo_scenario import configurations, telemetry, neighbor_packets
 
 ROOT, BACKEND, BINARY = backend_manage.ROOT, backend_manage.BACKEND, backend_manage.BINARY
 SEED = BACKEND / 'demo'
@@ -78,6 +79,11 @@ def build():
                 owner = Client(url)
                 owner.login('demo-admin@example.invalid', DEMO_PASSWORD, '_superusers')
                 provision(owner, credentials)
+                devices = owner.request('GET', '/api/collections/devices/records')['items']
+                for key, config in configurations():
+                    device = next(d for d in devices if d['key'] == key)
+                    owner.request('PATCH', f'/api/collections/devices/records/{device["id"]}',
+                                  {'configuration': {**device['configuration'], **config}})
                 # Match the original browser demo's member map labels. Radio
                 # short names remain device identities (S001, S002, ...).
                 for member in owner.request('GET', '/api/collections/members/records')['items']:
@@ -101,8 +107,14 @@ def build():
                         if index == 1:
                             item['data']['battery'] = 100
                     worker.request('POST', '/api/meshlink/worker/ingest', item)
+                for key, age in [('d1', 1), ('d2', 3), ('d3', 8), ('d4', 17),
+                                 ('r1', 2), ('r2', 22), ('b1', 1)]:
+                    worker.request('POST', '/api/meshlink/worker/ingest',
+                                   packet(key, 'telemetry', telemetry(key, reference, reference), age))
                 for row in links():
                     owner.request('POST', '/api/collections/link_observations/records', row)
+                for item in neighbor_packets():
+                    worker.request('POST', '/api/meshlink/worker/ingest', item)
             finally:
                 process.terminate()
                 process.wait(timeout=10)

@@ -1669,8 +1669,6 @@ footer button {
 .signal-pill { border: 1px solid; border-radius: 99px; padding: 3px 8px; font-size: .7rem; white-space: nowrap; background: #fff; }
 .signal-summary { display: grid; gap: 4px; border-left: 4px solid; padding: 8px 12px; background: #f2f5f0; border-radius: 4px; margin-top: 0; }
 .signal-summary span { font-size: .72rem; }
-.signal-node-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
-.signal-node-buttons button { min-height: 44px; overflow-wrap: anywhere; }
 .signal-reading { border-top: 1px solid #e4e9e1; padding-top: 14px; margin-top: 16px; }
 .signal-reading h3 { font-size: .95rem; margin: 0 0 6px; }
 .signal-reading .detail-grid { margin-bottom: 0; }

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from client import ApiError, Client
 from fixtures import packet
-from demo_power import voltage
+from demo_scenario import telemetry
 from manage import credentials
 
 
@@ -63,12 +63,10 @@ def run(once=False, replay=None, interval=5):
                     'pdop': [1.5, 3.5, 7][i - 1], 'satellites': [12, 8, 5][i - 1],
                 }))
             measured = datetime.now(timezone.utc)
-            for device_id in ['r1', 'r2', 'b1']:
-                data = {'battery': voltage(device_id, measured, reference)}
-                if device_id == 'r1':
-                    data.update(temperature=8.4, solar=1.2, intrusion=False)
+            for device_id in ['d1', 'd2', 'd3', 'r1', 'r2', 'b1']:
+                data = telemetry(device_id, measured, reference)
                 client.request('POST', '/api/meshlink/worker/ingest', packet(device_id, 'telemetry', data))
-            print('Simulation heartbeat and 6 normalized observations saved.', flush=True)
+            print('Simulation heartbeat and 9 normalized observations saved.', flush=True)
             if once:
                 return
             tick += 1

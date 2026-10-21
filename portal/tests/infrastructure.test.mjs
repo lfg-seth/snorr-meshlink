@@ -72,6 +72,66 @@ test('reported RAK current preserves sign and channel with separate hearing age 
     assert.ok(table.includes(value), value);
 });
 
+test('neighbor minimap icons select device identities without separate open buttons', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.ResizeObserver = class { observe() {} disconnect() {} };
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+  const dialog = window.HTMLDialogElement.prototype;
+  dialog.show = function () { this.open = true; };
+  dialog.close = function () { this.open = false; };
+  const { createRoot } = await import('react-dom/client');
+  const { default: SignalLinkDetail } = await import('../src/SignalLinkDetail.tsx');
+  const { MapPreferences } = await import('../src/MapPreferences.tsx');
+  const nodes = [
+    { id: 'member', label: 'B001', coordinates: [-115.6, 36.3], markerClassName: 'map-pin' },
+    { id: 'repeater', label: 'R001', coordinates: [-115.6, 36.3], markerClassName: 'infrastructure-pin' },
+  ];
+  const connection = { nodes, color: '#237346', snrDb: 4, latest: [], observations: [] };
+  const selected = [];
+  const root = createRoot(document.getElementById('root'));
+  const render = (nextNodes = nodes, onNodeSelect = id => selected.push(id)) => act(async () => root.render(
+    createElement(MapPreferences, null, createElement(SignalLinkDetail, {
+      connection: { ...connection, nodes: nextNodes }, labels: {}, markerLabels: { member: 'ALIAS' },
+      markerClasses: { member: 'map-pin', repeater: 'infrastructure-pin' },
+      now: Date.now(), online: true, onClose() {}, onNodeSelect,
+    })),
+  ));
+  try {
+    await render();
+    assert.equal(document.querySelector('.signal-node-buttons'), null);
+    const pins = [...document.querySelectorAll('button.mini-map-pin')];
+    assert.deepEqual(pins.map(pin => pin.textContent), ['ALIAS', 'R001']);
+    assert.deepEqual(pins.map(pin => pin.getAttribute('aria-label')), ['Open ALIAS node card', 'Open R001 node card']);
+    assert.ok(pins.every(pin => pin.type === 'button' && pin.tabIndex === 0));
+    assert.deepEqual(pins.map(pin => pin.dataset.offset), ['-30,0', '30,0'], 'colocated icons remain separately accessible');
+    let bubbled = 0;
+    document.querySelector('.mini-map-canvas').addEventListener('click', () => { bubbled++; });
+    await act(async () => pins.forEach(pin => pin.click()));
+    assert.deepEqual(selected, ['member', 'repeater'], 'labels do not replace device identities');
+    assert.equal(bubbled, 0);
+    await render(nodes, id => selected.push(`updated:${id}`));
+    await act(async () => document.querySelector('button.mini-map-pin').click());
+    assert.equal(selected.at(-1), 'updated:member', 'icons use the current selection callback');
+    await render([{ ...nodes[0], coordinates: null }, nodes[1]]);
+    assert.equal(document.querySelectorAll('button.mini-map-pin').length, 1);
+    assert.match(document.querySelector('.card-mini-map').textContent, /ALIAS: location unknown/);
+    await act(async () => document.querySelector('button.mini-map-pin').click());
+    assert.equal(selected.at(-1), 'repeater');
+    await render(nodes.map(node => ({ ...node, coordinates: null })));
+    assert.equal(document.querySelectorAll('.mini-map-pin').length, 0);
+    assert.match(document.querySelector('.mini-map-missing').textContent, /No recorded location/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    for (const key of ['window', 'document', 'HTMLElement', 'HTMLButtonElement', 'ResizeObserver', 'IS_REACT_ACT_ENVIRONMENT']) delete globalThis[key];
+  }
+});
+
 test('unlabelled signal lines, independent legend help and node relationships preserve node selection', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;
@@ -156,7 +216,10 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     ]);
     assert.equal(JSON.parse(mini().dataset.camera).maxZoom, 14);
     assert.equal(features().length, 0);
-    assert.deepEqual([...document.querySelectorAll('.signal-node-buttons button')].map(button => button.textContent), ['Open S001', 'Open R001']);
+    assert.equal(document.querySelector('.signal-node-buttons'), null, 'no separate open-device buttons');
+    assert.deepEqual([...mini().querySelectorAll('button')].map(button => button.getAttribute('aria-label')),
+      ['Open S001 node card', 'Open R001 node card'], 'endpoint icons are named native buttons');
+    assert.ok(miniPins().every(pin => pin.type === 'button' && pin.tabIndex === 0), 'icons support keyboard activation');
     await act(async () => document.querySelector('[aria-label="Open S001 node card"]').click());
     assert.ok(document.querySelector('.tracker-detail'));
     assert.equal(document.querySelectorAll('.device-sheet').length, 1, 'endpoint replaces the relationship card');
@@ -199,6 +262,8 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     })));
     let sheet = document.querySelector('.signal-link-detail');
     assert.equal(sheet.dataset.mode, 'panel');
+    assert.ok(sheet.querySelector('.signal-location-details'), 'neighbor cards retain endpoint location context');
+    assert.match(sheet.textContent, /Endpoint locations/);
     assert.equal(document.querySelectorAll('.signal-reading').length, 2);
     assert.match(sheet.textContent, /0 dB/);
     assert.match(sheet.textContent, /-112 dBm/);
@@ -295,6 +360,9 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     assert.deepEqual(miniPins().map(pin => pin.textContent), ['ALIAS'], 'assigned client mini map matches the main marker');
     await act(async () => document.querySelector('.node-relationship').click());
     assert.deepEqual(miniPins().map(pin => pin.textContent), ['ALIAS', 'R001'], 'relationship mini map also uses the assigned member shortname');
+    await act(async () => mini().querySelector('[aria-label="Open ALIAS node card"]').click());
+    assert.ok(document.querySelector('.tracker-detail'), 'assigned marker opens its device by persistent identity');
+    await act(async () => document.querySelector('.node-relationship').click());
     await render();
     assert.deepEqual(miniPins().map(pin => pin.textContent), ['S001', 'R001'], 'releasing an assignment restores the device label');
     for (const [minutes, state] of [[1, 'recent'], [5, 'aging'], [20, 'stale'], [180, 'unknown']]) {
