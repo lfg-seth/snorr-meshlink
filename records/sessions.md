@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-20 — Resolve portal release test blocker
+
+- Owner explicitly authorizes merging and deploying PR #38. Claim #9/#21 for the release and inspect hosted checks: backend CI passes; Portal CI stops during the broad map test with runner shutdown, without an assertion result.
+- Isolate the broad map/legend test: it times out after 25 seconds. Temporary checkpoints locate the stop at the unfinished assertion expecting no endpoint-location section. Comparing its boolean result instead produces the deterministic `true !== false` failure in two seconds; formatting the DOM-valued assertion caused the apparent hang.
+- Restore expectations for the existing endpoint-location section and unknown-location context, retaining minimap icon navigation. The same complete interaction scenario passes in 2.9 seconds. Remove all temporary instrumentation. This corrects the test without changing portal behavior; full suite/build and hosted CI are the next release checks.
+
+Next useful step: publish the correction in PR #38, merge after complete checks, then deploy the merged source with verified live/demo backups, a preserved prior demo workspace, source/static rollback and post-release isolation/recovery verification. Native WebGL/mobile review remains separate.
+
 ## 2026-10-20 — Publish all saved local changes
 
 - Owner requests pushing all local changes. Fetch origin and fast-forward main from `b108cf3` to `b55bb33`, temporarily stashing/restoring every local edit. Resolve the session-log conflict by preserving both histories and synchronize the clean firmware checkout to the already published `473a9ed41` pin; no new firmware change.

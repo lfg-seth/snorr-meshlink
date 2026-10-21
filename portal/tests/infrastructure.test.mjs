@@ -262,8 +262,8 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     })));
     let sheet = document.querySelector('.signal-link-detail');
     assert.equal(sheet.dataset.mode, 'panel');
-    assert.equal(sheet.querySelector('.signal-location-details'), null, 'neighbor cards omit endpoint locations');
-    assert.doesNotMatch(sheet.textContent, /Endpoint locations/);
+    assert.ok(sheet.querySelector('.signal-location-details'), 'neighbor cards retain endpoint location context');
+    assert.match(sheet.textContent, /Endpoint locations/);
     assert.equal(document.querySelectorAll('.signal-reading').length, 2);
     assert.match(sheet.textContent, /0 dB/);
     assert.match(sheet.textContent, /-112 dBm/);
@@ -343,7 +343,8 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     await act(async () => infraPin.click());
     assert.equal(document.querySelectorAll('.node-relationship').length, 1);
     await act(async () => document.querySelector('.node-relationship').click());
-    assert.equal(document.querySelector('.signal-location-details'), null, 'unknown endpoint locations do not restore the removed section');
+    await act(async () => document.querySelector('.signal-location-details summary').click());
+    assert.match(document.querySelector('.signal-location-details').textContent, /Location unknown/);
     await act(async () => document.querySelector('.signal-info-button').click());
     assert.match(document.querySelector('#signal-legend-help').textContent, /No neighbor connections/);
     await render([]);
