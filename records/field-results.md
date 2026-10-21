@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-10-21 ? G002 replacement Wi-Fi bench check
+
+Owner-authorized configuration on COM6 G002 `!849ad7a0`. Replacement Wi-Fi survives network-setting restart; independent complete profile comparison passes with only requested network fields changed. Console observes association/IP acquisition, MQTT connected and queued publish. Firmware unchanged `2.7.26.9d2fd8f`, LoRa TX disabled. Short bench check only: production ingestion, sustained freshness/runtime, reconnect reliability and field coverage unverified. [Evidence and capture limits](../docs/operations/g002-neighbor-gateway.md#wi-fi-replacement--2026-10-21); raw profiles/logs remain private.
+
 ## TEST-022 — G001 completes passive gateway neighbor rollout
 
 2026-10-19 Pacific. Owner connects identified G001 `!9ea13cc0` for the same authorized collector update. Full private profile/flash backup, exact cached image/partition comparison, application-only **2.7.26.9d2fd8f** flash/hash verification and complete intended profile comparison pass through explicit reboot. CLIENT/TX disabled and Wi-Fi/MQTT preserved; neighbor enabled/local-only. No rebuild, reset or other-board write.

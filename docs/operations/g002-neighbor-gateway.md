@@ -1,5 +1,11 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
+## Wi-Fi replacement ? 2026-10-21
+
+Owner requests replacement Wi-Fi on connected G002. COM6 independently identifies HELTEC_V3 `!849ad7a0`, still running **2.7.26.9d2fd8f**. Complete profile backed up privately before changing only owner-supplied SSID/password and Wi-Fi enablement. Credentials remain ignored under `private/bench/G002-wifi-20261021/`; network name/password are omitted here.
+
+Independent readback after the network-setting restart matches complete saved user, channels, metadata, local and module configuration with only requested Wi-Fi fields changed. Identity/security keys, CLIENT role, disabled LoRa TX, neighbor collector and MQTT settings are preserved. Console observes Wi-Fi association/IP acquisition, `MQTT connected` and a queued publish. Initial verifier completes profile assertions but fails saving an unsupported optional status attribute; corrected independent rerun passes. Initial console connection evidence was observed during that first run; its raw log was overwritten by the rerun. No firmware flash, factory reset, other-device write or server change. Serial closes after checks. Short local success does not verify production ingestion, sustained delivery or resolution of [the earlier gateway outage](https://github.com/lfg-seth/snorr-meshlink/issues/40).
+
 Subsequent same-day rollout: [G001 now runs the same verified image](g001-neighbor-gateway.md), with its own profile/keys preserved through reboot and fresh own-observer measurements accepted by the authenticated portal. Both gateway collector rollout checks pass. The G002 build and initial deployment evidence below remain unchanged.
 
 Owner activates the same richer passive neighbor measurements on the gateways, with G002 connected. [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31) tracks rollout; [firmware PR](https://github.com/lfg-seth/firmware/pull/1) is merged into the existing `snorr/rak-survey` branch. G001 was still stock during this initial G002 run; the subsequent update is linked above.

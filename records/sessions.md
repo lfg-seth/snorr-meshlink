@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 ? G002 Wi-Fi replacement
+
+- Owner supplies replacement Wi-Fi for connected G002. Inspect/claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40) for bounded follow-up; synchronize main and preserve unrelated battery-box model.
+- Identify COM6 HELTEC_V3 `!849ad7a0` on unchanged `2.7.26.9d2fd8f`; privately back up profile and save only supplied Wi-Fi fields. Independent complete profile comparison passes after configuration restart, preserving identity/keys/channels/radio/MQTT. Inactive DTR/RTS precede serial open. Console observes IP acquisition, MQTT connected and queued publish. Correct optional status-capture attribute error and pass independent verifier rerun. [Evidence and capture limits](../docs/operations/g002-neighbor-gateway.md#wi-fi-replacement--2026-10-21).
+- Close serial and release #40 to Verify; no retained claim, firmware/server change, other-board write or private-data publication. Production ingestion, sustained delivery and automatic reconnect remain unverified. Derived Project reconciliation pending authenticated CLI access.
+
+Next useful step: observe fresh G002 production receipts and sustained outage recovery under #40 when selected.
+
 ## 2026-10-20 — Connected gateways recover production delivery
 
 - Owner connects both gateways and debug receiver; reclaim #40. Identify G001 COM21, G002 COM22 and dedicated sniffer COM6. Passive logs show G002 publishing after recent boot, while G001 is still receiving RF after approximately 85,723 seconds uptime but reports disconnected MQTT and a full queue discarding older packets. Both retain expected firmware/profile and last supplied Wi-Fi settings.
