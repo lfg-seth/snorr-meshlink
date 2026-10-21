@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Create gateway and repeater firmware timing tickets
+
+- Owner requests tickets for both firmware fixes. Search existing timestamp/neighbor issues and create [Fix gateway firmware neighbor timestamps for reliable signal expiry #51](https://github.com/lfg-seth/snorr-meshlink/issues/51) and [Fix repeater firmware neighbor timestamps across relay and backhaul delays #52](https://github.com/lfg-seth/snorr-meshlink/issues/52). Verify both open with `bug`, `area:firmware`, exactly `status:ready`, no assignee, milestone or active claim.
+- Cross-link the shared versioned source-timing contract, delayed/duplicate-delivery tests, explicit invalid-clock handling, source/build evidence and separately authorized per-board rollout. Preserve G001/G002 LoRa TX disabled and R004's ongoing INA219 diagnostic state. Link both from [the durable compatibility record](../docs/operations/neighbor-signal-visibility.md#firmware-follow-up-tickets); #47 keeps ingestion/portal acceptance and records the firmware dependencies with `blocked` plus `status:ready`.
+- Ticket capture only; no firmware research beyond the existing diagnosis, implementation, build, device configuration, flash or deployment. Draft PR #50 remains undeployed. Fetch origin and preserve the unrelated battery-box model. GitHub CLI remains unavailable, so derived Project reconciliation awaits the authenticated management host.
+
+Next useful step: select/claim the gateway or repeater ticket and agree the shared report contract before implementation; retain separate board authorization and portal end-to-end verification.
+
 ## 2026-10-21 - Check current firmware support for neighbor expiry
 
 - Owner asks whether current firmware supports the proposed correction. Inspect the pinned custom SNNS encoder/module and router/MQTT source, plus sanitized timing fields in live archived reports. Custom RAK/V3 reporters provide hearing age, boot/sequence/uptime and thirty-minute collector expiry; standard reports lack per-entry hearing time. Neither payload carries an absolute source hearing/encoding clock.

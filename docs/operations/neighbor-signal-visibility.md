@@ -39,3 +39,14 @@ Private live archive inspection confirms that both gateways' own local SNNS enve
 For an absolute cutoff that accounts for transport delay while retaining valid signals, the reporting receiver needs to supply a trustworthy source hearing timestamp or an encoding timestamp tied to its relative hearing ages, with unknown/invalid clock quality explicit. Ingestion must preserve that provenance, and the portal must expire on that evidence. This is a firmware/report-contract and ingestion prerequisite, not just a display filter. Member nodes such as B002 do not need to report neighbors for a gateway/repeater to observe them; this does not imply a required member-node firmware update.
 
 No source firmware, device settings or hardware are changed during this compatibility review. The bounded frontend implementation remains available in draft PR #50, with its earlier passing tests accurately scoped to visibility behavior. No compatible timestamp pipeline or complete end-to-end fix is claimed. The owner has not approved deployment of the hide-all checkpoint, and it remains undeployed.
+
+## Firmware follow-up tickets
+
+On October 21 the owner requests separate tickets for the gateway and repeater firmware fixes:
+
+- [Fix gateway firmware neighbor timestamps for reliable signal expiry #51](https://github.com/lfg-seth/snorr-meshlink/issues/51): G001/G002, dedicated Heltec V3 gateway target, source timing preserved through local routing and MQTT queue/reconnect; preserve LoRa TX disabled and each board's profile.
+- [Fix repeater firmware neighbor timestamps across relay and backhaul delays #52](https://github.com/lfg-seth/snorr-meshlink/issues/52): R001–R005 RAK4631, source timing that survives LoRa forwarding and gateway delay, with unknown/changed clocks explicit. Preserve R004's separate INA219 diagnostic state until a specifically authorized rollout.
+
+Both are Ready corrective follow-ups, unassigned and unclaimed; ticket creation does not start implementation or authorize builds/flashing. They must coordinate the same bounded, versioned report contract. Each records source/build tests and separately authorized hardware/receipt verification, preserving keys/configuration and distinguishing measured evidence from planned acceptance criteria.
+
+[#47](https://github.com/lfg-seth/snorr-meshlink/issues/47) retains backend ingestion/provenance, portal behavior and final end-to-end acceptance; its useful completion depends on the source-timing capability in #51/#52. Draft PR #50 remains undeployed. The firmware tickets do not request member-node changes or activate #43's deferred card layout.
