@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-21 - R004 INA219 register investigation and zero-test preparation
+
+- Owner reconnects R004 with installed R100 between battery and board and authorizes flashing for diagnosis. Read startup/handoff records, synchronize main, inspect and claim [Investigate INA219 current discrepancy with simultaneous same-path measurements](https://github.com/lfg-seth/snorr-meshlink/issues/4). Preserve unrelated battery-box model and existing private worktree.
+- Identify COM17 RAK4631 `!77fdb9f1`, USB `820C9B4F0C2D7675`; privately back up full profile/keys/channels. Existing firmware reproduces **−1,152.6 mA**. Publish opt-in diagnostic source `4ad67eb35`, then held-conversion probe `09d8a9dbf` on authorized firmware branch, with [scoped draft review](https://github.com/lfg-seth/firmware/pull/2). Both RAK builds pass; current image is **2.7.26.09d8a9d**, with independent full identity/key/channel/local/module equality. No other board or saved configuration changes.
+- Correct live config/calibration **0x399F / 0x1000**; six held conversions reread identically three times and have exact current/shunt multiplication, yet imply **+1.24 to −1.50 A** across separate conversions. The original symptom persists in fresh matched replies. Narrow source of large values to the sensor's shunt conversions; physical input/wiring/interference/module fault remains unresolved. Existing actual-source R100 harness passes at multipliers 1 and 10; pinned formatting/whitespace checks pass, Trunk unavailable. [Audit, exact image hashes, measurements and limits](../docs/operations/ina219-audit.md#r004-reinvestigation--2026-10-21).
+- Owner proposes battery removal with USB retained for a zero-current check. Subsequent trace gives **−11.1 to −11.3 mA**, but physical battery-removal state is unconfirmed; do not accept it as a zero-current result. Wiring and physical millivolt evidence remain pending. Close serial; retain diagnostic image for comparison and ordinary pinned release as recovery. No accuracy fix, battery-only acceptance, RF/MQTT/portal verification or field result claimed.
+- Hand off #4 to Verify without retained session claim, pending physical state/measurement. Project reconciliation helper cannot run without authenticated GitHub CLI on this desktop. Private profiles/raw logs stay ignored; publish only sanitized evidence and source pin.
+
+Next useful step: confirm battery is disconnected with USB/INA219 powered, capture fresh raw/current values, and compare DC millivolts across R100 before changing calibration or replacing hardware.
+
 ## 2026-10-21 - Enable G002 telemetry every five minutes
 
 - Owner authorizes connected G002 only and leaves G001 for later. Search existing issues and claim [Enable G002 device telemetry every five minutes](https://github.com/lfg-seth/snorr-meshlink/issues/41). Synchronize main and preserve unrelated battery-box model.

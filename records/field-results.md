@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-10-21 - R004 INA219 register diagnosis
+
+Owner authorizes R004 diagnostic flashing with an installed R100 inline between battery and board. Existing firmware reproduces **−1,152.6 mA**; first diagnostic image reaches **−1,437.4 mA**. Address 0x40 configuration/calibration **0x399F / 0x1000** are correct. Updated diagnostic **2.7.26.09d8a9d** independently preserves full identity/keys/channels/profile. Three reads of one held conversion repeat **−40.09 mV / −400.9 mA**, with exact expected raw-current multiplication; ordinary continuous readings vary between conversions. This narrows the issue upstream of portal/unit scaling, without validating the actual voltage drop or current. Physical same-path meter evidence and exact wiring remain pending. Local bench evidence only; RF/MQTT/portal delivery, calibration, runtime and field acceptance are not tested. [Detailed evidence](../docs/operations/ina219-audit.md#r004-reinvestigation--2026-10-21), [investigation](https://github.com/lfg-seth/snorr-meshlink/issues/4).
+
 ## 2026-10-21 - G002 five-minute telemetry configuration and first receipt
 
 [Issue #41](https://github.com/lfg-seth/snorr-meshlink/issues/41). Complete independent profile readback passes after enabling device telemetry at **300 seconds** on G002 only. At **10:17:13 Pacific**, packet **14076657** reports **4.25 V** over encrypted MQTT while LoRa TX remains disabled; production stores the voltage at **10:17:14.159**, retaining measurement time **10:17:13.000**. G001 unchanged. First-report delivery passes; repeated cadence, calibrated battery measurement, runtime and reconnect reliability remain unmeasured. [Evidence](../docs/operations/g002-neighbor-gateway.md#five-minute-device-telemetry-enabled---2026-10-21).
