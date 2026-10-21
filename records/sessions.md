@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Explain recent B002/G001 neighbor report during isolation
+
+- Owner reports a roughly 36-minute-old B002/G001 report despite physical isolation. Search existing work and claim [Diagnose recent B002/G001 neighbor reports while radios are isolated](https://github.com/lfg-seth/snorr-meshlink/issues/47) for read-only diagnosis. Preserve unrelated battery-box model; fetch origin.
+- Reproduce recent standard-table receipt with unknown hearing time in live SQLite and authenticated state. Private archive decode confirms G001 itself publishes distinct, non-retained/non-duplicate reports at 07:46 and 13:46 Pacific, advertising six-hour cadence and repeating B002's 6.25 dB SNR without a last-heard clock. Latest richer B002/G001 report is 06:44 Pacific, already 29m 32s since hearing, with count 314 unchanged across preceding reports. [Evidence, code path and limits](../docs/operations/neighbor-report-freshness-20261021.md).
+- Explain cached standard-table publication and portal latest-row selection: report receipt is not fresh RF evidence. Standard firmware retains neighbors for twice their stored broadcast interval; exact live entry interval/expiration and absolute last-heard time remain unknown. No hardware, application, configuration or deployment change. The separate two-hour cutoff request #43 remains deferred; using report receipt as activity would preserve this failure mode.
+- Complete diagnostic scope and release claim after evidence publication. GitHub CLI is unavailable on this desktop, so derived Project reconciliation remains pending the authenticated management host. Private payloads/keys/locations stay outside Git.
+
+Next useful step: when owner activates a correction, preserve hearing freshness separately from periodic table publication and verify the isolated-pair case before deploying.
+
 ## 2026-10-21 - Deploy gateway battery graph correction
 
 - Owner restores connection and authorizes deployment. Reclaim [Populate gateway battery graphs from reported voltage](https://github.com/lfg-seth/snorr-meshlink/issues/42); live inspection confirms original zero cadence, 47 G002 measured voltage samples and zero G001 battery reports. Merge [PR #46](https://github.com/lfg-seth/snorr-meshlink/pull/46) and synchronize main to **fa03550**.
