@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Correct misleading neighbor freshness and enforce two-hour visibility
+
+- Owner activates portal correction after B002/G001 diagnosis and requests no signals two or more hours old anywhere on the portal. Reopen/claim [Hide stale neighbor signals and prevent cached reports refreshing link activity](https://github.com/lfg-seth/snorr-meshlink/issues/47). Activate only #43's cutoff; preserve its deferred name/strength/distance layout.
+- Four relationship regressions and a real MapPage/NeighborTable DOM scenario fail before the correction, then pass with a shared hearing-time filter. Require a valid absolute hearing clock, hide at exactly two hours, reject unknown/future/inconsistent timing and never refresh from table delivery. Map recalculation includes the advancing clock, so offline expiry removes lines, relationships, open details and table rows without new data. All **52 portal tests**, TypeScript and production build pass locally on Node 25.6.0.
+- Read-only live count finds 14,027 signals, all with unknown absolute hearing clocks. Explicitly explain to owner that the strict policy hides all current live neighbor signals; relative SNNS age excludes transport delay and cannot certify the hard bound. No stored data, backend, schema, radio or configuration changes. [Policy, evidence and release state](../docs/operations/neighbor-signal-visibility.md). Preserve unrelated battery-box model.
+
+Next useful step: publish the tested correction for review and verify pinned-runtime checks. Production release and a trustworthy hearing-timestamp improvement remain separate; production still runs fa03550.
+
 ## 2026-10-21 - Explain recent B002/G001 neighbor report during isolation
 
 - Owner reports a roughly 36-minute-old B002/G001 report despite physical isolation. Search existing work and claim [Diagnose recent B002/G001 neighbor reports while radios are isolated](https://github.com/lfg-seth/snorr-meshlink/issues/47) for read-only diagnosis. Preserve unrelated battery-box model; fetch origin.

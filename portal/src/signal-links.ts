@@ -1,6 +1,7 @@
 import type { Infrastructure, Tracker } from './demo';
 import type { LinkObservation } from './NeighborTable';
 import { infrastructureLabel } from './infrastructure-map.ts';
+import { recentSignals } from './signal-freshness.ts';
 
 export type SignalNode = {
   id: string;
@@ -40,7 +41,7 @@ function time(at: string | null) {
   return at ? Date.parse(at) || 0 : 0;
 }
 
-export function signalConnections(links: LinkObservation[], trackers: Tracker[], infrastructure: Infrastructure[]) {
+export function signalConnections(links: LinkObservation[], trackers: Tracker[], infrastructure: Infrastructure[], now: number) {
   const nodes = new Map<string, SignalNode>();
   trackers.forEach(device => {
     const position = device.position;
@@ -57,7 +58,7 @@ export function signalConnections(links: LinkObservation[], trackers: Tracker[],
   });
   const groups = new Map<string, SignalConnection>();
   let omitted = 0;
-  links.forEach(link => {
+  recentSignals(links, now).forEach(link => {
     // The packet's original source is not necessarily the radio neighbor.
     const heard = link.heardDeviceId && nodes.get(link.heardDeviceId);
     const observer = nodes.get(link.observerDeviceId);

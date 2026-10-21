@@ -68,7 +68,7 @@ test('production opens the isolated demo by default and live sign-in survives re
       equipped: { solar: false, weather: false, intrusion: false }, batterySetup: 'Unknown', solarSetup: 'Unknown', antenna: 'Unknown', samples: [] }],
     links: [{ id: 'db-link', observerDeviceId: 'db-gateway', heardDeviceId: 'db-tracker',
       originalSourceDeviceId: 'db-tracker', source: 'gateway', path: 'direct', snrDb: 0, rssiDbm: -101,
-      receivedAt: new Date().toISOString(), observedAt: null }],
+      receivedAt: new Date().toISOString(), observedAt: new Date(Date.now() - 1000).toISOString() }],
   };
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options });

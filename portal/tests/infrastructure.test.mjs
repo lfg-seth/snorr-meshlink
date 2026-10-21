@@ -46,7 +46,7 @@ registerHooks({
   },
 });
 
-test('reported RAK current preserves sign and channel with separate hearing age and count', async () => {
+test('reported RAK current preserves sign and timestamped signal reports preserve hearing age and count', async () => {
   const { renderToStaticMarkup } = await import('react-dom/server');
   const { default: PowerReadings } = await import('../src/PowerReadings.tsx');
   const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
@@ -66,10 +66,71 @@ test('reported RAK current preserves sign and channel with separate hearing age 
   const table = renderToStaticMarkup(createElement(NeighborTable, { infrastructure: [device], trackers: [], now, online: true,
     links: [{ id: 'one', observerDeviceId: device.id, heardDeviceId: null, heardNodeId: '!00000123',
       originalSourceDeviceId: null, source: 'neighbor', reportType: 'snns-v1', path: 'direct',
-      snrDb: 0, rssiDbm: -90, observedAt: null, receivedAt: '2026-10-16T19:59:00.000Z',
+      snrDb: 0, rssiDbm: -90, observedAt: '2026-10-16T19:58:48.000Z', receivedAt: '2026-10-16T19:59:00.000Z',
       hearingAgeSeconds: 12, observationCount: 7, subset: true, totalNeighbors: 9, capacityEvicted: true }] }));
   for (const value of ['!00000123', '0 dB', '-90 dBm', '12s', 'Partial', 'capacity eviction', 'RAK signal report'])
     assert.ok(table.includes(value), value);
+});
+
+test('neighbor freshness expires map lines, node links, open details and table rows while offline', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.ResizeObserver = class { observe() {} disconnect() {} };
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+  const dialog = window.HTMLDialogElement.prototype;
+  dialog.show = function () { this.open = true; };
+  dialog.close = function () { this.open = false; };
+  const { createRoot } = await import('react-dom/client');
+  const { default: MapPage } = await import('../src/MapPage.tsx');
+  const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
+  const { MapPreferences } = await import('../src/MapPreferences.tsx');
+  const { initialTrackers, infrastructure } = await import('../src/demo.ts');
+  const cutoff = Date.parse('2026-10-21T14:00:00Z');
+  const verified = { id: 'verified', observerDeviceId: 'r1', heardDeviceId: 'd1', originalSourceDeviceId: null,
+    source: 'neighbor', path: 'direct', snrDb: 8, rssiDbm: -70,
+    observedAt: '2026-10-21T12:00:00Z', receivedAt: '2026-10-21T13:59:00Z' };
+  const links = [verified,
+    { ...verified, id: 'expired', heardDeviceId: 'd2', snrDb: -10, observedAt: '2026-10-21T11:00:00Z' },
+    { ...verified, id: 'cached', reportType: 'neighbor-info', observedAt: null, snrDb: -15 },
+    { ...verified, id: 'relative-only', reportType: 'snns-v1', observedAt: null, hearingAgeSeconds: 0 }];
+  const root = createRoot(document.getElementById('root'));
+  const render = (now, rows = links) => act(async () => root.render(createElement(MapPreferences, null,
+    createElement(MapPage, { assignments: [], trackers: initialTrackers, infrastructureNodes: infrastructure,
+      links: rows, online: false, now, selectedId: '', onSelect() {}, labels: {}, trailId: null, onTrailChange() {} }),
+    createElement(NeighborTable, { links: rows, infrastructure, trackers: initialTrackers, online: false, now }))));
+  const features = () => JSON.parse(document.querySelector('.map-canvas').dataset.signals).features;
+  try {
+    await render(cutoff - 1);
+    assert.equal(document.querySelectorAll('tbody tr').length, 1);
+    assert.doesNotMatch(document.querySelector('tbody').textContent, /-10 dB|-15 dB/);
+    await act(async () => document.querySelector('.signal-toggle').click());
+    assert.equal(features().length, 1);
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.equal(document.querySelectorAll('.node-relationship').length, 1);
+    assert.match(document.querySelector('.node-relationship').textContent, /8 dB/);
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.equal(document.querySelectorAll('.signal-reading').length, 1);
+    // Keep the same links/trackers/infrastructure references: only the clock advances.
+    await render(cutoff);
+    assert.equal(features().length, 0);
+    assert.equal(document.querySelector('.signal-link-detail'), null);
+    assert.equal(document.querySelector('.neighbor-table'), null);
+    assert.match(document.querySelector('.neighbor-panel').textContent, /two hours|2 hours/);
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.equal(document.querySelectorAll('.node-relationship').length, 0);
+    assert.match(document.querySelector('.node-relationships').textContent, /No recent neighbors/);
+    await render(cutoff, [{ ...verified, id: 'fresh', observedAt: '2026-10-21T13:59:00Z' }]);
+    assert.equal(features().length, 1);
+    assert.equal(document.querySelectorAll('.node-relationship').length, 1);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    for (const key of ['window', 'document', 'HTMLElement', 'HTMLButtonElement', 'ResizeObserver', 'IS_REACT_ACT_ENVIRONMENT']) delete globalThis[key];
+  }
 });
 
 test('neighbor minimap icons select device identities without separate open buttons', async () => {
@@ -158,9 +219,9 @@ test('unlabelled signal lines, independent legend help and node relationships pr
   const links = [{ id: 'forward', observerDeviceId: 'r1', heardDeviceId: 'd1', originalSourceDeviceId: 'd2',
     path: 'relayed', source: 'gateway', snrDb: 0, rssiDbm: -112, observedAt: at, receivedAt: at },
   { id: 'reverse', observerDeviceId: 'd1', heardDeviceId: 'r1', originalSourceDeviceId: null,
-    path: 'direct', source: 'neighbor', snrDb: -2, rssiDbm: null, observedAt: null, receivedAt: at },
+    path: 'direct', source: 'neighbor', snrDb: -2, rssiDbm: null, observedAt: at, receivedAt: at },
   { id: 'unknown', observerDeviceId: 'r1', heardDeviceId: null, originalSourceDeviceId: 'd3',
-    path: 'unknown', source: 'gateway', snrDb: 9, rssiDbm: -80, observedAt: null, receivedAt: at }];
+    path: 'unknown', source: 'gateway', snrDb: 9, rssiDbm: -80, observedAt: at, receivedAt: at }];
   const root = createRoot(document.getElementById('root'));
   const render = (rows = links, online = true, trackers = initialTrackers, assignments = [], members = []) => act(async () => root.render(createElement(MapPreferences, null, createElement(MapPage, {
     trackers, infrastructureNodes: infrastructure, links: rows, online, now, assignments, members,
@@ -269,13 +330,14 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     assert.match(sheet.textContent, /-112 dBm/);
     assert.match(sheet.textContent, /S001 → R001/);
     assert.match(sheet.textContent, /R001 → S001/);
-    assert.match(sheet.textContent, /No hearing timestamp supplied/);
+    assert.match(sheet.textContent, /Delivery time does not refresh signal age/);
     assert.match(sheet.textContent, /Original packet sourceS002/);
     assert.equal(sheet.querySelector('time').dateTime, at);
     assert.equal(features()[0].properties.width, 6);
     await render(links, false);
     assert.match(document.querySelector('.signal-link-detail').textContent, /Feed offline/);
-    const updated = [{ ...links[0], id: 'new-forward', snrDb: 10, observedAt: new Date(now - 60000).toISOString() }, links[0]];
+    const updated = [{ ...links[0], id: 'new-forward', snrDb: 10,
+      observedAt: new Date(now - 60000).toISOString(), receivedAt: new Date(now - 60000).toISOString() }, links[0]];
     await render(updated);
     assert.equal(document.querySelectorAll('.signal-reading').length, 1);
     assert.equal(document.querySelector('.signal-map-label'), null);
@@ -351,7 +413,7 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     assert.equal(document.querySelector('.signal-map-label'), null, 'empty live data never creates fixture lines');
     await act(async () => document.querySelector('button.infrastructure-pin').click());
     assert.equal(document.querySelector('.node-relationship'), null);
-    assert.match(document.querySelector('.node-relationships').textContent, /No recorded neighbors/);
+    assert.match(document.querySelector('.node-relationships').textContent, /No recent neighbors/);
     const assigned = [{ id: 'assigned', deviceId: 'd1', memberId: 'm1', startedAt: at, endedAt: null }];
     const members = [{ id: 'm1', name: 'Demo Member', initials: 'DM', shortName: 'ALIAS' }];
     await render(links, true, initialTrackers, assigned, members);
@@ -675,7 +737,7 @@ test('map selections and device sheets keep infrastructure always visible withou
   }
 });
 
-test('neighbor rows preserve direction, zero readings, unknown hearing times and receiver filtering', async () => {
+test('neighbor rows preserve direction, zero readings, known hearing times and receiver filtering', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
@@ -687,7 +749,7 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
   const at = new Date(now - 5 * 60000).toISOString();
   const links = [
     { id: 'n', observerDeviceId: 'r1', heardDeviceId: 'r2', originalSourceDeviceId: null,
-      source: 'neighbor', path: 'direct', snrDb: 0, rssiDbm: null, receivedAt: at, observedAt: null },
+      source: 'neighbor', path: 'direct', snrDb: 0, rssiDbm: null, receivedAt: at, observedAt: at },
     { id: 'g', observerDeviceId: 'g1', heardDeviceId: null, originalSourceDeviceId: 'd1',
       source: 'gateway', path: 'relayed', snrDb: -3.5, rssiDbm: -118, receivedAt: at, observedAt: at },
   ];
@@ -702,7 +764,7 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
     assert.match(document.querySelector('tbody').textContent, /S001/);
     assert.match(document.querySelector('[role="status"]').textContent, /saved observations/);
     const neighbor = document.querySelector('tbody tr');
-    assert.equal(neighbor.querySelectorAll('time')[0].textContent, 'Unknown');
+    assert.equal(neighbor.querySelectorAll('time')[0].textContent, '5m ago');
     assert.equal(neighbor.querySelectorAll('time')[1].textContent, '5m ago');
     const select = document.querySelector('select');
     await act(async () => { select.value = 'g1'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
@@ -711,7 +773,7 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
     assert.doesNotMatch(document.querySelector('tbody').textContent, /Demo other repeater/);
     await act(async () => { select.value = 'r2'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
     assert.equal(document.querySelector('table'), null);
-    assert.match(document.querySelector('.empty').textContent, /No signal observations/);
+    assert.match(document.querySelector('.empty').textContent, /No recent neighbor signals/);
   } finally {
     await act(async () => root.unmount());
     dom.window.close();

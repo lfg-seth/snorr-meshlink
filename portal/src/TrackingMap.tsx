@@ -10,6 +10,7 @@ import './map-runtime';
 import { mapStyle, services } from './map-style';
 import { useBasemap } from './MapPreferences';
 import { trackerMarkerClass, infrastructureMarkerClass } from './map-markers';
+import { signalFreshnessHelp } from './signal-freshness';
 
 type Props = {
   trackers: Tracker[];
@@ -254,6 +255,7 @@ export default function TrackingMap(props: Props) {
           <button className="signal-info-button" aria-label="About signal strength" aria-expanded={signalInfo}
             aria-controls="signal-legend-help" onClick={() => setSignalInfo(!signalInfo)}>i</button>
           {signalInfo && <small id="signal-legend-help">{props.signalConnections.length ? 'Weakest known latest reading · tap a line or a relationship in a node card for details' : 'No neighbor connections with known endpoints and locations'}
+            {` · ${signalFreshnessHelp}`}
             {props.omittedSignals > 0 && ` · ${props.omittedSignals} observations without distinct mapped endpoints omitted`}</small>}
         </div>}
       </div>
