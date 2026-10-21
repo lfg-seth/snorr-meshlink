@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Diagnose R002/R004 old battery readings with recent contact
+
+- Owner reports old battery metrics despite recent hearing and offers connected R002 for debugging. Search existing issues and claim [Diagnose R002/R004 recent-heard status with stale battery telemetry #53](https://github.com/lfg-seth/snorr-meshlink/issues/53). Preserve existing branch/PR #50 and unrelated battery-box model; fetch origin.
+- Authenticated state/read-only observations reproduce old selected voltages despite new battery packets about every fifteen minutes. Decode source packets privately: G002 receives actual R002/R004 transmissions with direct-hop RF metadata and contemporaneous gateway clocks. Recent contact is supported independently of cached neighbor entries; #47's per-neighbor freshness remains unresolved.
+- New telemetry clocks equal uptime, so ingestion stores unknown measurement time. Its selection rule never lets those reports replace a prior timestamped reading, freezing displayed voltage and metric age. R002 shows 4.193 V while latest received is 4.058 V; R004 shows 4.090 V versus 4.195 V. [Evidence, clocks, reproduction and correction boundary](../docs/operations/battery-contact-freshness-20261021.md).
+- Read-only COM9 identification confirms R002 firmware 2.7.26.0b65f2e, CLIENT and enabled 900-second device telemetry; serial is closed. No clock/configuration change, flash, reboot, forced radio transmission or deployment. R004 diagnostic state remains untouched. Replace an automatically rejected broad row export with approved narrowly selected timing/voltage/packet metadata; keep raw logs, keys, payloads and locations private.
+
+Next useful step: correct latest-received versus latest-measured telemetry handling under #53 with clock-transition and delayed-delivery regressions. Diagnosis is complete; release the session claim to Ready for that bounded corrective work. Derived Project reconciliation still awaits an authenticated CLI management host.
+
 ## 2026-10-21 - Create gateway and repeater firmware timing tickets
 
 - Owner requests tickets for both firmware fixes. Search existing timestamp/neighbor issues and create [Fix gateway firmware neighbor timestamps for reliable signal expiry #51](https://github.com/lfg-seth/snorr-meshlink/issues/51) and [Fix repeater firmware neighbor timestamps across relay and backhaul delays #52](https://github.com/lfg-seth/snorr-meshlink/issues/52). Verify both open with `bug`, `area:firmware`, exactly `status:ready`, no assignee, milestone or active claim.
