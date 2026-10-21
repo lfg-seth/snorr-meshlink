@@ -2,6 +2,23 @@
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
+## Demo feature examples and minimap navigation — 2026-10-20
+
+Owner authorizes merging and deploying [PR #38](https://github.com/lfg-seth/snorr-meshlink/pull/38). Application source **`5d07d61d916290ea81d5ed98bfdadc6127f407eb`** is deployed at **https://meshlink.spp.lol**. The synthetic demo now includes member pack/voltage profiles, humidity, signed/zero sensor-power channels and three SNNS examples (thirteen directional signal rows total). Neighbor minimap endpoint icons open the corresponding device cards; the separate Open device buttons are removed. Endpoint-location context remains available.
+
+All **59 backend and 46 portal checks**, TypeScript and the live production build pass, including on the pinned LXC runtime in `/opt/meshlink-release-5d07d61`. The isolated stage uses its own lockfile-installed dependencies; the older shared dependency folder lacked test packages. [Portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39521996510) and [Backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39521996418) pass on merged main. The previous broad map-test stall was a failed DOM-valued assertion expecting removal of the retained location section; corrected expectations pass the full scenario. No portal behavior was removed to satisfy the test.
+
+Before promotion, all fourteen hook/migration files match the prior application after normalizing existing CRLF line endings; no schema migration is needed. Preserve prior application source/static assets and the **complete old synthetic workspace, including saved edits**, root-private at `/opt/meshlink-rollback-5d07d61` (`demo-state` holds the prior workspace). Promotion verifies exact live database-file and private configuration hashes while services are stopped; both are unchanged. The live nine device identities, owner-provided configuration and existing operational/history/archive rows are preserved. New hashed assets are published before an atomic index replacement; earlier hashed assets remain available for open tabs. `/opt/meshlink/SOURCE_COMMIT` identifies this application release; `RECORDS_COMMIT` identifies the separate evidence commit.
+
+Private backup evidence:
+
+- Pre-release `meshlink-20261021T003040Z.tar.gz`, SHA-256 `98f395065ca5b04a2ddf5049f49e136d83c6e9506d6f687e9145406e3670f700`.
+- Post-release `meshlink-20261021T003651Z.tar.gz`, SHA-256 `bfc7889ec56a2b65e4f5762356f3fda8d9dd286251751f407683d5b10c84e417`.
+
+Checksums and isolated live/demo database/API/history recovery pass. The pre-release demo already exceeded the 50,000-sample API history cap in its 7-day/30-day windows; the existing verifier incorrectly assumes untruncated responses. An isolated pre-release recovery check verifies the exact newest bounded samples and truncation flags for all windows. The refreshed checkpoint fits the limit and passes the existing post-release verifier. [Handle bounded battery history in demo recovery verification](https://github.com/lfg-seth/snorr-meshlink/issues/39) tracks the verifier correction; no API expansion or history deletion is part of this release.
+
+All **126 installed application source files** and **nine build files** match the tested release, with build files also matching public HTTPS byte-for-byte. Public index SHA-256: `f3f5e0c6171031a9eefef4c827ff12bd23a8221fb0085fa41d2458abb4d61838`. Demo feature-state checks, proxy/authentication/throttling boundaries, live/demo token and OS isolation, all three demo history windows and all six services pass. Live feed heartbeat is online; the latest 200 archived envelopes validate and the queue is empty. No new MQTT receipt arrives during a 45-second observation, so fresh radio delivery is unverified by this release. No browser surfaces are available for native WebGL/mobile/keyboard visual review; [native verification](https://github.com/lfg-seth/snorr-meshlink/issues/6) remains separate. No hardware changes or field-performance claims.
+
 ## Deployed environment
 
 - Ubuntu 24.04.5 LTS, amd64, 4 logical CPUs, 8192 MiB RAM, 512 MiB swap allowance and a 64 GiB SSD-backed root filesystem. These allocations were inspected inside the LXC; Proxmox settings and physical-host capacity were not inspected.
