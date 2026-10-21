@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-21 - Capture neighbor-card cleanup and sign-in persistence fixes
+
+- Owner adds two more portal fix-list items. Search existing authentication and endpoint issues; create [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48) and [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49), linked from [the wishlist](wishlist.md#remove-endpoint-locations-from-neighbor-signal-cards). Record the sign-in interval as approximate owner-reported behavior with cause and reproduction details unknown; link existing native authentication verification #6 without treating the prior reload fix as resolution.
+- Creation responses verify both issues open with exactly `status:deferred` and `area:portal`, typed feature and bug respectively, without assignees or milestones. Capture only; no diagnosis, application implementation, testing or deployment. Fetch origin and preserve unrelated battery-box model. GitHub CLI remains unavailable on this desktop; derived Project reconciliation is pending the authenticated management host.
+
+Next useful step: keep the additions deferred until owner activation, then verify section removal and diagnose sign-in expiry against a captured browser/session case; reconcile the derived Project when authenticated CLI access is available.
+
 ## 2026-10-21 - Explain recent B002/G001 neighbor report during isolation
 
 - Owner reports a roughly 36-minute-old B002/G001 report despite physical isolation. Search existing work and claim [Diagnose recent B002/G001 neighbor reports while radios are isolated](https://github.com/lfg-seth/snorr-meshlink/issues/47) for read-only diagnosis. Preserve unrelated battery-box model; fetch origin.
