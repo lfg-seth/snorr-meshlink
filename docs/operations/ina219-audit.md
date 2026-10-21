@@ -159,6 +159,37 @@ Issue #4 remains open for physical verification; no retained session claim.
 GitHub Project reconciliation is pending an authenticated GitHub CLI: the
 documented helper reports that it is unavailable on this desktop.
 
+### Battery-removed confirmation and input-bridge check
+
+Later on October 21, the owner explicitly confirms the **−11.1 to −11.3 mA**
+transition trace was taken **with the battery disconnected** and USB retained.
+This resolves that trace's formerly unknown battery state. The fitted sensor
+continued responding with the correct preset and a stable reported shunt
+drop around **−1.12 mV**. It is a battery-removed observation, not independent
+proof of actual current or measured physical differential voltage.
+
+The owner proposes bridging INA219 VIN+ to VIN−. The requested test keeps
+battery disconnected, USB connected and the INA219 powered, then connects
+only those two sense terminals together. This creates a known-zero
+differential input at the terminals; it does not measure or correct gain
+under load. Physical bridge confirmation and the resulting measurement are
+recorded separately from the battery-removed baseline. No further flash or
+saved profile change is needed.
+
+The subsequent `bridge-transition` trace (physical bridge state still awaiting
+owner confirmation) gives **0.0, −0.3 and −0.1 mA** in three fresh matched
+replies at local uptime 579–603 s. Four held conversions, each read three
+times, give **−0.02, −0.01, −0.01 and +0.02 mV**, corresponding to **−0.2,
+−0.1, −0.1 and +0.2 mA**. All held triples are stable with exact current
+arithmetic. Full owner/local/module/channel equality again passes; firmware
+remains **2.7.26.09d8a9d**, no configuration write or flash.
+
+This is an observed near-zero reading. Attribution to the bridge awaits
+physical confirmation; it is not yet proof that the bridge removed the
+battery-removed −11 mA reading. Keep the battery disconnected for the next
+controlled bridge-on/bridge-off comparison. Serial is closed. The resumed
+session claim awaits the owner's bridge-state reply under issue #4.
+
 ### Historical October 16 evidence
 
 Owner reports removing an R100 shunt and measuring **0.45 Ω out of circuit**, then confirms **0.16 Ω with the probes shorted on the same range**. Subtraction gives an estimated **0.29 Ω**, not a calibrated resistance: differing contact resistance and meter resolution/accuracy remain unquantified. Exact sensor allocation and reinstallation are unconfirmed. Two-wire lead/contact resistance requires compensation; a four-wire measurement would better establish the actual component value. [Manufacturer guidance](https://www.keysight.com/sg/en/use-cases/make-resistance-measurements.html). If the true shunt were 0.29 Ω, the firmware's 0.1 Ω calibration would report **2.9×** current: 8–16 mA would appear as **23.2–46.4 mA**, still far below the recorded roughly one amp. Do not recalibrate from this approximate measurement alone. The affected sensor's shunt was removed; subsequent assembled readings require confirmation of its physical state.

@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - R004 battery-removed confirmation and bridge preparation
+
+- Owner confirms the earlier **−11.1 to −11.3 mA** trace was captured with the battery disconnected and USB connected. This resolves the prior trace's physical-state uncertainty; current accuracy and any other connected branch remain unverified.
+- Reclaim [Investigate INA219 current discrepancy with simultaneous same-path measurements](https://github.com/lfg-seth/snorr-meshlink/issues/4) for the owner-proposed VIN+ to VIN− bridge, with battery absent and USB/INA219 powered. Bridge confirmation remains pending. New transition trace reports **0.0, −0.3, −0.1 mA** in fresh matched replies; four held triples remain stable at **±0.02 mV** or less, with correct current arithmetic. Do not attribute the change to the bridge until physical state is confirmed.
+- Complete profile comparison passes on unchanged diagnostic **2.7.26.09d8a9d**. No flash, saved configuration change or other-board action. Close serial; retain claim explicitly awaiting the owner's bridge-state reply. Preserve private raw captures and unrelated battery-box model. [Evidence](../docs/operations/ina219-audit.md#battery-removed-confirmation-and-input-bridge-check).
+
+Next useful step: confirm VIN+/VIN− bridge state, then compare bridge-on and bridge-off readings with battery still disconnected.
+
 ## 2026-10-21 - R004 INA219 register investigation and zero-test preparation
 
 - Owner reconnects R004 with installed R100 between battery and board and authorizes flashing for diagnosis. Read startup/handoff records, synchronize main, inspect and claim [Investigate INA219 current discrepancy with simultaneous same-path measurements](https://github.com/lfg-seth/snorr-meshlink/issues/4). Preserve unrelated battery-box model and existing private worktree.
