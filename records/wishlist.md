@@ -91,3 +91,19 @@ GitHub: [Add member-node battery percentage beside GPS quality on node cards](ht
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
 Desired behavior: on client/member-node cards, add battery percentage where GPS quality is now and move GPS quality to the right. Keep the battery logo/icon at the top. Missing-percentage presentation and responsive layout details remain to define when activated; no new battery-estimation method is selected.
+
+## Remove endpoint locations from neighbor signal cards
+
+GitHub: [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48).
+
+Status: deferred; portal fix-list capture only. Added 2026-10-21.
+
+Desired behavior: remove the "Endpoint locations" heading and its section contents from neighbor signal cards. The owner finds this section unnecessary. This is separate from the earlier minimap navigation change.
+
+## Improve sign-in persistence
+
+GitHub: [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49).
+
+Status: deferred; portal fix-list capture only. Added 2026-10-21.
+
+Owner reports needing to sign back in every hour or so. Desired behavior: retain a valid sign-in through ordinary use without roughly hourly credential prompts. This interval is approximate owner-reported behavior, not a measured token lifetime or established cause. Browser/device, application version, idle/active use and tab/reload behavior remain uncaptured. Exact longer duration and cross-tab/browser-restart expectations remain to define when activated; preserve deliberate sign-out, rejected/revoked-session handling and live/demo isolation. Diagnosis and verification wait for activation.
