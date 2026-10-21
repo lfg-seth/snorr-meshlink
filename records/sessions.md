@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Gateway pack confirmation and empty graph correction
+
+- Owner confirms one installed **1000 mAh LiPo in each of G001/G002**. Update inventory without increasing stock; retain uncertainty for remaining pack labels and actual capacity/runtime.
+- Search existing issues and claim [Populate gateway battery graphs from reported voltage](https://github.com/lfg-seth/snorr-meshlink/issues/42). Actual chart reproduction fails twice with valid history and the original zero gateway cadence. Same-input positive-cadence control passes without a battery profile. Fix hidden isolated samples by plotting exact dots; retain curves/outage boundaries for known cadence. Publish application **c15859a** in [PR #46](https://github.com/lfg-seth/snorr-meshlink/pull/46). All **47 portal tests**, TypeScript and production build pass on desktop Node 25.6.0 and [pinned 22.23.1 CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39675958265). Release claim to Verify; derived Project sync awaits authenticated CLI access.
+- Recorded portal SSH hostname returns NXDOMAIN, preventing current production history/config readback, metadata updates and deployment. Request current LXC address. No hardware, backend, schema or server change; preserve unrelated owner work and battery-box model. [Evidence and remaining release steps](../docs/operations/gateway-battery-graphs.md).
+
+Next useful step: restore portal host access, verify live gateway metadata/history, apply confirmed pack details and release the reviewed frontend with standard backup/recovery checks. G001 telemetry enablement remains separate.
+
 ## 2026-10-21 - Capture three portal node-card fixes
 
 - Owner requests additions to the portal fix list. Search existing portal issues and create [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43), [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44), and [Add member-node battery percentage beside GPS quality on node cards](https://github.com/lfg-seth/snorr-meshlink/issues/45). Preserve the requested miles, two-hour cutoff, sensor-presence condition and top battery icon in [the wishlist](wishlist.md#node-card-neighbor-details-and-inactivity-cutoff).

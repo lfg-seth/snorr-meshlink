@@ -722,6 +722,46 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
 });
 
 
+test('gateway voltage samples remain visible without a configured reporting cadence', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const { createRoot } = await import('react-dom/client');
+  const { default: BatteryChart } = await import('../src/BatteryChart.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.parse('2026-10-21T18:00:00Z');
+  const samples = [
+    { at: '2026-10-21T17:50:00Z', volts: 4.25 },
+    { at: '2026-10-21T17:55:00Z', volts: 4.24 },
+  ];
+  const device = { ...infrastructure[0], id: 'g002', name: 'G002', cadenceMinutes: 0,
+    reportCadenceMinutes: {}, missingTimeoutMinutes: {}, samples: [], battery: 4.24 };
+  const loadHistory = async () => ({ samples, truncated: false });
+  const root = createRoot(document.getElementById('root'));
+  try {
+    await act(async () => root.render(createElement(BatteryChart, {
+      device: { ...device, cadenceMinutes: 5, batteryProfile: 'unknown' }, now, loadHistory,
+    })));
+    assert.ok(document.querySelector('path'), 'same loader and readings work with positive cadence, without pack metadata');
+    await act(async () => root.render(createElement(BatteryChart, { device, now, loadHistory })));
+    assert.ok(document.querySelector('svg'), 'received gateway history must populate the graph');
+    assert.equal(document.querySelectorAll('circle').length, 2, 'show exact readings with unknown cadence');
+    assert.equal(document.querySelector('path'), null, 'unknown cadence must not imply continuity');
+    assert.equal(document.querySelector('.battery-mini-empty'), null);
+    await act(async () => root.render(createElement(BatteryChart, {
+      device: { ...device, id: 'g001', cadenceMinutes: 5, samples: [samples[0]] }, now,
+    })));
+    assert.equal(document.querySelectorAll('circle').length, 1, 'first reading is visible before a second arrives');
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    delete globalThis.window;
+    delete globalThis.document;
+    delete globalThis.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
 test('minimal battery charts load each period, retain outages, and reject obsolete requests', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;

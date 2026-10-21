@@ -1,19 +1,25 @@
 import { batterySamples } from './battery.ts';
 import type { BatterySample } from './battery.ts';
 
-// Monotone cubic interpolation: round the joins without overshooting readings.
-// Missing-report intervals start a new subpath rather than inventing recovery.
-export function batteryCurve(samples: BatterySample[], now: number, timeoutMinutes: number,
-  x: (time: number) => number, y: (volts: number) => number) {
+// Unknown cadence keeps exact readings separate rather than inventing continuity.
+export function batterySegments(samples: BatterySample[], now: number, timeoutMinutes: number) {
   const points = batterySamples(samples, now);
   const segments: BatterySample[][] = [];
   for (const point of points) {
     const segment = segments.at(-1);
-    if (!segment || Date.parse(point.at) - Date.parse(segment.at(-1)!.at) >= timeoutMinutes * 60000)
+    if (!segment || !Number.isFinite(timeoutMinutes) || timeoutMinutes <= 0 ||
+      Date.parse(point.at) - Date.parse(segment.at(-1)!.at) >= timeoutMinutes * 60000)
       segments.push([point]);
     else segment.push(point);
   }
-  return segments.filter(segment => segment.length > 1).map(segment => {
+  return segments;
+}
+
+// Monotone cubic interpolation: round the joins without overshooting readings.
+// Missing-report intervals start a new subpath rather than inventing recovery.
+export function batteryCurve(samples: BatterySample[], now: number, timeoutMinutes: number,
+  x: (time: number) => number, y: (volts: number) => number) {
+  return batterySegments(samples, now, timeoutMinutes).filter(segment => segment.length > 1).map(segment => {
     const p = segment.map(s => ({ x: x(Date.parse(s.at)), y: y(s.volts) }));
     const slopes = p.slice(1).map((v, i) => (v.y - p[i].y) / (v.x - p[i].x));
     const tangents = p.map((_, i) => {

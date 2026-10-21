@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { batterySamples } from './battery';
 import type { BatterySample } from './battery';
-import { batteryCurve } from './battery-curve';
+import { batteryCurve, batterySegments } from './battery-curve';
 import type { Infrastructure } from './demo';
 
 export type BatteryHistoryResult = { samples: BatterySample[]; truncated: boolean };
@@ -53,6 +53,8 @@ export default function BatteryChart({ device, now, loadHistory }: {
   const timeout = device.missingTimeoutMinutes?.battery ??
     (device.reportCadenceMinutes?.battery ?? device.cadenceMinutes) * 3;
   const path = batteryCurve(samples, now, timeout, x, y);
+  const isolated = batterySegments(samples, now, timeout)
+    .filter(segment => segment.length === 1).map(segment => segment[0]);
   const timeLabel = (time: number) => new Date(time).toLocaleString([], hours === 24
     ? { hour: '2-digit', minute: '2-digit' } : { month: 'short', day: 'numeric' });
   return (
@@ -66,7 +68,7 @@ export default function BatteryChart({ device, now, loadHistory }: {
           ))}
         </div>
       </div>
-      {path ? (
+      {samples.length > 0 ? (
         <svg className="battery-mini-chart" viewBox="0 0 360 122" role="img"
           aria-label={`${device.name}: battery voltage over ${hours === 24 ? '24 hours' : `${hours / 24} days`}, ${low.toFixed(2)} to ${high.toFixed(2)} volts`}>
           <title>Battery voltage · curved interpolation · local time</title>
@@ -79,7 +81,11 @@ export default function BatteryChart({ device, now, loadHistory }: {
               {timeLabel(start + fraction * (now - start))}
             </text>
           ))}
-          <path d={path} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          {path && <path d={path} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
+          {isolated.map(sample => <circle key={sample.at} cx={x(Date.parse(sample.at))}
+            cy={y(sample.volts)} r="2.2" fill="currentColor">
+            <title>{new Date(sample.at).toLocaleString()}: {sample.volts.toFixed(3)} V</title>
+          </circle>)}
         </svg>
       ) : <p className="battery-mini-empty small muted">{loading ? 'Loading battery history…' : 'Not enough battery history in this period.'}</p>}
       {error && <p className="small muted" role="status">History unavailable · showing retained readings.</p>}
