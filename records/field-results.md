@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-10-21 - G002 five-minute telemetry configuration and first receipt
+
+[Issue #41](https://github.com/lfg-seth/snorr-meshlink/issues/41). Complete independent profile readback passes after enabling device telemetry at **300 seconds** on G002 only. At **10:17:13 Pacific**, packet **14076657** reports **4.25 V** over encrypted MQTT while LoRa TX remains disabled; production stores the voltage at **10:17:14.159**, retaining measurement time **10:17:13.000**. G001 unchanged. First-report delivery passes; repeated cadence, calibrated battery measurement, runtime and reconnect reliability remain unmeasured. [Evidence](../docs/operations/g002-neighbor-gateway.md#five-minute-device-telemetry-enabled---2026-10-21).
+
 ## 2026-10-21 ? G002 replacement Wi-Fi bench check
 
 Owner-authorized configuration on COM6 G002 `!849ad7a0`. Replacement Wi-Fi survives network-setting restart; independent complete profile comparison passes with only requested network fields changed. Console observes association/IP acquisition, MQTT connected and queued publish. Firmware unchanged `2.7.26.9d2fd8f`, LoRa TX disabled. Short bench check only: production ingestion, sustained freshness/runtime, reconnect reliability and field coverage unverified. [Evidence and capture limits](../docs/operations/g002-neighbor-gateway.md#wi-fi-replacement--2026-10-21); raw profiles/logs remain private.

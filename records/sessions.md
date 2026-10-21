@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Enable G002 telemetry every five minutes
+
+- Owner authorizes connected G002 only and leaves G001 for later. Search existing issues and claim [Enable G002 device telemetry every five minutes](https://github.com/lfg-seth/snorr-meshlink/issues/41). Synchronize main and preserve unrelated battery-box model.
+- Identify COM6 HELTEC_V3 `!849ad7a0` / unchanged `2.7.26.9d2fd8f`; privately back up complete profile. Set device telemetry enabled and interval **300 seconds**. Independent complete profile comparison after configuration restart passes with exactly these two changes; keys/identity/network/MQTT/radio/neighbor configuration preserved, LoRa TX disabled.
+- First device report **14076657**, **4.25 V**, measured **10:17:13 Pacific**, reaches production observations at **10:17:14.159**. Console confirms encrypted MQTT publication and LoRa TX-disabled rejection. [Evidence](../docs/operations/g002-neighbor-gateway.md#five-minute-device-telemetry-enabled---2026-10-21). Close serial; no G001/server/application/firmware change. Sustained cadence, calibration/runtime and #40 reconnect acceptance remain separate.
+- Close scoped #41 after evidence publication; release claim. Derived Project reconciliation remains pending authenticated CLI access. Private credentials/profiles/raw logs remain ignored.
+
+Next useful step: update G001 when connected and authorized; observe sustained G002 delivery without treating this single receipt as endurance evidence.
+
 ## 2026-10-21 ? Explain missing gateway battery metrics
 
 - Owner asks why G001/G002 lack battery readings. Read-only production inspection confirms zero gateway observations but fresh own-source receipts, with both node IDs mapped for infrastructure telemetry.

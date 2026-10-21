@@ -1,5 +1,11 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
+## Five-minute device telemetry enabled - 2026-10-21
+
+Owner authorizes G002 only; G001 remains for a later session. [Enable G002 device telemetry every five minutes](https://github.com/lfg-seth/snorr-meshlink/issues/41) scopes the change. Identify COM6 HELTEC_V3 `!849ad7a0` on unchanged **2.7.26.9d2fd8f**, privately back up its complete profile, and set only `telemetry.device_telemetry_enabled=true` and `device_update_interval=300`. Independent complete user/metadata/local/module/channel comparison passes after the setting-triggered restart. Identity/keys, Wi-Fi/MQTT, CLIENT role, disabled LoRa TX and neighbor collector remain preserved. No flash, server/application change or G001 access.
+
+At **10:17:13 Pacific** (`2026-10-21T17:17:13Z`), G002 originates device telemetry packet **14076657**, reporting **4.25 V** and firmware USB/charging indicator 101. Console confirms encrypted MQTT publication followed by `send - !config.lora.tx_enabled`; no RF transmission inferred. Production observations contain `{"battery":4.25}`, measured **17:17:13.000Z**, received **17:17:14.159Z**, packet key `telemetry:g002:14076657:9dedd3c081bf29c563f0c27be84fe99e`. This confirms fresh voltage ingestion, not pack capacity, calibrated voltage, or charge percentage. Configured interval is 300 seconds; repeated five-minute cadence, runtime and sustained reconnect behavior remain unmeasured. All serial interfaces close after checks. Private profile/log/receipt evidence: `private/bench/G002-telemetry-20261021/`.
+
 ## Gateway battery reporting diagnosis ? 2026-10-21
 
 Owner asks why gateways lack battery metrics. Read-only production SQLite query finds zero `observations` for G001/G002, while original-source receipts are current: G001 `2026-10-21T17:12:38.986Z` (702 receipts), G002 `2026-10-21T17:12:01.741Z` (681). These counts describe the inspection checkpoint, not continuing totals. Production infrastructure mappings include both node IDs.
