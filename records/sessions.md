@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-21 - Capture three portal node-card fixes
+
+- Owner requests additions to the portal fix list. Search existing portal issues and create [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43), [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44), and [Add member-node battery percentage beside GPS quality on node cards](https://github.com/lfg-seth/snorr-meshlink/issues/45). Preserve the requested miles, two-hour cutoff, sensor-presence condition and top battery icon in [the wishlist](wishlist.md#node-card-neighbor-details-and-inactivity-cutoff).
+- Creation responses verify three open issues with `feature`, `area:portal` and exactly `status:deferred`, without assignees or milestones. Capture only; no application research, design, implementation, testing or deployment. Preserve the unrelated infrastructure-test edit and battery-box model. Fetch origin; main matches origin/main. GitHub CLI is unavailable on this desktop, so derived Project reconciliation remains pending the authenticated management host.
+
+Next useful step: keep these fixes deferred until owner activation; reconcile the derived Project with the existing sync script when authenticated CLI access is available.
+
 ## 2026-10-21 - R004 battery-removed confirmation and bridge preparation
 
 - Owner confirms the earlier **−11.1 to −11.3 mA** trace was captured with the battery disconnected and USB connected. This resolves the prior trace's physical-state uncertainty; current accuracy and any other connected branch remain unverified.

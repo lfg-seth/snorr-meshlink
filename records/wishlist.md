@@ -67,3 +67,27 @@ GitHub: [Allow starting, stopping and restarting member GPS tracking sessions wh
 Status: deferred by owner. Added 2026-10-19.
 
 Desired behavior: provide a way to start, stop and restart member-node (client) GPS tracking sessions even when a device remains powered on throughout. Session boundaries must be independent of device uptime or reboot boundaries. Control location, authorized roles, whether restart resumes a session or creates a new one, and treatment of reports outside active sessions remain to define when activated. No radio-broadcasting or raw-data-retention changes are selected by this request.
+
+## Node-card neighbor details and inactivity cutoff
+
+GitHub: [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43).
+
+Status: deferred; portal fix-list capture only. Added 2026-10-21.
+
+Desired behavior: node-card neighbor entries show just the neighbor name, signal strength and distance in miles. Neighbors fall off the card after two or more hours without activity. Exact strength presentation, activity timestamp semantics and missing-location handling remain to define when activated. Card visibility does not request deletion of stored neighbor history. No independent reproduction or browser/build details captured.
+
+## Hide sensor power section when no sensors are present
+
+GitHub: [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44).
+
+Status: deferred; portal fix-list capture only. Added 2026-10-21.
+
+Desired behavior: hide the sensor voltage/current section on node cards when no sensors are present; retain it for nodes with relevant sensors. Sensor-presence detection remains to define when activated; missing or stale readings alone do not establish absent hardware. No independent reproduction or browser/build details captured.
+
+## Member-node battery percentage and GPS layout
+
+GitHub: [Add member-node battery percentage beside GPS quality on node cards](https://github.com/lfg-seth/snorr-meshlink/issues/45).
+
+Status: deferred; portal fix-list capture only. Added 2026-10-21.
+
+Desired behavior: on client/member-node cards, add battery percentage where GPS quality is now and move GPS quality to the right. Keep the battery logo/icon at the top. Missing-percentage presentation and responsive layout details remain to define when activated; no new battery-estimation method is selected.
