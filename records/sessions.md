@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-20 — Connected gateways recover production delivery
+
+- Owner connects both gateways and debug receiver; reclaim #40. Identify G001 COM21, G002 COM22 and dedicated sniffer COM6. Passive logs show G002 publishing after recent boot, while G001 is still receiving RF after approximately 85,723 seconds uptime but reports disconnected MQTT and a full queue discarding older packets. Both retain expected firmware/profile and last supplied Wi-Fi settings.
+- G001 restarts during ordinary serial API inspection, potentially from default USB control-line states; no reboot command/configuration write/flash is issued. Its delivery resumes at **19:47:00.592 Pacific**, after G002 at **19:44:44.367**. Subsequent safe-control-line readback confirms both Wi-Fi/MQTT connections and exact preserved local/module/channel profiles. [Evidence and limits](../docs/operations/node-update-outage-20261020.md#connected-gateway-follow-up-and-recovery).
+- Original archive check turns green: 3,775 records, two new receipts, 200 valid recent envelopes and empty queue. Fresh B001/B002 GPS fixes reach both gateways; gateway-originated reports and R001/R002/R003/R004 also resume. No fresh R005 observed in the short checkpoint. Dedicated sniffer records 12 decoded receptions/six duplicates without a gap event or capture error over 65.101 seconds. No sustained/reconnect root-cause or field acceptance claimed.
+- Close serial interfaces and release claim to Verify: current delivery recovered, original trigger/automatic reconnect reliability unresolved. Raw/profile/track evidence stays ignored/private. Preserve unrelated battery-box model and firmware; derived Project reconciliation remains pending the authenticated management host.
+
+Next useful step: observe a recurrence with gateway connection status and console already captured, distinguishing Wi-Fi loss from MQTT-session failure before any reset; verify the remaining R005 receipt during its full reporting interval when powered.
+
 ## 2026-10-20 — Diagnose missing production node updates
 
 - Owner reports missing production updates; search current issues and claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40). Fetch/fast-forward main to preserve the other workstation's published release/evidence; preserve unrelated untracked battery-box model and firmware.

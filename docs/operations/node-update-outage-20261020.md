@@ -34,3 +34,22 @@ The broker SSH account cannot read the Mosquitto log and passwordless sudo is un
 Confirm both gateways' power and Wi-Fi, then inspect gateway MQTT status or obtain a broker-admin connection-log summary around the cutoff and current connections for G001/G002. Preserve existing settings and keys. After correcting the actual cause, repeat the archive check and independently verify new per-gateway normalized receipts and GPS measurement ages. No recovery or fix is claimed in this session.
 
 Secrets, packet bodies, coordinates and raw tracks were not included in the public evidence. The startup shell emits a missing Node-version warning, but the Python services and diagnostic commands run; that warning is not evidence of the delivery cause.
+
+## Connected-gateway follow-up and recovery
+
+Later on October 20, the owner connects both gateways and the dedicated debug receiver. Identify **G001 / !9ea13cc0 / COM21**, **G002 / !849ad7a0 / COM22**, and the dedicated sniffer stream on **COM6**, reporting `2.7.26.f95a443`, 910.625 MHz / BW 250 kHz / SF11 / CR 4/5 / TX disabled. Both gateways independently report expected `2.7.26.9d2fd8f`, enabled Wi-Fi/MQTT/TLS/uplink, expected broker/root, disabled LoRa TX/downlink and credentials matching the last owner-supplied Wi-Fi. Exact profiles remain private.
+
+Initial 12-second passive logs distinguish the gateways:
+
+- G002 is publishing. First resumed production archive receipt is **19:44:44.367 Pacific** (`2026-10-21T02:44:44.367Z`). Its initial console uptime is approximately 57 seconds, consistent with a recent boot; prior power state is not established.
+- G001 is receiving and processing mesh reports, but emits **`MQTT not connected, queue packet`** and **`MQTT queue is full, discard oldest`**. Its initial console uptime is approximately **85,723 seconds**, so absence of portal traffic did not mean the radio was powered off. These logs directly establish a failed gateway MQTT uplink and loss of older packets from its bounded queue. They do not establish the underlying Wi-Fi/session failure.
+
+G001 restarts during the ordinary Meshtastic serial API inspection: later passive logs have uptime 46–86 seconds. The stock Python serial constructor opens with default USB control-line states; an incidental serial-open reset is a plausible trigger, not a confirmed reset reason. No reboot command, configuration write, firmware flash or broker change is issued. Do not describe this as spontaneous recovery or proof of a firmware fix. Subsequent API readback uses a serial subclass that sets DTR/RTS inactive **before** opening.
+
+G001's first resumed production archive receipt is **19:47:00.592 Pacific** (`2026-10-21T02:47:00.592Z`). A subsequent 65-second passive G001 capture contains seven MQTT publish log entries and zero disconnected/full-queue messages. Final local connection-status responses confirm **Wi-Fi connected and MQTT connected on both gateways**. Independent local/module/channel byte comparisons match their saved inspection profiles exactly.
+
+The original archive verification command now passes: **3,775** archive records, **two** new deliveries during the check, latest **200** envelopes validated, outcomes **195 normalized / five unsupported**, and **zero** pending queue entries. New B001 and B002 reports have receipts through **both** gateways. Authenticated live state has valid GPS measurement times **19:47:00** and **19:47:29 Pacific**, distinct from the newer receipt times. G001/G002 own reports and R001/R002/R003/R004 delivery also resume; no new R005 report is observed in this short checkpoint, and its cadence/readiness is not established.
+
+The dedicated sniffer's **65.101-second** capture contains **12** reconstructed/decoded receptions, **six** duplicate receptions and no capture-gap events or session error. Observed sources are R001/R003/B001/B002. Peak trailing-window receive-airtime estimate is **16.77%**; this does not measure all RF activity or validate high-load completeness.
+
+Private evidence: `private/bench/outage-20261020/` and `local-data/sniffer/20261020-194716-ab6b72ee/`. All interfaces close after checks. Current delivery is recovered; the original disconnection trigger, automatic reconnect reliability, sustained freshness and outage data loss remain unverified. Keep #40 in Verify for that bounded remaining diagnosis rather than claiming a permanent fix.
