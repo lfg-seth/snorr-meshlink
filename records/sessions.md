@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Deploy gateway battery graph correction
+
+- Owner restores connection and authorizes deployment. Reclaim [Populate gateway battery graphs from reported voltage](https://github.com/lfg-seth/snorr-meshlink/issues/42); live inspection confirms original zero cadence, 47 G002 measured voltage samples and zero G001 battery reports. Merge [PR #46](https://github.com/lfg-seth/snorr-meshlink/pull/46) and synchronize main to **fa03550**.
+- Verify pre-release backup and isolated live/demo recovery. Server pinned Node 22.23.1 passes all **47 portal tests**, TypeScript and live build. Fourteen backend hooks/migrations match prior deployment. Publish frontend source/assets with rollback retained; quiesced live/demo database and private configuration hashes remain unchanged. Separately save both owner-confirmed `lipo-1s` / **1000 mAh** pack profiles/descriptions and G002 battery cadence **5 minutes**; all nine identities, unrelated metadata and warning enablement survive independent readback. No radio/backend/schema change.
+- Actual React/live-history checks show 48 G002 samples as a curve and approximately 80% at 3.996 V; unknown cadence renders the same samples as dots. G001 correctly awaits its first battery report. Public checks catch root-only staged asset modes; correct only public build files to 0644, then all nine HTTPS build hashes match. All six services, public/authentication boundaries, final live/demo isolated recovery and fresh MQTT ingestion pass. [Exact backups, hashes and limits](../docs/operations/gateway-battery-graphs.md#verification-and-deployment).
+- Release claim to Verify for native presentation confirmation. No native/mobile or field/capacity/runtime acceptance claimed; G001 telemetry remains separate. Preserve private evidence and unrelated battery-box model. GitHub CLI is unavailable locally/on LXC; derived Project reconciliation remains pending the authenticated management host.
+
+Next useful step: refresh the portal and confirm G002's visible graph; enable/verify G001 telemetry only when separately authorized and connected.
+
 ## 2026-10-21 - Gateway pack confirmation and empty graph correction
 
 - Owner confirms one installed **1000 mAh LiPo in each of G001/G002**. Update inventory without increasing stock; retain uncertainty for remaining pack labels and actual capacity/runtime.
