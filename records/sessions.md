@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-20 — Diagnose missing production node updates
+
+- Owner reports missing production updates; search current issues and claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40). Fetch/fast-forward main to preserve the other workstation's published release/evidence; preserve unrelated untracked battery-box model and firmware.
+- Read-only archive check reproduces missing fresh deliveries. Production and independent MeshMonitor both stop receiving G001/G002 at **20:19:33 Pacific October 19**, before today's application deployment. Production has 3,746 archived deliveries, nine real devices, empty queue, healthy database/storage and an active subscribed worker. Separate validating-TLS subscriber authenticates/subscribes but receives no packets. [Sanitized evidence and exact limits](../docs/operations/node-update-outage-20261020.md).
+- Locate the failing observed boundary upstream of portal ingestion; do not assert power/Wi-Fi/broker/gateway root cause. Broker is active but connection logs require unavailable privilege; no gateway is attached locally. Ask owner for current gateway power/Wi-Fi status. No production, broker, radio or firmware changes; no recovery claimed.
+- Release session claim to Verify pending gateway-side/broker-admin evidence. GitHub CLI is unavailable on this desktop; derived Project reconciliation remains pending the authenticated management host.
+
+Next useful step: confirm both gateways' power/Wi-Fi and MQTT sessions; inspect broker connection logs if needed, then verify fresh archive and normalized per-gateway receipts after correction.
+
 ## 2026-10-20 — Merge and deploy demo/minimap release
 
 - Owner explicitly requests merge and deployment. Complete PR #38's test correction, obtain passing hosted backend/portal checks and merge the exact reviewed head as application `5d07d61d916290ea81d5ed98bfdadc6127f407eb`. Local main fast-forwards and tracks origin/main. Both merged-main CI workflows pass too.
