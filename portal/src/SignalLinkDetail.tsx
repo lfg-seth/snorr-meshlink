@@ -38,7 +38,7 @@ export default function SignalLinkDetail({ connection, labels, markerLabels = {}
         <div><dt>Signal strength (RSSI)</dt><dd>{signalValue(row.rssiDbm, 'dBm')}</dd></div>
         <div><dt>Last heard / measured</dt><dd><SignalTime at={row.observedAt} now={now} />
           {!row.observedAt && <small>No hearing timestamp supplied</small>}</dd></div>
-        <div><dt>Report received</dt><dd><SignalTime at={row.receivedAt} now={now} /></dd></div>
+        <div><dt>Report delivered</dt><dd><SignalTime at={row.receivedAt} now={now} /><small>Delivery time does not refresh signal age</small></dd></div>
         <div><dt>Packet path</dt><dd>{row.path === 'direct' ? 'Direct' : row.path === 'relayed' ? 'Relayed' : 'Unknown'}</dd></div>
         <div><dt>Original packet source</dt><dd>{label(row.originalSourceDeviceId)}</dd></div>
         {row.reportType === 'snns-v1' && <>

@@ -17,6 +17,6 @@ export default function NodeRelationships({ nodeId, connections, onSelect }: {
           {signalValue(connection.snrDb, 'dB')}
         </span>
       </button>
-    </li>)}</ul> : <p className="small muted">No recorded neighbors</p>}
+    </li>)}</ul> : <p className="small muted">No recent neighbors with a known hearing time</p>}
   </section>;
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Infrastructure, Tracker } from './demo';
+import { recentSignals, signalFreshnessHelp } from './signal-freshness';
 
 export type LinkObservation = {
   id: string;
@@ -49,7 +50,7 @@ export default function NeighborTable({ links, infrastructure, trackers, now, on
     return device ? `${id.toUpperCase()} · ${device.name}`
       : trackers.find(t => t.id === id)?.shortName || id.toUpperCase();
   };
-  const rows = links.filter(link => observer === 'all' || link.observerDeviceId === observer)
+  const rows = recentSignals(links, now).filter(link => observer === 'all' || link.observerDeviceId === observer)
     .toSorted((a, b) => b.receivedAt.localeCompare(a.receivedAt));
   return <section className="panel neighbor-panel" aria-labelledby="neighbor-heading">
     <div className="panel-heading">
@@ -62,6 +63,7 @@ export default function NeighborTable({ links, infrastructure, trackers, now, on
       </label>
     </div>
     <p className="small muted">Each row records one direction, as heard by its receiver. RAK reports include RSSI, SNR, observation count and hearing age when the report was made. Hearing age excludes delivery delay; an absolute hearing time stays unknown. Partial reports and omitted neighbors do not establish a lost link.</p>
+    <p className="small muted">{signalFreshnessHelp}</p>
     {!online && <p className="small muted" role="status">Feed unavailable · showing saved observations.</p>}
     {rows.length ? <div className="neighbor-table-scroll" tabIndex={0} role="region" aria-label="Neighbor signal observations">
       <table className="neighbor-table">
@@ -87,6 +89,6 @@ export default function NeighborTable({ links, infrastructure, trackers, now, on
           </td>
         </tr>)}</tbody>
       </table>
-    </div> : <p className="empty">No signal observations recorded for this receiver.</p>}
+    </div> : <p className="empty">No recent neighbor signals with a known hearing time for this receiver.</p>}
   </section>;
 }

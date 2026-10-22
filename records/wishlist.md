@@ -72,9 +72,9 @@ Desired behavior: provide a way to start, stop and restart member-node (client) 
 
 GitHub: [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43).
 
-Status: deferred; portal fix-list capture only. Added 2026-10-21.
+Status: layout remains deferred. Added 2026-10-21; owner activates the two-hour cutoff across the portal later that day under [#47](https://github.com/lfg-seth/snorr-meshlink/issues/47).
 
-Desired behavior: node-card neighbor entries show just the neighbor name, signal strength and distance in miles. Neighbors fall off the card after two or more hours without activity. Exact strength presentation, activity timestamp semantics and missing-location handling remain to define when activated. Card visibility does not request deletion of stored neighbor history. No independent reproduction or browser/build details captured.
+Deferred layout: node-card neighbor entries show just the neighbor name, signal strength and distance in miles. Exact strength presentation and missing-location handling remain to define when activated. The cutoff now uses hearing time and hides unknown-time reports; it never deletes stored history. [Visibility policy, tests and current live consequences](../docs/operations/neighbor-signal-visibility.md). Layout work in #43 remains parked independently of that correction.
 
 ## Hide sensor power section when no sensors are present
 
