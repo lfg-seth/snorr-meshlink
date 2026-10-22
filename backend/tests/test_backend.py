@@ -261,7 +261,7 @@ class BackendTests(unittest.TestCase):
         fix = packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6, 'battery': 42})
         self.ingest(fix)
         before = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
-        reading = packet('d1', 'telemetry', {'battery': 3.8})
+        reading = packet('d1', 'telemetry', {'battery': 3.8}, 1)
         self.assertEqual(self.ingest(reading)['outcome'], 'accepted')
         self.assertEqual(self.ingest({**reading, 'gatewayId': 'b2'})['outcome'], 'duplicate')
         configured = {'deviceId': 'd1', 'configuration': {'batteryProfile': 'lipo-1s', 'batteryCapacityMah': 3000}}
@@ -280,9 +280,11 @@ class BackendTests(unittest.TestCase):
                        {'cadenceMinutes': 1}]:
             with self.assertRaises(ApiError):
                 self.admin.request('POST', '/api/meshlink/configuration', {'deviceId': 'd1', 'configuration': config})
-        for item in [packet('d1', 'telemetry', {'battery': 3.7}, minutes=-10),
+        reference = datetime.now(timezone.utc)
+        for index, item in enumerate([packet('d1', 'telemetry', {'battery': 3.7}, minutes=-10),
                      {**packet('d1', 'telemetry', {'battery': 3.6}), 'measuredAt': None},
-                     packet('d1', 'telemetry', {'battery': 4.1}, minutes=10)]:
+                     packet('d1', 'telemetry', {'battery': 4.1}, minutes=10)]):
+            item['receivedAt'] = (reference - timedelta(seconds=3 - index)).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
             self.ingest(item)
         row = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
         self.assertEqual(row['batteryVoltage'], 3.6)
