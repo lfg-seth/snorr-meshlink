@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Capture five-minute member status and battery reporting
+
+- Owner endorses the Infrastructure-page feedback; retain it with LOCAL-1 without selecting the exact neighbor layout/page name or starting implementation.
+- Add [LOCAL-2](wishlist.md#member-node-and-battery-reports-without-a-gps-fix) to the wishlist and Deferred queue. Capture owner-reported missing member battery data and the requested five-minute (300-second) node/status and battery broadcasts, even without a satellite fix or phone. Retain 15 minutes as the maximum baseline reporting interval and five minutes as the current requested setting; GPS staleness requirements remain separate.
+- Preserve separate node identity, battery telemetry, receiver-measured signal and GPS freshness semantics. Future acceptance follows actual member transmissions through both available gateways and portal ingestion, including no-fix operation, repeated cycles, fix recovery, reboot and cadence/runtime effects. The cause is unverified and no radios/settings, code, live data or GitHub issues/Project changed.
+- Verification: captured requirements reviewed against the request; relative documentation file targets resolve and whitespace checks pass. Documentation only; no device or application tests performed.
+
+Next useful step: activate LOCAL-2 when ready and identify available member trackers/settings before diagnosing the missing reports or applying the five-minute profile.
+
 ## 2026-10-21 - Capture Infrastructure page overhaul
 
 - Owner requests a tracker entry and feedback. Record [LOCAL-1](wishlist.md#infrastructure-page-overhaul) in the wishlist and Deferred queue: richer device summary cards with last heard, battery and GPS highlights; include member devices; open full node cards; replace the main neighbor table with a readable current-state view; optionally retain a collapsed, sortable, paginated debug table with timestamps; consolidate useful unique detail into full cards.

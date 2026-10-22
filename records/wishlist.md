@@ -129,4 +129,26 @@ Requested behavior / future acceptance:
 
 Feedback / points to settle when activated: keep last heard, GPS measurement age and battery-reading age distinct so recent contact does not make an old fix or battery reading appear fresh. A compact current-link summary with expandable directional signal details is one possible direction, not a selected design. Because member devices would be included, consider whether a broader page name such as Devices or Network would be clearer; no rename is selected.
 
+2026-10-21 follow-up: owner endorses the feedback above. Keep that direction with LOCAL-1; the exact neighbor layout and page name remain unset, and implementation is not activated by this endorsement.
+
 Related parked requests: [GH-43 neighbor-card cleanup](#node-card-neighbor-details-and-inactivity-cutoff), [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present), [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout) and [GH-48 endpoint-location removal](#remove-endpoint-locations-from-neighbor-signal-cards). Coordinate overlaps when activated without automatically activating or closing those items. Preserve [GH-47's current-state freshness correction](../docs/operations/neighbor-signal-visibility.md) and its separate release/acceptance work; this page request does not resolve GH-51/GH-52's upstream-delay limits or change data/history retention.
+
+## Member node and battery reports without a GPS fix
+
+Local task: **LOCAL-2** in the [local tracker](../.scratch/TRACKER.md).
+
+Status: deferred; issue capture only. Added 2026-10-21. The requested reporting interval is **five minutes (300 seconds) for now**. Retain the owner's baseline requirement of at least one report every 15 minutes (900 seconds); five minutes is the setting requested now. No radio settings have been changed.
+
+Owner reports that client/member-device battery information is missing from the portal. Ensure powered member devices broadcast node information/status and battery information even before obtaining a satellite fix or while no fix is available, so dispatch can still see contact and available signal readings. The cause of missing battery data is unverified; a GPS-dependent transmission gate is not an established diagnosis.
+
+Requested behavior / future acceptance:
+
+- Target member trackers, initially the inventoried B001/B002 when available. A repeater's Meshtastic CLIENT role does not make it a member tracker; this request does not select repeater/gateway configuration changes.
+- Set node information/status and battery reporting to a five-minute target, independently of GPS acquisition, movement and position broadcasts. Treat node identity information and device battery telemetry as distinct required outputs; verify the installed firmware's actual settings/packet types rather than assuming a NodeInfo packet contains battery values. Record any effective-cadence limits or airtime deferrals.
+- Broadcast without a phone and without a valid satellite fix, including after power-on before the first fix and after losing a previously valid fix. Preserve the saved reporting configuration through reboot and retain normal GPS reporting when fixes are available.
+- Verify fresh battery values and their independent timestamps reach the gateway, MQTT/archive, normalized member record and portal. Match portal cadence metadata to verified reporting; missing battery values stay unknown. Existing battery ingestion is recorded in [member battery support](../docs/research/member-battery-charge.md), so verify the full path before selecting a firmware or portal fix.
+- Use receiver-measured RSSI/SNR from these receptions where available, preserving which receiver heard which transmitter and distinguishing a relayed packet's final hop from a direct member link. A node information packet alone does not supply every receiver's signal measurements.
+- Verify last heard and supported signal readings can advance while GPS remains unavailable/stale; node/battery reports must not refresh an old GPS fix's measurement time or invent a position.
+- For acceptance, observe multiple consecutive reporting cycles without a fix, then fix recovery and reboot/readback, checking both gateways where available and portal deduplication. Record configured versus observed intervals, missing packets and battery/runtime/channel-utilization effects; a five-minute setting alone is not proof of end-to-end delivery.
+
+Related work: [GH-2 phone-free freshness/runtime](tracking-import/github-2.md), [GH-45 battery percentage presentation](#member-node-battery-percentage-and-gps-layout) and [LOCAL-1 device summary cards](#infrastructure-page-overhaul). Keep report delivery separate from card layout and the existing 15-minute GPS stale threshold. This capture activates no diagnosis, firmware build/flash, device configuration, deployment or live-data access.
