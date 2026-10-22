@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Reassess simpler neighbor freshness approaches
+
+- Owner questions the timestamp-first fix, notes clock fragility and asks about not storing stale readings. Recheck existing source: custom SNNS already expires source entries after thirty minutes using elapsed uptime; the observed B002/G001 discrepancy comes from a separately cached standard table. A synchronized source clock is not the only possible correction. [Alternatives and limits](../docs/operations/neighbor-signal-visibility.md#simpler-alternatives-raised-by-the-owner).
+- Recommend excluding standard cached tables from current signal state, using existing relative hearing/boot/sequence evidence without refreshing unchanged observations, and examining monotonic queue expiry/fresh passive snapshots after reconnect. Deleting old database rows alone cannot stop a newly delivered cached table reinserting old readings. Preserve raw archive/history; a small current-neighbor view can expire independently. Receipt-relative age still excludes unseen transport delay unless buffering is bounded/expired; no strict hearing-age guarantee is claimed from it alone.
+- Mark #51/#52 Triage with the owner's design question and clarify that their initial timestamp criteria are proposals under review. No alternative is selected or implemented; PR #50 remains draft and undeployed. Preserve the other task's substantial uncommitted telemetry edits by using an isolated worktree on the existing neighbor branch. No hardware/build/configuration/test changes; documentation links and whitespace checks only. Derived Project reconciliation remains pending unavailable authenticated CLI access.
+
+Next useful step: agree the simplest freshness/queue policy, then revise #47/#51/#52 around that outcome before implementation; leave the absolute-time-only draft unreleased.
+
 ## 2026-10-21 - Diagnose R002/R004 old battery readings with recent contact
 
 - Owner reports old battery metrics despite recent hearing and offers connected R002 for debugging. Search existing issues and claim [Diagnose R002/R004 recent-heard status with stale battery telemetry #53](https://github.com/lfg-seth/snorr-meshlink/issues/53). Preserve existing branch/PR #50 and unrelated battery-box model; fetch origin.
