@@ -50,7 +50,7 @@ export default function MapPage({
     ...trackers.map(tracker => [tracker.id, trackerMarkerClass(tracker, now)]),
     ...infrastructureNodes.map(device => [device.id, infrastructureMarkerClass()]),
   ]);
-  const signalMap = useMemo(() => signalConnections(links, trackers, infrastructureNodes), [links, trackers, infrastructureNodes]);
+  const signalMap = useMemo(() => signalConnections(links, trackers, infrastructureNodes, now), [links, trackers, infrastructureNodes, now]);
   const selectedSignal = selection?.kind === 'signal'
     ? signalMap.relationships.find(connection => connection.id === selection.id) : undefined;
   const selectedTracker = selection?.kind === 'tracker'

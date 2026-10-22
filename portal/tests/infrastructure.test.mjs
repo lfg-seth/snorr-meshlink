@@ -99,8 +99,9 @@ test('reported RAK current preserves sign and channel with separate hearing age 
     links: [{ id: 'one', observerDeviceId: device.id, heardDeviceId: null, heardNodeId: '!00000123',
       originalSourceDeviceId: null, source: 'neighbor', reportType: 'snns-v1', path: 'direct',
       snrDb: 0, rssiDbm: -90, observedAt: null, receivedAt: '2026-10-16T19:59:00.000Z',
+      freshness: { basis: 'relative', anchorReceivedAt: '2026-10-16T19:59:00.000Z', ageAtAnchorSeconds: 12 },
       hearingAgeSeconds: 12, observationCount: 7, subset: true, totalNeighbors: 9, capacityEvicted: true }] }));
-  for (const value of ['!00000123', '0 dB', '-90 dBm', '12s', 'Partial', 'capacity eviction', 'RAK signal report'])
+  for (const value of ['!00000123', '0 dB', '-90 dBm', '12s', 'Partial', 'capacity eviction', 'Passive signal report'])
     assert.ok(table.includes(value), value);
 });
 
@@ -190,9 +191,10 @@ test('unlabelled signal lines, independent legend help and node relationships pr
   const links = [{ id: 'forward', observerDeviceId: 'r1', heardDeviceId: 'd1', originalSourceDeviceId: 'd2',
     path: 'relayed', source: 'gateway', snrDb: 0, rssiDbm: -112, observedAt: at, receivedAt: at },
   { id: 'reverse', observerDeviceId: 'd1', heardDeviceId: 'r1', originalSourceDeviceId: null,
-    path: 'direct', source: 'neighbor', snrDb: -2, rssiDbm: null, observedAt: null, receivedAt: at },
+    path: 'direct', source: 'neighbor', reportType: 'snns-v1', snrDb: -2, rssiDbm: null, observedAt: null, receivedAt: at,
+    freshness: { basis: 'relative', anchorReceivedAt: at, ageAtAnchorSeconds: 0 } },
   { id: 'unknown', observerDeviceId: 'r1', heardDeviceId: null, originalSourceDeviceId: 'd3',
-    path: 'unknown', source: 'gateway', snrDb: 9, rssiDbm: -80, observedAt: null, receivedAt: at }];
+    path: 'unknown', source: 'gateway', snrDb: 9, rssiDbm: -80, observedAt: at, receivedAt: at }];
   const root = createRoot(document.getElementById('root'));
   const render = (rows = links, online = true, trackers = initialTrackers, assignments = [], members = []) => act(async () => root.render(createElement(MapPreferences, null, createElement(MapPage, {
     trackers, infrastructureNodes: infrastructure, links: rows, online, now, assignments, members,
@@ -301,13 +303,15 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     assert.match(sheet.textContent, /-112 dBm/);
     assert.match(sheet.textContent, /S001 → R001/);
     assert.match(sheet.textContent, /R001 → S001/);
-    assert.match(sheet.textContent, /No hearing timestamp supplied/);
+    assert.match(sheet.textContent, /Estimated 2m 0s ago/);
+    assert.match(sheet.textContent, /Excludes upstream delivery delay/);
     assert.match(sheet.textContent, /Original packet sourceS002/);
     assert.equal(sheet.querySelector('time').dateTime, at);
     assert.equal(features()[0].properties.width, 6);
     await render(links, false);
     assert.match(document.querySelector('.signal-link-detail').textContent, /Feed offline/);
-    const updated = [{ ...links[0], id: 'new-forward', snrDb: 10, observedAt: new Date(now - 60000).toISOString() }, links[0]];
+    const updatedAt = new Date(now - 60000).toISOString();
+    const updated = [{ ...links[0], id: 'new-forward', snrDb: 10, observedAt: updatedAt, receivedAt: updatedAt }, links[0]];
     await render(updated);
     assert.equal(document.querySelectorAll('.signal-reading').length, 1);
     assert.equal(document.querySelector('.signal-map-label'), null);
@@ -378,12 +382,13 @@ test('unlabelled signal lines, independent legend help and node relationships pr
     await act(async () => document.querySelector('.signal-location-details summary').click());
     assert.match(document.querySelector('.signal-location-details').textContent, /Location unknown/);
     await act(async () => document.querySelector('.signal-info-button').click());
-    assert.match(document.querySelector('#signal-legend-help').textContent, /No neighbor connections/);
+    assert.match(document.querySelector('#signal-legend-help').textContent, /No recent neighbor connections/);
+    assert.match(document.querySelector('#signal-legend-help').textContent, /expire at two hours.*excludes delivery delay before server receipt/);
     await render([]);
     assert.equal(document.querySelector('.signal-map-label'), null, 'empty live data never creates fixture lines');
     await act(async () => document.querySelector('button.infrastructure-pin').click());
     assert.equal(document.querySelector('.node-relationship'), null);
-    assert.match(document.querySelector('.node-relationships').textContent, /No recorded neighbors/);
+    assert.match(document.querySelector('.node-relationships').textContent, /No recent neighbor readings/);
     const assigned = [{ id: 'assigned', deviceId: 'd1', memberId: 'm1', startedAt: at, endedAt: null }];
     const members = [{ id: 'm1', name: 'Demo Member', initials: 'DM', shortName: 'ALIAS' }];
     await render(links, true, initialTrackers, assigned, members);
@@ -707,7 +712,7 @@ test('map selections and device sheets keep infrastructure always visible withou
   }
 });
 
-test('neighbor rows preserve direction, zero readings, unknown hearing times and receiver filtering', async () => {
+test('neighbor rows preserve direction, zero readings, relative hearing age and receiver filtering', async () => {
   const dom = new JSDOM('<div id="root"></div>');
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
@@ -719,7 +724,8 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
   const at = new Date(now - 5 * 60000).toISOString();
   const links = [
     { id: 'n', observerDeviceId: 'r1', heardDeviceId: 'r2', originalSourceDeviceId: null,
-      source: 'neighbor', path: 'direct', snrDb: 0, rssiDbm: null, receivedAt: at, observedAt: null },
+      source: 'neighbor', reportType: 'snns-v1', path: 'direct', snrDb: 0, rssiDbm: null, receivedAt: at, observedAt: null,
+      freshness: { basis: 'relative', anchorReceivedAt: at, ageAtAnchorSeconds: 0 } },
     { id: 'g', observerDeviceId: 'g1', heardDeviceId: null, originalSourceDeviceId: 'd1',
       source: 'gateway', path: 'relayed', snrDb: -3.5, rssiDbm: -118, receivedAt: at, observedAt: at },
   ];
@@ -734,8 +740,9 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
     assert.match(document.querySelector('tbody').textContent, /S001/);
     assert.match(document.querySelector('[role="status"]').textContent, /saved observations/);
     const neighbor = document.querySelector('tbody tr');
-    assert.equal(neighbor.querySelectorAll('time')[0].textContent, 'Unknown');
-    assert.equal(neighbor.querySelectorAll('time')[1].textContent, '5m ago');
+    assert.match(neighbor.textContent, /Estimated 5m 0s ago/);
+    assert.equal(neighbor.querySelectorAll('time').length, 1, 'relative age never invents a hearing timestamp');
+    assert.equal(neighbor.querySelector('time').textContent, '5m ago');
     const select = document.querySelector('select');
     await act(async () => { select.value = 'g1'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
     assert.equal(document.querySelectorAll('tbody tr').length, 1);
@@ -743,7 +750,7 @@ test('neighbor rows preserve direction, zero readings, unknown hearing times and
     assert.doesNotMatch(document.querySelector('tbody').textContent, /Demo other repeater/);
     await act(async () => { select.value = 'r2'; select.dispatchEvent(new window.Event('change', { bubbles: true })); });
     assert.equal(document.querySelector('table'), null);
-    assert.match(document.querySelector('.empty').textContent, /No signal observations/);
+    assert.match(document.querySelector('.empty').textContent, /No recent signal observations/);
   } finally {
     await act(async () => root.unmount());
     dom.window.close();
@@ -845,5 +852,85 @@ test('minimal battery charts load each period, retain outages, and reject obsole
     delete globalThis.window;
     delete globalThis.document;
     delete globalThis.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
+test('offline clock expiry updates signal lines, relationships, open detail, minimap and table with stable data', async () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.ResizeObserver = class { observe() {} disconnect() {} };
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+  const dialog = window.HTMLDialogElement.prototype;
+  dialog.showModal = dialog.show = function () { this.open = true; };
+  dialog.close = function () { this.open = false; };
+  const { createRoot } = await import('react-dom/client');
+  const { default: MapPage } = await import('../src/MapPage.tsx');
+  const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
+  const { MapPreferences } = await import('../src/MapPreferences.tsx');
+  const { infrastructure, initialTrackers } = await import('../src/demo.ts');
+  const anchor = '2026-10-21T20:00:00Z';
+  const forward = { id: 'forward', observerDeviceId: 'r1', heardDeviceId: 'd1', originalSourceDeviceId: null,
+    source: 'neighbor', reportType: 'snns-v1', path: 'direct', snrDb: 0, rssiDbm: -112,
+    observedAt: null, receivedAt: anchor, hearingAgeSeconds: 60,
+    freshness: { basis: 'relative', anchorReceivedAt: anchor, ageAtAnchorSeconds: 60 } };
+  const links = [forward,
+    { ...forward, id: 'reverse', observerDeviceId: 'd1', heardDeviceId: 'r1', snrDb: -4,
+      hearingAgeSeconds: 61, freshness: { ...forward.freshness, ageAtAnchorSeconds: 61 } },
+    { ...forward, id: 'cached', reportType: 'neighbor-info', snrDb: -20,
+      observedAt: '2026-10-21T21:58:00Z', receivedAt: '2026-10-21T21:58:00Z' },
+    { ...forward, id: 'raw-unanchored', snrDb: 20, freshness: undefined,
+      receivedAt: '2026-10-21T21:58:00Z' },
+  ];
+  const assignments = [];
+  const members = [];
+  const root = createRoot(document.getElementById('root'));
+  const render = at => act(async () => root.render(createElement(MapPreferences, null,
+    createElement(MapPage, { links, trackers: initialTrackers, infrastructureNodes: infrastructure,
+      now: Date.parse(at), online: false, assignments, members, labels: {}, selectedId: '',
+      onSelect() {}, trailId: null, onTrailChange() {} }),
+    createElement(NeighborTable, { links, trackers: initialTrackers, infrastructure,
+      now: Date.parse(at), online: false }))));
+  const canvas = () => document.querySelector('.map-canvas');
+  const lines = () => JSON.parse(canvas().dataset.signals).features;
+  const miniLines = () => JSON.parse(document.querySelector('.mini-map-canvas').dataset.signals).features;
+  try {
+    await render('2026-10-21T21:58:58.999Z');
+    assert.equal(document.querySelectorAll('.neighbor-table tbody tr').length, 2);
+    await act(async () => document.querySelector('.signal-toggle').click());
+    assert.equal(lines()[0].properties.color, '#b42318');
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.match(document.querySelector('.node-relationship').textContent, /S001 ↔ R001.*-4 dB/);
+    await act(async () => document.querySelector('.node-relationship').click());
+    assert.equal(document.querySelectorAll('.signal-reading').length, 2);
+    assert.match(document.querySelector('.signal-link-detail').textContent, /Estimated.*Excludes upstream delivery delay/);
+    assert.equal(document.querySelectorAll('.signal-reading time').length, 2, 'only receipt times have timestamps');
+    assert.ok([...document.querySelectorAll('.signal-reading time')].every(time => time.dateTime === anchor));
+    assert.equal(miniLines()[0].properties.color, '#b42318');
+
+    await render('2026-10-21T21:58:59.000Z');
+    assert.equal(document.querySelectorAll('.signal-reading').length, 1, 'expired reverse direction leaves the selected card');
+    assert.equal(document.querySelectorAll('.neighbor-table tbody tr').length, 1);
+    assert.equal(lines()[0].properties.color, '#a15c00', 'expired negative SNR no longer affects the line');
+    assert.equal(miniLines()[0].properties.color, '#a15c00');
+    assert.doesNotMatch(document.querySelector('.signal-link-detail').textContent, /-4 dB|-20 dB|20 dB/);
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.match(document.querySelector('.node-relationship').textContent, /S001 → R001.*0 dB/);
+    await act(async () => document.querySelector('.node-relationship').click());
+
+    await render('2026-10-21T21:59:00.000Z');
+    assert.equal(lines().length, 0, 'the last direction expires exactly at two hours including reported age');
+    assert.equal(document.querySelector('.signal-link-detail'), null, 'open expired relationship and its minimap disappear');
+    assert.equal(document.querySelector('.neighbor-table'), null);
+    await act(async () => document.querySelector('button.map-pin').click());
+    assert.equal(document.querySelector('.node-relationship'), null);
+    assert.match(document.querySelector('.node-relationships').textContent, /No recent neighbor readings/);
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    for (const key of ['window', 'document', 'HTMLElement', 'HTMLButtonElement', 'ResizeObserver', 'IS_REACT_ACT_ENVIRONMENT']) delete globalThis[key];
   }
 });

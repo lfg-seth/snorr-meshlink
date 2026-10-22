@@ -1,6 +1,7 @@
 const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
 const telemetry = require(`${__hooks}/telemetry.js`);
+const neighborCurrent = require(`${__hooks}/neighbor_current.js`);
 function assign(e) {
   c.human(e);
   const body = e.requestInfo().body;
@@ -624,6 +625,7 @@ function state(e) {
     members,
     assignments,
     infrastructure: infra,
+    currentLinks: neighborCurrent.current(app),
     links: c.rows(app, 'link_observations', '', '-receivedAt,-id').map((row) => ({
       id: row.id,
       observerDeviceId: row.getString('observerDeviceId'),

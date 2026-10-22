@@ -1,0 +1,27 @@
+# Current neighbor signals and expiry
+
+GH-47 application correction, 2026-10-21. [Design comparison and selected scope](../../.scratch/pilot/issues/24-neighbor-current-state.md). [Original diagnosis](neighbor-report-freshness-20261021.md). Draft PR #50's absolute-time-only filter remains incomplete and undeployed; this work starts from the local-tracking trial and replaces its proposed approach without merging that draft.
+
+## Behavior
+
+Current signals use SNNS relative hearing evidence and retain their age anchor across repeated reports. Standard cached NeighborInfo tables remain historical records and cannot create or refresh current links. Two hours of estimated hearing age is the visibility cutoff, including while the portal is offline. Signal direction, weakest-current-SNR colors, node cards, the selected relationship/minimap and Infrastructure table use the same eligible observations. Missing and expired observations do not establish a failed radio link.
+
+Reported relative age plus elapsed time since the retained worker receipt is an estimate. It excludes unknown delivery delay before that receipt. The application does not synthesize an absolute hearing timestamp. A strict two-hour limit since actual hearing across radio/MQTT outages remains unverified; installed queues lack a proven residence limit. The selected design does not require synchronized UTC clocks.
+
+## Storage and rollout
+
+Keep raw MQTT archival, packet receipts, neighbor reports and link observations intact. The authenticated snapshot separates historical `links` from `currentLinks`; portal current views consume the latter. Current state is private and survives restart. Source ordering and expired-state watermarks prevent repeated known reports from reviving an old hearing. Existing historical rows are not re-anchored at migration or browser startup.
+
+The additive `1792600000_current_neighbor_evidence.js` migration creates private `neighbor_frontiers` and `neighbor_current` collections. One frontier per reporting observer tracks boot/sequence and unwrapped source uptime; one current row per observer/heard-node pair retains its signal snapshot, original receipt anchor and hearing watermark. Expired rows remain as replay guards, rather than being used as visible signals. The state grows with distinct pairs, not every report. Original reports continue to own historical evidence.
+
+For an existing observer, the first new report initializes ordering from archived SNNS metadata only. It waits for hearing evidence newer than that baseline before creating current state. This can temporarily suppress valid old/partial-table readings until a new passive hearing. Historical receipt order cannot fully reconstruct boot order before this state existed. Subsequent rejected old-boot reports cannot replace the persisted baseline. Two seconds of hearing-coordinate tolerance covers rounding and monotonic-counter rollover; genuinely new hearing within that tolerance without an increased count can be conservatively suppressed. Sequence rollback/wrap is rejected until a new boot. Snapshot lists retain the existing 2,000-row bound; larger networks require a separate capacity/pagination review.
+
+Backend and portal changes must be released together through the existing backup/recovery procedure. No production database, service, firmware or device changes are performed in this source session. After an eventual release, collect fresh unique SNNS reports, verify cached standard tables cannot refresh a relationship, then observe calculated expiry during polling loss. Preserve R004's separate INA219 diagnostic image and profile.
+
+## Verification
+
+The minimized relationship regression initially fails with the cached standard row's **−20 dB** replacing valid SNNS **0 dB**. After correction, the SNNS reading remains visible until its exact calculated two-hour boundary. The actual MapPage/NeighborTable DOM regression advances only `now`, keeping the same data arrays while offline; it verifies per-direction line/color/arrow changes, node relationships, selected details, minimap and table removal. App coverage verifies that an intentionally empty `currentLinks` never falls back to historical rows.
+
+Local portal `npm run check` passes **55 tests**, TypeScript and the production build. The existing Vite bundle-size advisory remains. Focused actual PocketBase 0.40.5 checks (`python -m unittest discover -s backend/tests -p test_neighbor_freshness.py -v`) pass **11 tests**: archive-only standard tables, duplicates, unchanged snapshots and expired tombstones, genuine new hearing, count reset/saturation, partial reports, reboot/known-old-boot replay, repeated old-boot input during bootstrap, rounding/millis rollover, conservative sequence rollback, retained original receipts through API delay/restart, private state, bounded snapshots and reversible migration without history backfill. The first backend regression fails before implementation because the current-state API is absent.
+
+Full pinned Linux CI is checked after source publication. Native browser/mobile, fresh operational radio delivery, deployment and the strict upstream-delay bound remain separate acceptance work. No full Windows-suite pass is claimed; the earlier unrelated authorization-connection and timezone-data limits make Linux CI the complete backend verification path.
