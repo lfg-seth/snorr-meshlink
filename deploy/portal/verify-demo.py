@@ -101,13 +101,20 @@ def main():
                 history = restored.request('GET', '/api/meshlink/battery-history/r1?hours=720')
                 end = datetime.now(timezone.utc)
                 cutoff = (end - timedelta(hours=720)).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+                # Older backups expose measured-only samples; new releases include clock provenance.
+                clock = "COALESCE(NULLIF(measuredAt, ''), receivedAt)" if any(
+                    'measuredAt' in sample for sample in history['samples']) else 'measuredAt'
                 with closing(sqlite3.connect(data / 'data.db')) as database:
                     expected = [{'at': at, 'volts': volts} for at, volts in database.execute(
-                        "SELECT measuredAt, json_extract(payload, '$.battery') FROM observations "
-                        "WHERE deviceId='r1' AND measuredAt >= ? AND measuredAt <= ? "
-                        "AND json_extract(payload, '$.battery') > 0 ORDER BY measuredAt, id",
+                        f"SELECT {clock}, json_extract(payload, '$.battery') FROM observations "
+                        f"WHERE deviceId='r1' AND {clock} >= ? AND {clock} <= ? "
+                        f"AND json_extract(payload, '$.battery') > 0 ORDER BY {clock}, receivedAt, id",
                         (cutoff, end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')))]
-                assert expected and history['samples'] == expected and history['truncated'] is False
+                actual = [{'at': sample['at'], 'volts': sample['volts']} for sample in history['samples']]
+                assert expected and actual == expected and history['truncated'] is False
+                for sample in history['samples']:
+                    if 'measuredAt' in sample:
+                        assert sample['at'] == (sample['measuredAt'] or sample['receivedAt'])
             finally:
                 process.terminate()
                 process.wait(timeout=10)
