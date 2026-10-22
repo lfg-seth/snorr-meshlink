@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Capture Infrastructure page overhaul
+
+- Owner requests a tracker entry and feedback. Record [LOCAL-1](wishlist.md#infrastructure-page-overhaul) in the wishlist and Deferred queue: richer device summary cards with last heard, battery and GPS highlights; include member devices; open full node cards; replace the main neighbor table with a readable current-state view; optionally retain a collapsed, sortable, paginated debug table with timestamps; consolidate useful unique detail into full cards.
+- Recommend keeping contact, GPS and battery freshness distinct. Preserve tentative choices about neighbor presentation, debug-table retention and a broader page name. Cross-link related parked card requests and keep GH-47 release/acceptance plus GH-51/GH-52 timing limits separate. No implementation or other deferred item activated; GitHub issues/Project stay unchanged under the local-tracking trial.
+- Verification: captured requirements reviewed against the owner's request; relative documentation file targets resolve and whitespace checks pass. Documentation only; no application tests or native UI validation performed.
+
+Next useful step: activate LOCAL-1 when ready, then settle the current-neighbor presentation and audit which unique details/controls must move into the full card before implementation.
+
 ## 2026-10-21 - Correct current neighbor signals with relative age
 
 - Owner selects GH-47 on the local-tracking trial and requests comparison before design selection. Compare per-row relative-age filtering, persistent current state, stale-queue/source expiry and the optional absolute-clock alternative. Select a small durable current state using installed SNNS evidence; no absolute hearing timestamp requirement. [Decision and source evidence](../.scratch/pilot/issues/24-neighbor-current-state.md).

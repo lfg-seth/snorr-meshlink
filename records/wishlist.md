@@ -109,3 +109,24 @@ Original issue: [Improve portal sign-in persistence to avoid roughly hourly reau
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
 Owner reports needing to sign back in every hour or so. Desired behavior: retain a valid sign-in through ordinary use without roughly hourly credential prompts. This interval is approximate owner-reported behavior, not a measured token lifetime or established cause. Browser/device, application version, idle/active use and tab/reload behavior remain uncaptured. Exact longer duration and cross-tab/browser-restart expectations remain to define when activated; preserve deliberate sign-out, rejected/revoked-session handling and live/demo isolation. Diagnosis and verification wait for activation.
+
+## Infrastructure page overhaul
+
+Local task: **LOCAL-1** in the [local tracker](../.scratch/TRACKER.md).
+
+Status: deferred; backlog capture and requested feedback only. Added 2026-10-21. Implementation awaits owner activation.
+
+Owner feedback: the Infrastructure page is not useful in its current form. Its detailed sections repeat the full node card, and the Neighbor signals table is difficult to read and does not provide a useful overview of current conditions. Keep the small cards, called **device summary cards**, and make them the page's primary content.
+
+Requested behavior / future acceptance:
+
+- Keep the device summary cards and add last heard, battery and last GPS fix where applicable; compact pills are a suggested presentation. Include client/member devices alongside repeaters and gateways, with the same headline information and clear device roles.
+- Clicking a summary card opens that device's full node card, rather than selecting repeated detail on the page.
+- Replace the primary Neighbor signals table with a substantially different, easy-to-scan readout of current neighbor conditions. Exact presentation remains open; it may fit within the cards or a compact overview so the page remains primarily a device-card view.
+- Optionally retain the original table as a debug view. If retained, it must be hidden/collapsed by default, paginated, sortable and show clear timestamps. Preserve distinctions between hearing age/time and report receipt; unavailable absolute hearing timestamps must remain unknown rather than invented.
+- Remove the repeated on-page detail sections. Move any important information or controls available only there into the full node card before removing them, including applicable warnings/incidents, configuration and history access.
+- Future verification covers repeaters, gateways and member devices, including devices without GPS, missing/stale readings, opening the correct full card, and the optional debug table's default collapse, timestamps, sorting and pagination on desktop/mobile.
+
+Feedback / points to settle when activated: keep last heard, GPS measurement age and battery-reading age distinct so recent contact does not make an old fix or battery reading appear fresh. A compact current-link summary with expandable directional signal details is one possible direction, not a selected design. Because member devices would be included, consider whether a broader page name such as Devices or Network would be clearer; no rename is selected.
+
+Related parked requests: [GH-43 neighbor-card cleanup](#node-card-neighbor-details-and-inactivity-cutoff), [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present), [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout) and [GH-48 endpoint-location removal](#remove-endpoint-locations-from-neighbor-signal-cards). Coordinate overlaps when activated without automatically activating or closing those items. Preserve [GH-47's current-state freshness correction](../docs/operations/neighbor-signal-visibility.md) and its separate release/acceptance work; this page request does not resolve GH-51/GH-52's upstream-delay limits or change data/history retention.
