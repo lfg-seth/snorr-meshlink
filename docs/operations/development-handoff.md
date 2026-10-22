@@ -1,17 +1,19 @@
 # Development handoff: Dell Linux and Windows/WSL
 
-Updated 2026-10-16. The owner regularly switches between the **Dell laptop running Linux** and the **Windows desktop running WSL**. Treat both as active development machines. GitHub `origin` (`git@github.com:lfg-seth/snorr-meshlink.git`) is the shared source and project record. The hosted Ubuntu LXC is a separate deployment.
+Tracking handoff updated 2026-10-21; dated hardware/service evidence below is unchanged. The owner regularly switches between the **Dell laptop running Linux** and the **Windows desktop running WSL**. Treat both as active development machines. GitHub `origin` (`git@github.com:lfg-seth/snorr-meshlink.git`) is the shared source and project record. The hosted Ubuntu LXC is a separate deployment.
 
 ## Each time you switch machines
 
-Before leaving, record completed work, open questions and the next step in `records/sessions.md`, commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`. On the receiving machine, first check `git status`; preserve any local work before pulling. With a clean checkout on main:
+Before leaving, update the [local tracker](../../.scratch/TRACKER.md) if status or the next action changed, and append a brief handoff to `records/sessions.md`. Commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`. On the receiving machine, first check `git status`; preserve any local work before switching or pulling. During the trial, use `trial/local-tracking` on both machines; `main` retains the prior workflow. With a clean checkout:
 
 ```sh
-git pull --ff-only origin main
+git fetch origin
+git switch trial/local-tracking
+git pull --ff-only origin trial/local-tracking
 git submodule update --init --recursive
 ```
 
-If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Read `AGENTS.md`, `PROJECT.md`, the newest session entries and `.scratch/pilot/map.md` at session start. Inspect relevant GitHub issues using the [tracking workflow](github-tracking.md); update the issue's claim, evidence and next action before switching machines.
+If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Start with `AGENTS.md`, the local tracker and the latest session entry. Consult `PROJECT.md` for mission/constraints, and `.scratch/pilot/map.md` or domain records when the task needs their decisions or evidence. Follow the [local workflow](local-tracking.md); the tracker and linked evidence travel with Git. Imported issue history remains available [locally](../../records/tracking-import/index.md), while GitHub issues and the Project board stay untouched during the trial.
 
 Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`. Reinstall dependencies locally from the pinned versions/lockfiles; do not copy `.venv`, `node_modules` or built binaries between machines. Frontend checks are `npm ci` then `npm run check` inside `portal/`. Backend setup/check commands are in [backend/README.md](../../backend/README.md). Native local development uses fictional data; do not reinitialize the hosted database.
 

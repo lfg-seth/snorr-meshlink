@@ -2,13 +2,13 @@
 
 These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
-Current status is maintained in the linked GitHub issues under the [tracking workflow](../docs/operations/github-tracking.md). This file preserves the owner's requested ideas and deferral decisions.
+During the `trial/local-tracking` branch trial, current status is maintained in the [local tracker](../.scratch/TRACKER.md) under the [local workflow](../docs/operations/local-tracking.md). Capture each new requested idea here and add one deferred tracker line linked to its section. This file preserves the owner's requested ideas and deferral decisions. Existing GitHub links below are historical references; issues and the Project board stay untouched during the trial, while `main` retains the prior workflow.
 
 Keep these ideas available as context: mention a parked item when it is relevant and useful in a future conversation. Mentioning it does not activate it or authorize work.
 
 ## Known Wi-Fi networks with automatic MQTT backhaul
 
-GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/15).
+Original issue: [Known Wi-Fi networks with automatic MQTT backhaul](https://github.com/lfg-seth/snorr-meshlink/issues/15).
 
 Status: deferred by owner.
 
@@ -18,7 +18,7 @@ Exact supported devices, network selection/retry behavior, credential provisioni
 
 ## Browser-based firmware flashing for member-owned devices
 
-GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/16).
+Original issue: [Browser-based firmware flashing for member-owned devices](https://github.com/lfg-seth/snorr-meshlink/issues/16).
 
 Status: deferred by owner.
 
@@ -28,7 +28,7 @@ The owner cites Meshtastic's website flashing experience as the reference. Brows
 
 ## Slack integration
 
-GitHub: [track this deferred idea](https://github.com/lfg-seth/snorr-meshlink/issues/17).
+Original issue: [Slack integration](https://github.com/lfg-seth/snorr-meshlink/issues/17).
 
 Status: deferred by owner. Added 2026-10-12.
 
@@ -38,7 +38,7 @@ Exact use cases, information shared, message direction, channel creation behavio
 
 ## Overlapping map nodes
 
-GitHub: [Keep overlapping map nodes separately visible and selectable](https://github.com/lfg-seth/snorr-meshlink/issues/34).
+Original issue: [Keep overlapping map nodes separately visible and selectable](https://github.com/lfg-seth/snorr-meshlink/issues/34).
 
 Status: deferred by owner. Added 2026-10-19.
 
@@ -46,7 +46,7 @@ Owner reports that nodes at the same location stack on the map, preventing acces
 
 ## Selected-node neighbor signals on desktop
 
-GitHub: [Show only the selected node's neighbor signals on the desktop main map](https://github.com/lfg-seth/snorr-meshlink/issues/35).
+Original issue: [Show only the selected node's neighbor signals on the desktop main map](https://github.com/lfg-seth/snorr-meshlink/issues/35).
 
 Status: deferred by owner. Added 2026-10-19.
 
@@ -54,7 +54,7 @@ Desired behavior: clicking a node on desktop shows only its neighbor signal conn
 
 ## Map default centered on all nodes
 
-GitHub: [Default the map to the center of all node locations](https://github.com/lfg-seth/snorr-meshlink/issues/36).
+Original issue: [Default the map to the center of all node locations](https://github.com/lfg-seth/snorr-meshlink/issues/36).
 
 Status: deferred by owner. Added 2026-10-19.
 
@@ -62,7 +62,7 @@ Desired behavior: stop defaulting to Mount Charleston and instead default to the
 
 ## Member GPS tracking session controls
 
-GitHub: [Allow starting, stopping and restarting member GPS tracking sessions while devices stay on](https://github.com/lfg-seth/snorr-meshlink/issues/37).
+Original issue: [Allow starting, stopping and restarting member GPS tracking sessions while devices stay on](https://github.com/lfg-seth/snorr-meshlink/issues/37).
 
 Status: deferred by owner. Added 2026-10-19.
 
@@ -70,7 +70,7 @@ Desired behavior: provide a way to start, stop and restart member-node (client) 
 
 ## Node-card neighbor details and inactivity cutoff
 
-GitHub: [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43).
+Original issue: [Simplify node-card neighbors and hide links after two hours of inactivity](https://github.com/lfg-seth/snorr-meshlink/issues/43).
 
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
@@ -78,7 +78,7 @@ Desired behavior: node-card neighbor entries show just the neighbor name, signal
 
 ## Hide sensor power section when no sensors are present
 
-GitHub: [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44).
+Original issue: [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44).
 
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
@@ -86,7 +86,7 @@ Desired behavior: hide the sensor voltage/current section on node cards when no 
 
 ## Member-node battery percentage and GPS layout
 
-GitHub: [Add member-node battery percentage beside GPS quality on node cards](https://github.com/lfg-seth/snorr-meshlink/issues/45).
+Original issue: [Add member-node battery percentage beside GPS quality on node cards](https://github.com/lfg-seth/snorr-meshlink/issues/45).
 
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
@@ -94,7 +94,7 @@ Desired behavior: on client/member-node cards, add battery percentage where GPS 
 
 ## Remove endpoint locations from neighbor signal cards
 
-GitHub: [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48).
+Original issue: [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48).
 
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
@@ -102,7 +102,7 @@ Desired behavior: remove the "Endpoint locations" heading and its section conten
 
 ## Improve sign-in persistence
 
-GitHub: [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49).
+Original issue: [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49).
 
 Status: deferred; portal fix-list capture only. Added 2026-10-21.
 

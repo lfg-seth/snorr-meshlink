@@ -4,7 +4,7 @@ Project name: **SNORR MeshLink** — Search and Rescue Tracking & Communications
 
 Recorded from the project owner's instructions on 2026-10-12.
 
-Current execution status is tracked in [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) under the [tracking workflow](docs/operations/github-tracking.md), adopted 2026-10-17. The [roadmap](docs/roadmap.md) summarizes evidence checkpoints; the brief and historical notes below preserve decisions and may describe earlier states superseded by dated evidence.
+On `trial/local-tracking`, current execution status is tracked in the [local tracker](.scratch/TRACKER.md) under the [local workflow](docs/operations/local-tracking.md). The trial preserves [imported GitHub tracking history](records/tracking-import/index.md) and leaves existing issues and the Project board untouched; `main` retains the prior workflow. The [roadmap](docs/roadmap.md) summarizes evidence checkpoints; the brief and historical notes below preserve decisions and may describe earlier states superseded by dated evidence.
 
 ## Mission and priorities
 
@@ -82,7 +82,7 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 - Initial relay evaluation will use 2 undamaged, on-hand RAKs, subject to core identification and bench verification. Both app and laptop/portal viewing are intended; the Meshtastic app is acceptable for the first local-viewing MVP. An owned rugged Dell laptop/tablet running Linux is available for field use, with compatibility unverified.
 - Dispatch stale-position threshold: 15 minutes since GPS measurement, with an obvious stale indication and visible position age. Prefer aggressive broadcasting initially and tune based on measured congestion; exact intervals and movement/power-based modes remain for evaluation. These are requirements and preferences, not tested guarantees.
 - Member battery runtime: minimum 4 hours, target 12 hours. Consider larger batteries if runtime tests justify them; no additional battery purchase specified.
-- Passive-tracking MVP: power on and automatically broadcast GPS without a phone or repeated member interaction. Device-only SOS is deferred to a future issue.
+- Passive-tracking MVP: power on and automatically broadcast GPS without a phone or repeated member interaction. Device-only SOS remains deferred work.
 - Support members who use companion apps and members who operate entirely from the device. Some may use a keyboard-equipped, BlackBerry-style node.
 - Provide a web portal/dashboard for dispatch and members to see nodes and status.
 - Member tracker radio short names stay tied to device numbers across carrier changes. Keep portal device identity/assignment history separate from names and remote-update success; [naming decision](.scratch/pilot/issues/12-assignment-radio-names.md). Remote admin integration is planned, not implemented/tested.

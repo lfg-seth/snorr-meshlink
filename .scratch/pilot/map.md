@@ -1,6 +1,6 @@
 # Define an owned-hardware field pilot
 
-**Tracking migration — 2026-10-17:** [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) now owns current work status. This map and its tickets preserve decision history; historical open/claimed fields do not define today's frontier. See [tracking rules](../../docs/operations/github-tracking.md) and the [current roadmap](../../docs/roadmap.md).
+**Local tracking trial — 2026-10-21:** On `trial/local-tracking`, the [local tracker](../TRACKER.md) owns current work status under the [local workflow](../../docs/operations/local-tracking.md). This map and its tickets preserve decision history; historical open/claimed fields do not define today's frontier. The [imported GitHub history](../../records/tracking-import/index.md) preserves the 2026-10-17 migration's issue records. Existing GitHub issues and the Project board stay untouched during this branch trial; `main` retains the prior workflow. See the [current roadmap](../../docs/roadmap.md) for evidence checkpoints.
 
 Formerly open questions: [private monitoring scope](https://github.com/lfg-seth/snorr-meshlink/issues/10), [held repeater survey](https://github.com/lfg-seth/snorr-meshlink/issues/11), and [deferred WebSockets alternative](https://github.com/lfg-seth/snorr-meshlink/issues/12). Their original questions remain below and in the linked decision files.
 
@@ -38,11 +38,11 @@ A concise, evidence-backed pilot plan for passive SNORR member GPS tracking on M
 
 - Full mission and standing priorities: [Project brief](../../PROJECT.md).
 - Keep it simple. Chart decisions now; implementation and installation follow when their prerequisites are settled.
-- Use Wayfinder with the local tracker in [Tracker conventions](../TRACKER.md). For live design questions use grilling/domain-modeling lightly; avoid exhaustive interviews at this stage.
+- Use Wayfinder with the [local tracker](../TRACKER.md) and [tracking workflow](../../docs/operations/local-tracking.md). For live design questions use grilling/domain-modeling lightly; avoid exhaustive interviews at this stage.
 - For research, use primary sources and capture a linked report. Firmware changes are a possibility to investigate, not a settled requirement.
 - Owned hardware comes first; no speculative purchase list.
 - Future ideas are parked in the [deferred feature wishlist](../../records/wishlist.md), outside the active ticket frontier. Do not begin work on them until the owner explicitly brings them forward.
-- Historical child tickets live in `issues/`; use GitHub for the current work queue.
+- Historical child tickets live in `issues/`; use the local tracker for the current work queue during the branch trial.
 - Owner resumed endpoint testing under [Check Heltec MQTT over WebSockets for Tunnel hosting](issues/09-heltec-websocket-research.md) on 2026-10-14. Public TLS 8883 through Nginx to source-restricted private Mosquitto 1883 passes authentication/delivery checks; Mike handles certificates. The persistent portal worker now decodes actual encrypted GPS through both V3 gateways and saves deduplicated positions. No WebSockets implementation or research-ticket resolution is claimed; that ticket stays open/unassigned.
 
 ## Decisions so far

@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Trial compact repository tracking
+
+- Owner authorizes the proposed reversible trial. Create `trial/local-tracking` from `origin/main` **0713f7ea60d7bd839d246630655d6d9f70a736db**, preserving the original `docs/telemetry-release-record` branch, other worktrees and unrelated untracked files. Keep `main`, GitHub issues and the Project board unchanged; no merge, archive or deletion yet.
+- Make [.scratch/TRACKER.md](../.scratch/TRACKER.md) the single current queue with Current, Next, Verify and Deferred entries. Preserve all **36 open issues and 25 comments** in the [one-time local import](tracking-import/index.md), including original requirements, labels, timestamps, holds and handoffs. Retain GH-4's existing R004 diagnostic claim awaiting owner bridge-state confirmation; GH-47/GH-51/GH-52 remain Triage with no selected timing design. Migration activates no deferred work.
+- Update agent instructions and project navigation for tracker/latest-session startup, with detailed history read only for the selected task. Replace routine issue claims, label updates and Project synchronization with a local handoff update. Preserve existing evidence records and publication/hardware boundaries. [Trial, machine handoff, acceptance and rollback procedure](../docs/operations/local-tracking.md).
+- Verification passes: all 36 issue IDs appear once in their imported status groups, all 25 comments are accounted for, 243 relative documentation links resolve and whitespace/scope checks pass. Read-only review corrects GH-5's summary to retain already-passed G002 neighbor delivery while preserving the pending sensor-power scope. This is a documentation/tracking change with no application, firmware, service or hardware action. No measured speed, token or cost saving is claimed; assess during actual work.
+
+Next useful step: use this branch for the next owner-selected task and assess the simpler handoff. If rejected, keep trial records and return to the prior workflow; if accepted later, archive the pre-merge main state and merge normally before separately retiring old issue tracking.
+
 ## 2026-10-21 - Deploy telemetry receipt-time fallback
 
 - Owner explicitly says deploy. Reclaim [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53), update the demo recovery verifier for the new history provenance and merge [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) as **8c5350e8834a771781d594414bd6b7c812a5f136**. Final PR CI and isolated LXC 63 backend/49 portal checks, TypeScript/live build pass. Preserve concurrent worktrees; use a separate main-based release-record branch.
