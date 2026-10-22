@@ -45,6 +45,11 @@ test('member display separates voltage estimate, nominal capacity and measuremen
   assert.doesNotMatch(html, /Save battery configuration|42%/);
   const offline = renderToStaticMarkup(createElement(MemberBattery, { device, now, online: false }));
   assert.match(offline, /Feed offline/);
+  const receivedDevice = { ...device, batteryMeasuredAt: null, batteryReceivedAt: '2026-10-15T11:59:00Z' };
+  const fallback = renderToStaticMarkup(createElement(MemberBattery, { device: receivedDevice, now, online: true }));
+  assert.match(fallback, /Recorded voltage/);
+  assert.doesNotMatch(fallback, /measurement time unknown|Stale battery reading/i);
+  assert.match(fallback, /Battery measured at<\/dt><dd>[^<]+<\/dd>/);
 });
 
 test('admin configuration offers LiPo and inventory capacities; unknown voltage stays unknown', () => {

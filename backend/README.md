@@ -68,6 +68,8 @@ Messages are persisted with authenticated author identity, a display-name prefix
 
 ## Checks and next integration work
 
+Telemetry clock fallback (2026-10-21, #53): unique telemetry readings are selected by valid measurement time, otherwise their original receipt time. The database keeps unknown measurement clocks null/empty with timestamp quality intact. The portal displays receipt time as the temporary measurement-time fallback, and supported telemetry health uses the same age. Infrastructure state retains actual `readingTimes` and adds per-metric `readingReceivedTimes`; `reportedAt` summarizes the effective telemetry clocks. Both snapshot samples and battery history merge measured-time and receipt-time observations before applying limits and return source/receipt clock provenance. Duplicate gateway receipts cannot advance a selected reading's fallback age. GPS and neighbor timing are unchanged; uptime is not used. [Evidence and limits](../docs/operations/battery-contact-freshness-20261021.md#receipt-fallback-correction).
+
 ```sh
 python3 backend/manage.py check
 cd portal

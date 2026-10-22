@@ -4,6 +4,7 @@ import type { LoadBatteryHistory } from './BatteryChart';
 import type { Infrastructure } from './demo';
 import { ageLabel } from './demo';
 import { batterySamples, batteryPower } from './battery';
+import { metricTime } from './telemetry-time';
 
 const stamp = (at: string) =>
   new Date(at).toLocaleString([], {
@@ -28,9 +29,7 @@ export default function BatteryHistory({
   const cadence = device.reportCadenceMinutes?.battery ?? device.cadenceMinutes;
   const timeout = device.missingTimeoutMinutes?.battery ?? cadence * 3;
   const power = batteryPower(device, now);
-  const readingAt = device.readingTimes
-    ? device.readingTimes.battery
-    : device.reportedAt;
+  const readingAt = metricTime(device, 'battery', now);
   const stale = !readingAt || now - Date.parse(readingAt) >= timeout * 60000;
   return (
     <section className="battery-history" aria-label="Battery detail">
@@ -50,7 +49,7 @@ export default function BatteryHistory({
           <small>
             {readingAt
               ? `${ageLabel(Math.max(0, (now - Date.parse(readingAt)) / 1000))} ago`
-              : 'Measurement time unknown'}
+              : 'Awaiting first reading'}
           </small>
         </div>
         <div>

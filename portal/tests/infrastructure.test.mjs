@@ -46,6 +46,37 @@ registerHooks({
   },
 });
 
+test('telemetry views fall back to each metric receipt without changing valid measurement ages', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { default: QuickStats } = await import('../src/InfrastructureQuickStats.tsx');
+  const { default: InfrastructurePage } = await import('../src/InfrastructurePage.tsx');
+  const { default: BatteryHistory } = await import('../src/BatteryHistory.tsx');
+  const { default: BatteryCharge } = await import('../src/BatteryCharge.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.parse('2026-10-21T22:00:00Z');
+  const received = '2026-10-21T21:58:00Z';
+  const device = { ...infrastructure[0], battery: 4.05, batteryProfile: 'lipo-1s',
+    reportedAt: received, lastContactAt: '2026-10-21T21:59:59Z',
+    cadenceMinutes: 5, readingTimes: { battery: null, temperature: '2026-10-21T20:00:00Z' },
+    readingReceivedTimes: { battery: received, temperature: received },
+    powerReadings: [{ metric: 'sensorCurrentMa', value: 0, measuredAt: null, receivedAt: received, timestampQuality: 'unknown' }],
+    samples: [{ at: received, volts: 4.05 }] };
+  const html = renderToStaticMarkup(createElement(QuickStats, { device, now, online: true, onClose() {} }));
+  assert.match(html, /4.050 V/);
+  assert.match(html, /2m 0s ago/);
+  assert.match(html, /2h 0m ago.*stale/);
+  assert.doesNotMatch(html, /measurement time unknown/i);
+  assert.doesNotMatch(renderToStaticMarkup(createElement(BatteryHistory, { device, now, online: true })), /measurement time unknown/i);
+  const page = renderToStaticMarkup(createElement(InfrastructurePage, { now, online: true, admin: false,
+    infrastructureNodes: [device], incidents: [], events: [], rules: {}, onRule() {}, onIncident() {} }));
+  assert.match(page, /4.05 V.*current reading/);
+  assert.doesNotMatch(page, /measurement time unknown/i);
+  const charge = renderToStaticMarkup(createElement(BatteryCharge, { device, now, online: true }));
+  assert.doesNotMatch(charge, /Historical reading/);
+  const stale = { ...device, readingReceivedTimes: { ...device.readingReceivedTimes, battery: '2026-10-21T21:40:00Z' } };
+  assert.match(renderToStaticMarkup(createElement(BatteryCharge, { device: stale, now, online: true })), /Historical reading/);
+});
+
 test('reported RAK current preserves sign and channel with separate hearing age and count', async () => {
   const { renderToStaticMarkup } = await import('react-dom/server');
   const { default: PowerReadings } = await import('../src/PowerReadings.tsx');
@@ -60,7 +91,8 @@ test('reported RAK current preserves sign and channel with separate hearing age 
   assert.match(html, /Power channel 3/);
   assert.match(html, /-323.1 mA/);
   assert.match(html, /0.0 mA/);
-  assert.match(html, /Measurement time unknown/);
+  assert.doesNotMatch(html, /Measurement time unknown/);
+  assert.match(html, /2m 0s ago/);
   assert.match(html, /Stale/);
   assert.match(html, /polarity and calibration are unverified/);
   const table = renderToStaticMarkup(createElement(NeighborTable, { infrastructure: [device], trackers: [], now, online: true,

@@ -1,6 +1,7 @@
 const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
 const neighbors = require(`${__hooks}/neighbors.js`);
+const telemetry = require(`${__hooks}/telemetry.js`);
 const powerMetric = (key) => /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key);
 function timestamp(value, now) {
   if (value === null || value === undefined || value === '')
@@ -193,20 +194,13 @@ function ingest(e) {
             ]
           ];
         if (!supported) return;
-        const latest = readings[metric];
-        if (
-          !latest ||
-          (!latest.measuredAt && !time.measuredAt && time.quality === 'unknown' &&
-            receivedAt > latest.receivedAt) ||
-          (time.measuredAt &&
-            (!latest.measuredAt || time.measuredAt > latest.measuredAt))
-        )
-          readings[metric] = {
-            value: data[metric],
-            measuredAt: time.measuredAt,
-            receivedAt,
-            timestampQuality: time.quality,
-          };
+        const reading = {
+          value: data[metric],
+          measuredAt: time.measuredAt,
+          receivedAt,
+          timestampQuality: time.quality,
+        };
+        if (telemetry.newer(reading, readings[metric])) readings[metric] = reading;
       });
       device.set('readings', readings);
       app.save(device);

@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-10-21 - Implement telemetry receipt-time fallback
+
+- Owner authorizes backend/portal changes under [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53): valid device calendar time first, otherwise receipt time for displayed measurement time/age; retain absent/invalid source clocks in storage and use no uptime ordering. Claim #53 and create a separate branch from origin/main, preserving draft neighbor PR #50.
+- Actual PocketBase regression reproduces 4.19 V freezing ahead of a newer 4.05 V unknown-time report, then passes with shared per-metric effective-time selection. Preserve GPS/neighbor timing and original source/receipt provenance; duplicate receipts cannot refresh selected telemetry. Apply fallback consistently to telemetry values, battery history, cards, charge/power presentation and supported telemetry health. [Behavior, evidence and remaining release work](../docs/operations/battery-contact-freshness-20261021.md#receipt-fallback-correction).
+- All 49 portal tests/TypeScript/production build pass locally. Targeted actual-binary backend tests pass for source-clock loss/recovery, delayed/duplicate packets, invalid/future clocks, health and mixed-clock history. Full Windows suite exposes connection resets on authorization tests and missing timezone data; Linux CI is the full verification path. Automatic approval review rejects isolated LXC source staging, so no source transfer or production change is made; use authorized GitHub CI publication instead.
+
+- Publish application **6ee314a** and deterministic receipt-order fixture correction **d382ce2** in [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54). Preserve concurrent main **87d2422**'s G002 Wi-Fi record in merge **7a71f67**, resolving only session-log insertions. All **63 backend checks** pass on Linux Python 3.14.3 / PocketBase 0.40.5 and all **49 portal checks**, TypeScript and build pass on pinned Node 22.23.1. Release implementation claim to Verify for deployment and fresh/native acceptance; no retained session claim. Final evidence links are in the diagnosis/correction record.
+
+Next useful step: release PR #54's backend/frontend together through the existing backup/recovery procedure and verify new unique R002/R004 receipts and native presentation. No device action, migration or deployment in this implementation session; derived Project reconciliation still awaits authenticated CLI access.
+
 ## 2026-10-21 - G002 second Wi-Fi replacement
 
 - Owner authorizes supplied Wi-Fi settings on attached G002 only. Read startup/hardware handoff records, search related issues and claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40) for this scoped configuration follow-up. Preserve concurrent portal work in the original checkout; record hardware evidence in an isolated main checkout.

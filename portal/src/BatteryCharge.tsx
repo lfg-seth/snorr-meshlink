@@ -1,5 +1,6 @@
 import type { Infrastructure } from './demo';
 import { batteryChargeEstimate } from './battery';
+import { metricTime } from './telemetry-time';
 
 export default function BatteryCharge({
   device,
@@ -11,9 +12,7 @@ export default function BatteryCharge({
   online: boolean;
 }) {
   const estimate = batteryChargeEstimate(device);
-  const at = device.readingTimes
-    ? device.readingTimes.battery
-    : device.reportedAt;
+  const at = metricTime(device, 'battery', now);
   const timeout =
     device.missingTimeoutMinutes?.battery ??
     (device.reportCadenceMinutes?.battery ?? device.cadenceMinutes) * 3;

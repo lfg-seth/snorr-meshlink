@@ -1,3 +1,5 @@
+import { telemetryTime } from './telemetry-time.ts';
+
 // Approximate readings of EVE's 0.2C / 77°F discharge plot, not an OCV curve.
 // Source, lookup points and scope: docs/research/member-battery-charge.md.
 const eve26vCurve = [
@@ -68,15 +70,15 @@ export function memberBatteryState(device: {
   batteryVoltage?: number | null;
   batteryProfile?: string;
   batteryMeasuredAt?: string | null;
+  batteryReceivedAt?: string | null;
 }, now: number, online: boolean) {
   const estimate = batteryChargeEstimate({
     id: device.id, battery: device.batteryVoltage ?? null,
     batteryProfile: device.batteryProfile ?? 'unknown',
   });
-  const measured = Date.parse(device.batteryMeasuredAt ?? '');
+  const measured = Date.parse(telemetryTime(device.batteryMeasuredAt, device.batteryReceivedAt, now) ?? '');
   const status = !online ? 'Feed offline · historical reading'
-    : !Number.isFinite(measured) ? 'Measurement time unknown'
-    : measured > now ? 'Invalid future measurement time'
+    : !Number.isFinite(measured) ? 'Awaiting first battery report'
     : now - measured >= 15 * 60000 ? 'Stale battery reading' : 'Recorded voltage';
   return { ...estimate, status };
 }

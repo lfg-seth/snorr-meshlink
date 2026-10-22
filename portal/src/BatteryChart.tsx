@@ -84,7 +84,7 @@ export default function BatteryChart({ device, now, loadHistory }: {
           {path && <path d={path} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
           {isolated.map(sample => <circle key={sample.at} cx={x(Date.parse(sample.at))}
             cy={y(sample.volts)} r="2.2" fill="currentColor">
-            <title>{new Date(sample.at).toLocaleString()}: {sample.volts.toFixed(3)} V</title>
+            <title>{`${new Date(sample.at).toLocaleString()}: ${sample.volts.toFixed(3)} V`}</title>
           </circle>)}
         </svg>
       ) : <p className="battery-mini-empty small muted">{loading ? 'Loading battery history…' : 'Not enough battery history in this period.'}</p>}
