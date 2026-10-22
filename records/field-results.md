@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-10-21 - G002 second Wi-Fi replacement bench check
+
+Owner-authorized COM6 G002 `!849ad7a0`, unchanged **2.7.26.9d2fd8f**. New complete private backup and independent post-restart comparison pass; only Wi-Fi SSID differs, with supplied password already matching. Retained console observes IP acquisition, MQTT connected and publication activity. Five-minute telemetry, identity/keys/channel/MQTT and LoRa TX disabled preserved. Serial closed. Short local bench result; independent broker/production receipt, sustained reconnect, runtime and field coverage unverified. [Evidence](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21).
+
 ## 2026-10-21 - R004 INA219 register diagnosis
 
 Owner authorizes R004 diagnostic flashing with an installed R100 inline between battery and board. Existing firmware reproduces **−1,152.6 mA**; first diagnostic image reaches **−1,437.4 mA**. Address 0x40 configuration/calibration **0x399F / 0x1000** are correct. Updated diagnostic **2.7.26.09d8a9d** independently preserves full identity/keys/channels/profile. Three reads of one held conversion repeat **−40.09 mV / −400.9 mA**, with exact expected raw-current multiplication; ordinary continuous readings vary between conversions. This narrows the issue upstream of portal/unit scaling, without validating the actual voltage drop or current. Physical same-path meter evidence and exact wiring remain pending. Local bench evidence only; RF/MQTT/portal delivery, calibration, runtime and field acceptance are not tested. [Detailed evidence](../docs/operations/ina219-audit.md#r004-reinvestigation--2026-10-21), [investigation](https://github.com/lfg-seth/snorr-meshlink/issues/4).

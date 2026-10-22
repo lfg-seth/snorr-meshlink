@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - G002 second Wi-Fi replacement
+
+- Owner authorizes supplied Wi-Fi settings on attached G002 only. Read startup/hardware handoff records, search related issues and claim [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40) for this scoped configuration follow-up. Preserve concurrent portal work in the original checkout; record hardware evidence in an isolated main checkout.
+- Independently identify COM6 HELTEC_V3 `!849ad7a0`, unchanged **2.7.26.9d2fd8f**. New complete private backup and independent post-restart profile comparison pass: only Wi-Fi SSID differs, with owner-supplied password already matching. Identity/keys/channels, MQTT, CLIENT/TX disabled, neighbor collector and enabled 300-second device telemetry preserved.
+- Retained console observes IP acquisition, MQTT connected and publication activity. No flash/reset, other-board write or server/application change; serial closed. [Evidence and limits](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21). Keep credentials/profiles/raw logs private.
+- Release scoped Windows claim to Verify; #40 remains open for original failure trigger and sustained reconnect verification. GitHub CLI is unavailable on this desktop; derived Project reconciliation remains pending the authenticated management host.
+
+Next useful step: observe sustained per-gateway delivery and capture Wi-Fi/MQTT state before resetting during a recurrence; independent production ingestion was not checked in this short Wi-Fi task.
+
 ## 2026-10-21 - Capture neighbor-card cleanup and sign-in persistence fixes
 
 - Owner adds two more portal fix-list items. Search existing authentication and endpoint issues; create [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48) and [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49), linked from [the wishlist](wishlist.md#remove-endpoint-locations-from-neighbor-signal-cards). Record the sign-in interval as approximate owner-reported behavior with cause and reproduction details unknown; link existing native authentication verification #6 without treating the prior reload fix as resolution.
