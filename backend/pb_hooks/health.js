@@ -1,4 +1,5 @@
 const c = require(`${__hooks}/common.js`);
+const telemetry = require(`${__hooks}/telemetry.js`);
 // Run in an existing transaction. Feed loss never creates device-missing incidents.
 function evaluate(app) {
   const feed = c.feed(app);
@@ -43,8 +44,7 @@ function evaluate(app) {
       const timeout =
         ((config.missingTimeoutMinutes || {})[metric] || cadence * 3) * 60000;
       const reading = readings[metric];
-      const measured =
-        reading && reading.measuredAt ? Date.parse(reading.measuredAt) : 0;
+      const measured = Date.parse(telemetry.at(reading)) || 0;
       const fresh = measured > 0 && now - measured < timeout && measured <= now;
       const kind = `missing:${metric}`;
       const warning = c.first(
@@ -81,8 +81,9 @@ function evaluate(app) {
       !rule ||
       rule.enabled === false ||
       !battery ||
-      !battery.measuredAt ||
-      now - Date.parse(battery.measuredAt) >= batteryTimeout
+      !telemetry.at(battery) ||
+      Date.parse(telemetry.at(battery)) > now ||
+      now - Date.parse(telemetry.at(battery)) >= batteryTimeout
     )
       return;
     const warning = c.first(

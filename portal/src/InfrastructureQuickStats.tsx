@@ -7,6 +7,7 @@ import { temperatureLabel } from './temperature';
 import type { Infrastructure } from './demo';
 import { ageLabel, timeLabel } from './demo';
 import { batteryPower } from './battery';
+import { metricTime } from './telemetry-time';
 import { infrastructureLabel } from './infrastructure-map';
 import type { ReactNode } from 'react';
 import { infrastructureMarkerClass } from './map-markers';
@@ -28,13 +29,11 @@ export default function InfrastructureQuickStats({
 }) {
   const power = batteryPower(device, now);
   const freshness = (metric: string) => {
-    const at = device.readingTimes
-      ? device.readingTimes[metric]
-      : device.reportedAt;
+    const at = metricTime(device, metric, now);
     const minutes =
       device.missingTimeoutMinutes?.[metric] ??
       (device.reportCadenceMinutes?.[metric] ?? device.cadenceMinutes) * 3;
-    if (!at) return 'measurement time unknown';
+    if (!at) return 'Awaiting first reading';
     return `${ageLabel(Math.max(0, (now - Date.parse(at)) / 1000))} ago${now - Date.parse(at) >= minutes * 60000 ? ' · stale' : ''}`;
   };
   return (

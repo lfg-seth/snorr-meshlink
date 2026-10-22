@@ -7,6 +7,7 @@ import type { LoadBatteryHistory } from './BatteryChart';
 import NeighborTable from './NeighborTable';
 import type { LinkObservation } from './NeighborTable';
 import { batteryPower } from './battery';
+import { metricTime } from './telemetry-time';
 import {
   ageLabel,
   telemetryState,
@@ -67,11 +68,7 @@ export default function InfrastructurePage({
     (i) => i.deviceId === selected.id && !i.resolvedAt,
   );
   const metricState = (metric: string) => {
-    const time = selected.readingTimes
-      ? selected.readingTimes[metric]
-      : selected.reportedAt;
-    if (selected.readingTimes && metric in selected.readingTimes && !time)
-      return 'unknown measurement time';
+    const time = metricTime(selected, metric, now);
     const cadence =
       selected.reportCadenceMinutes?.[metric] ?? selected.cadenceMinutes;
     const timeout = selected.missingTimeoutMinutes?.[metric] ?? cadence * 3;
@@ -84,7 +81,6 @@ export default function InfrastructurePage({
     selected.reportedAt,
     now,
     selected.cadenceMinutes,
-    selected.lastContactAt,
   );
   return (
     <div className="stack">
@@ -112,7 +108,6 @@ export default function InfrastructurePage({
               device.reportedAt,
               now,
               device.cadenceMinutes,
-              device.lastContactAt,
             );
             const open = incidents.find(
               (i) => i.deviceId === device.id && !i.resolvedAt,
@@ -182,7 +177,7 @@ export default function InfrastructurePage({
           Last report:{' '}
           {selected.reportedAt
             ? `${timeLabel(selected.reportedAt)} · ${ageLabel((now - Date.parse(selected.reportedAt)) / 1000)} ago`
-            : selected.lastContactAt ? `Received ${timeLabel(selected.lastContactAt)} · measurement time unknown` : 'Never reported'}
+            : 'Awaiting first telemetry report'}
           {selected.cadenceMinutes > 0
             ? `. Cadence ${selected.cadenceMinutes}m; default missing timeout ${selected.cadenceMinutes * 3}m (three intervals). `
             : '. Telemetry reporting cadence is not configured. '}

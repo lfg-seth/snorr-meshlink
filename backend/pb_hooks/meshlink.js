@@ -1,5 +1,6 @@
 const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
+const telemetry = require(`${__hooks}/telemetry.js`);
 function assign(e) {
   c.human(e);
   const body = e.requestInfo().body;
@@ -473,15 +474,7 @@ function batteryHistory(e) {
     throw new BadRequestError('Choose 24, 168 or 720 hours.');
   const end = c.now();
   const cutoff = new Date(Date.parse(end) - hours * 3600000).toISOString();
-  const rows = c.rows(e.app, 'observations',
-    'deviceId = {:id} && measuredAt >= {:cutoff} && measuredAt <= {:end} && payload.battery > 0',
-    '-measuredAt,-id', { id: device.getString('key'), cutoff, end }, 50001);
-  return e.json(200, {
-    samples: rows.slice(0, 50000).reverse().map(o => ({
-      at: o.getString('measuredAt'), volts: c.object(o, 'payload').battery,
-    })),
-    truncated: rows.length > 50000,
-  });
+  return e.json(200, telemetry.batteryHistory(e.app, device.getString('key'), cutoff, end, 50000));
 }
 function state(e) {
   c.human(e);
@@ -545,11 +538,15 @@ function state(e) {
       const value = (metric) =>
         readings[metric] ? readings[metric].value : null;
       const times = {};
+      const receivedTimes = {};
       Object.keys(readings).forEach(
-        (key) => (times[key] = readings[key].measuredAt),
+        (key) => {
+          times[key] = readings[key].measuredAt;
+          receivedTimes[key] = readings[key].receivedAt;
+        },
       );
-      const timesKnown = Object.keys(times)
-        .map((key) => times[key])
+      const timesKnown = Object.keys(readings)
+        .map((key) => telemetry.at(readings[key]))
         .filter(Boolean)
         .sort();
       return {
@@ -564,24 +561,11 @@ function state(e) {
         solar: value('solar'),
         intrusion: value('intrusion'),
         readingTimes: times,
+        readingReceivedTimes: receivedTimes,
         powerReadings: Object.keys(readings).filter((key) =>
           /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key))
           .map((key) => ({ metric: key, ...readings[key] })),
-        samples: c
-          .rows(
-            app,
-            'observations',
-            'deviceId = {:id} && measuredAt != ""',
-            '-measuredAt',
-            { id: d.getString('key') },
-            40,
-          )
-          .reverse()
-          .map((o) => ({
-            at: o.getString('measuredAt'),
-            volts: c.object(o, 'payload').battery,
-          }))
-          .filter((s) => typeof s.volts === 'number'),
+        samples: telemetry.batteryHistory(app, d.getString('key'), '', c.now(), 40).samples,
       };
     });
   const incidentRows = c.rows(app, 'incidents', '', 'openedAt').map((i) => ({

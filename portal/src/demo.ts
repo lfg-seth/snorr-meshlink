@@ -1,4 +1,5 @@
 import type { Position } from './position';
+import { telemetryTime } from './telemetry-time.ts';
 
 export type Fix = Position & {
   longitude: number;
@@ -74,6 +75,7 @@ export type Infrastructure = {
   antenna: string;
   samples: { at: string; volts: number }[];
   readingTimes?: Record<string, string | null>;
+  readingReceivedTimes?: Record<string, string | null>;
   reportCadenceMinutes?: Record<string, number>;
   missingTimeoutMinutes?: Record<string, number>;
   disabledMonitoring?: string[];
@@ -370,8 +372,9 @@ export function telemetryState(
   cadenceMinutes: number,
   receivedAt?: string | null,
 ) {
-  if (!at) return receivedAt ? 'Unknown measurement time' : 'Awaiting first report';
-  return now - Date.parse(at) >= cadenceMinutes * 3 * 60_000
+  const time = telemetryTime(at, receivedAt, now);
+  if (!time) return 'Awaiting first report';
+  return now - Date.parse(time) >= cadenceMinutes * 3 * 60_000
     ? 'Stale reading'
     : 'Current reading';
 }

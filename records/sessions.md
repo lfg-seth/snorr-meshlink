@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Implement telemetry receipt-time fallback
+
+- Owner authorizes backend/portal changes under [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53): valid device calendar time first, otherwise receipt time for displayed measurement time/age; retain absent/invalid source clocks in storage and use no uptime ordering. Claim #53 and create a separate branch from origin/main, preserving draft neighbor PR #50.
+- Actual PocketBase regression reproduces 4.19 V freezing ahead of a newer 4.05 V unknown-time report, then passes with shared per-metric effective-time selection. Preserve GPS/neighbor timing and original source/receipt provenance; duplicate receipts cannot refresh selected telemetry. Apply fallback consistently to telemetry values, battery history, cards, charge/power presentation and supported telemetry health. [Behavior, evidence and remaining release work](../docs/operations/battery-contact-freshness-20261021.md#receipt-fallback-correction).
+- All 49 portal tests/TypeScript/production build pass locally. Targeted actual-binary backend tests pass for source-clock loss/recovery, delayed/duplicate packets, invalid/future clocks, health and mixed-clock history. Full Windows suite exposes connection resets on authorization tests and missing timezone data; Linux CI is the full verification path. Automatic approval review rejects isolated LXC source staging, so no source transfer or production change is made; use authorized GitHub CI publication instead.
+
+Next useful step: complete Linux CI, then hand off #53 for the separately authorized backend/frontend release and fresh R002/R004/native acceptance. No device action, migration or deployment in this implementation session; derived Project reconciliation still awaits authenticated CLI access.
+
 ## 2026-10-21 - Capture neighbor-card cleanup and sign-in persistence fixes
 
 - Owner adds two more portal fix-list items. Search existing authentication and endpoint issues; create [Remove "Endpoint locations" from neighbor signal cards](https://github.com/lfg-seth/snorr-meshlink/issues/48) and [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49), linked from [the wishlist](wishlist.md#remove-endpoint-locations-from-neighbor-signal-cards). Record the sign-in interval as approximate owner-reported behavior with cause and reproduction details unknown; link existing native authentication verification #6 without treating the prior reload fix as resolution.

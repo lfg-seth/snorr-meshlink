@@ -19,6 +19,108 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_telemetry_calendar_time_then_receipt_fallback_across_clock_loss(self):
+        known = packet('r1', 'telemetry', {'battery': 4.19, 'temperature': 20}, 300)
+        known['receivedAt'] = at(299)
+        self.ingest(known)
+        unknown = packet('r1', 'telemetry', {'battery': 4.05, 'temperature': 0}, None)
+        unknown['receivedAt'] = at(2)
+        self.ingest(unknown)
+        row = lambda: next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')
+        self.assertEqual(row()['battery'], 4.05)
+        self.assertEqual(row()['temperature'], 0)
+        self.assertIsNone(row()['readingTimes']['battery'])
+        self.assertEqual(row()['readingReceivedTimes']['battery'], unknown['receivedAt'])
+        self.assertEqual(row()['reportedAt'], unknown['receivedAt'])
+        saved = next(o for o in self.records('observations') if o['packetKey'].startswith('telemetry:r1:' + unknown['packetId']))
+        self.assertEqual(saved['measuredAt'], '')
+        self.assertEqual(saved['timestampQuality'], 'unknown')
+        # Late calendar-time and delayed receipt-time packets cannot replace it.
+        for measured, received in [(10, 1), (None, 3)]:
+            delayed = packet('r1', 'telemetry', {'battery': 3.5}, measured)
+            delayed['receivedAt'] = at(received)
+            self.ingest(delayed)
+            self.assertEqual(row()['battery'], 4.05)
+        self.assertEqual(self.ingest({**unknown, 'gatewayId': 'b2', 'receivedAt': at(1)})['outcome'], 'duplicate')
+        self.assertEqual(row()['readingReceivedTimes']['battery'], unknown['receivedAt'])
+        # Recovery uses measurement time, rather than the later arrival time.
+        recovered = packet('r1', 'telemetry', {'battery': 4.1}, 1)
+        self.ingest(recovered)
+        self.assertEqual(row()['battery'], 4.1)
+        self.assertEqual(row()['readingTimes']['battery'], recovered['measuredAt'])
+        history = self.admin.request('GET', '/api/meshlink/battery-history/r1?hours=24')['samples']
+        self.assertTrue(any(s['at'] == unknown['receivedAt'] and s['volts'] == 4.05 for s in history))
+        self.assertTrue(any(s['at'] == recovered['measuredAt'] and s['volts'] == 4.1 for s in history))
+        self.assertEqual([s['at'] for s in history], sorted(s['at'] for s in history))
+        self.assertTrue(any(s['at'] == unknown['receivedAt'] for s in row()['samples']))
+
+    def test_invalid_telemetry_clocks_fall_back_without_changing_gps_freshness(self):
+        fix = packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6}, 30)
+        self.ingest(fix)
+        for clock, quality in [('not-a-time', 'invalid'), (at(-10), 'future'), (None, 'unknown')]:
+            reading = packet('d1', 'telemetry', {'battery': 3.9}, None)
+            reading['measuredAt'] = clock
+            self.ingest(reading)
+            row = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
+            self.assertIsNone(row['batteryMeasuredAt'])
+            self.assertEqual(row['batteryReceivedAt'], reading['receivedAt'])
+            self.assertEqual(row['batteryTimestampQuality'], quality)
+            self.assertEqual(row['position']['measuredAt'], fix['measuredAt'])
+
+    def test_battery_history_merges_both_clocks_before_limiting_and_preserves_provenance(self):
+        reference = datetime.now(timezone.utc)
+        stamp = lambda minutes: (reference - timedelta(minutes=minutes)).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        for minute in range(44):
+            measured = stamp(minute + 1) if minute % 2 else ''
+            self.superuser.request('POST', '/api/collections/observations/records', {
+                'deviceId': 'r1', 'packetKey': f'history-{minute}', 'measuredAt': measured,
+                'receivedAt': stamp(minute + .5), 'timestampQuality': 'valid' if measured else 'unknown',
+                'payload': {'battery': 3.5 + minute / 1000}})
+        for key, measured, received in [('old-known', stamp(1500), stamp(1)), ('old-unknown', '', stamp(1500))]:
+            self.superuser.request('POST', '/api/collections/observations/records', {
+                'deviceId': 'r1', 'packetKey': key, 'measuredAt': measured, 'receivedAt': received,
+                'timestampQuality': 'valid' if measured else 'unknown', 'payload': {'battery': 4.2}})
+        samples = next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['samples']
+        self.assertEqual(len(samples), 40)
+        self.assertEqual(samples[0]['volts'], 3.539)
+        self.assertEqual(samples[-1]['volts'], 3.5)
+        for sample in samples:
+            self.assertEqual(sample['at'], sample['measuredAt'] or sample['receivedAt'])
+        history = self.admin.request('GET', '/api/meshlink/battery-history/r1?hours=24')['samples']
+        self.assertEqual(len(history), 44)
+        self.assertEqual([s['at'] for s in history], sorted(s['at'] for s in history))
+        for client in [self.worker, Client(self.url)]:
+            with self.assertRaises(ApiError):
+                client.request('GET', '/api/meshlink/battery-history/r1?hours=24')
+
+    def test_telemetry_receipt_fallback_drives_health_without_duplicate_refresh(self):
+        self.admin.request('POST', '/api/meshlink/rules', {'deviceId': 'r1', 'trigger': 3.5, 'recovery': 3.8})
+        low = packet('r1', 'telemetry', {'battery': 3.4}, None)
+        self.ingest(low)
+        warnings = lambda: [w for w in self.state()['warnings'] if w['deviceId'] == 'r1' and w['kind'] == 'battery']
+        self.assertIsNone(warnings()[0]['recoveredAt'])
+        self.ingest(packet('r1', 'telemetry', {'battery': 4.0}, 20))
+        self.assertIsNone(warnings()[0]['recoveredAt'])
+        good = packet('r1', 'telemetry', {'battery': 3.9}, None)
+        self.ingest(good)
+        self.assertTrue(warnings()[0]['recoveredAt'])
+        stale = packet('r2', 'telemetry', {'battery': 3.9}, None)
+        stale['receivedAt'] = at(30)
+        self.ingest(stale)
+        self.ingest({**stale, 'gatewayId': 'b2', 'receivedAt': at()})
+        r2 = next(d for d in self.state()['infrastructure'] if d['id'] == 'r2')
+        self.assertEqual(r2['readingReceivedTimes']['battery'], stale['receivedAt'])
+        # A new source reading, not a duplicate or neighboring-node mention, recovers missing health.
+        device = next(d for d in self.records('devices') if d['key'] == 'r2')
+        self.superuser.request('PATCH', '/api/collections/devices/records/' + device['id'], {'monitoringStartedAt': at(60)})
+        feed = self.records('feed')[0]
+        self.superuser.request('PATCH', '/api/collections/feed/records/' + feed['id'], {'restoredAt': at(60)})
+        self.worker.request('POST', '/api/meshlink/worker/heartbeat', {'connected': True})
+        missing = lambda: [w for w in self.state()['warnings'] if w['deviceId'] == 'r2' and w['kind'] == 'missing:battery']
+        self.assertIsNone(missing()[0]['recoveredAt'])
+        self.ingest(packet('r2', 'telemetry', {'battery': 3.95}, None))
+        self.assertTrue(missing()[0]['recoveredAt'])
+
     def test_neighbor_reports_atomic_dedup_private_storage_and_clock_semantics(self):
         data = {'reportType': 'snns-v1', 'observerNodeId': '!05237743', 'bootId': 42,
                 'sequence': 7, 'reportUptimeSeconds': 100, 'subset': False,
@@ -75,7 +177,12 @@ class BackendTests(unittest.TestCase):
         replay_future = packet('r1', 'telemetry', {'power3CurrentMa': 100}, 2)
         replay_future['receivedAt'] = at(10)
         self.ingest(replay_future)  # Future when received remains future on replay.
-        self.assertEqual(next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings'], current['powerReadings'])
+        latest = {r['metric']: r for r in next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings']}
+        self.assertEqual(latest['power3CurrentMa']['value'], 100)
+        self.assertIsNone(latest['power3CurrentMa']['measuredAt'])
+        self.assertEqual(latest['power3CurrentMa']['timestampQuality'], 'future')
+        self.assertGreater(latest['power3CurrentMa']['receivedAt'], replay_future['receivedAt'])
+        self.assertEqual(latest['power1CurrentMa'], readings['power1CurrentMa'])
         self.ingest(packet('r1', 'telemetry', {'sensorVoltage': 0.008, 'sensorCurrentMa': -0.4}, None))
         self.assertEqual(len(next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings']), 5)
         for data in [{'power9CurrentMa': 1}, {'power3CurrentMa': -100001}, {'sensorVoltage': -1}, {'power1CurrentMa': True}]:
@@ -178,7 +285,8 @@ class BackendTests(unittest.TestCase):
                      packet('d1', 'telemetry', {'battery': 4.1}, minutes=10)]:
             self.ingest(item)
         row = next(d for d in self.state()['trackers'] if d['id'] == 'd1')
-        self.assertEqual(row['batteryVoltage'], 3.8)
+        self.assertEqual(row['batteryVoltage'], 3.6)
+        self.assertIsNone(row['batteryMeasuredAt'])
         self.assertEqual(row['position'], before['position'])
         with self.assertRaises(ApiError):
             self.ingest(packet('d1', 'telemetry', {'temperature': 20}))

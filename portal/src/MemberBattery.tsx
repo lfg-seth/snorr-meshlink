@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Tracker } from './demo';
 import { timeLabel } from './demo';
 import { memberBatteryState } from './battery-charge';
+import { telemetryTime } from './telemetry-time';
 
 export type BatteryConfiguration = {
   batteryProfile: string;
@@ -31,7 +32,7 @@ export default function MemberBattery({ device, now, online, onConfigure }: {
           {device.batteryVoltage == null ? 'Unknown' : `${device.batteryVoltage.toFixed(3)} V`}
           <small>{estimate.status}</small>
         </dd></div>
-        <div><dt>Battery measured at</dt><dd>{timeLabel(device.batteryMeasuredAt ?? null)}</dd></div>
+        <div><dt>Battery measured at</dt><dd>{timeLabel(telemetryTime(device.batteryMeasuredAt, device.batteryReceivedAt, now))}</dd></div>
         <div><dt>Battery received at</dt><dd>{timeLabel(device.batteryReceivedAt ?? null)}</dd></div>
         <div><dt>Configured battery</dt><dd>
           {device.batteryProfile === 'lipo-1s' ? 'LiPo · 1S · 3.7 / 4.2 V'
