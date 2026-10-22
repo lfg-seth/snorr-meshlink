@@ -2,6 +2,10 @@
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
+## Current neighbor signals and relative expiry - 2026-10-21
+
+Owner explicitly authorizes deployment of the trial branch's reviewed GH-47 correction. Application **443ba03** is deployed with explicit additive migrations to both live/demo databases, preserving all pre-existing records, configuration and saved demo work. Server 74 backend/55 portal checks, live build, nine public assets, access/isolation boundaries and migrated backup recovery pass. Fresh SNNS reports produce useful current readings; cached standard tables cannot renew them. Actual-component replay verifies exact two-hour estimated-age expiry. Native/sustained acceptance and unseen upstream delay remain separate. [Release evidence and limits](neighbor-signal-visibility.md#deployment---2026-10-21). `main` and draft PR #50 remain unchanged.
+
 ## Telemetry receipt-time fallback - 2026-10-21
 
 Application **8c5350e** from [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) is deployed 2026-10-21. Backend/frontend release, 63 backend/49 portal checks on the server, exact protected-state preservation, public hashes/authentication/services and isolated live/demo recovery pass. [Release evidence and fresh-receipt verification](battery-contact-freshness-20261021.md#deployment---2026-10-21).

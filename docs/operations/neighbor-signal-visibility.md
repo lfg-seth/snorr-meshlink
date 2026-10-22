@@ -2,6 +2,8 @@
 
 GH-47 application correction, 2026-10-21. [Design comparison and selected scope](../../.scratch/pilot/issues/24-neighbor-current-state.md). [Original diagnosis](neighbor-report-freshness-20261021.md). Draft PR #50's absolute-time-only filter remains incomplete and undeployed; this work starts from the local-tracking trial and replaces its proposed approach without merging that draft.
 
+**Deployed 2026-10-21:** source **443ba03** is live after the owner's explicit deployment instruction. [Release evidence](#deployment---2026-10-21).
+
 ## Behavior
 
 Current signals use SNNS relative hearing evidence and retain their age anchor across repeated reports. Standard cached NeighborInfo tables remain historical records and cannot create or refresh current links. Two hours of estimated hearing age is the visibility cutoff, including while the portal is offline. Signal direction, weakest-current-SNR colors, node cards, the selected relationship/minimap and Infrastructure table use the same eligible observations. Missing and expired observations do not establish a failed radio link.
@@ -26,4 +28,25 @@ Local portal `npm run check` passes **55 tests**, TypeScript and the production 
 
 Published source **1282463** merges through [PR #55](https://github.com/lfg-seth/snorr-meshlink/pull/55) into `trial/local-tracking` as **3d6bd1e400fd28ff980a4d25078427efd6bac98d**. [Backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39709144039) passes all **74 tests** with pinned dependencies, including cryptography 50.0.2. [Portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39709144081) passes all **55 tests**, TypeScript and build on pinned Node **22.23.1**. Local supplementary checks pass the existing atomic neighbor regression and 17 adapter/queue tests; five demo checks pass, with the Windows worker simulation unable to load `America/Los_Angeles` timezone data. Linux CI passes that simulation too. No full Windows-suite pass is claimed.
 
-Native browser/mobile, fresh operational radio delivery, deployment and the strict upstream-delay bound remain separate acceptance work. `main`, production, hardware and draft PR #50 remain unchanged. The [local tracker](../../.scratch/TRACKER.md) carries the remaining actions; no GitHub issue or Project status is changed.
+At that source checkpoint, native presentation, fresh operational radio delivery and deployment remained separate acceptance work. The deployment below supersedes those release/delivery limits; native review and the strict upstream-delay bound remain pending. The [local tracker](../../.scratch/TRACKER.md) carries the remaining actions; no GitHub issue or Project status is changed.
+
+## Deployment - 2026-10-21
+
+Owner explicitly says **deploy**. Promote source **443ba037bb3eec63ad6ae3cb4c2fc84ca0a0d013** from the trial branch at **19:18:53 Pacific** (`2026-10-22T02:18:53Z`), replacing application **8c5350e**. This publishes the selected release without accepting the tracking trial into `main` or choosing a general deployment-branch policy. Concurrent wishlist-only commits remain preserved on the trial branch; deployed backend/portal source is unchanged by them. Draft PR #50 remains excluded.
+
+Isolated LXC checks pass all **74 backend tests**, **55 portal tests**, TypeScript and the live build on Node **22.23.1**. The source archive SHA-256 is `f9c88f9301174d2426a1e7ad4690350080112a3c88d56f68113ee9b9e8b3dd68`. Before promotion, apply the migration to consistent private live/demo copies and confirm all pre-existing application rows are unchanged. During promotion, stop both APIs and workers, preserve rollback source/static/state, explicitly migrate both databases, and compare exact fingerprints again: all **19 live** and **20 demo** pre-existing application tables match. All **11 protected configuration, credential and worker-queue file hashes** match. The new private collections initially contain zero rows; no historical anchor backfill, demo reset, history pruning, account/configuration rewrite or hardware action occurs.
+
+Rollback remains private at `/opt/meshlink-rollback-neighbor-443ba03`. An old-source rollback can retain the additive schema; do not undo migration or restore an old database over newly received history merely to roll back code. Matching pre-migration state is also retained privately for a separately controlled recovery if needed.
+
+| Private host backup | SHA-256 | Recovery |
+| --- | --- | --- |
+| Pre-release `meshlink-20261022T021641Z.tar.gz` | `3f76b87581351ed2eef2245bef18fc5ebba0ce0c16fa5f71f6d775f1301e3e74` | Separate live and demo database/API/history recovery passes |
+| Post-release `meshlink-20261022T022004Z.tar.gz` | `d55a8ecd6084bd44b9f796d921e9a99b9a492e217ab320dd09d0971dd0d73feb` | Both migrated databases recover; all ten saved current readings and three observer frontiers retain their exact IDs/age anchors and historical references |
+
+All **nine public HTTPS assets** match the tested manifest. Public index SHA-256: `ad67c789bacfec8dd4143f59f54c8341d0c767586f1ff194d57723ff74c96e66`. Live-mode declaration, all six services, protected/public routes, per-client sign-in throttling, live/demo token and OS isolation, private current-collection denial and recovery pass. A fresh MQTT check receives two new archive records, validates the latest 200 envelopes and finds an empty durable receipt queue. Raw data remains private.
+
+Fresh normal-cadence SNNS reports from **G001, G002 and R003** create **ten current readings** by `02:20:01Z`; the feed is online. Authenticated current state contains no standard NeighborInfo rows and preserves null absolute hearing times. An actual React table render against those sanitized received readings shows estimated ages while offline, remains visible one millisecond before calculated expiry, and removes readings at two hours exactly. This is a clock-advanced presentation check, not a measured two-hour field run.
+
+The original B002/G001 pair demonstrates the difference between publication and hearing. Same-boot sequences **1066/1067**, received `02:18:32.020Z` and `02:19:47.114Z`, retain count **81** and the same derived hearing coordinate **84690 seconds** despite report uptime/age changing from **84705/15** to **84780/90**. The pair is absent from the initial current snapshot. Sequence **1068**, received `02:21:02.417Z`, supplies count **82** and a newer relative hearing coordinate **84811**, making the reading eligible. Sequence **1069** advances count to **83** with zero reported age. These are source-reported passive hearing observations, not independent proof of physical isolation, range or actual end-to-end delay. The 672 historical pair rows are retained.
+
+Private manifests, logs and sanitized verification evidence remain under `/opt/meshlink-release-neighbor-443ba03/`. `/opt/meshlink/SOURCE_COMMIT` pins the application above. Native desktop/mobile presentation, sustained operation and a strict hearing-age limit through unseen upstream buffering remain pending. No radio settings, firmware, R004 diagnostics, GitHub issue/Project status or `main` are changed.

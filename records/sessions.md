@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-21 - Deploy relative-age current neighbor signals
+
+- Owner explicitly authorizes deployment. Release pinned trial source **443ba03** at **19:18:53 Pacific**, preserving concurrent LOCAL-1/LOCAL-2 wishlist records and leaving `main`, draft PR #50 and GitHub issue/Project status unchanged. The tracking trial is not accepted into `main`, and no general deployment-branch policy is selected. [Deployment evidence](../docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).
+- Isolated server 74 backend/55 portal checks, TypeScript/live build and trial migrations on consistent live/demo copies pass. Back up and verify recovery before promotion. Quiesce both APIs/workers, retain rollback source/static/state, then explicitly migrate live and demo together. Exact fingerprints of all 19 live/20 demo pre-existing application tables and all 11 protected configuration/credential/queue files are preserved; current collections initially empty, with no history backfill or demo reset.
+- Nine public asset hashes, live/public authentication and isolation boundaries, all six services, fresh MQTT archival and empty queue pass. Fresh SNNS from G001/G002/R003 creates ten useful current readings; null absolute hearing clocks and standard-table exclusion remain honest. Actual React renders of those readings pass offline estimated-age presentation and exact two-hour clock-advanced expiry. B002/G001's unchanged count-81 snapshots remain excluded; the pair becomes eligible only after newer source hearing/count-82 evidence. No independent physical-link or delay-bound claim.
+- Pre- and post-release backups pass separate live/demo recovery. Additional isolated restore confirms all ten saved current readings and three observer frontiers preserve exact IDs, relative-age anchors and historical references. Keep archives, logs, manifests and rollback private on the host. No radio/firmware/configuration action or R004 diagnostic change. GH-47 remains Verify for native and sustained/outage acceptance; the unseen upstream delay limit remains GH-51/GH-52 work.
+
+Next useful step: refresh the portal and verify native desktop/mobile neighbor presentation, then observe sustained expiry/outage behavior. Select and verify bounded source/queue work before claiming a strict two-hour hearing limit through upstream delays.
+
 ## 2026-10-21 - Capture five-minute member status and battery reporting
 
 - Owner endorses the Infrastructure-page feedback; retain it with LOCAL-1 without selecting the exact neighbor layout/page name or starting implementation.
