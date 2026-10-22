@@ -76,6 +76,8 @@ Status: deferred; portal fix-list capture only. Added 2026-10-21.
 
 Desired behavior: node-card neighbor entries show just the neighbor name, signal strength and distance in miles. Neighbors fall off the card after two or more hours without activity. Exact strength presentation, activity timestamp semantics and missing-location handling remain to define when activated. Card visibility does not request deletion of stored neighbor history. No independent reproduction or browser/build details captured.
 
+2026-10-21: the owner separately selects GH-47's corrective current-signal freshness and two-hour expiry work under the [relative-age decision](../.scratch/pilot/issues/24-neighbor-current-state.md). The name/strength/distance layout remains deferred; this correction does not activate it.
+
 ## Hide sensor power section when no sensors are present
 
 Original issue: [Hide node-card sensor voltage and current when no sensors are present](https://github.com/lfg-seth/snorr-meshlink/issues/44).

@@ -67,8 +67,11 @@ test('production opens the isolated demo by default and live sign-in survives re
       reportedAt: null, cadenceMinutes: 2, battery: null, temperature: null, solar: null, intrusion: null,
       equipped: { solar: false, weather: false, intrusion: false }, batterySetup: 'Unknown', solarSetup: 'Unknown', antenna: 'Unknown', samples: [] }],
     links: [{ id: 'db-link', observerDeviceId: 'db-gateway', heardDeviceId: 'db-tracker',
+      originalSourceDeviceId: 'db-tracker', source: 'gateway', path: 'direct', snrDb: -20, rssiDbm: -101,
+      receivedAt: new Date().toISOString(), observedAt: new Date().toISOString() }],
+    currentLinks: [{ id: 'db-current-link', observerDeviceId: 'db-gateway', heardDeviceId: 'db-tracker',
       originalSourceDeviceId: 'db-tracker', source: 'gateway', path: 'direct', snrDb: 0, rssiDbm: -101,
-      receivedAt: new Date().toISOString(), observedAt: null }],
+      observedAt: new Date().toISOString(), receivedAt: new Date().toISOString() }],
   };
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options });
@@ -107,10 +110,14 @@ test('production opens the isolated demo by default and live sign-in survives re
     await navigate('#infrastructure');
     assert.match(document.querySelector('.neighbor-table').textContent, /DB901/);
     assert.match(document.querySelector('.neighbor-table').textContent, /0 dB/);
-    demoState.links[0].snrDb = 8.5;
+    demoState.currentLinks[0].snrDb = 8.5;
     await navigate('#users');
     await navigate('#infrastructure');
     assert.match(document.querySelector('.neighbor-table').textContent, /8.5 dB/, 'table reflects backend changes');
+    demoState.currentLinks = [];
+    await navigate('#users');
+    await navigate('#infrastructure');
+    assert.equal(document.querySelector('.neighbor-table'), null, 'empty current state never revives history');
     await act(async () => button('Simulate outage').click());
     assert.ok(requests.some(r => r.url === '/demo-api/api/meshlink/demo/feed' && r.options.method === 'POST'));
     assert.ok(requests.every(r => r.url.startsWith('/demo-api/')), 'demo mutations also stay isolated');

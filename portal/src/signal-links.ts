@@ -1,6 +1,7 @@
 import type { Infrastructure, Tracker } from './demo';
 import type { LinkObservation } from './NeighborTable';
 import { infrastructureLabel } from './infrastructure-map.ts';
+import { signalFreshness } from './signal-freshness.ts';
 
 export type SignalNode = {
   id: string;
@@ -40,7 +41,7 @@ function time(at: string | null) {
   return at ? Date.parse(at) || 0 : 0;
 }
 
-export function signalConnections(links: LinkObservation[], trackers: Tracker[], infrastructure: Infrastructure[]) {
+export function signalConnections(links: LinkObservation[], trackers: Tracker[], infrastructure: Infrastructure[], now: number) {
   const nodes = new Map<string, SignalNode>();
   trackers.forEach(device => {
     const position = device.position;
@@ -58,6 +59,7 @@ export function signalConnections(links: LinkObservation[], trackers: Tracker[],
   const groups = new Map<string, SignalConnection>();
   let omitted = 0;
   links.forEach(link => {
+    if (!signalFreshness(link, now)) return;
     // The packet's original source is not necessarily the radio neighbor.
     const heard = link.heardDeviceId && nodes.get(link.heardDeviceId);
     const observer = nodes.get(link.observerDeviceId);
@@ -74,7 +76,7 @@ export function signalConnections(links: LinkObservation[], trackers: Tracker[],
   const relationships = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));
   relationships.forEach(connection => {
     const chronological = (a: LinkObservation, b: LinkObservation) =>
-      time(b.observedAt ?? b.receivedAt) - time(a.observedAt ?? a.receivedAt) ||
+      signalFreshness(a, now)!.ageSeconds - signalFreshness(b, now)!.ageSeconds ||
       time(b.receivedAt) - time(a.receivedAt) || a.id.localeCompare(b.id);
     connection.observations.sort(chronological);
     const latest = new Map<string, LinkObservation>();
