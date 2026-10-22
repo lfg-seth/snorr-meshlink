@@ -2,6 +2,10 @@
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
+## Telemetry receipt-time fallback - 2026-10-21
+
+Application **8c5350e** from [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) is deployed 2026-10-21. Backend/frontend release, 63 backend/49 portal checks on the server, exact protected-state preservation, public hashes/authentication/services and isolated live/demo recovery pass. [Release evidence and fresh-receipt verification](battery-contact-freshness-20261021.md#deployment---2026-10-21).
+
 ## Gateway battery graph release - 2026-10-21
 
 Owner authorizes deployment after restoring connectivity. Merged [PR #46](https://github.com/lfg-seth/snorr-meshlink/pull/46), application **`fa035509dfc2fd1492c8ae01618d99269c9a4f92`**, is deployed. Graphs preserve isolated readings when cadence is unknown; both gateways now have owner-confirmed 1000 mAh LiPo metadata. G002 has verified five-minute battery cadence and actual history rendering; G001 correctly awaits its first battery report. All 47 portal checks on pinned server Node, public assets/boundaries, six services, fresh MQTT ingestion and final isolated live/demo backup recovery pass. Prior frontend rollback is retained. Initial public asset permissions are corrected before final verification. [Exact release/backup evidence and limits](gateway-battery-graphs.md#verification-and-deployment).

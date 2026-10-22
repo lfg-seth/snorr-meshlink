@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-21 - Deploy telemetry receipt-time fallback
+
+- Owner explicitly says deploy. Reclaim [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53), update the demo recovery verifier for the new history provenance and merge [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) as **8c5350e8834a771781d594414bd6b7c812a5f136**. Final PR CI and isolated LXC 63 backend/49 portal checks, TypeScript/live build pass. Preserve concurrent worktrees; use a separate main-based release-record branch.
+- Pre-release backup and isolated live/demo recovery pass. Deploy backend/frontend together with rollback retained; all migration files and protected live/demo database, account-credential and worker-configuration hashes remain unchanged during promotion. Public nine-file manifest, all six services, live/demo isolation, public/authentication boundaries and post-release isolated recovery pass. Fresh MQTT archival and empty queue pass. [Exact hashes, checkpoints and remaining limits](../docs/operations/battery-contact-freshness-20261021.md#deployment---2026-10-21).
+- Actual React components against sanitized live R002/R004 data render the correct selected voltage/age and history without an unknown-time message. Histories include prior unknown-time samples immediately. Fresh normal-cadence packets pass: R004 **4.091 V**, measured **18:24:16 Pacific**, replaces its selected five-hour-old reading; R002 **4.110 V**, measured **18:26:54**, advances its reading/history. Both now supply valid calendar time, correctly preferred; no radio/firmware/configuration/clock change performed. Final fresh-telemetry backup and isolated live/demo recovery pass. Release deployment claim to Verify with no retained session claim; native browser/mobile and sustained freshness remain unverified.
+
+Next useful step: refresh the portal and confirm native presentation, then continue sustained telemetry freshness/outage verification under the existing issues. Derived Project reconciliation still awaits authenticated CLI access.
+
 ## 2026-10-21 - Implement telemetry receipt-time fallback
 
 - Owner authorizes backend/portal changes under [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53): valid device calendar time first, otherwise receipt time for displayed measurement time/age; retain absent/invalid source clocks in storage and use no uptime ordering. Claim #53 and create a separate branch from origin/main, preserving draft neighbor PR #50.

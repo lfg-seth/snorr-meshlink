@@ -57,3 +57,28 @@ Verification: the real PocketBase integration regression fails before the correc
 Implementation is prepared separately from draft neighbor PR #50. Production remains `fa03550`; device state, production databases and services are unchanged. Release must apply backend and portal together and verify new unique R002/R004 receipts and native presentation through the normal backup/recovery procedure.
 
 Published application **6ee314a**, deterministic test-fixture correction **d382ce2**, and records-only main merge **7a71f67** in [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54). The first Linux run exposed equal receipt timestamps in an older fixture; explicit distinct receipt clocks remove its ordering ambiguity without changing application behavior. Preserve concurrent main **87d2422**'s G002 Wi-Fi evidence; resolve only the two session-log insertions. On `7a71f67`, all **63 backend checks** pass on pinned Python 3.14.3 / PocketBase 0.40.5 ([Backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39704129129)); all **49 portal checks**, TypeScript and build pass on pinned Node 22.23.1 ([Portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39704129233)). The full supported Linux checks supersede the Windows verification limits above. No live/native/deployment acceptance is claimed. Release the #53 implementation claim to Verify for release and fresh receipts; derived Project reconciliation still awaits authenticated CLI access.
+
+## Deployment - 2026-10-21
+
+Owner explicitly authorizes deployment. Merge [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) as **`8c5350e8834a771781d594414bd6b7c812a5f136`** and deploy backend/frontend together at approximately **18:17 Pacific** (`2026-10-22T01:17:39Z`). The exact staged application matches the merged commit. A small operational compatibility update **fc24573** teaches demo backup verification to compare the new history provenance fields and receipt fallback, while retaining support for older backups. Both final PR CI suites pass; all **63 backend checks**, **49 portal tests**, TypeScript and live build also pass in an isolated stage on the LXC using its MQTT Python environment and pinned Node 22.23.1.
+
+No migration is needed; all migration files match the previous deployment. Quiesce the four application services, preserve prior backend/portal/deployment source and public files in `/opt/meshlink-rollback-telemetry-fc24573`, and promote the staged backend/frontend with explicit public file modes. Exact hashes of the live/demo databases, live account credentials and `/etc/meshlink` files remain unchanged throughout promotion. Preserve all nine devices, account/assignment/history records and private provisioning. No radio, firmware, device configuration, worker identity or gateway-direction change.
+
+Backups remain private on the LXC:
+
+- Pre-release `meshlink-20261022T011448Z.tar.gz`, SHA-256 `8f314091b707831493a28e538154841d70b63fabebcb4a79933978d1371ce4b2`.
+- Post-release `meshlink-20261022T011918Z.tar.gz`, SHA-256 `9d471d29fc30628788db080f090ea47522077d5cbc5ba9be07733fe786c25bd6`.
+- Final fresh-telemetry checkpoint `meshlink-20261022T012725Z.tar.gz`, SHA-256 `37b78757442f01c3cbb99075afa1062dabbf9bb98c13a6a41e98213add5d3e88`.
+
+All three backups pass checksum, isolated live database/API and separate synthetic demo database/API/history recovery. All nine public HTTPS assets match the tested manifest; index SHA-256 is `9154f59e373356363fae24d9b4b606b48b8ebc616338296254e74274577fa0b0`. Live/demo authentication/OS isolation, protected public routes, per-client sign-in throttling and all six services pass. Fresh archive receipt, 200 envelope checks and zero pending MQTT queue pass. Final restore retains 2,951 positions, 2,389 telemetry observations, 10,713 normalized receipts, 9,758 archived MQTT packets and 15,350 link observations; these are backup checkpoint counts, not current totals.
+
+Actual React node-card and battery-detail rendering against sanitized authenticated R002/R004 data passes voltage/age and unknown-time-message checks. Production histories immediately include the prior unknown-time observations (77 R002 and 76 R004 samples in the initial 24-hour check). Existing selected values advance with the next unique newer report, as documented above. Observe their normal fifteen-minute cadence without requesting transmissions or changing radios:
+
+| Node | Fresh voltage | Source measurement, Pacific | Portal receipt, Pacific | Outcome |
+| --- | --- | --- | --- | --- |
+| R002 | 4.110 V | 18:26:54 | 18:26:59.318 | New unique observation, selected value/timestamp and history agree |
+| R004 | 4.091 V | 18:24:16 | 18:24:19.842 | Replaces the selected five-hour-old battery reading |
+
+Both new packets have valid calendar timestamps, which the deployed code correctly prefers. R002 had already regained a calendar clock before this release; no hardware clock change is performed here. Real historical unknown-time samples use receipt fallback in history, and the isolated integration regressions verify unknown-time selection. Final actual-component renders show R002 `4.110 V / 28s ago` and R004 `4.091 V / 3m 6s ago`, with 78/77 samples in their respective 24-hour histories. Native browser/mobile presentation, sustained freshness and hardware clock recovery remain separate limits. Release the #53 deployment claim to Verify without a retained claim for native/sustained acceptance.
+
+Private build manifest/logs and sanitized verification evidence stay under `/opt/meshlink-release-fc24573/`; raw operational state remains private. Source pin `/opt/meshlink/SOURCE_COMMIT` is the merged release above. Draft neighbor PR #50 is excluded from this deployment.
