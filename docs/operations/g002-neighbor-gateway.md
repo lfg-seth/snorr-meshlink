@@ -1,5 +1,13 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
+## Clifford INT24 Wi-Fi update - 2026-10-21
+
+Owner requests a second Wi-Fi replacement on connected G002. Independently identify COM6 as HELTEC_V3 **`!849ad7a0`**, unchanged firmware **2.7.26.9d2fd8f**. Preserve a new complete private profile before writing the supplied Wi-Fi settings. Independent readback after the network-setting restart passes exact user/metadata/local/module/channel comparison: **only `localConfig.network.wifiSsid` differs**; the supplied password already matches and Wi-Fi was already enabled. Identity/security/channel keys, CLIENT role, disabled LoRa TX, MQTT, local-only neighbor collector and enabled 300-second device telemetry remain preserved.
+
+The retained verification console captures IP acquisition, `MQTT connected` and publication activity. This verifies short local connection recovery; no independent broker subscription or production-ingestion check, sustained reconnect, runtime or field result is claimed. No flash, reset, other-board write or server/application change. Serial closes after verification. Credentials, complete profiles and raw logs remain ignored under `private/bench/G002-wifi-20261021-int24/`; the supplied network name/password are omitted from public records.
+
+Tracked as an owner-authorized configuration follow-up to [Diagnose missing production node updates](https://github.com/lfg-seth/snorr-meshlink/issues/40); its original trigger and sustained recovery checks remain open.
+
 ## Five-minute device telemetry enabled - 2026-10-21
 
 Owner authorizes G002 only; G001 remains for a later session. [Enable G002 device telemetry every five minutes](https://github.com/lfg-seth/snorr-meshlink/issues/41) scopes the change. Identify COM6 HELTEC_V3 `!849ad7a0` on unchanged **2.7.26.9d2fd8f**, privately back up its complete profile, and set only `telemetry.device_telemetry_enabled=true` and `device_update_interval=300`. Independent complete user/metadata/local/module/channel comparison passes after the setting-triggered restart. Identity/keys, Wi-Fi/MQTT, CLIENT role, disabled LoRa TX and neighbor collector remain preserved. No flash, server/application change or G001 access.
