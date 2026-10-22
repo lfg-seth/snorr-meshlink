@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-21 - Remove the temporary neighbor-options worktree
+
+- Inspect `.scratch/worktrees/neighbor-options` after the owner's cleanup question. Its tracked, untracked and ignored-file status is clean; verify HEAD **22fcd7f** exactly matches the published `origin/fix/neighbor-signal-freshness` branch through remote readback.
+- Remove the temporary checkout with normal `git worktree remove`. Preserve the local/remote branch and its draft implementation, comparison notes and history. Remaining worktrees are the local-tracking trial and the separate private main checkout; the trial working tree is clean after removal. No application, firmware, device, deployment or GitHub tracking changes; no application tests needed for checkout removal.
+
+Next useful step: continue from the local tracker. Recreate an isolated checkout from the preserved neighbor branch only when that work is selected.
+
 ## 2026-10-21 - Trial compact repository tracking
 
 - Owner authorizes the proposed reversible trial. Create `trial/local-tracking` from `origin/main` **0713f7ea60d7bd839d246630655d6d9f70a736db**, preserving the original `docs/telemetry-release-record` branch, other worktrees and unrelated untracked files. Keep `main`, GitHub issues and the Project board unchanged; no merge, archive or deletion yet.
