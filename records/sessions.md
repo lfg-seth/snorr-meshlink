@@ -7,7 +7,7 @@
   `!da581e5f` / default `1e5f`, USB `E9B12C5CA98FBCB8`; **R006 stays
   provisional**, without rename or portal registration. Record the new
   assembly without inferring purchases or stock totals.
-- Privately back up stock **2.7.15.567b8ea** and complete configuration.
+- Record stock version **2.7.15.567b8ea** and privately back up complete configuration.
   Verify the existing diagnostic UF2 hash, match bootloader identity and flash
   **2.7.26.09d8a9d** without rebuilding/resetting. Independent version and
   post-restart intended-profile checks pass. Identity/security/channels
