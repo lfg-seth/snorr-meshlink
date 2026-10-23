@@ -1,5 +1,50 @@
 # Session log
 
+## 2026-10-23 - Prepare R006 with INA219-only production telemetry
+
+- Owner assigns fresh assembly **R006** and requests production preparation
+  with INA219 only/no temperature sensor. Build ordinary `rak4631` from clean
+  published **09d8a9dbf**, retaining INA219 fixes/SNNS without diagnostic or
+  dummy-load flags. Flash verified UF2 SHA256 **8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e**;
+  preserve node/hardware identity. [Manifest](../docs/operations/r006-production-image.json)
+  and [full preparation/evidence](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+- Independently verify the complete intended CLIENT/private-US-pilot profile
+  through reboot: device and power telemetry **900 seconds**, environmental
+  reporting disabled, neighbors enabled, GPS off and random-PIN Bluetooth.
+  The formerly keyless UNSET profile creates its first PKI pair, which persists
+  through reboot. Two fresh local power requests verify corrected **channel 1**.
+- At **14:10:51 Pacific**, register R006 unlocated with no weather capability
+  and unknown battery capacity/arrangement. Exact quiesced fingerprints preserve
+  all old rows across 31 live/32 demo tables/schema; only R006 device/event/
+  migration marker and provisioning/mapping/manifest changes are added. All
+  other protected private files are preserved. Application **443ba03** stays
+  deployed; no application or other-radio change.
+- After final startup/clock setting, three unique automatic reports arrive
+  through **both G001/G002**, with six retained gateway copies and correct
+  accepted/duplicate outcomes. Device battery **3.882 V**, INA219 channel 1
+  **3.856 V / −275.7 mA** and one SNNS neighbor report reach authenticated
+  portal state. Device/power measurement clocks are valid; SNNS calendar
+  hearing time remains unknown. Temperature/humidity absent; serial closed.
+  This completes GH-5's remaining fresh power check; remove its local Verify
+  entry without changing GitHub issues/Project.
+- Complete pre/post backups pass isolated live and independent demo recovery;
+  final archive **meshlink-20261023T211331Z.tar.gz**, SHA256
+  **7730b6aa4f633cf0119c42e83921d92ba8f2a1ad18c1732807a8971555655f76**.
+  The installed demo verifier hits known GH-39 bounded-history assumptions;
+  private archived database/table/API-window/isolation verification passes
+  without modifying that verifier or any history. All four services active.
+- Validation: ordinary build/UF2-OTA payload checks, final full profile/PKI
+  readback, actual local power replies, live isolated provisioning/deduplication
+  and full recovery pass. Retained artifacts match the recorded manifest;
+  applied provisioning source matches its tracked copy. Documentation links
+  and whitespace checks pass. No sustained cadence/runtime, physical current
+  calibration, native UI or field acceptance claimed.
+
+Next useful step: choose an actual R006 site and record its battery assembly,
+then observe repeated 15-minute delivery and battery runtime. GH-4's physical
+same-path calibration/marking/polarity and R004 bridge confirmation remain
+separate; startup acceptance does not establish field readiness.
+
 ## 2026-10-23 - Flash and test fresh INA219 assembly
 
 - Owner brings a brand-new RAK19003/RAK4631 and INA219 inline with an 18650

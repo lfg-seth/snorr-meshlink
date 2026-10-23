@@ -1,5 +1,16 @@
 # Hardware inventory
 
+2026-10-23 R006 commissioning - Owner assigns the fresh RAK19003/RAK4631
+assembly **R006**, with **INA219 only and no temperature sensor**. Identity
+`!da581e5f`, hardware ID `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB
+`E9B12C5CA98FBCB8`. Ordinary `rak4631` **2.7.26.09d8a9d** replaces the
+diagnostic image; CLIENT pilot profile, device and power telemetry at 900
+seconds, environmental reporting off. Initial PKI keys are created from the
+previously keyless UNSET profile and persist through reboot. 18650 source
+count/capacity/arrangement, antenna and site remain unconfigured; shunt polarity
+and independent accuracy remain unverified. No purchase or stock-total change
+inferred. [Production preparation](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+
 2026-10-23 fresh INA219 bench assembly - Owner confirms a brand-new RAK19003/RAK4631 and INA219 inline with the 18650 battery, currently USB-powered and charging. Device identifies as `!da581e5f`, default short name `1e5f`, USB serial `E9B12C5CA98FBCB8`; **R006 remains provisional and is not assigned**. Original firmware **2.7.15.567b8ea** is replaced with diagnostic `rak4631-ina219-debug` **2.7.26.09d8a9d**, verified by device version readback. Owner reports approximately **280 mA at 5 V** on the USB input meter, a separate measurement path from the battery-inline sensor. Exact shunt value, polarity, carrier revision and calibrated current accuracy remain unverified. Relationship to previously inventoried stock is unknown; no purchase, cost or stock-total change inferred. [Diagnostic evidence](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
 
 2026-10-21 G002 second Wi-Fi replacement - Existing HELTEC_V3 `!849ad7a0`, COM6, retains **2.7.26.9d2fd8f** and enabled five-minute telemetry. Exact independent full profile comparison shows only the owner-requested Wi-Fi SSID differs; supplied password already matches. IP acquisition/MQTT connection and publication activity observed. LoRa TX remains disabled; quantities and other boards unchanged. [Evidence and limits](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21).

@@ -1,5 +1,17 @@
 # Board flashing and configuration handoff
 
+2026-10-23 R006 production exception supersedes its diagnostic-only profile
+below: **R006 `!da581e5f`** now runs ordinary **`rak4631` / 2.7.26.09d8a9d**,
+UF2 SHA256 `8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e`.
+This is a new ordinary build from the published pinned source, with INA219
+fixes and no diagnostic/dummy-load flags; it is distinct from both the older
+published prerelease and R004's same-version diagnostic target. Owner selects
+**INA219 only, no temperature sensor**. CLIENT pilot profile, device and power
+telemetry enabled at **900 seconds**, environmental measurement disabled;
+private channel and newly initialized PKI pair persist through reboot. Local
+fresh power replies verify **channel 1**. [Image, profile and acceptance](ina219-audit.md#r006-production-preparation--2026-10-23).
+Other repeaters retain their separate current profiles.
+
 2026-10-23 fresh-board diagnostic: owner-authorized new RAK19003/4631
 `!da581e5f` / default `1e5f` now runs checksum-verified existing
 **`rak4631-ina219-debug` / 2.7.26.09d8a9d**. **R006 remains provisional**.

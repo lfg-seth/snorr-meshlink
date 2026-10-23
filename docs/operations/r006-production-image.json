@@ -1,0 +1,48 @@
+{
+  "source": "09d8a9dbf0e18c5f192ed9a8e4be6ed7df1738e7",
+  "runtimeVersion": "2.7.26.09d8a9d",
+  "target": "rak4631",
+  "architecture": "nrf52840",
+  "hwModel": 9,
+  "buildEpoch": 1792738800,
+  "sourceClean": true,
+  "diagnosticsCompiled": false,
+  "dummyLoadCompiled": false,
+  "neighborSignalsCompiled": true,
+  "ina219MultiplierOverride": false,
+  "uf2": {
+    "blocks": 2967,
+    "family": "0xADA52840",
+    "firstAddress": "0x26000",
+    "endAddress": "0xdf700",
+    "matchesOtaApplication": true,
+    "containsDebugIna219": false
+  },
+  "files": [
+    {
+      "name": "firmware-rak4631-2.7.26.09d8a9d.elf",
+      "bytes": 1459300,
+      "sha256": "653cd40e1696b729d3b36123e9e460e760bb9a808ea2fd6cf802e172d3627c31"
+    },
+    {
+      "name": "firmware-rak4631-2.7.26.09d8a9d.hex",
+      "bytes": 2135800,
+      "sha256": "43095b3e01a6b589a5fdbab8eea9d0a89366c93e5a4d941c80d43a778f6c23e3"
+    },
+    {
+      "name": "firmware-rak4631-2.7.26.09d8a9d.uf2",
+      "bytes": 1519104,
+      "sha256": "8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e"
+    },
+    {
+      "name": "firmware-rak4631-2.7.26.09d8a9d.zip",
+      "bytes": 760262,
+      "sha256": "424ce2c59e63b45b73068f698c69494cd9862ca5e2b8bb412b12f6c955ddf05c"
+    },
+    {
+      "name": "firmware-rak4631-2.7.26.09d8a9d.mt.json",
+      "bytes": 1094,
+      "sha256": "819fa122a26097d0b41d532811d535674be691c9a81376ffc73c1a5bcbc3307e"
+    }
+  ]
+}

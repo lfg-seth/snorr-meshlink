@@ -1,5 +1,136 @@
 # INA219 current audit — 2026-10-16
 
+## R006 production preparation — 2026-10-23
+
+Owner assigns the fresh assembly **R006** and requests production preparation
+with **INA219 only, no temperature sensor**. Device **`!da581e5f`**, hardware
+ID **`b8bc8fa95c2cb1e95f1e58dafebb06cc`**, USB serial
+**`E9B12C5CA98FBCB8`**, runtime COM24. This supersedes its provisional label
+and diagnostic-only profile below; R004 and other boards are unchanged.
+
+### Ordinary firmware and saved profile
+
+The old ordinary prerelease predates the INA219 channel/read fixes. Build
+ordinary **`rak4631`**, clean published source
+**`09d8a9dbf0e18c5f192ed9a8e4be6ed7df1738e7`**, instead of carrying the
+diagnostic target into production. Runtime remains **2.7.26.09d8a9d**; the
+target, filename and checksum distinguish these images. Build passes at
+**759,304 bytes flash / 105,252 bytes static RAM**. INA219 fixes and passive
+SNNS reporting are linked; diagnostic, dummy-load and current-multiplier
+override flags are absent. All 2,967 UF2 blocks match the nRF52840 family
+and application address range, and their payload matches the OTA application
+byte-for-byte. [Exact artifact manifest](r006-production-image.json).
+
+Flashed ordinary UF2 **1,519,104 bytes**, SHA256
+`8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e`,
+through the matched WisBlock RAK4631 bootloader, without factory reset or bootloader
+update. Artifacts, build/link logs and pre-production configuration remain
+under ignored `private/bench/R006-production-20261023/`. This new ordinary
+binary is locally retained, not substituted for the published older release.
+
+- Name **SNORR Pilot Repeater R006 / R006**; **CLIENT**, LOCAL_ONLY,
+  node information 10,800 seconds and Pacific timezone.
+- Existing private pilot channel/key, other channels disabled, channel
+  uplink/downlink disabled. Existing pilot US / LONG_FAST / slot 35 / hop 3 /
+  **10 dBm**, boosted receive, ignore MQTT-origin packets; Wi-Fi/MQTT off.
+- Device telemetry **enabled / 900 seconds**; INA219 **power telemetry
+  enabled / 900 seconds**; environmental/temperature/humidity, unrelated
+  air-quality/health and power-screen reporting disabled. Device battery
+  measurement continues using the board ADC; battery INA address remains unset.
+- NeighborInfo enabled with transmit-over-LoRa true and standard interval
+  21,600 seconds; companion cadence remains firmware-controlled. GPS and fixed
+  position disabled, position interval 21,600 seconds, continuous reception
+  without power saving. Serial administration retained; stock fixed-PIN
+  Bluetooth changed to **random PIN** and independently checked after restart;
+  debug API off.
+
+The initial UNSET-region profile had **no PKI keypair**. Commissioning on the
+US pilot profile creates its first pair; this is not preservation of an
+existing pair. Independent full intended-profile checks and an explicit
+reboot verify names, device identity, private channel and the new keypair's
+persistence. Empty disabled-channel settings are normalized for protobuf
+message presence; no channel content difference is ignored.
+
+### Local power-only acceptance
+
+With environmental measurement disabled, two fresh request-matched power
+responses contain **channel 1 only**:
+
+| Local uptime | INA219 bus voltage | Signed current |
+| --- | --- | --- |
+| 41 s | 3.852 V | −275.5 mA |
+| 53 s | 3.848 V | −274.0 mA |
+
+This verifies the ordinary image's INA219 initialization and corrected power
+channel without enabling temperature reporting. Ordinary runtime captures
+contain no INA219 diagnostic markers. Accuracy, polarity and battery-only
+behavior retain the physical-measurement limits of the comparison below.
+
+### Live registration and fresh delivery
+
+At **14:10:51 Pacific**, register R006 in the live portal with the verified
+hardware/node identity, INA219 power capability and **weather disabled**.
+Location is unassigned, deployment status is **bench**, and no site or battery
+capacity/arrangement is invented. [Manual provisioning source](../../deploy/portal/add-r006.js)
+is outside ordinary application migrations. Append the R006-only MQTT
+infrastructure/identity mapping and private repeater manifest entry; retain
+all existing mappings. Application source stays **443ba03**, without frontend
+or backend deployment. Authenticated state now contains **10 devices**:
+two member trackers and eight infrastructure nodes.
+
+Isolated invalid-input rejection, additive provisioning and repeat-run
+idempotence pass. While all writers are quiesced, exact fingerprints of all
+**31 live / 32 demo tables and schema** preserve every existing row, excluding
+only the single added R006 device, event and manual-migration marker. Protected
+configuration, credentials and worker-state files match except the three
+intended R006 provisioning/mapping/manifest files. Rollback copies remain
+private on the host.
+
+After a final explicit restart, independently verify the complete intended
+radio profile and persistent PKI pair, set the device clock through serial,
+then close serial. Only post-**21:11:43 UTC** automatic reports count below:
+
+| Report | Source measurement UTC | G001 receipt UTC | G002 receipt UTC | Normalized result |
+| --- | --- | --- | --- | --- |
+| Device battery | 21:12:39 | 21:12:45.234 | 21:12:45.245 | 3.882 V; one observation |
+| SNNS neighbors | Calendar hearing time unknown | 21:12:47.268 | 21:12:47.266 | One report, one neighbor; relative-age evidence retained |
+| INA219 power channel 1 | 21:13:05 | 21:13:08.073 | 21:13:08.071 | 3.856 V / −275.7 mA; one observation |
+
+**Three unique reports / six gateway copies** retain both gateway receipts.
+G001's battery copy is accepted and G002's duplicate; G002's SNNS/power copies
+are accepted and G001's duplicates. Authenticated portal state preserves
+signed channel-1 readings and valid source clocks for device/power reports,
+while SNNS absolute hearing time remains unknown. Temperature/humidity are
+absent, weather capability false, and no location is assigned. This completes
+the previously outstanding [GH-5 fresh G002 power-delivery check](../../records/tracking-import/github-5.md)
+with an explicitly configured sensor source; GitHub tracking stays unchanged.
+
+Private evidence on the desktop and host `R006-production-20261023/` includes
+the final identity/profile, isolated stage, exact promotion fingerprints and
+`fresh-delivery-evidence.json`. This is startup acceptance, not repeated
+15-minute cadence, calibrated current, battery runtime, installed-site or
+field-coverage acceptance.
+
+### Recovery evidence
+
+Full pre-change backup **`meshlink-20261023T210454Z.tar.gz`**, SHA256
+`07eb97c4d25fe329a168204bb71c3dcd59633dc0201695f5788a1265ca10b8ca`,
+passes installed live recovery. The installed demo verifier reaches the known
+GH-39 assumption that history must never be truncated. Leave that verifier
+and all history untouched. Independent isolated recovery using the archived
+binary/backend/database verifies complete saved database byte equality,
+integrity/schema and all operational-table fingerprints, exact API history
+windows and honest truncation, token rejection and live/demo OS isolation.
+The saved 24/168/720-hour windows contain **17,103 / 49,539 / 50,000** rows,
+with only the 720-hour response truthfully truncated. This is recovery
+evidence, not a GH-39 fix.
+
+After fresh delivery, full backup **`meshlink-20261023T211331Z.tar.gz`**, SHA256
+`7730b6aa4f633cf0119c42e83921d92ba8f2a1ad18c1732807a8971555655f76`,
+passes installed live recovery and the same independent demo recovery.
+All four portal API/worker services are active afterward. Archives, protected
+configuration, rollback copies and recovery logs remain private on the host.
+
 ## Fresh RAK19003/4631 comparison — 2026-10-23
 
 Owner authorizes flashing and testing a brand-new RAK19003/RAK4631 with a

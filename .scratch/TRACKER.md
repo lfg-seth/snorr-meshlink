@@ -6,7 +6,7 @@ Local-tracking trial, 2026-10-21, on `trial/local-tracking`. This file owns curr
 
 | Task | Handoff / next action |
 | --- | --- |
-| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | Fresh RAK19003/4631 (provisional R006) now runs verified existing diagnostic image; five USB-charging replies are −270.7 to −279.4 mA and six initialized held triples pass stability/math, without amp-scale spikes. Next: confirm new shunt marking/polarity and compare simultaneous physical shunt mV/series battery current; accuracy and battery-only behavior remain unresolved. Serial closed; preserve diagnostic image/profile. R004's bridge-state confirmation remains pending and R004 is unchanged. [Comparison](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23). |
+| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | Fresh assembly is now R006, ordinary 2.7.26.09d8a9d, INA219-only; profile/reboot and fresh signed channel-1 power through both gateways/portal pass. Prior diagnostic held triples were stable without amp-scale spikes. Next: confirm shunt marking/polarity and compare simultaneous physical shunt mV/series battery current; accuracy and battery-only behavior remain unresolved. Serial closed. R004's diagnostic image and pending bridge-state confirmation are unchanged. [Production/evidence](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23). |
 
 ## Next
 
@@ -16,7 +16,7 @@ Ready follow-ups and items needing scope/prerequisites; select with the owner be
 | --- | --- |
 | [GH-2 — Phone-free GPS freshness/runtime](../records/tracking-import/github-2.md) | Ready: agree run plan and available B001/B002 hardware, then measure measurement age, two-gateway delivery and battery runtime. Preserve 15-minute stale threshold, four-hour minimum and 12-hour target. |
 | [GH-3 — Forced relay and outage/local viewing](../records/tracking-import/github-3.md) | Ready: define a test excluding direct reception; verify relay, backhaul recovery and useful offline viewing without silently changing radio profiles. |
-| [GH-39 — Bounded demo battery-history recovery](../records/tracking-import/github-39.md) | Ready: reproduce bounded-history verifier failure; correct/check the verifier without truncating demo history or changing production data. |
+| [GH-39 — Bounded demo battery-history recovery](../records/tracking-import/github-39.md) | Ready: correct/check the installed verifier's unconditional untruncated-history assertion without truncating history or changing production data. R006 backup reobserves it; independent exact bounded-history/full-database recovery passes, with the installed verifier untouched. [Evidence](../docs/operations/ina219-audit.md#recovery-evidence). |
 | [GH-7 — Off-host backup recovery](../records/tracking-import/github-7.md) | Triage: choose an authorized private destination/retention plan, then verify separate live/demo recovery beyond the current host. |
 | [GH-8 — Recurring high channel utilization](../records/tracking-import/github-8.md) | Triage: capture the recurrence with the existing receive-only tools before identifying cause or changing radio settings. |
 | [GH-13 — Deployment branch/staging policy](../records/tracking-import/github-13.md) | Triage: agree policy before release automation; this tracking branch does not choose production deployment policy. |
@@ -30,7 +30,6 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 | Task | Remaining check / evidence |
 | --- | --- |
-| [GH-5 — Fresh G002 neighbor/power delivery](../records/tracking-import/github-5.md) | Fresh G002 neighbor delivery/deduplication passed. Sensor-power receipt remains unverified under the deliberately power-disabled RAK profile; agree a configured source/test scope before observing fresh power. |
 | [GH-9 — Expanded demo release](../records/tracking-import/github-9.md) | Preserve completed release evidence; finish native review of battery/power/humidity/neighbor examples and remaining imported acceptance. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-21 — Neighbor minimap navigation](../records/tracking-import/github-21.md) | Deployed; verify native desktop/mobile endpoint interaction and retained relationship/viewport behavior. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-23 — MeshMonitor acceptance](../records/tracking-import/github-23.md) | Native views, two-gateway behavior, storage growth and off-host recovery remain; retain read-only/isolation boundaries. [Operations](../docs/operations/meshmonitor-lxc.md). |

@@ -1,5 +1,30 @@
 # Field testing and tangible results
 
+## 2026-10-23 - R006 INA219-only production preparation
+
+Owner assigns **R006**, INA219 only/no temperature sensor. Ordinary
+**rak4631 / 2.7.26.09d8a9d** replaces the diagnostic target, with verified
+INA219 fixes and no diagnostic/dummy-load flags. Full intended profile and
+new initial PKI pair persist through reboot: CLIENT, existing US/private
+pilot channel at 10 dBm, device/power **900 seconds**, environmental reporting
+off, GPS off, neighbor transmission enabled and random-PIN Bluetooth.
+
+Register the unlocated R006 in the live portal without copying a site or
+battery capacity. Exact quiesced preservation checks pass for all 31 live /
+32 demo tables/schema and protected files, apart from the intended additive
+R006 provisioning records/mappings. After the final startup, **three unique
+reports / six fresh G001+G002 copies** produce one battery observation,
+one channel-1 power observation and one SNNS report, retaining both gateways'
+receipts with correct deduplication. At **14:13:05 Pacific**, INA219 reports
+**3.856 V / −275.7 mA**; first portal receipt **14:13:08.071**. Device battery
+is **3.882 V**; no temperature/humidity and weather capability false.
+
+Fresh delivery passes for both gateways, including GH-5's outstanding power
+path. Independent physical current accuracy, battery-only behavior, repeated
+15-minute cadence, runtime, native UI and installed-site/field acceptance
+remain unverified. Serial closed; other radios unchanged. [Full evidence,
+image hash and recovery checks](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+
 ## 2026-10-23 - Fresh RAK19003/4631 INA219 comparison
 
 Owner-authorized new assembly `!da581e5f` / default `1e5f`, provisional R006,
