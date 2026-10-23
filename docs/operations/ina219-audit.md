@@ -1,5 +1,84 @@
 # INA219 current audit — 2026-10-16
 
+## Fresh RAK19003/4631 comparison — 2026-10-23
+
+Owner authorizes flashing and testing a brand-new RAK19003/RAK4631 with a
+brand-new INA219 inline with its 18650 supply, USB connected and charging.
+Owner's USB-input meter reports approximately **280 mA at 5 V**. This is a
+different measurement path from the battery shunt and is not a calibration
+reference for the INA219. **R006 is provisional**, with no radio rename or
+portal registration performed.
+
+Identify **`!da581e5f`**, default short name **`1e5f`**, USB serial
+**`E9B12C5CA98FBCB8`**, runtime COM24. Original firmware is
+**2.7.15.567b8ea**. Full owner/security, local/module configuration and eight
+channels are backed up under ignored `private/bench/new-rak-ina219-20261023/`.
+The stock environmental measurement setting is disabled; three local requests
+produce no fresh current, so the pre-flash measurement is **inconclusive**.
+
+Flash the existing **`rak4631-ina219-debug` / 2.7.26.09d8a9d**, source
+**`09d8a9dbf0e18c5f192ed9a8e4be6ed7df1738e7`**. Exact UF2 size
+**1,521,152 bytes**, SHA256
+`640c6f86b6ce2020d4db900f07bc5b4880780266df90326a5e26a76bfb149813`.
+Matched DFU COM25 / WisBlock RAK4631 bootloader **0.4.3**, S140 **6.1.1**;
+version is independently read back afterward. No rebuild, factory reset,
+bootloader update, region/channel/key change or other-board operation.
+
+Enable only `telemetry.environment_measurement_enabled` for sensor testing,
+then independently verify the profile after its configuration restart.
+Identity, security, channels, all module settings except this enable flag,
+and other local settings match the original except five firmware-normalized
+fields: default-channel position interval **900 → 3600 seconds**, smart
+minimum **30 → 300 seconds**, default buzzer GPIO **0 → 21**, and derived
+LoRa bandwidth/spreading fields **0 → 250 / 0 → 11**. These are recorded
+upgrade effects, not exact full-profile equality. Region remains **UNSET**,
+device telemetry interval **2147483647**, power telemetry disabled and battery
+INA address unset. No pilot radio profile is applied.
+
+### USB charging observations
+
+Two private feedback invocations:
+`.venv/Scripts/python.exe private/bench/new-rak-ina219-20261023.py sample --label usb-charging-1`
+and the same command with `--label usb-charging-2`.
+Both pass the existing **|current| < 1000 mA** symptom check. This detects the
+prior amp-scale symptom, not subamp accuracy.
+
+Five fresh request-matched responses at **13:48:48–13:50:12 Pacific**:
+
+| Local uptime | INA219 bus voltage | Signed telemetry current |
+| --- | --- | --- |
+| 20 s | 3.848 V | −277.7 mA |
+| 32 s | 3.848 V | −270.7 mA |
+| 80 s | 3.844 V | −279.4 mA |
+| 92 s | 3.848 V | −279.4 mA |
+| 104 s | 3.844 V | −278.8 mA |
+
+**Six initialized held conversions × three reads** are each stable, with
+shunt **−27.57 to −27.84 mV**, implied R100 current **−275.7 to −278.4 mA**,
+calibration **0x1000**, triggered config **0x399B**, exact signed shunt/current
+word equality, and overflow **0**. Continuous **0x399F** is restored afterward;
+no diagnostic I2C/config-write errors are captured. An earlier uptime-9-second
+probe has calibration **0x0000** before logged sensor initialization at 16 s;
+exclude that triple from initialized current verification. Sensor register
+arithmetic is checked against the [TI datasheet](https://www.ti.com/lit/ds/symlink/ina219.pdf).
+
+The fresh assembly does **not reproduce R004's amp-scale variation** in this
+short USB-charging test. Independent physical shunt voltage, actual shunt
+resistance/marking, VIN+/VIN− orientation, carrier revision and same-path
+current accuracy remain unverified. A negative value is consistent with
+charging **if VIN+ is battery-side and VIN− board-side**. RAK lists a
+[350 mA RAK19003 charging specification](https://docs.rakwireless.com/product-categories/wisblock/rak19003/datasheet/#battery-connector);
+it is not a measurement of this battery's actual charge current.
+
+Raw profiles, captures, held checks and `verification-summary.json` remain
+private in the directory above; the feedback script is also local-only.
+Serial is closed. Keep this diagnostic image for the next controlled
+comparison. Next useful measurement: confirm shunt marking and polarity,
+then compare simultaneous physical DC millivolts directly across the shunt
+and series battery current under this unchanged USB state. Battery-only,
+zero-input, RF/MQTT/portal, runtime and field acceptance are not tested.
+R004 and its pending physical bridge confirmation remain unchanged.
+
 ## R004 reinvestigation — 2026-10-21
 
 Owner reconnects R004, confirms an installed **R100** with INA219 inline

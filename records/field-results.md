@@ -1,5 +1,24 @@
 # Field testing and tangible results
 
+## 2026-10-23 - Fresh RAK19003/4631 INA219 comparison
+
+Owner-authorized new assembly `!da581e5f` / default `1e5f`, provisional R006,
+is flashed to checksum-verified existing diagnostic **2.7.26.09d8a9d**.
+Independent version and intended-profile verification pass; identity/keys and
+channels are preserved, environmental measurement enabled, and five automatic
+firmware-upgrade field changes are recorded. Region stays UNSET. With USB
+connected and the 18650 charging, **five fresh replies** give **−270.7 to
+−279.4 mA at 3.844–3.848 V**. **Six initialized held triples** repeat their
+individual values exactly, with correct calibration/configuration and raw
+current arithmetic; no captured overflow or diagnostic transport errors.
+An early uninitialized zero-calibration triple is excluded.
+
+The prior amp-scale symptom is absent in these two short captures. Owner's
+**280 mA at 5 V USB-input** observation is a separate measurement path;
+physical current accuracy, shunt marking/polarity and battery-only behavior
+remain unverified. No RF/MQTT/portal, runtime or field-readiness test. Serial
+closed; R004 unchanged. [Detailed evidence and next measurement](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+
 ## 2026-10-21 - G002 second Wi-Fi replacement bench check
 
 Owner-authorized COM6 G002 `!849ad7a0`, unchanged **2.7.26.9d2fd8f**. New complete private backup and independent post-restart comparison pass; only Wi-Fi SSID differs, with supplied password already matching. Retained console observes IP acquisition, MQTT connected and publication activity. Five-minute telemetry, identity/keys/channel/MQTT and LoRa TX disabled preserved. Serial closed. Short local bench result; independent broker/production receipt, sustained reconnect, runtime and field coverage unverified. [Evidence](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21).

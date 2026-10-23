@@ -6,7 +6,7 @@ Local-tracking trial, 2026-10-21, on `trial/local-tracking`. This file owns curr
 
 | Task | Handoff / next action |
 | --- | --- |
-| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | Retain the existing bounded Codex Windows/R004 diagnostic claim awaiting the owner's bridge-state reply; serial is closed. Confirm whether VIN+→VIN− was bridged, then compare bridge-on/off with battery disconnected under the existing diagnostic scope. Accuracy and full wiring remain unresolved; preserve image/profile. [Audit](../docs/operations/ina219-audit.md#r004-reinvestigation--2026-10-21). |
+| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | Fresh RAK19003/4631 (provisional R006) now runs verified existing diagnostic image; five USB-charging replies are −270.7 to −279.4 mA and six initialized held triples pass stability/math, without amp-scale spikes. Next: confirm new shunt marking/polarity and compare simultaneous physical shunt mV/series battery current; accuracy and battery-only behavior remain unresolved. Serial closed; preserve diagnostic image/profile. R004's bridge-state confirmation remains pending and R004 is unchanged. [Comparison](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23). |
 
 ## Next
 

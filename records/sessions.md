@@ -1,5 +1,39 @@
 # Session log
 
+## 2026-10-23 - Flash and test fresh INA219 assembly
+
+- Owner brings a brand-new RAK19003/RAK4631 and INA219 inline with an 18650
+  forward for troubleshooting and authorizes flashing/testing. Identify
+  `!da581e5f` / default `1e5f`, USB `E9B12C5CA98FBCB8`; **R006 stays
+  provisional**, without rename or portal registration. Record the new
+  assembly without inferring purchases or stock totals.
+- Privately back up stock **2.7.15.567b8ea** and complete configuration.
+  Verify the existing diagnostic UF2 hash, match bootloader identity and flash
+  **2.7.26.09d8a9d** without rebuilding/resetting. Independent version and
+  post-restart intended-profile checks pass. Identity/security/channels
+  survive; enable only environmental measurement, record five automatic
+  firmware-upgrade setting differences, and retain region UNSET. R004 and
+  other boards are untouched. [Detailed image/profile evidence](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+- Two USB-charging captures provide five fresh request-matched readings
+  **−270.7 to −279.4 mA / 3.844–3.848 V**. Six initialized held conversions,
+  each read three times, pass stability and exact current/shunt arithmetic
+  with calibration **0x1000**, restored continuous configuration and no
+  captured overflow/diagnostic I2C errors. Exclude one pre-initialization
+  zero-calibration triple. The amp-scale symptom is absent; this is not an
+  independent accuracy result. Owner's USB **280 mA / 5 V** is a different
+  path. Raw evidence stays private and serial is closed.
+- Update inventory, bench results, flashing handoff and GH-4's local next
+  action. Physical shunt marking/polarity, same-path current accuracy and
+  battery-only testing remain pending. No RF/MQTT/portal, runtime or field
+  acceptance result; no firmware source/submodule or GitHub tracking change.
+- Documentation verification: whitespace checks and all 303 relative file
+  targets in changed records pass; new evidence heading/anchor resolves.
+
+Next useful step: confirm the fresh shunt marking and VIN orientation, then
+compare physical millivolts directly across the shunt and series battery
+current with simultaneous diagnostic readings under unchanged USB charging.
+Retain R004's separate pending bridge-state confirmation.
+
 ## 2026-10-21 - Deploy relative-age current neighbor signals
 
 - Owner explicitly authorizes deployment. Release pinned trial source **443ba03** at **19:18:53 Pacific**, preserving concurrent LOCAL-1/LOCAL-2 wishlist records and leaving `main`, draft PR #50 and GitHub issue/Project status unchanged. The tracking trial is not accepted into `main`, and no general deployment-branch policy is selected. [Deployment evidence](../docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).

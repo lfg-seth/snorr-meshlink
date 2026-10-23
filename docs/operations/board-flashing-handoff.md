@@ -1,5 +1,18 @@
 # Board flashing and configuration handoff
 
+2026-10-23 fresh-board diagnostic: owner-authorized new RAK19003/4631
+`!da581e5f` / default `1e5f` now runs checksum-verified existing
+**`rak4631-ina219-debug` / 2.7.26.09d8a9d**. **R006 remains provisional**.
+Environmental measurement is enabled; region remains UNSET and no pilot
+radio profile is applied. Identity/keys/channels are preserved; five automatic
+upgrade-setting differences are explicitly recorded. Five fresh USB-charging
+responses report **−270.7 to −279.4 mA / 3.844–3.848 V**; six initialized held
+triples are stable and mathematically consistent. Physical calibration,
+polarity and battery-only behavior remain unverified. Serial closed; retain
+the diagnostic image for the next controlled comparison. [Image, profile,
+measurements and limits](ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+R004 and all other boards are unchanged.
+
 2026-10-21 R004 exception: owner activates the INA219 investigation and authorizes diagnostic flashing. R004 now runs **`rak4631-ina219-debug` / 2.7.26.09d8a9d**, with its complete original owner/keys/channel/local/module profile independently preserved. It logs continuous and held single-shot register snapshots, restoring sensor configuration before normal telemetry. Device/environment stay 900 seconds; power telemetry remains disabled and battery INA address unset. Correct R100 calibration is captured, but physical accuracy/current variation remain unresolved. Diagnostic image is retained for the next measurement; restore ordinary released firmware when collection is complete. [Audit, hashes and measurements](ina219-audit.md#r004-reinvestigation--2026-10-21). Other boards retain their prior state.
 
 2026-10-19 gateway collector: **G001/G002** now run dedicated **`heltec-v3-gateway` / 2.7.26.9d2fd8f**, with enabled/local-only neighbor collection, CLIENT and LoRa TX disabled. Individual full identity/keys/intended profiles persist through reboot. Fresh own-observer measurements pass MQTT/archive/normalized and authenticated portal state for each gateway. Both gateway source IDs are registered in the live worker. [G001 image/profile/evidence](g001-neighbor-gateway.md), [G002 exact build/source/hash and evidence](g002-neighbor-gateway.md). This is separate from MC00 and the RAK prerelease.
