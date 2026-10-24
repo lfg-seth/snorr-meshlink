@@ -3,6 +3,27 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.1.2 - 2026-10-24
+
+Consolidate device-card battery presentation (LOCAL-8, PR #60). Member,
+repeater/router and gateway details show one top summary of estimated battery
+percentage, device voltage, charging/discharging state and current. Remove the
+entire sensor-power section and duplicate current readings. Member GPS quality
+sits beside percentage; preserve the battery icon, environment readings,
+history/graphs and configuration controls.
+
+Compatibility: existing Meshtastic telemetry and SNNS v1. Reuse existing battery
+profiles and the 0.1.1 normalized-current convention. Measured current identifies
+its sensor path and requires the explicit polarity marker for direction;
+voltage-trend direction remains an estimate. Missing/ambiguous sources remain
+unknown, with independent battery/current freshness. No migration, ingestion,
+stored-history, radio or live-configuration change is required.
+
+Rollback: restore the previous matching portal source/build and root release
+metadata using the verified backup procedure. Backend behavior and schema are
+unchanged. Calibration, whole-battery accounting and owner-phone acceptance
+remain separate gates. Deployment follows the selected manual release procedure.
+
 ## 0.1.1 - 2026-10-24
 
 Correct fleet sensor-current polarity in the authenticated API and portal.
