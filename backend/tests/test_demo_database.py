@@ -152,7 +152,7 @@ class DemoDatabaseTests(unittest.TestCase):
         history = {}
         for device in ['r1', 'r2', 'b1']:
             lengths = []
-            for hours in [24, 168, 720]:
+            for hours in [0.5, 6, 24, 168, 720]:
                 result = self.admin.request('GET', f'/api/meshlink/battery-history/{device}?hours={hours}')
                 self.assertFalse(result['truncated'])
                 samples = result['samples']

@@ -19,6 +19,54 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_current_history_signed_source_deduplication_windows_and_average(self):
+        for minutes, raw in [(400, 300), (40, 1000), (20, 30), (10, -60), (1, 0)]:
+            item = packet('r1', 'telemetry', {'power1CurrentMa': raw, 'sensorCurrentMa': 999}, minutes)
+            self.ingest(item)
+            self.ingest({**item, 'gatewayId': 'b2'})
+        unknown = packet('r1', 'telemetry', {'power1CurrentMa': -90}, None)
+        self.ingest(unknown)
+        before = self.records('observations')
+        results = {}
+        for hours in [0.5, 6, 24, 168, 720]:
+            history = self.admin.request('GET', f'/api/meshlink/current-history/r1?hours={hours}')
+            results[hours] = history
+            self.assertFalse(history['truncated'])
+            self.assertEqual(history['average30Minutes']['count'], 4)
+            self.assertEqual(history['average30Minutes']['milliamps'], 30)
+            self.assertEqual(history['average30Minutes']['metric'], 'power1CurrentMa')
+            self.assertEqual([s['at'] for s in history['samples']], sorted(s['at'] for s in history['samples']))
+            self.assertTrue(all(s['milliamps'] == -s['rawValue'] for s in history['samples']))
+            self.assertTrue(all(s['metric'] == 'power1CurrentMa' for s in history['samples']))
+        self.assertEqual(len(results[0.5]['samples']), 4)
+        self.assertEqual(len(results[6]['samples']), 5)
+        self.assertEqual(len(results[24]['samples']), 6)
+        latest = results[0.5]['samples'][-1]
+        self.assertIsNone(latest['measuredAt'])
+        self.assertEqual(latest['at'], unknown['receivedAt'])
+        self.assertEqual(latest['timestampQuality'], 'unknown')
+        self.assertEqual(self.records('observations'), before)
+        for hours in [0.5, 6]:
+            self.admin.request('GET', f'/api/meshlink/battery-history/r1?hours={hours}')
+
+    def test_current_history_legacy_ambiguity_empty_and_access(self):
+        self.ingest(packet('r2', 'telemetry', {'sensorCurrentMa': -42}, 1))
+        history = lambda device: self.admin.request('GET', f'/api/meshlink/current-history/{device}?hours=0.5')
+        self.assertEqual(history('r2')['samples'][0]['milliamps'], 42)
+        self.assertEqual(history('r2')['average30Minutes']['count'], 1)
+        self.ingest(packet('r2', 'telemetry', {'power1CurrentMa': 15, 'power2CurrentMa': 25}, 0))
+        self.assertEqual(history('r2')['samples'], [])
+        self.assertIsNone(history('r2')['average30Minutes']['milliamps'])
+        self.assertEqual(history('b1')['samples'], [])
+        self.assertIsNone(history('b1')['average30Minutes']['milliamps'])
+        for suffix in ['r1?hours=1', 'r1?hours=NaN', 'd1?hours=24', 'missing?hours=24']:
+            with self.assertRaises(ApiError):
+                self.admin.request('GET', '/api/meshlink/current-history/' + suffix)
+        for client in [self.worker, Client(self.url)]:
+            with self.assertRaises(ApiError):
+                client.request('GET', '/api/meshlink/current-history/r1?hours=24')
+        self.member.request('GET', '/api/meshlink/current-history/r1?hours=24')
+
     def test_gateway_wifi_loss_relay_replay_recovery_and_restart(self):
         data = dict(bootId=123, sequence=1, uptimeSeconds=60, intervalSeconds=180,
                     wifiConnected=False, mqttConnected=False)

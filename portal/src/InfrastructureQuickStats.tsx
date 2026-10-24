@@ -1,6 +1,8 @@
 import BatterySummary from './BatterySummary';
 import BatteryChart from './BatteryChart';
 import type { LoadBatteryHistory } from './BatteryChart';
+import CurrentChart from './CurrentChart';
+import type { LoadCurrentHistory } from './current';
 import DeviceSheet from './DeviceSheet';
 import { temperatureLabel } from './temperature';
 import type { Infrastructure } from './demo';
@@ -17,6 +19,7 @@ export default function InfrastructureQuickStats({
   onClose,
   relationships,
   loadBatteryHistory,
+  loadCurrentHistory,
 }: {
   device: Infrastructure;
   now: number;
@@ -24,6 +27,7 @@ export default function InfrastructureQuickStats({
   onClose: () => void;
   relationships?: ReactNode;
   loadBatteryHistory?: LoadBatteryHistory;
+  loadCurrentHistory?: LoadCurrentHistory;
 }) {
   const freshness = (metric: string) => {
     const at = metricTime(device, metric, now);
@@ -77,6 +81,7 @@ export default function InfrastructureQuickStats({
         </div>
       </dl>
       <BatteryChart device={device} now={now} loadHistory={loadBatteryHistory} />
+      <CurrentChart device={device} now={now} online={online} loadHistory={loadCurrentHistory} />
       {relationships}
     </DeviceSheet>
   );

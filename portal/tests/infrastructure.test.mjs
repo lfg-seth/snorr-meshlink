@@ -68,7 +68,7 @@ test('LOCAL-8 cards consolidate battery/current and retain environment/history a
       const dom = new JSDOM(html);
       const summaries = dom.window.document.querySelectorAll('[aria-label="Battery summary"]');
       assert.equal(summaries.length, 1);
-      assert.equal((html.match(/106.3 mA/g) ?? []).length, 1);
+      assert.equal((summaries[0].textContent.match(/106.3 mA/g) ?? []).length, 1);
       assert.match(summaries[0].textContent, /≈50%.*3.720 V.*Charging \(sensor path\).*\+106.3 mA/);
       assert.match(summaries[0].textContent, /Measured · Power channel 1 · battery flow\/calibration unverified/);
       assert.doesNotMatch(html, /Sensor voltage|Reported sensor power|Battery &amp; power/);
@@ -892,17 +892,17 @@ test('minimal battery charts load each period, retain outages, and reject obsole
   const buttons = () => [...document.querySelectorAll('.battery-periods button')];
   try {
     await render();
-    assert.deepEqual(buttons().map(b => b.textContent), ['24hr', '7day', '30day']);
+    assert.deepEqual(buttons().map(b => b.textContent), ['30min', '6hr', '24hr', '7day', '30day']);
     assert.equal(requests[0].hours, 24);
     await act(async () => requests[0].resolve({ samples: series(24), truncated: false }));
     let path = document.querySelector('.battery-mini-chart path').getAttribute('d');
     assert.ok(path.includes('C'));
     assert.equal(document.querySelectorAll('.battery-mini-chart circle, .battery-mini-chart line, .battery-mini-chart polyline').length, 0);
     assert.equal(document.querySelectorAll('.battery-mini-chart text').length, 6, 'only small axis values');
-    await act(async () => buttons()[1].click());
+    await act(async () => buttons()[3].click());
     assert.equal(requests[1].hours, 168);
     assert.equal(requests[0].signal.aborted, true);
-    await act(async () => buttons()[2].click());
+    await act(async () => buttons()[4].click());
     assert.equal(requests[2].hours, 720);
     assert.equal(requests[1].signal.aborted, true);
     await act(async () => requests[2].resolve({ samples: series(720), truncated: false }));
@@ -911,6 +911,13 @@ test('minimal battery charts load each period, retain outages, and reject obsole
     assert.match(document.querySelector('svg').getAttribute('aria-label'), /30 days/);
     await act(async () => requests[1].resolve({ samples: [], truncated: false }));
     assert.equal(document.querySelector('.battery-mini-chart path').getAttribute('d'), path, 'stale range response is ignored');
+    for (const [index, hours, description] of [[0, .5, '30 minutes'], [1, 6, '6 hours']]) {
+      await act(async () => buttons()[index].click());
+      assert.equal(requests.at(-1).hours, hours);
+      await act(async () => requests.at(-1).resolve({ samples: series(hours), truncated: false }));
+      assert.ok(document.querySelector('svg').getAttribute('aria-label').includes(description));
+      assert.ok([...document.querySelectorAll('svg text')].slice(-3).every(t => t.textContent.includes(':')));
+    }
     await render({ ...device, id: 'b1', name: 'Gateway' });
     assert.equal(requests.at(-1).id, 'b1');
     await act(async () => requests.at(-1).resolve({ samples: [], truncated: false }));

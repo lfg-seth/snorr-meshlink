@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { batterySamples } from './battery';
 import type { BatterySample } from './battery';
 import { batteryCurve, batterySegments } from './battery-curve';
 import type { Infrastructure } from './demo';
+import { historyPeriods } from './history-periods';
+import { useHistory } from './use-history';
 
 export type BatteryHistoryResult = { samples: BatterySample[]; truncated: boolean };
 export type LoadBatteryHistory = (id: string, hours: number, signal: AbortSignal) => Promise<BatteryHistoryResult>;
@@ -13,33 +15,7 @@ export default function BatteryChart({ device, now, loadHistory }: {
   loadHistory?: LoadBatteryHistory;
 }) {
   const [hours, setHours] = useState(24);
-  const [history, setHistory] = useState<BatteryHistoryResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  useEffect(() => {
-    setHistory(null);
-    setError(false);
-    if (!loadHistory) return;
-    let active = true;
-    let abort: AbortController;
-    const refresh = async () => {
-      abort?.abort();
-      const controller = new AbortController();
-      abort = controller;
-      setLoading(true);
-      try {
-        const result = await loadHistory(device.id, hours, controller.signal);
-        if (active && !controller.signal.aborted) { setHistory(result); setError(false); }
-      } catch {
-        if (active && !controller.signal.aborted) setError(true);
-      } finally {
-        if (active && !controller.signal.aborted) setLoading(false);
-      }
-    };
-    void refresh();
-    const timer = window.setInterval(() => void refresh(), 60000);
-    return () => { active = false; abort?.abort(); window.clearInterval(timer); };
-  }, [device.id, hours, loadHistory]);
+  const { history, loading, error } = useHistory(device.id, hours, loadHistory);
 
   const start = now - hours * 3600000;
   const samples = batterySamples([...(history?.samples ?? []), ...device.samples], now)
@@ -55,22 +31,22 @@ export default function BatteryChart({ device, now, loadHistory }: {
   const path = batteryCurve(samples, now, timeout, x, y);
   const isolated = batterySegments(samples, now, timeout)
     .filter(segment => segment.length === 1).map(segment => segment[0]);
-  const timeLabel = (time: number) => new Date(time).toLocaleString([], hours === 24
+  const timeLabel = (time: number) => new Date(time).toLocaleString([], hours <= 24
     ? { hour: '2-digit', minute: '2-digit' } : { month: 'short', day: 'numeric' });
   return (
     <section className="battery-mini-history" aria-label="Battery voltage history">
       <div className="battery-mini-heading">
         <span>Battery · V</span>
         <div className="battery-periods" role="group" aria-label="Battery history period">
-          {[[24, '24hr'], [168, '7day'], [720, '30day']].map(([value, label]) => (
+          {historyPeriods.map(({ hours: value, label }) => (
             <button key={value} type="button" aria-pressed={hours === value}
-              onClick={() => setHours(Number(value))}>{label}</button>
+              onClick={() => setHours(value)}>{label}</button>
           ))}
         </div>
       </div>
       {samples.length > 0 ? (
         <svg className="battery-mini-chart" viewBox="0 0 360 122" role="img"
-          aria-label={`${device.name}: battery voltage over ${hours === 24 ? '24 hours' : `${hours / 24} days`}, ${low.toFixed(2)} to ${high.toFixed(2)} volts`}>
+          aria-label={`${device.name}: battery voltage over ${historyPeriods.find(p => p.hours === hours)!.description}, ${low.toFixed(2)} to ${high.toFixed(2)} volts`}>
           <title>Battery voltage · curved interpolation · local time</title>
           {[bottom, (bottom + top) / 2, top].map(volts => (
             <text key={volts} x="34" y={y(volts) + 3} textAnchor="end">{volts.toFixed(2)}</text>

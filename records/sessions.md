@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-10-24 - INA219 card current graphs and short history ranges
+
+- Add signed sensor-path current graphs to equipped repeater/backhaul map cards
+  and Infrastructure detail, with an independent **30-minute sample mean** and
+  count. Both voltage/current graphs gain **30min / 6hr** alongside their
+  existing periods. [Behavior, API and limits](../docs/operations/device-card-current-history.md).
+- Read existing current observations through a human-authenticated endpoint;
+  match the card's source selection and existing polarity convention, preserve
+  zero/clock provenance and deduplication, and leave outage gaps disconnected.
+  No schema, stored-evidence, radio or production change.
+- **63 portal tests**, TypeScript and production build pass; existing bundle
+  warning remains. Two new backend integration tests pass. Two full Windows
+  runs attempt **89 tests**, seven platform skips and one loopback reset each in
+  different existing tests; both affected tests then pass together in isolation.
+  Linux PR CI supplies the remaining full-suite gate.
+- In-app browser verifies actual fictional-data components at desktop
+  1280 × 720 and a 390 × 844 iframe viewport: both graphs/average fit, short
+  range controls act independently and the mobile sheet scrolls correctly.
+  Documentation link/whitespace checks pass. Preserve original checkout hardware
+  edits; publish the isolated source on `codex/device-current-history`.
+
+Next useful step: review/merge the source, then explicitly select a versioned
+manual release and verify authenticated device histories on the owner phone.
+Current calibration, whole-battery accounting and existing field gates remain
+open; this session does not deploy the portal.
+
 ## 2026-10-24 - Four-gateway radio fallback and backhaul health
 
 - Owner authorizes all four connected gateways and one read-only review.
