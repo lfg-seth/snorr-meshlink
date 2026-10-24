@@ -1,5 +1,19 @@
 # Hardware inventory
 
+## 2026-10-24 - B002 latest firmware and three-minute reporting
+
+Existing original OLED V4 **B002 `!699ca878`**, USB
+**`90:70:69:9C:A8:78`**, COM4, now runs selected
+**heltec-v4-gateway / 2.7.26.a56466d** from published source **`a56466d8c`**.
+Application digest and complete intended member profile/identity/keys pass
+through explicit reboot. Device telemetry is enabled at **180 seconds**;
+over-LoRa SNNS follows the same saved baseline with jitter/admission. Preserve
+CLIENT, private RF/channel settings, 10 dBm configured TX power/FEM, disabled
+Wi-Fi/MQTT and GPS acquisition/reporting at **60/120 seconds**. External
+environment/power reporting remains disabled. Existing 3000 mAh LiPo/no-solar
+allocation and stock totals are unchanged. This supersedes B002's historical
+stock-firmware state below. [Image, backup, profile and delivery evidence](../docs/operations/b002-three-minute.md).
+
 ## 2026-10-24 - R004 battery and solar allocation
 
 Owner confirms **R004 has four standard EVE 18650 cells and one solar panel**.

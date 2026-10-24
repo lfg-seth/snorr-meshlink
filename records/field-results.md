@@ -1,5 +1,31 @@
 # Field testing and tangible results
 
+## 2026-10-24 - B002 three-minute telemetry and SNNS bench
+
+Owner-selected original V4 **B002 `!699ca878`** receives selected
+**heltec-v4-gateway / 2.7.26.a56466d**, preserving its complete member
+profile/keys through application-only update and explicit reboot. Enabled
+device telemetry and over-LoRa SNNS use the saved **180-second baseline**;
+GPS remains enabled at **60-second acquisition / 120-second reporting**.
+
+Two automatic device packets and two SNNS reports reach each of **G001,
+G002 and G003** after reboot. Device receipt gaps are **180.19-180.20 seconds**;
+source wall-clock measurement gap is 181 seconds. Same-boot SNNS sequences
+1/2 advance source uptime **195 seconds**, with **195.20-195.22-second** receipt
+gaps including jitter/scheduling. Independent authenticated portal/read-only
+database checks match both battery observations and both SNNS reports, retaining
+accepted/duplicate gateway receipts. Latest battery is **4.316 V**, measured
+19:32:00Z, received 19:32:01.682Z; calibration is not independently verified.
+
+One additional boot is observed after the serial observer closes; cause is
+unverified. With COM4 left closed, two more battery/SNNS cycles reach all three
+gateways on the same boot: device receipt gaps approximately 180.31 seconds;
+SNNS source gap 210 seconds and receipt gaps approximately 213.30 seconds.
+No further boot-ID change is observed. No fresh GPS position is observed in this short capture. This is a bench
+firmware/profile and delivery check; sustained freshness, runtime, forced-relay,
+outage and field acceptance remain open. Serial closed; no other radio written.
+[Exact image, backup, preserved settings and private evidence references](../docs/operations/b002-three-minute.md).
+
 ## 2026-10-24 - Thirty-minute fleet telemetry snapshot
 
 Owner requests online-device battery voltage, current and temperature for the

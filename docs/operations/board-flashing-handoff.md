@@ -1,5 +1,15 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **B002 `!699ca878`** now runs selected original OLED V4 target
+**heltec-v4-gateway / 2.7.26.a56466d**, published source **`a56466d8c`**.
+The target enables SNNS while B002 retains its **CLIENT member profile**,
+disabled Wi-Fi/MQTT, individual keys/private channel, 10 dBm configured RF
+power/FEM and GPS **60-second acquisition / 120-second reporting**.
+Device telemetry enabled at **180 seconds** and over-LoRa SNNS using the same
+saved baseline pass complete intended-profile comparison through explicit
+reboot; environment/power telemetry remain disabled. This supersedes all
+historical B002 stock-image entries below. [Exact image, preserved profile and delivery evidence](b002-three-minute.md).
+
 2026-10-24 **R002 `!b456f760`** now runs ordinary **rak4631 /
 2.7.26.4c96b9b**, with complete original-profile preservation and intended
 profile verification through explicit reboot. Owner confirms fitted INA219;

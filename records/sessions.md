@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-10-24 - B002 latest firmware and three-minute telemetry/SNNS
+
+- Flash existing B002 **`!699ca878`** with latest published source **`a56466d8c`**,
+  selected **heltec-v4-gateway / 2.7.26.a56466d**. Enable device telemetry and
+  over-LoRa SNNS at the saved **180-second baseline**. Preserve member role,
+  GPS 60/120-second cadence, RF/channel settings, disabled Wi-Fi/MQTT and keys.
+- Full 16 MB backup, application digest and complete intended profile pass
+  through explicit reboot. Recover the stalled initial high-speed backup with
+  bounded lower-speed reads before any flash write. Two automatic battery and
+  SNNS cycles pass through G001/G002/G003; exact battery/time and deduplicated
+  reports pass authenticated portal/read-only database checks. [Evidence](../docs/operations/b002-three-minute.md).
+- Documentation link/whitespace checks pass. Pin the published firmware source;
+  publish on `codex/b002-three-minute`. Preserve unrelated G004/hardware edits
+  and `3DModels/`; serial and MQTT closed. Record one additional boot after
+  serial close, with cause unverified; two further battery/SNNS cycles pass
+  on one boot with COM4 closed (device ~180 s, SNNS source 210 s). Fresh GPS, calibration, sustained
+  cadence/runtime and field gates remain unverified.
+
+Next useful step: prepare the existing phone-free GPS/runtime run with B002,
+then agree sampling and acceptance before field measurement.
+
 ## 2026-10-24 - Infrastructure card eyebrow model ticket
 
 - Capture **LOCAL-9** in the [wishlist](wishlist.md#router-and-gateway-card-eyebrow-device-model) and Deferred tracker: add recorded hardware model to router/gateway card eyebrows like clients, retaining role text.
