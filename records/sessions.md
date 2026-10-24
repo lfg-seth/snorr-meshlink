@@ -1,5 +1,27 @@
 # Session log
 
+## 2026-10-24 - Read-only last-thirty-minute fleet summary
+
+- Owner requests online devices' battery voltage, current and temperature.
+  Read-only live database/archive queries freeze **10:27:14 to 10:57:14
+  Pacific**: nine source devices heard, eight within the final five minutes.
+  B001 appears only in unsupported archive receipts; R001's latest contact is
+  about 29 minutes old. Six devices provide usable requested telemetry.
+- Summarize latest/ranges from **85 deduplicated telemetry observations**;
+  verify the frozen window independently and reconcile **377 archive receipts**.
+  Preserve separate device-battery and INA219 channel/environment values,
+  signed-current uncertainty and unknown-clock receipt fallback. Record R004's
+  **26.6 to 43.2 degrees C** rise and R003's **3.651 to 4.263 V** change without
+  diagnosing physical behavior. [Snapshot and limits](field-results.md#2026-10-24---thirty-minute-fleet-telemetry-snapshot).
+- No radio/server/configuration or task-state change. Preserve unrelated
+  `3DModels/`, G004 documentation and firmware work. Documentation link and
+  whitespace checks pass. Publish sanitized records on
+  **`codex/telemetry-summary-20261024`**.
+
+Next useful step: owner review of the snapshot; investigate the R004 temperature
+rise or R003 voltage change only if selected. Runtime/calibration, portal
+acceptance and existing task gates remain separate.
+
 ## 2026-10-24 - R002 latest firmware and three-minute INA219 reporting
 
 - Owner reconnects **R002** for the same update as R004 and explicitly confirms

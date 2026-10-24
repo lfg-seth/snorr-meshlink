@@ -1,5 +1,70 @@
 # Field testing and tangible results
 
+## 2026-10-24 - Thirty-minute fleet telemetry snapshot
+
+Owner requests online-device battery voltage, current and temperature for the
+last 30 minutes. Read-only production SQLite queries cover **17:27:14.655529
+through 17:57:14.655529 UTC**, or **10:27:14 through 10:57:14 Pacific**.
+This is observed bench telemetry, not a field, runtime or calibration test.
+
+Nine source devices have archived activity in this window; eight were heard in
+its final five minutes. R001 was last heard about 29 minutes before the end.
+B001 is present in unencrypted envelope source headers despite its stale portal
+contact timestamp: six unsupported receipts, last at 17:54:55.166 UTC, with no
+normalized requested metrics. Inventory identifies that source as B001. No
+packet decryption or private configuration access is needed for this summary.
+
+Values below are **latest (minimum to maximum)** within the window. Battery is
+device-reported voltage; current is the separately reported INA219 PowerMetrics
+channel 1. A dash means no usable in-window sample, not a zero reading.
+
+| Device | Last heard, Pacific | Battery, V | Channel-1 current, mA | Temperature, degrees C |
+| --- | --- | --- | --- | --- |
+| B001 | 10:54:55 | - | - | - |
+| G001 | 10:57:05 | - | - | - |
+| G002 | 10:57:06 | 3.800 (3.800 to 3.846) | - | - |
+| G003 | 10:56:53 | 3.891 (3.883 to 3.896) | +166.1 (0.0 to +179.4) | - |
+| R001 | 10:28:16 | - | - | - |
+| R002 | 10:57:04 | 4.029 (3.965 to 4.107) | -86.7 (-229.2 to -86.7) | - |
+| R003 | 10:53:56 | 4.263 (3.651 to 4.263) | - | 21.5 (21.0 to 21.5) |
+| R004 | 10:55:43 | 3.623 (3.601 to 3.664) | -101.9 (-298.8 to -73.6) | 43.2 (26.6 to 43.2) |
+| R006 | 10:56:33 | 4.022 (4.020 to 4.048) | -110.0 (-128.0 to +12.9) | - |
+
+R004 temperature rises from 26.5505 to 43.2371 degrees C in nine observations;
+the last four are approximately 30.7, 35.9, 40.1 and 43.2 degrees C. R003's two
+battery observations change from 3.651 to 4.263 V. These readings warrant
+physical comparison if investigated; this request does not diagnose either
+change or establish charging behavior. G003's latest channel-1 sensor voltage
+is **5.344 V**, separate from its **3.891 V** device battery report, so its
+current must not be described as measured battery discharge.
+
+Latest channel-1 sensor voltages are R002 **4.000 V**, R004 **3.628 V** and
+R006 **3.996 V**. Separate environment-source INA219 reports give R002
+**4.004 V / -86.1 mA** at 17:55:08.024 UTC and R004
+**3.632 V / -101.5 mA** at 17:55:01.902 UTC. Current signs remain literal;
+physical polarity/path/calibration are not established by these packets.
+
+Evidence: production `/var/lib/meshlink/pb_data/data.db`, opened with SQLite
+`mode=ro`; snapshot transaction over devices, observations and packet receipts,
+then an independent query of the same frozen window and archive headers.
+**85 unique normalized telemetry observations** across six devices; battery
+sample counts G002/G003/R002/R003/R004/R006 are **6/10/6/2/9/8**. Channel-1
+current counts G003/R002/R004/R006 are **10/3/8/8**; temperature counts
+R003/R004 are **2/9**. The archive contains **377 receipts: 350 normalized and
+27 unsupported**, with no rejected/error outcomes. Normalized packet receipt
+outcomes are **178 accepted / 172 duplicate**; gateway copies are not counted
+again in telemetry ranges. Unsupported source-header inspection adds B001 to
+the activity summary without printing packet bodies, locations or secrets.
+
+Metric selection uses measurement time when known, otherwise original worker
+receipt time; many RAK reports have unknown source clocks. Such receipt-based
+times are approximate and do not prove when a buffered sample was measured.
+Activity does not prove continuous uptime or present connectivity. R001's
+previous **3.990 V at 10:22:45 Pacific** lies outside the requested window and
+is excluded. B002 and R005 have no archived source activity in this window;
+G004 remains on its recorded owner hold. No radio, service, database content,
+configuration or task acceptance state is changed.
+
 ## 2026-10-24 - R002 latest firmware and confirmed INA219 profile
 
 Owner reconnects **R002 `!b456f760` / USB `BADB1E79E9739FC4`** and explicitly
