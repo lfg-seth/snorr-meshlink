@@ -1,6 +1,5 @@
 # Session log
 
-<<<<<<< HEAD
 ## 2026-10-24 - B002 latest firmware and three-minute telemetry/SNNS
 
 - Flash existing B002 **`!699ca878`** with latest published source **`a56466d8c`**,
@@ -352,7 +351,6 @@ Next required bench: a transmitting intermediate and proof excluding direct
 reception for remote changes, interrupted/lost commands and restoration; resolve
 operator-tool ACK/result handling before inaccessible placement. Continue the
 independent software freshness/release assignments while bench/access gates wait.
-=======
 ## 2026-10-24 - Installed recovery verifiers corrected; GH-39 complete
 
 - Owner activates installed verifier maintenance and live/demo recovery. Fix
@@ -525,7 +523,6 @@ Next useful step: review/merge PR #59 and select its manual production rollout
 under the [release policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
 Then verify served source metadata, corrected/raw API pairs and native views;
 physical calibration and runtime gates stay open.
->>>>>>> origin/main
 
 ## 2026-10-23 - Complete LOCAL-3 saved SNNS interval software
 

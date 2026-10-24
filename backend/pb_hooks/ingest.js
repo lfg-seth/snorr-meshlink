@@ -2,6 +2,7 @@ const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
 const neighbors = require(`${__hooks}/neighbors.js`);
 const telemetry = require(`${__hooks}/telemetry.js`);
+const gatewayHealth = require(`${__hooks}/gateway-health.js`);
 const powerMetric = (key) => /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key);
 function timestamp(value, now) {
   if (value === null || value === undefined || value === '')
@@ -38,7 +39,7 @@ function ingest(e) {
       c.text(b.packetId, 'packet ID', 80);
       c.text(b.deviceId, 'device ID', 80);
       c.text(b.gatewayId, 'gateway ID', 80);
-      if (['position', 'telemetry', 'message', 'neighbors'].indexOf(b.kind) < 0)
+      if (['position', 'telemetry', 'message', 'neighbors', 'gateway-health'].indexOf(b.kind) < 0)
         throw new BadRequestError('Unknown normalized packet kind.');
       packetKey = `${b.kind}:${b.deviceId}:${b.packetId}`;
       device = c.device(app, b.deviceId);
@@ -104,6 +105,7 @@ function ingest(e) {
         });
       }
       if (b.kind === 'neighbors') neighbors.validate(app, data, b.deviceId);
+      if (b.kind === 'gateway-health') gatewayHealth.validate(device, data);
       if (b.kind === 'message') {
         c.text(data.text, 'inbound text', 400);
         c.text(data.author, 'reported author', 80);
@@ -115,7 +117,7 @@ function ingest(e) {
     const collection =
       b.kind === 'position'
         ? 'positions'
-        : b.kind === 'telemetry'
+        : b.kind === 'telemetry' || b.kind === 'gateway-health'
           ? 'observations'
           : b.kind === 'neighbors' ? 'neighbor_reports' : 'messages';
     const existing =
@@ -143,7 +145,10 @@ function ingest(e) {
       device.set('lastContactAt', receivedAt);
       app.save(device);
     }
-    if (outcome === 'duplicate') return;
+    if (outcome === 'duplicate') {
+      if (b.kind === 'gateway-health') gatewayHealth.duplicate(app, device, b, receivedAt, time);
+      return;
+    }
     if (b.kind === 'position') {
       const position = {
         longitude: data.longitude,
@@ -172,6 +177,9 @@ function ingest(e) {
         device.set('latestPosition', position);
         app.save(device);
       }
+    } else if (b.kind === 'gateway-health') {
+      gatewayHealth.save(app, device, packetKey, b, receivedAt, time);
+      health.evaluate(app);
     } else if (b.kind === 'neighbors') {
       neighbors.save(app, packetKey, b, receivedAt);
     } else if (b.kind === 'telemetry') {

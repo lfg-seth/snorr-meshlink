@@ -41,6 +41,30 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
 
 
 class AdapterTests(unittest.TestCase):
+    def test_gateway_health_wire_provenance_flags_clock_and_peer_route(self):
+        config = {**CONFIG, 'infrastructure': {'!9ea13cc0': 'g001', '!849ad7a0': 'g002'}}
+        def decode(payload, gateway='!849ad7a0', source=0x9ea13cc0):
+            data = mesh_pb2.Data(portnum=portnums_pb2.PRIVATE_APP, payload=payload)
+            p = mesh_pb2.MeshPacket(id=19)
+            setattr(p, 'from', source)
+            nonce = struct.pack('<QI', 19, source) + b'\0' * 4
+            p.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(nonce)).encryptor().update(data.SerializeToString())
+            wire = mqtt_pb2.ServiceEnvelope(packet=p, channel_id='Test', gateway_id=gateway)
+            return Adapter(config).decode(f'snorr/pilot/2/e/Test/{gateway}', wire.SerializeToString(), NOW)
+        payload = struct.pack('<4sBBHIIIIII', b'SNGH', 1, 0, 0, 0x9ea13cc0, 42, 7, 100, NOW-1, 180)
+        actual = decode(payload)
+        self.assertEqual(actual['kind'], 'gateway-health')
+        self.assertEqual(actual['deviceId'], 'g001')
+        self.assertEqual(actual['gatewayId'], CONFIG['gateways']['!849ad7a0'])
+        self.assertFalse(actual['data']['wifiConnected'])
+        self.assertFalse(actual['data']['mqttConnected'])
+        for offset, value in [(4, 2), (5, 2), (5, 4), (6, 1), (8, 1), (12, 0), (16, 0), (28, 1)]:
+            bad = bytearray(payload)
+            bad[offset] = value
+            with self.assertRaises(PacketRejected): decode(bytes(bad))
+        with self.assertRaises(PacketRejected): decode(payload[:-1])
+        with self.assertRaises(PacketRejected): decode(payload + b'\0')
+
     def wire_report(self, payload, port=portnums_pb2.PRIVATE_APP, gateway='!9ea13cc0'):
         source = 0x05237743
         data = mesh_pb2.Data(portnum=port, payload=payload)

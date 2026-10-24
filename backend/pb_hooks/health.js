@@ -1,11 +1,13 @@
 const c = require(`${__hooks}/common.js`);
 const telemetry = require(`${__hooks}/telemetry.js`);
+const gatewayHealth = require(`${__hooks}/gateway-health.js`);
 // Run in an existing transaction. Feed loss never creates device-missing incidents.
 function evaluate(app) {
   const feed = c.feed(app);
   if (!c.online(feed)) return;
   const now = Date.now();
   c.rows(app, 'devices', 'kind != "member"').forEach((device) => {
+    if (device.getString('kind') === 'backhaul') gatewayHealth.evaluate(app, device);
     const id = device.getString('key');
     const config = c.object(device, 'configuration');
     const readings = c.object(device, 'readings');

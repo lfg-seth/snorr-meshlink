@@ -49,6 +49,8 @@ export type Message = {
   evidence: string;
 };
 export type Infrastructure = {
+  gatewayHealth?: { state: string; label: string; radioAlive?: boolean; transportGatewayId?: string;
+    measuredAt?: string; intervalSeconds?: number; wifiConnected?: boolean; mqttConnected?: boolean } | null;
   id: string;
   name: string;
   role: 'Repeater' | 'Backhaul';

@@ -178,7 +178,6 @@ staging and automatic-release connection/implementation remain deferred, not
 required for the current workflow. Revisit only when the owner brings them
 forward. [Accepted policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
 
-<<<<<<< HEAD
 ## Large-map router and gateway health colors
 
 Local task: **LOCAL-7** in the [local tracker](../.scratch/TRACKER.md).
@@ -195,8 +194,6 @@ Requested behavior / future acceptance:
 
 Related parked work: [LOCAL-1 infrastructure page overhaul](#infrastructure-page-overhaul). This request concerns large-map indicators and does not activate that page overhaul, implementation or deployment.
 
-=======
->>>>>>> origin/main
 ## Device-card battery summary without duplicate sensor readings
 
 Local task: **LOCAL-8** in the [local tracker](../.scratch/TRACKER.md).
@@ -214,7 +211,18 @@ Requested behavior / future acceptance:
 
 Related parked requests: [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present) and [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout). This newer request calls for removing the sensor section entirely and consolidating the top summary; reconcile overlapping presentation criteria when activated. Historical issues remain unchanged.
 
-<<<<<<< HEAD
+2026-10-24 activation: owner explicitly brings LOCAL-8 forward for implementation.
+The shared summary now removes the whole sensor section, reuses profile-based
+percentage, places member GPS quality to its right, and preserves independent
+battery/current freshness. This supersedes GH-44's conditional section retention
+and implements GH-45's overlapping layout request. Review/merge and manual
+production deployment remain separate. [Source decisions and verification](../docs/operations/device-card-battery-summary.md).
+
+2026-10-24 deployment: PR #60 is merged and MeshLink 0.1.2 is deployed from
+`359e6ba`. Source/build, all-device live-data component checks, public demo
+native desktop/mobile cards and isolated backup recovery pass. Owner-phone
+live acceptance remains separate. [Deployment evidence](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
+
 ## Router and gateway card eyebrow device model
 
 Local task: **LOCAL-9** in the [local tracker](../.scratch/TRACKER.md).
@@ -229,16 +237,3 @@ Requested behavior / future acceptance:
 - Future verification covers both roles, known/unknown models, longer labels and desktop/mobile layouts, with client cards retaining their existing presentation.
 
 Related parked work: [LOCAL-8 battery summary](#device-card-battery-summary-without-duplicate-sensor-readings). This is a separate card-header request; capturing it does not activate either implementation.
-=======
-2026-10-24 activation: owner explicitly brings LOCAL-8 forward for implementation.
-The shared summary now removes the whole sensor section, reuses profile-based
-percentage, places member GPS quality to its right, and preserves independent
-battery/current freshness. This supersedes GH-44's conditional section retention
-and implements GH-45's overlapping layout request. Review/merge and manual
-production deployment remain separate. [Source decisions and verification](../docs/operations/device-card-battery-summary.md).
-
-2026-10-24 deployment: PR #60 is merged and MeshLink 0.1.2 is deployed from
-`359e6ba`. Source/build, all-device live-data component checks, public demo
-native desktop/mobile cards and isolated backup recovery pass. Owner-phone
-live acceptance remains separate. [Deployment evidence](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
->>>>>>> origin/main
