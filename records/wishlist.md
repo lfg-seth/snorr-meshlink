@@ -152,3 +152,15 @@ Requested behavior / future acceptance:
 - For acceptance, observe multiple consecutive reporting cycles without a fix, then fix recovery and reboot/readback, checking both gateways where available and portal deduplication. Record configured versus observed intervals, missing packets and battery/runtime/channel-utilization effects; a five-minute setting alone is not proof of end-to-end delivery.
 
 Related work: [GH-2 phone-free freshness/runtime](tracking-import/github-2.md), [GH-45 battery percentage presentation](#member-node-battery-percentage-and-gps-layout) and [LOCAL-1 device summary cards](#infrastructure-page-overhaul). Keep report delivery separate from card layout and the existing 15-minute GPS stale threshold. This capture activates no diagnosis, firmware build/flash, device configuration, deployment or live-data access.
+
+## Public Markdown blog and hardware wiki
+
+Added 2026-10-23. Owner requests this side-tangent ticket; deferred implementation.
+[LOCAL-5](../.scratch/pilot/issues/27-public-markdown-blog-wiki.md) captures a
+public blog and docs/wiki on the existing site, driven by approved Markdown
+files so content changes update the site through its release process. Every
+node type gets a hardware/setup page with actual photos. Begin from the new
+[hardware source section](../docs/hardware/README.md); gateway content is owned
+by LOCAL-4. Public content must be explicitly selected rather than exposing all
+repository records. Layout/build integration, picture collection and publication
+wait for activation; no website or publication change is claimed.

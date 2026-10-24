@@ -1,5 +1,18 @@
 # Hardware inventory
 
+2026-10-23 planned gateway outdoor configuration - Owner retains Heltec V3
+and selects INA219 sensing and a Muzi whip antenna. Per-gateway battery option
+is **four or eight 18650 cells**; solar option is **two 60 x 100 mm panels** or
+an external larger **5 V USB solar charger advertised as 6 W**. These are design
+requirements/alternatives, not installed allocations or new stock counts.
+Exact models, capacities, pack topology/protection/charging path, panel output,
+antenna specifications and quantities on hand remain unverified. The last
+confirmed G001/G002 installed packs remain one 1000 mAh LiPo each until a
+physical change is recorded. No purchase, cost, measured power or runtime is
+inferred. Custom 3D-printed enclosure and Wi-Fi/solar characterization are
+planned in [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md).
+[Hardware documentation](../docs/hardware/README.md).
+
 2026-10-23 R006 three-minute update - Existing RAK19003/RAK4631 **R006
 `!da581e5f`**, hardware `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB
 `E9B12C5CA98FBCB8`, now runs ordinary **rak4631 / 2.7.26.0634b77** from the

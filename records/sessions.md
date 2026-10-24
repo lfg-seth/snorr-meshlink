@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-10-23 - Scope gateway hardware readiness and public Markdown documentation
+
+- Create [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md)
+  with power characterization, four/eight 18650 alternatives, two 60 x 100 mm
+  panels or external advertised 6 W/5 V USB solar, INA219, Muzi whip, enclosure
+  CAD/print/fit/weather tests, gateway firmware and end-to-end acceptance.
+  Record planned hardware without overwriting installed LiPo allocations.
+- Move gateway-specific LOCAL-3 readiness and GH-40 remaining reconnect
+  acceptance into LOCAL-4. Shared SNNS timing remains LOCAL-3; imported history
+  and GitHub issues/Project remain unchanged. Source confirms a shared firmware
+  tree but distinct Heltec ESP32-S3 and RAK nRF52840 build targets/binaries.
+- Create deferred [LOCAL-5](../.scratch/pilot/issues/27-public-markdown-blog-wiki.md)
+  for public Markdown blog/wiki, automatic content updates through site releases
+  and illustrated pages per node type. Add hardware index and initial gateway
+  source page; pictures, wiring/CAD and public site rendering remain pending.
+- Validation: local link and whitespace checks. Documentation only; no
+  implementation, purchases, prints, hardware/configuration changes or site
+  publication. Wi-Fi power, solar yield, INA219 accuracy and autonomy remain
+  unknown; advertised power is not a measurement.
+
+Next useful step: identify actual gateway power components and agree a measured
+energy/charging run before selecting the pack, solar option and enclosure.
+
 ## 2026-10-23 - Consolidate production firmware readiness before mountain redeployment
 
 - Owner requests a ticket covering configurable SNNS timing and other firmware

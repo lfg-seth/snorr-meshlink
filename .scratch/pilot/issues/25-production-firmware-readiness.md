@@ -77,18 +77,14 @@ Current portal relative-age behavior is already deployed; this work addresses
 unseen upstream delay, not a mandate to deploy historical draft PR #50.
 [Current decision](24-neighbor-current-state.md).
 
-### 4. Gateway prerequisites for end-to-end production
+### 4. Gateway prerequisites (moved to LOCAL-4)
 
-- [ ] Remove MQTT credential values from gateway logging. The pinned
-  `src/mqtt/MQTT.cpp` logs username/password on connect.
-- [ ] Replace its `setInsecure()` direct-TLS path with verified server identity
-  and a documented trust/time provisioning and renewal procedure. Test trusted
-  connection and rejection of invalid identity/trust, including cold boot.
-  This affects Heltec gateway builds, not the RAK radio-only target.
-- [ ] Use GH-40's captured recurrence/outage tests to establish unattended
-  Wi-Fi/MQTT reconnect. Patch only demonstrated firmware faults; a watchdog or
-  periodic reset is not presumed to fix the cause. Test restored fresh GPS and
-  telemetry delivery and stale-queue handling together with section 3.
+Gateway MQTT credential-log removal, verified TLS, unattended reconnect,
+INA219/power acceptance and gateway-specific release/soak now belong to
+[LOCAL-4](26-gateway-production-readiness.md), created 2026-10-23. GH-40's
+remaining reconnect acceptance moves there too. This ticket retains the shared
+SNNS freshness contract in section 3 and RAK readiness. Neither move claims a
+fix or completed verification; LOCAL-4 is an end-to-end deployment dependency.
 
 ### 5. Release and per-board production acceptance
 
@@ -129,7 +125,7 @@ Immutable imports and GitHub issues/Project remain unchanged during the trial.
 | Three-minute repeater rollout | Firmware release/updater/remaining-board acceptance consumed here. R006 private map placement and pending portal acceptance remain a separate current handoff. |
 | [GH-4 INA219](../../../records/tracking-import/github-4.md) | Separate hardware diagnosis dependency: confirm shunt/polarity and simultaneous same-path meter readings, including battery-only operation. No arbitrary scaling fix. Unvalidated current cannot support runtime/charging claims. |
 | [GH-8 utilization](../../../records/tracking-import/github-8.md) | Separate diagnosis dependency; measure all selected nodes at the proposed cadence before accepting airtime/GPS impact. No blind role or radio-power change. |
-| [GH-40 reconnect](../../../records/tracking-import/github-40.md) | Separate recurrence/evidence owner; feeds gateway fixes and sustained acceptance in section 4. |
+| [GH-40 reconnect](../../../records/tracking-import/github-40.md) | Remaining acceptance consumed by LOCAL-4; original evidence retained. |
 | [GH-2 GPS/runtime](../../../records/tracking-import/github-2.md), [GH-3 relay/outages](../../../records/tracking-import/github-3.md), [GH-18 field plan](../../../records/tracking-import/github-18.md) | Separate deployment gates: phone-free GPS, 15-minute stale threshold, member runtime four-hour minimum/12-hour target, forced relay, offline viewing and agreed field criteria. Those member-runtime targets are not an unattended repeater power budget. |
 | GH-47 / GH-53 | Existing portal freshness/display verification stays separate; coordinate delayed neighbor and unknown-clock telemetry acceptance. |
 
