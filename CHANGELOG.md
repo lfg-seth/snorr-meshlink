@@ -3,6 +3,24 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.1.4 - 2026-10-24
+
+Add INA219 sensor-path current history and a separate average of unique readings
+in the latest 30 minutes to equipped device cards and Infrastructure detail.
+Current and battery-voltage graphs both gain 30-minute and six-hour ranges.
+Retain the existing periods, signed/zero current, source selection, timestamp
+provenance and gaps for missing reports. Empty, ambiguous, incomplete or expired
+averages remain Unknown.
+
+Compatibility: existing Meshtastic telemetry, SNNS v1 and gateway-health v1.
+Read existing observations with the established positive-charging API convention;
+no firmware change, schema migration, data rewrite or configuration update.
+The average is a sample mean, not a time-weighted estimate across missing data.
+Rollback restores the previous matching backend/portal/root release metadata
+from the verified backup. Calibration, whole-battery accounting and native
+owner-phone acceptance remain separate gates. Manual deployment is selected
+by the owner for PR #64.
+
 ## 0.1.3 - 2026-10-24
 
 Add private SNGH v1 gateway health reports, independently of SNNS neighbor
