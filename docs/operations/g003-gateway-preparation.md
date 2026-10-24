@@ -1,5 +1,12 @@
 # G003 gateway preparation - 2026-10-24
 
+Later same-day [portal commissioning](g003-portal.md) creates G003's dedicated
+MQTT account, registers the live portal identity/mappings and saves a labelled
+random Las Vegas placeholder. R006 also receives a placeholder under the owner's
+new default. G003's radio credential change awaits reconnection after G004;
+the original board preparation and shared-account measurements below remain
+historical evidence for that first installation.
+
 Owner requests flashing the attached Heltec V3 with INA219 as **G003**, with
 telemetry enabled every **three minutes**, and supplies/corrects its private
 Wi-Fi credentials. Only this board is written.

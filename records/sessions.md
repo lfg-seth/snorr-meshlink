@@ -1,5 +1,48 @@
 # Session log
 
+## 2026-10-24 - G003 dedicated account, portal registration and map defaults
+
+- Owner activates G003's dedicated MQTT account/portal registration and random
+  Las Vegas placements for it and all unlocated routers/gateways going forward.
+  A concurrent G004 chat owns the shared checkout/attached hardware; isolate
+  this work on `codex/g003-portal` under `private/worktrees/g003-portal` and
+  preserve its branch/edits. Owner confirms G004 is attached and will reconnect
+  G003 later; no serial write is attempted.
+- Broker owner SSH works, sudo needs interactive authentication. Stage a guarded
+  additive account installer and test on an unprivileged isolated Mosquitto.
+  First owner run stops before writes at an incorrect single-listener assertion.
+  Correct the parser for loopback/private listeners, reproduce/add regression
+  coverage, repeat tests, then owner executes successfully. Dedicated
+  **pilot-v3-uplink-3** has a 30-character secret and write-only G003 encrypted
+  gateway-topic scope. Preserve existing accounts/hashes/ACL entries. Independent
+  public certificate-validated TLS login passes; save concealed G003 username
+  and password in **SNORR MeshLink — Pilot**, with names-only confirmation.
+- Back up and restore-verify the portal, register G003's known identity,
+  installed firmware/INA219/180-second metadata and worker gateway/source/identity
+  mappings. Save labelled random map placeholders for **G003 and R006** only;
+  preserve seven existing valid infrastructure locations and both member
+  configurations. R006's older unapplied point request is superseded by the
+  latest owner instruction. Authenticated readback, no missing infrastructure
+  positions, online feed and **seven actual normalized G003 receipts** pass.
+  These precede the pending radio credential cutover.
+- Publish the stable placeholder policy/helper and three tests for preservation,
+  bounds/provenance and idempotence. Broker tests additionally verify actual
+  own-topic writes, denied reads/other topics, rollback, preserved old accounts,
+  idempotence and refusal to rotate a conflicting account. No application,
+  firmware, frontend or schema release; physical locations/permission/GPS remain
+  unverified. [Exact account, map, backups, failures and acceptance](../docs/operations/g003-portal.md).
+- The installed recovery verifier rejects a third gateway because it hard-codes
+  G001/G002. Prepare a mapping-aware correction: two focused checks and staged
+  full post-change isolated restore pass with 11 devices. Automatic approval
+  review rejects persistent replacement as outside registration/location scope;
+  ask the owner separately. Installed file remains unchanged pending approval.
+
+Next: owner reconnects G003 for the sole MQTT credential change, full-profile
+reboot comparison and fresh account-specific delivery. Resolve the separately
+requested verifier approval. Use the recorded default placeholder policy for
+future infrastructure provisioning; actual site data replaces the label/point
+together. Keep private account inputs, exact points and raw evidence out of Git.
+
 ## 2026-10-24 - Default bench Wi-Fi saved in 1Password
 
 - At the owner's request, retry 1Password authentication successfully and select

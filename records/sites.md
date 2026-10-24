@@ -1,5 +1,16 @@
 # Candidate sites and backhaul
 
+2026-10-24 random infrastructure map placeholders - Owner requests a random
+Las Vegas point for G003 and the same default for all routers/gateways missing
+a location going forward. Live portal **G003 and R006** now have distinct saved
+random points, visibly labelled **Random Las Vegas map placement**, with explicit
+placeholder provenance and preserved original names. All seven existing valid
+infrastructure locations and both member configurations are preserved. This
+supersedes the older unapplied R006 point request below for its current marker;
+prior private point evidence stays historical. These map-only placeholders
+establish no physical location, installation plan, permission, coverage or GPS
+measurement. [Default and measured acceptance](../docs/operations/g003-portal.md).
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

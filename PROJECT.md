@@ -46,6 +46,11 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   [infrastructure warnings](.scratch/pilot/issues/10-infrastructure-warning-rules.md)
   retain their detailed requirements; capability, battery, solar and antenna
   metadata must distinguish known, planned and unknown equipment.
+- Infrastructure without a valid map location receives a persisted, labelled
+  random Las Vegas placeholder during provisioning, per the owner's 2026-10-24
+  [default](docs/operations/board-flashing-handoff.md#default-infrastructure-map-placement).
+  Existing valid locations and member GPS records are preserved; placeholders
+  are not measured sites or installation permission.
 
 ## Releases and project records
 

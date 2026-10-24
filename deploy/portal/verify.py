@@ -26,6 +26,16 @@ def status(base, path):
         return error.code
 
 
+def expected_infrastructure(mqtt_path=Path('/etc/meshlink/mqtt.json'), repeaters_path=Path('/etc/meshlink/repeaters.json')):
+    config = json.loads(mqtt_path.read_text())
+    if not isinstance(config.get('gateways'), dict) or not config['gateways']:
+        raise RuntimeError('Verified gateway mappings are required for live verification.')
+    result = set(config['gateways'].values()) | set(config.get('infrastructure', {}).values())
+    if repeaters_path.exists():
+        result.update(d['key'] for d in json.loads(repeaters_path.read_text())['devices'])
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--public', action='store_true', help='Also test HTTPS through Cloudflare using public DNS')
@@ -67,10 +77,7 @@ def main():
         assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
     else:
         assert {d['id'] for d in live['trackers']} == {'b001', 'b002'}
-        infrastructure = {'g001', 'g002'}
-        repeaters = Path('/etc/meshlink/repeaters.json')
-        if repeaters.exists():
-            infrastructure.update(d['key'] for d in json.loads(repeaters.read_text())['devices'])
+        infrastructure = expected_infrastructure()
         assert {d['id'] for d in live['infrastructure']} == infrastructure
         assert not live['members']
     print('Proxy, protected routes and sign-in: PASS')

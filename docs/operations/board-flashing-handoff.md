@@ -117,6 +117,24 @@ The local file matches G003's final profile through reboot and its successful
 MQTT observation. Keep credentials out of Git and command output. This saved
 preference does not change any currently configured board.
 
+## Default infrastructure map placement
+
+Owner selects this default on **2026-10-24**: when registering a router/repeater
+or gateway/backhaul with no valid location pair, assign a random central
+Las Vegas **portal map placeholder**, using
+[`place_missing`](../../scripts/server/infrastructure-locations.py).
+Persist the generated coordinates once, retain its explicit random-placement
+label/provenance and original name, and verify the authenticated portal result.
+Apply the same rule to existing unlocated infrastructure during provisioning.
+Owner-provided locations take precedence; preserve existing valid points and
+member GPS records. A placeholder never configures a radio GPS/fixed position
+or establishes an installation/site permission. When replacing it with an
+actual owner-provided/measured point, restore `locationOriginalName` and remove
+the random-placement label/provenance together with replacing the coordinates.
+
+G003 and previously unlocated R006 receive these labelled placeholders;
+[account, map, preservation and delivery evidence](g003-portal.md).
+
 ## Identify the requested board
 
 1. Check project and firmware Git status, preserving unrelated edits. With clean checkouts, pull the project with `--ff-only` and initialize its pinned submodules. Use the pinned commit rather than `git submodule update --remote`.
