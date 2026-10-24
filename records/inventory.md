@@ -27,8 +27,12 @@ measurement gaps **180 seconds**, SNNS uptime gap **195 seconds** including
 jitter. Power channel 1 reports **4.192–4.196 V / -0.1–0.0 mA**. Owner confirms
 indoors without sky view; no fresh fix/position packet is observed. Exact sensor
 measurement path/calibration, battery/capacity, GPS clock/mesh-time adoption,
-hard-power boot and field/runtime operation remain unverified. Portal identity
-migration from B001/retired V3 G004 remains separate.
+hard-power boot and field/runtime operation remain unverified. Subsequent
+owner-authorized live registration maps this radio to backhaul **G004** and
+preserves B001's historical row/measurements with retired identity metadata.
+The portal includes the planned cells/panels without assuming installed power
+equipment or capacity; no site/coordinates are invented. The existing shared
+MQTT uplink account remains in use.
 [Replacement firmware/profile and acceptance](../docs/operations/g004-v4-gateway.md).
 
 2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing

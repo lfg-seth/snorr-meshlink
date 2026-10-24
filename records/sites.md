@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+2026-10-24 G004 bench backhaul registration - Replacement V4 **`!699c2ed8`**
+is registered as **G004** in the live portal and MQTT worker's source/gateway
+mappings. Existing bench Wi-Fi and encrypted TLS MQTT uplink remain in use.
+No site or coordinates are supplied: G004 stays unplaced, with GPS fix/site
+placement pending. Planned four-cell/dual-panel equipment is metadata, not
+an installed solar site or coverage/permission result.
+[Registration and remaining acceptance](../docs/operations/g004-v4-gateway.md#live-portal-and-mqtt-registration---2026-10-24).
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

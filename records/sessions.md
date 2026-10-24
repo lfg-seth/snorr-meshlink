@@ -1,5 +1,40 @@
 # Session log
 
+## 2026-10-24 - Register replacement G004 in live portal and MQTT
+
+- Owner asks to check and complete G004's portal/MQTT registration. Existing
+  encrypted TLS MQTT uplink already works, but the live worker still maps
+  **`!699c2ed8`** to B001 and lacks G004. After a verified private backup,
+  register backhaul **G004** with its verified hardware ID, firmware/INA219/GPS,
+  three-minute telemetry and planned **4 × 18650 / 2 × 100 × 60 mm panels**.
+  Leave capacity/electrical ratings unknown, warnings disabled and coordinates
+  unconfigured; no site or installed solar equipment is inferred.
+- Move active radio/source/gateway/identity mappings to G004. Preserve B001's
+  existing row and all historical position/assignment/measurement/receipt/event
+  fingerprints, with retired/superseded identity metadata. Every unrelated
+  device configuration and identity is preserved. Existing shared uplink
+  credentials remain in use; broker accounts/ACLs, radios, application source,
+  schemas and demo configuration are unchanged. Worker restarts for metadata.
+- Fresh **device/power/SNNS** arrive through G004 and deduplicate through
+  G001/G002/G003. G004 also transports R002/R003/R004/R006 traffic. Authenticated
+  loopback and public HTTPS portal state show **4.373 V device voltage** and
+  channel-1 **4.192 V / -0.1 mA** at **18:21:50 UTC / 11:21:50 Pacific**;
+  physical calibration remains unverified. Public verification uses the
+  documented curl path because Cloudflare rejects Python's default user agent;
+  certificates and protections remain enabled.
+- Pre/post backups pass isolated database/API/history/credential recovery,
+  retaining **12 devices / 3,370 historical positions**. Installed public/proxy/
+  authentication checks pass after one transient rate-limit assertion retry.
+  Latest **200 MQTT archive records** validate; four new deliveries arrive
+  during the check, and API/worker/Nginx/Tunnel services are active. Native
+  rendering, GPS/time, map placement and field/runtime gates remain separate.
+  [Backup hashes, private audit and acceptance](../docs/operations/g004-v4-gateway.md#live-portal-and-mqtt-registration---2026-10-24).
+
+Next useful step: sky-view GPS fix/time and controlled mesh-time adoption,
+then a confirmed map location. Separate broker account provisioning needs
+broker-admin access; the existing shared account is working. Publish checked
+records on **`codex/g004-v4`**.
+
 ## 2026-10-24 - Record G004 battery and solar plan
 
 Owner specifies **4 × 18650 cells** and **2 × 100 × 60 mm solar panels** for

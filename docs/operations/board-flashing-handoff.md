@@ -15,6 +15,13 @@ telemetry and over-LoRa SNNS baseline are **180 seconds**, GPS position 300
 seconds, RF TX enabled. This assignment supersedes B001's former member role;
 B002 and other gateways retain their individual profiles.
 
+G004 is subsequently **registered in the live portal/MQTT worker** at the
+owner's request: source/gateway/identity mappings, authenticated public portal
+device/INA219 power readings, SNNS and other-node traffic through G004 pass.
+Historical B001 rows are retained with retired identity metadata. Existing
+shared uplink credentials remain; GPS fix/site coordinates are still pending.
+[Registration and recovery evidence](g004-v4-gateway.md#live-portal-and-mqtt-registration---2026-10-24).
+
 2026-10-24 **R002 `!b456f760`** now runs ordinary **rak4631 /
 2.7.26.4c96b9b**, with complete original-profile preservation and intended
 profile verification through explicit reboot. Owner confirms fitted INA219;

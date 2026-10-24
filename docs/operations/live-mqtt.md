@@ -1,5 +1,13 @@
 # Live GPS and infrastructure telemetry ingestion
 
+2026-10-24 **G004 registration**: replacement V4 **`!699c2ed8`** now maps to
+**g004** as both infrastructure source and transport gateway. Remove its old
+B001 active worker mapping/identity while retaining the historical B001 device
+row and measurements. G004 already publishes with the existing shared uplink
+account; this registration changes portal/MQTT metadata, not broker credentials
+or radio settings. Its device/INA219 cadence is 180 seconds and radio SNNS uses
+that baseline plus jitter. [Registration, preservation and live checks](g004-v4-gateway.md#live-portal-and-mqtt-registration---2026-10-24).
+
 The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered member battery-voltage telemetry and infrastructure voltage/temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
 
 GPS quality extension (2026-10-16; included in the owner-authorized accumulated release): the adapter now preserves positive `Position.PDOP` (wire value / 100) and `sats_in_view` as normalized `pdop` and `satellites`, attached to the same measurement. Absent/zero wire scalars stay unknown. PocketBase retains them in historical/latest position JSON, and the shared Map/Users card presents a plain-language GPS quality pill without exposing the score or claiming a metre radius. Existing member position flags stay unchanged. [Policy and local checks](../../.scratch/pilot/issues/15-gps-quality-pill.md). New worker/backend/frontend source must be released together to make the indicator available live; existing points without quality display Unknown until a new quality-bearing fix arrives. No archive replay/backfill is part of this change.

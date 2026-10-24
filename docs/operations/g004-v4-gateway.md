@@ -129,3 +129,68 @@ The manufacturer's [V4 pin reference](https://resource.heltec.cn/download/WiFi_L
 and the selected fork's V4 variant define the board wiring; the existing saved
 MCU UART settings agree with `GPS::createGps()`'s RX/TX defaults. Model label,
 cold boot, fresh fix/time and field/runtime acceptance remain distinct checks.
+
+## Live portal and MQTT registration - 2026-10-24
+
+Owner requests checking and completing G004's portal/MQTT registration.
+Inspection finds live MQTT delivery already working with the existing shared
+uplink account, but the portal worker still maps **`!699c2ed8`** to member B001
+and has no G004 source/gateway entry. No dedicated G004 broker account is
+required to repair that missing registration; broker credentials/ACLs and the
+radio's verified profile remain unchanged. Separate account isolation remains
+a future provisioning follow-up; broker SSH works, but unattended sudo does not.
+
+At **18:18:45 UTC / 11:18:45 Pacific**, create backhaul **G004**, with the
+verified V4 hardware ID, installed version/target, INA219 and GPS metadata,
+180-second telemetry/SNNS baseline, and the planned **4 × 18650 / 2 × 100 ×
+60 mm panels**. Capacity and panel electrical ratings remain unknown; solar
+equipment/warnings are not activated from a plan alone. No coordinates are
+invented: the gateway remains an unplaced bench device, with GPS fix/site
+placement pending.
+
+Move the active radio mapping from `members` to `infrastructure`, add the
+gateway mapping and G004 identity, and remove B001's active worker identity.
+Retain B001's existing device row, number, positions, assignments, readings,
+receipts and events; mark its configuration retired/superseded by G004 and
+move its former radio/hardware IDs into `retiredIdentity`. There is no active
+B001 assignment. Exact historical row fingerprints pass before/after the
+change, and every other device configuration/identity is preserved. B001
+remains visible as a historical offline tracker in the current portal; new
+packets update G004. The failed V3's ID is not registered as a working gateway.
+
+The standard private backup **`meshlink-20261024T181646Z.tar.gz`**, SHA256
+`b2219ae44675a00e5e128ed6ebbfdd2a10fb306dafdf8b23eed6141b7c17aea2`,
+passes isolated database/API/history/credential recovery before the change.
+The worker alone restarts for the root-owned MQTT configuration update;
+application source, schemas, demo state, broker configuration and other radios
+are not changed. Root-private preview/apply evidence is under
+`/root/g004-registration-20261024/`; no credentials or full portal state are
+published.
+
+Fresh post-registration evidence passes through the production worker and
+authenticated portal state. G004's own MQTT uplink supplies the accepted
+device/power/SNNS packets; the same packets through G001/G002/G003 deduplicate
+without losing their receipts. By **18:21:50 UTC / 11:21:50 Pacific**, the
+portal shows device voltage **4.373 V** and INA219 channel 1 **4.192 V /
+-0.1 mA**, measured at **18:21:37 UTC**, with valid device timestamps.
+These remain uncalibrated reported values. G004 also transports normalized
+R002/R003/R004/R006 traffic. B001's historical fingerprints remain exactly
+unchanged after fresh G004 ingestion. The authenticated public HTTPS portal
+independently returns G004 with those readings and the planned power metadata.
+
+Python's default HTTP user agent receives Cloudflare 1010; use the existing
+ordinary curl verification path with credentials on private stdin/files,
+retaining certificate validation and edge protections. This does not require
+an application/authentication/Cloudflare change.
+
+Post-change backup **`meshlink-20261024T182314Z.tar.gz`**, SHA256
+`97017c993cbbc7c7d745e760ce67d385c2134f2d1b9db34cd81aa0727fb27e11`,
+passes isolated live database/API/history/credential recovery with **12 device
+records** and all **3,370 historical positions** retained. The installed
+verifier passes protected routes, public HTTPS/certificates and per-client
+authentication throttling. Its first rate-limit assertion fails transiently;
+the retry passes after the test window clears, without a configuration change.
+The MQTT archive checker validates the latest **200 records**, observes four
+new deliveries during its check, and all four live API/worker/Nginx/Tunnel
+services are active. Native/mobile rendering, GPS fix/time sharing, a confirmed
+map location, sensor calibration, cold boot and field/runtime remain separate.
