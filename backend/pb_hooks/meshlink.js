@@ -563,9 +563,7 @@ function state(e) {
         intrusion: value('intrusion'),
         readingTimes: times,
         readingReceivedTimes: receivedTimes,
-        powerReadings: Object.keys(readings).filter((key) =>
-          /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key))
-          .map((key) => ({ metric: key, ...readings[key] })),
+        powerReadings: telemetry.powerReadings(readings),
         samples: telemetry.batteryHistory(app, d.getString('key'), '', c.now(), 40).samples,
       };
     });

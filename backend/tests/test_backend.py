@@ -160,6 +160,45 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(len(self.state()['links']), 2)
         self.assertEqual(self.ingest(item)['outcome'], 'duplicate')
 
+    def test_current_polarity_for_existing_and_new_readings_without_rewriting_evidence(self):
+        # Owner-confirmed wiring: raw negative is charging, raw positive discharging.
+        raw_currents = {'r1': -86.7, 'r2': -101.9, 'b1': 166.1, 'b2': -110.0}
+        for device_id, raw in raw_currents.items():
+            data = {'battery': 4.02, 'sensorVoltage': 4.0, 'sensorCurrentMa': raw,
+                    **{f'power{n}Voltage': 4.0 for n in range(1, 9)},
+                    **{f'power{n}CurrentMa': raw if n < 8 else 0 for n in range(1, 9)}}
+            item = packet(device_id, 'telemetry', data, None)
+            if device_id == 'r2':
+                # A pre-upgrade latest-reading cache must work without a backfill.
+                device = next(d for d in self.records('devices') if d['key'] == device_id)
+                readings = {metric: {'value': value, 'measuredAt': None,
+                            'receivedAt': item['receivedAt'], 'timestampQuality': 'unknown'}
+                            for metric, value in data.items()}
+                self.superuser.request('PATCH', '/api/collections/devices/records/' + device['id'],
+                                       {'readings': readings})
+            else:
+                self.assertEqual(self.ingest(item)['outcome'], 'accepted')
+                self.assertEqual(self.ingest({**item, 'gatewayId': 'b2'})['outcome'], 'duplicate')
+        before = {table: self.records(table) for table in ('devices', 'observations', 'packet_receipts')}
+        for _ in range(2):
+            state = {d['id']: d for d in self.state()['infrastructure']}
+            for device_id, raw in raw_currents.items():
+                self.assertEqual(state[device_id]['battery'], 4.02)
+                readings = {r['metric']: r for r in state[device_id]['powerReadings']}
+                for metric, reading in readings.items():
+                    if metric.endswith('CurrentMa'):
+                        expected_raw = 0 if metric == 'power8CurrentMa' else raw
+                        self.assertEqual(reading['value'], -expected_raw)
+                        self.assertEqual(reading['rawValue'], expected_raw)
+                        self.assertEqual(reading['currentConvention'], 'positive-charging')
+                        self.assertIsNone(reading['measuredAt'])
+                        self.assertEqual(reading['timestampQuality'], 'unknown')
+                    else:
+                        self.assertEqual(reading['value'], 4.0)
+                        self.assertNotIn('rawValue', reading)
+        for table, rows in before.items():
+            self.assertEqual(self.records(table), rows, table)
+
     def test_sensor_current_signed_channels_and_latest_reading_independent_of_battery(self):
         before = self.state()
         item = packet('r1', 'telemetry', {'power3Voltage': 4.2, 'power3CurrentMa': -323.1,
@@ -169,7 +208,8 @@ class BackendTests(unittest.TestCase):
         current = next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')
         self.assertIsNone(current['battery'])
         readings = {r['metric']: r for r in current['powerReadings']}
-        self.assertEqual(readings['power3CurrentMa']['value'], -323.1)
+        self.assertEqual(readings['power3CurrentMa']['value'], 323.1)
+        self.assertEqual(readings['power3CurrentMa']['rawValue'], -323.1)
         self.assertEqual(readings['power1CurrentMa']['value'], 0)
         self.assertNotIn('batteryCurrentMa', current)
         for minutes in [20, None, -10]:
@@ -178,7 +218,8 @@ class BackendTests(unittest.TestCase):
         replay_future['receivedAt'] = at(10)
         self.ingest(replay_future)  # Future when received remains future on replay.
         latest = {r['metric']: r for r in next(d for d in self.state()['infrastructure'] if d['id'] == 'r1')['powerReadings']}
-        self.assertEqual(latest['power3CurrentMa']['value'], 100)
+        self.assertEqual(latest['power3CurrentMa']['value'], -100)
+        self.assertEqual(latest['power3CurrentMa']['rawValue'], 100)
         self.assertIsNone(latest['power3CurrentMa']['measuredAt'])
         self.assertEqual(latest['power3CurrentMa']['timestampQuality'], 'future')
         self.assertGreater(latest['power3CurrentMa']['receivedAt'], replay_future['receivedAt'])

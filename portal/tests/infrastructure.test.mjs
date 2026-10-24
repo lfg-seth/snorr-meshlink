@@ -77,7 +77,7 @@ test('telemetry views fall back to each metric receipt without changing valid me
   assert.match(renderToStaticMarkup(createElement(BatteryCharge, { device: stale, now, online: true })), /Historical reading/);
 });
 
-test('reported RAK current preserves sign and channel with separate hearing age and count', async () => {
+test('current shows the API charging convention without another inversion and preserves channel and timing', async () => {
   const { renderToStaticMarkup } = await import('react-dom/server');
   const { default: PowerReadings } = await import('../src/PowerReadings.tsx');
   const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
@@ -86,15 +86,20 @@ test('reported RAK current preserves sign and channel with separate hearing age 
   const device = { ...infrastructure[0], powerReadings: [
     { metric: 'power3CurrentMa', value: -323.1, measuredAt: null, receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'unknown' },
     { metric: 'power1CurrentMa', value: 0, measuredAt: '2026-10-16T18:00:00.000Z', receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'valid' },
+    { metric: 'sensorCurrentMa', value: 86.1, rawValue: -86.1, currentConvention: 'positive-charging', measuredAt: null, receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'unknown' },
+    { metric: 'power1Voltage', value: 4.004, measuredAt: null, receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'unknown' },
   ] };
   const html = renderToStaticMarkup(createElement(PowerReadings, { device, now }));
   assert.match(html, /Power channel 3/);
   assert.match(html, /-323.1 mA/);
+  assert.match(html, /\+86.1 mA/);
+  assert.match(html, /4.004 V/);
   assert.match(html, /0.0 mA/);
   assert.doesNotMatch(html, /Measurement time unknown/);
   assert.match(html, /2m 0s ago/);
   assert.match(html, /Stale/);
-  assert.match(html, /polarity and calibration are unverified/);
+  assert.match(html, /Positive current means charging; negative means discharging/);
+  assert.match(html, /accuracy and calibration remain unverified/);
   const table = renderToStaticMarkup(createElement(NeighborTable, { infrastructure: [device], trackers: [], now, online: true,
     links: [{ id: 'one', observerDeviceId: device.id, heardDeviceId: null, heardNodeId: '!00000123',
       originalSourceDeviceId: null, source: 'neighbor', reportType: 'snns-v1', path: 'direct',

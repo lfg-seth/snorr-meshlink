@@ -4,7 +4,7 @@
 
 Fictional members have saved map shortnames AVERY, JORD, MORG, RILEY and CASEY. Assigned tracker icons use the member's shortname; unassigned trackers retain their S00X device label. These portal labels do not rename radios.
 
-Current feature examples include 1S LiPo member voltage/capacity (3000/1100/1000 mAh), EVE 26V repeater charge profiles, humidity, and channel-preserving sensor power with positive, negative and zero currents. Three SNNS rows add hearing ages, observation counts and complete/partial table coverage with capacity eviction. These are fictional readings; sensor signs do not establish battery charging or discharging. Missing sensor values and the never-reported tracker/gateway remain explicit.
+Current feature examples include 1S LiPo member voltage/capacity (3000/1100/1000 mAh), EVE 26V repeater charge profiles, humidity, and channel-preserving sensor power with positive, negative and zero currents. Three SNNS rows add hearing ages, observation counts and complete/partial table coverage with capacity eviction. These are fictional readings; stored current signs use the raw sensor convention, while the state API applies the fleet's positive-charging/negative-discharging convention once. They are not physical charge/discharge measurements. Missing sensor values and the never-reported tracker/gateway remain explicit.
 
 Production remains on the VM. Its database, credentials, raw MQTT and actual location tracks stay outside Git. This demo has no MQTT connection or radio command path. Signal rows are synthetic gateway, standard NeighborInfo and SNNS examples, not firmware or field measurements.
 
