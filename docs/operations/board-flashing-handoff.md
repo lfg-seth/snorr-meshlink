@@ -1,5 +1,15 @@
 # Board flashing and configuration handoff
 
+LOCAL-3 saved-interval source/build verification is recorded in
+[repeater operations](repeater-update.md#saved-snns-interval-software-verification).
+On that source, radio SNNS follows saved `telemetry.device_update_interval`
+with RAK 180-second fallback/minimum, retained jitter/cooldown and explicit
+long-interval saturation. Gateway local reporting remains 60 seconds plus
+jitter with RF TX disabled. The source pin does not select a new image for
+flashing; release artifacts, updater integration and selected-board/admin
+acceptance remain separate. Installed images below retain their recorded
+compiled SNNS intervals.
+
 2026-10-23 owner-requested three-minute rollout: the new
 [repeater updater and acceptance procedure](repeater-update.md) covers
 R001–R006, preserving their identities/private profiles and fitted-sensor

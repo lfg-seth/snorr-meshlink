@@ -1,5 +1,43 @@
 # Session log
 
+## 2026-10-23 - Complete LOCAL-3 saved SNNS interval software
+
+- Complete the bounded [saved-interval assignment](../.scratch/tasks/local-3-snns-interval.md)
+  with one implementation worker and one read-only reviewer. Radio SNNS reads
+  saved `telemetry.device_update_interval`, retaining RAK's 180-second fallback
+  and minimum, safe saturation at 2,147,468 seconds, sampled jitter, outstanding
+  cooldown, scheduler/startup, expiry/rotation, priority and airtime gates.
+  Gateway local reports retain 60 seconds plus jitter and disabled RF TX;
+  environment/power and standard NeighborInfo keep their separate settings.
+- Publish reviewed firmware **`4c96b9ba0360f01752892a41d09ccacda82747bb`** by
+  fast-forward to `origin/snorr/develop`; update the root source pin and
+  profile/bench guidance on short-lived branch `feat/local-3-snns-interval`.
+  The reviewer checks fixed diff `b23f09d5b..4c96b9ba0`, finds no actionable
+  issues and independently repeats the sanitized behavioral matrix. No
+  follow-up code changes are required.
+- Validation: the actual module/real Throttle tests cover saved settings,
+  extremes, changes, retained jitter, no catch-up, reboot reconstruction,
+  rollover including zero and local/radio modes. Both fallback profiles and
+  collector capacities pass ASan/UBSan; existing INA219 x1/x10 checks, 34
+  updater and ten release tests pass. Ordinary `rak4631` and
+  `heltec-v3-gateway` full builds pass on the committed source. Resolve the
+  Windows gateway command-length failure with a temporary package-cache drive
+  mapping and run final builds sequentially after shared output invalidation.
+  Trunk is unavailable; configured clang-format 16.0.3, YAML/Python syntax and
+  whitespace/link checks pass. [Evidence and build limits](../docs/operations/repeater-update.md#saved-snns-interval-software-verification).
+- No board flashing, remote-admin provisioning, release manifest/artifact
+  publication, production-pointer update or live deployment is performed.
+  The harness stubs the scheduler boundary and reconstructs module state; real
+  scheduler execution, flash persistence, admin transport/authorization and
+  RF/MQTT/portal acceptance remain unverified. Preserve the unrelated image.
+
+Next required bench step: explicitly select and identify a RAK and authorized
+transmitting controller, preserve the complete private profile/keys, use an
+independently verified selected image, then perform LOCAL-3 section-2 admin
+read/change/readback, unauthorized-key rejection, save/reboot, relay/interrupted
+command and both-gateway cadence checks; restore the intended profile. Freshness,
+release, sensor accuracy, soak and deployment gates remain separate.
+
 ## 2026-10-23 - Accept agent-workflow restructuring for merge
 
 - Owner requests merging [PR #56](https://github.com/lfg-seth/snorr-meshlink/pull/56)

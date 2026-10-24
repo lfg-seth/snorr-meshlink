@@ -8,6 +8,10 @@ ignored storage.
 
 ## Current rollout status
 
+- LOCAL-3's saved-interval source work is recorded in
+  [the software verification record](#saved-snns-interval-software-verification).
+  It changes the source pin, not the installed fleet or production download
+  pointer. The installed `0634b77` image below still uses a compiled baseline.
 - Firmware source **`0634b775f65804968f5a18a7e8824db415556db2`** is built for
   ordinary `rak4631`, including the INA219 fixes and the RAK-specific
   180-second passive-neighbor cadence. Source/build success is separate from
@@ -50,6 +54,85 @@ The owner authorizes this repeater rollout. Every other repeater still needs
 its own physical connection and independent identity/backup checks. This tool
 supports RAK4631 repeaters R001–R006; member trackers and Heltec gateways keep
 their separate update procedures.
+
+## Saved SNNS interval software verification
+
+LOCAL-3 section 1 implements the saved-interval contract in the firmware fork.
+The implementation input is pinned source `b23f09d5b`, not R006's installed
+runtime string. Reviewed source
+[`4c96b9ba0360f01752892a41d09ccacda82747bb`](https://github.com/lfg-seth/firmware/commit/4c96b9ba0360f01752892a41d09ccacda82747bb)
+is published by fast-forward on `origin/snorr/develop` and pinned through this
+repository's `firmware` submodule. This is software evidence, separate from
+all installed-board results in this record.
+
+- The actual-module regression fails against the old implementation and passes
+  after the change. `python3 test/test_snorr_neighbor_signals/run.py` compiles
+  the real module and `src/mesh/Throttle.cpp` with GCC, AddressSanitizer and
+  UndefinedBehaviorSanitizer. Both 180/300-second fallback builds pass the
+  unset, 1/179/180/300/900/3601/86400-second settings, saturation boundary,
+  overflowing-millisecond input and uint32 maximum cases. The harness also
+  covers shorter/longer settings, retained jitter, no catch-up, reboot
+  reconstruction, rollover including a report at zero, local/radio transitions,
+  TX-disabled local operation, report fields, empty/expired observations and
+  airtime/channel/role gates. Collector capacities 32/10 pass the existing wire,
+  rotation, eviction, zero-SNR and expiry checks.
+- Existing actual-source INA219 checks pass at multipliers 1 and 10 using
+  cached RAK dependencies and emulated I2C. The project environment
+  `.venv/Scripts/python.exe scripts/check-project.py bench firmware-release`
+  passes **34 updater tests and 10 release tests**. These checks preserve
+  sensor/profile/release behavior; they do not verify actual admin access.
+- The module harness observes constructor startup delay and returned scheduler
+  delays with a fake scheduler boundary. Reboot reconstruction retains the
+  saved configuration fixture and resets module state. Actual scheduler
+  execution, flash persistence, remote admin authorization/session handling,
+  RF/MQTT/portal delivery and measured airtime remain bench/live gates.
+- Full Trunk is unavailable on this Windows host. The changed C++ files pass
+  the repository's configured clang-format **16.0.3**; workflow YAML and Python
+  syntax parse, and Git whitespace checks pass.
+- One independent read-only reviewer checks the fixed diff
+  `b23f09d5b..4c96b9ba0` against every section-1 criterion and reports **no
+  actionable findings**. The reviewer independently reruns the sanitized module
+  and collector matrix successfully, checks actual Throttle/admin paths and
+  confirms the clean firmware worktree. No review edits or extra workers are used.
+
+Both full target builds pass on clean source `4c96b9ba0` using installed
+Windows PlatformIO **6.1.19**. RAK uses Nordic platform 10.11.0/GCC 9.3.1;
+gateway uses Espressif platform 6.13.0/GCC 8.4.0. These are build checks only.
+
+| Target / command | RAM used / available | Flash used / available | Result |
+| --- | --- | --- | --- |
+| `pio run -e rak4631` | 105,252 / 248,832 bytes (42.3%) | 759,352 / 815,104 bytes (93.2%) | Pass, 136.04 s |
+| `pio run -e heltec-v3-gateway` | 132,096 / 327,680 bytes (40.3%) | 2,110,561 / 3,342,336 bytes (63.1%) | Pass, 301.40 s |
+
+The initial gateway build hits Windows GCC's command expansion length limit
+(`CreateProcess`). A temporary `subst P:` mapping of the existing
+`C:/Users/Setheth/.platformio/packages` cache, selected with process-local
+`PLATFORMIO_PACKAGES_DIR=P:/`, shortens framework/compiler paths and resolves
+it without source/toolchain changes. An overlapping retry invalidates shared
+PlatformIO output; both final builds run sequentially with the same package
+path. The mapping is removed at handoff. Existing dependency/compiler warnings
+remain; no warning-free or hardware acceptance claim is made.
+
+PR #57's first Linux record check passes all eight runner regression tests but
+fails three links into the uninitialized firmware submodule. The read-only
+record workflow now checks out the pinned submodule before validating links;
+it does not build firmware or follow the development branch head.
+
+Private logs are under ignored `private/bench/local-3-snns-interval/`:
+`behavior-tests.log`, `sensor-tests.log`, `project-checks.log` and target build
+logs (`rak-reviewed-build.log`, `gateway-short-path-build.log`, plus initial
+failed-attempt logs). They contain build/test evidence only; no radio profiles or keys were
+read or published. The release manifest/schema, production pointer and existing
+binary provenance stay unchanged for the separate release-integration outcome.
+
+Next required bench check: select and identify one RAK and an authorized
+transmitting controller under LOCAL-3 section 2. Preserve its complete profile
+and keys, install an independently verified selected image, read/change/read
+the device interval through authorized admin, verify unauthorized-key rejection,
+save/reboot persistence, fresh device/SNNS cadence through both gateways, then
+restore and verify the intended profile. Include relay-path and interrupted
+command recovery. G001/G002 remain receive-only; no gateway downlink, board
+flash or remote-admin provisioning is performed by this assignment.
 
 ## Run from the repository root
 
@@ -152,12 +235,37 @@ The saved role is **CLIENT**. The updater enables neighbor reporting over
 LoRa and keeps standard NeighborInfo at **21,600 seconds**. Standard
 NeighborInfo has a **14,400-second minimum**; setting its interval to 180
 would be clamped and would not control the separate project-private SNNS
-reports. The selected RAK firmware compiles SNNS's radio baseline to 180
-seconds. Initial SNNS opportunities begin about 60–75 seconds after boot;
+reports. The existing `0634b77` image compiles SNNS's radio baseline to 180
+seconds. The newer LOCAL-3 source instead reads saved
+`telemetry.device_update_interval`: zero/unset falls back to 180 seconds,
+nonzero values below 180 clamp to 180, and longer values are supported up to
+a saturated baseline of 2,147,468 seconds (about 24.85 days). Saturation occurs
+before millisecond conversion, reserving room for jitter below half the timer
+range. Device telemetry and radio SNNS now share the selected baseline;
+environment and power keep separate settings. The updater's intended device
+setting stays 180 seconds; its legacy manifest checks and production pointer
+remain unchanged until the separate release-integration assignment certifies
+the saved-interval contract.
+
+Initial SNNS opportunities begin about 60–75 seconds after boot;
 later reports add jitter and scheduler delay and retain airtime admission
 checks. Empty neighbor reports are suppressed. Device and sensor reports
 also retain normal firmware scheduling, congestion and airtime limits.
 Three minutes is a requested baseline, not guaranteed end-to-end delivery.
+
+On the new source, shortening an interval preserves the previous report's
+baseline plus sampled jitter once. Lengthening extends that cooldown with the
+same jitter. The next report starts a fresh cooldown; missed opportunities
+never produce catch-up bursts. Telemetry admin writes change in-memory
+configuration, then save/reboot normally outside an edit transaction (or on
+commit). A reboot uses saved configuration and a fresh 60–75-second startup
+opportunity; the prior boot's cooldown is not persisted. Validate actual admin
+persistence and delivery on the separately selected bench board.
+
+Gateway local SNNS remains 60 seconds plus jitter regardless of this device
+setting; preserve local-only mode and disabled LoRa TX. Standard NeighborInfo,
+wire format, expiry, rotation, background priority and airtime gates retain
+their existing behavior. See the pinned [firmware contract](../../firmware/SNORR_NEIGHBORS.md).
 
 Before any flash, the updater matches the requested repeater's recorded USB
 serial, radio node ID and RAK4631 hardware model. It requires an existing
