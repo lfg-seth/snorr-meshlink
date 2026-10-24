@@ -1,5 +1,37 @@
 # Hardware inventory
 
+## 2026-10-24 - Active-device battery and solar allocations
+
+Owner decommissions **B001** and **R005** and requests removal. Their active
+portal device records are removed; historical observations, positions,
+assignments and raw MQTT archive remain stored. B001's board was reassigned
+to G004 as recorded below; decommissioning the old B001 label does not remove
+the replacement G004. R005's physical disposition is unspecified; no stock
+count, disposal, purchase or valuation is inferred.
+
+Owner confirms these allocations, now reflected in live portal metadata:
+
+| Device | Battery | Solar |
+| --- | --- | --- |
+| B002 | 3000 mAh LiPo; `lipo-1s` | None |
+| G003 | 8 standard EVE 18650 cells; `eve-26v-1s` | 1 large 5 V panel |
+| G004 | 4 standard EVE 18650 cells; `eve-26v-1s` | 2 panels |
+| R006 | 4 standard EVE 18650 cells; `eve-26v-1s` | 1 panel |
+
+Interpret the owner's 18650 shorthand using the existing standard EVE cell
+inventory/profile. The known EVE 26V reference is 2550 mAh per cell; total
+pack capacity remains unset pending confirmation of wiring. Panel ratings
+beyond G003's stated 5 V, output, charging path, sensor accuracy and measured
+runtime remain unverified. Solar equipment flags record fitted hardware,
+not a measured solar input. This supersedes earlier unknown/planned allocations
+for these devices. R004's battery allocation remains unknown.
+
+Before mutation, take a consistent root-private database backup at
+`/var/lib/meshlink/private-inventory-updates/20261024T185016Z/before.db`.
+Independent authenticated portal snapshot confirms updated profiles and
+absence of B001/R005; history-table counts do not decrease. No firmware,
+radio settings, source deployment or demo-state change.
+
 2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing
 R002 **`!b456f760`**, USB **`BADB1E79E9739FC4`**, COM9, also has an **INA219**.
 This supersedes its earlier no-INA219 bench sensor selection, without adding
