@@ -1,5 +1,43 @@
 # Session log
 
+## 2026-10-24 - PR 59 merged; MeshLink 0.1.1 deployed
+
+- Owner explicitly authorizes merging/deploying [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59).
+  All final-head checks pass; merge **`a405987dc849acf9f609ed3764c967ceb292a333`**
+  has the reviewed source tree. Publish immutable annotated
+  **`meshlink-v0.1.1`**. Local `main` advances by fast-forward and continues
+  tracking `origin/main`; the root checkout's unrelated G004/firmware and
+  inventory/3DModels work remains untouched.
+- Stage the exact merged source with Git identity on the existing LXC. Server
+  **75 backend / 56 portal tests**, TypeScript and clean live build pass on
+  Node **22.23.1**; migration sources match. Promote backend/portal/version
+  files while preserving private configuration, raw caches/observations,
+  queue and live/demo database hashes. Keep the approved gateway-aware
+  recovery verifier. Rollback source/assets remain private on the server.
+- All **ten public build hashes** and root/public source/version identity
+  pass. Live API first verifies ten cached current/raw pairs and unchanged
+  voltage/clocks; actual component rendering with sanitized live values
+  passes. Fresh current receipts then pass for R002/R004/R006 through all
+  four registered gateways and G003 locally; independently provisioned G004
+  also uses the global inversion. At **11:35:28 Pacific** the selected currents
+  are **+106.3 / +109.0 / +111.0 / -165.0 mA**, respectively. All six services
+  and live feed are healthy.
+- Verified pre/post backups include complete state and matching source/static
+  files. Both isolated live and demo integrity/API recoveries pass. A delayed
+  retry clears the existing post-restart sign-in throttle. For the known GH-39
+  demo-cap assertion, a task-private bounded check proves exact newest
+  **50,000 of 67,903 / 67,983** samples and correct truncation, without pruning
+  rows or changing the installed verifier. [Exact hashes, paths and limits](../docs/operations/radio-report-ingestion.md#meshlink-011-deployment---2026-10-24).
+- Remove the completed polarity rollout and superseded 0.1.0 release-validation
+  follow-ups from Verify; the 0.1.1 release now has Linux/source/build/tag and
+  deployed recovery evidence. GH-4 calibration/battery-only, GH-39 verifier
+  maintenance, native browser/mobile, sustained and field gates remain open.
+  Publish these coherent handoff records from **`codex/current-polarity-deployment`**.
+
+Next useful step: owner/native portal confirmation; continue the existing
+physical-accuracy and runtime work only when selected. No board/profile or
+credential changes are part of this release.
+
 ## 2026-10-24 - Global fleet current-sign correction prepared
 
 - Owner confirms all sensor wiring is the same: **R002/R004/R006 charging,

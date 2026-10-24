@@ -2,6 +2,18 @@
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
+## Fleet current polarity / MeshLink 0.1.1 - 2026-10-24
+
+Owner-selected [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59) is
+merged and deployed as **`a405987dc849acf9f609ed3764c967ceb292a333`**, tagged
+**`meshlink-v0.1.1`**. The state API globally inverts environment and all eight
+power-channel currents once: positive charging, negative discharging. Existing
+caches and new reports share the conversion; raw evidence remains unchanged.
+Server 75 backend/56 portal checks and clean live build pass, as do all ten
+public asset hashes, protected-state preservation and verified pre/post live
+and demo recovery. Root source marker and public `/version.json` agree on the
+merged commit. [Exact deployment, current samples and recovery evidence](radio-report-ingestion.md#meshlink-011-deployment---2026-10-24).
+
 ## Current neighbor signals and relative expiry - 2026-10-21
 
 Owner explicitly authorizes deployment of the trial branch's reviewed GH-47 correction. Application **443ba03** is deployed with explicit additive migrations to both live/demo databases, preserving all pre-existing records, configuration and saved demo work. Server 74 backend/55 portal checks, live build, nine public assets, access/isolation boundaries and migrated backup recovery pass. Fresh SNNS reports produce useful current readings; cached standard tables cannot renew them. Actual-component replay verifies exact two-hour estimated-age expiry. Native/sustained acceptance and unseen upstream delay remain separate. [Release evidence and limits](neighbor-signal-visibility.md#deployment---2026-10-21). `main` and draft PR #50 remain unchanged.

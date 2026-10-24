@@ -31,6 +31,60 @@ This settles the owner's requested sign convention, not shunt accuracy,
 calibration, capacity/runtime or whole-battery versus sensor-path accounting.
 Source/test publication and selected production deployment remain separate.
 
+### MeshLink 0.1.1 deployment - 2026-10-24
+
+Owner explicitly authorizes merging [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59)
+and deploying the correction. Merge **`a405987dc849acf9f609ed3764c967ceb292a333`**
+has the reviewed head's exact source tree; immutable annotated tag
+**`meshlink-v0.1.1`** identifies that commit. A clean source checkout on the
+existing server passes **75 backend tests**, **56 portal tests**, TypeScript
+and a live-mode build on pinned Node **22.23.1**. All existing migration sources
+match; promotion needs no schema operation or replay.
+
+Backend/portal source and root version metadata are promoted with rollback at
+`/opt/meshlink-rollback-current-a405987`. Live/demo database, raw-current cache,
+worker queue and private-configuration hashes remain identical while services
+are quiesced for the switch. The already approved gateway-aware recovery
+verifier is preserved, as are existing one-off migration records. All ten
+published build files match the tested build through loopback and public HTTPS;
+`/version.json` identifies **0.1.1 / a405987**, live mode and
+`trackedChanges: false`. Public index SHA-256:
+`3ffd021c60f84f23684c359cead1476bf1ad00df5c57cdef87a4726d8d89cbba`.
+
+Authenticated API comparison before restarting the workers verifies **ten
+cached current/raw pairs**, unchanged voltage and original clocks. Initial
+corrected channel-1 samples are R002 **+103.7 mA**, R004 **+111.7 mA**, R006
+**+109.9 mA** and G003 **-181.5 mA**. Actual `PowerReadings` component rendering
+with sanitized live API data confirms the signs and convention text without
+another inversion. All six services and the live feed are healthy afterward.
+Fresh post-promotion current receipts and their API values pass separately
+from the cached-readings test. At **18:35:28 UTC / 11:35:28 Pacific**, R002
+is **+106.3 mA**, R004 **+109.0 mA**, R006 **+111.0 mA** and G003
+**-165.0 mA**. Each selected repeater has new current receipts through
+G001/G002/G003 and the independently provisioned G004; G003 has fresh local
+uplink current. G004's new current also receives the global conversion.
+All ten selected current/raw pairs pass; unknown measurement clocks remain
+unknown and retain their original receipt-time fallback.
+
+Pre-release backup **`meshlink-20261024T182359Z.tar.gz`**, SHA-256
+`d33ac00ab2964e261976be1e6faa403f780230ac1b4bbeb633faa514d87e824e`,
+and post-release backup **`meshlink-20261024T183115Z.tar.gz`**, SHA-256
+`cb1801091f6da97bcecae9b7246ef2f451e0b43270adaf2e347750f53c9defdf`,
+both pass checksum, isolated live integrity/API recovery and separate demo
+integrity/API/history recovery. An initial precheck hits the existing sign-in
+rate window immediately after restart; a delayed retry passes. The installed
+demo verifier's already recorded untruncated-history assumption also fails.
+A task-private bounded check instead proves the exact newest **50,000 of
+67,903 pre-release / 67,983 post-release** samples and truthful truncation,
+preserving all database rows. The installed verifier remains unchanged;
+GH-39's broader correction stays separate.
+
+Private build/promotion/recovery logs and current-value evidence remain under
+`/opt/meshlink-release-current-a405987`. This release settles the requested
+global presentation convention. Sensor accuracy, battery-only behavior,
+sustained runtime, native desktop/mobile review and field acceptance remain
+their existing independent gates.
+
 ### Original raw storage and radio contract
 
 - The encrypted private-channel adapter recognizes `SNNS` v1 on private port 256. It checks exact header/row lengths, version/reserved flags, reporter/sender agreement, row/total counts, bounded hearing ages, unique non-self node IDs, nonzero counts and valid RSSI/quarter-dB SNR. Other private applications remain unsupported. SNNS zero SNR and zero hearing age are valid.
