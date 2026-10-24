@@ -1,5 +1,31 @@
 # Field testing and tangible results
 
+## 2026-10-24 - G003 first installation and INA219 gateway telemetry
+
+Owner-requested **G003 `!9e9f167c`** receives dedicated
+**heltec-v3-gateway / 2.7.26.4c96b9b** from the exact reviewed local build.
+Original factory-demo flash is fully backed up; gateway factory, official
+recovery and matching filesystem images pass independent byte verification.
+Complete intended owner/new PKI/channel/local/module profile matches through
+explicit reboot, including corrected supplied Wi-Fi, CLIENT, LoRa TX disabled,
+local-only collector, and enabled **180-second device/power telemetry**.
+INA219 is detected at **0x40** and initialized; environment stays off.
+
+Independent validating-TLS MQTT observation receives fresh non-retained
+encrypted source/transport-G003 device voltage **4.069 V** at 16:14:26 UTC and
+INA219 channel-1 **3.920 V / -489.4 mA** at 16:14:51 UTC. Values/sign are retained
+without calibration or charging-path interpretation. A 275-second observation
+captures two reports of each type: MQTT receipt gaps **180.353 / 180.176 seconds**
+for device/power, respective measurement-clock gaps **180 / 181 seconds**.
+Second power is **3.924 V / -489.3 mA**; second device voltage is **4.073 V**.
+Five own-source local API telemetry packets are also captured. Serial and MQTT
+handles close. [Exact images, private evidence and acceptance limits](../docs/operations/g003-gateway-preparation.md).
+
+No production gateway/source mapping or portal record is changed. Separate
+broker credentials, authenticated portal acceptance, sensor calibration/path,
+pack/runtime, sustained delivery and field coverage remain follow-ups.
+No other board is changed.
+
 ## 2026-10-23 - R006 three-minute firmware/profile bench acceptance
 
 At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected

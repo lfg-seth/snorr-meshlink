@@ -1,5 +1,15 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **G003 `!9e9f167c`** is commissioned from the Heltec factory demo
+with dedicated **heltec-v3-gateway / 2.7.26.4c96b9b**, a complete original
+flash backup and verified first-install images. CLIENT/receive-only private
+pilot profile, supplied Wi-Fi, device/power telemetry enabled at **180 seconds**,
+INA219 detected at 0x40, environment off and local-only collector pass complete
+profile comparison through explicit reboot. Initial region setup automatically
+enables TX; save TX disabled again after initial provisioning and verify it.
+[Exact images, sensor/delivery evidence and remaining registration gates](g003-gateway-preparation.md).
+G001/G002 retain their separate profiles below.
+
 LOCAL-3 saved-interval source/build verification is recorded in
 [repeater operations](repeater-update.md#saved-snns-interval-software-verification).
 On that source, radio SNNS follows saved `telemetry.device_update_interval`

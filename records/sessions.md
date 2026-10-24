@@ -1,5 +1,42 @@
 # Session log
 
+## 2026-10-24 - G003 first installation and three-minute INA219 telemetry
+
+- Owner asks to flash the attached V3/INA219 as G003 and enable three-minute
+  telemetry, then supplies and corrects the Wi-Fi credentials. Independently
+  identify ESP32-S3 v0.2 / 8 MB / MAC `9c:13:9e:9f:16:7c`, initially running
+  the Heltec factory demo. Configuration API timeouts are explained by that
+  non-Meshtastic image; retain a complete private original-flash recovery copy.
+- Install and independently hash-verify dedicated **heltec-v3-gateway /
+  2.7.26.4c96b9b**, official ESP32-S3 OTA v1.0.1 and matching filesystem.
+  Reuse the exact reviewed local build from published source `4c96b9ba0`;
+  no source/release change, full-chip erase or factory-reset command.
+- Assign **G003 `!9e9f167c` / SNORR Pilot Gateway G003**. CLIENT, private US
+  pilot channel, supplied corrected Wi-Fi, encrypted TLS MQTT, **device and
+  INA219 power telemetry enabled at 180 seconds**, environment off and
+  local-only neighbor collector. Initial region setup creates PKI and forces
+  TX on; the full-profile check catches it, a second LoRa write disables TX,
+  then complete intended owner/hardware/key/channel/local/module equality
+  passes through explicit reboot. New keys remain stable; other boards unchanged.
+- INA219 at **0x40** initializes. Independent validating-TLS MQTT observation
+  captures two device and two channel-1 power reports. Device/power receipt
+  gaps **180.353 / 180.176 seconds**, measurement-clock gaps **180 / 181 seconds**;
+  latest **4.073 V** device and **3.924 V / -489.3 mA** INA219. Five local API
+  telemetry packets are captured too. Serial/subscriber handles close.
+  Preserve literal sign/values; no calibration, charging-path or runtime claim.
+- Update inventory, flashing handoff, measured results and the tracker.
+  [Exact images, preservation, delivery and limits](../docs/operations/g003-gateway-preparation.md).
+  Private recovery/profile/network/raw evidence stays ignored. Documentation
+  link/whitespace validation passes; no firmware/software source is changed.
+  Publish sanitized records on short-lived `codex/g003-preparation`, preserving
+  unrelated untracked `3DModels/` and the existing source pin.
+
+Next useful step: with broker/portal access, provision a distinct G003 uplink
+account (this board currently reuses G002's existing account), register its
+gateway/source/device mappings and verify authenticated portal state. These
+server writes are not performed during this board preparation. Calibrated
+power/path, installed pack/antenna/site, sustained delivery and field gates remain.
+
 ## 2026-10-24 - Selected R006 and gateway admin/cadence bench
 
 - After PR #57 merges, owner explicitly authorizes flashing R006/G001/G002,

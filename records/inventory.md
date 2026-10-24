@@ -1,5 +1,19 @@
 # Hardware inventory
 
+2026-10-24 G003 commissioning - Owner assigns the attached Heltec V3 with
+INA219 **G003**, independently identified as ESP32-S3 revision v0.2 / 8 MB,
+MAC `9c:13:9e:9f:16:7c`, Meshtastic **`!9e9f167c`**, hardware device ID
+`4393827189e95c03021dd7b37007a6a0`. The original Heltec factory demo is fully
+backed up before first installation of dedicated **heltec-v3-gateway /
+2.7.26.4c96b9b**. All installed images verify; complete intended profile/new
+PKI identity persists through explicit reboot. CLIENT, receive-only private
+pilot/Wi-Fi/MQTT, enabled **180-second device and INA219 power telemetry**,
+environment off and local-only neighbor collector. INA219 is detected at
+0x40 on the external I2C bus. Pack/capacity, physical measurement path,
+shunt/polarity/calibration, antenna and site remain unverified. This assigns
+an existing connected board; no purchase or change to stock totals is inferred.
+[Installation, delivery evidence and limits](../docs/operations/g003-gateway-preparation.md).
+
 2026-10-24 saved-interval bench - Existing R006 `!da581e5f` receives ordinary
 `rak4631 / 2.7.26.4c96b9b`; G001 `!9ea13cc0` and G002 `!849ad7a0` receive
 dedicated `heltec-v3-gateway / 2.7.26.4c96b9b`, all from reviewed source
