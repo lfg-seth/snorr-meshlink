@@ -4,16 +4,16 @@ Tracking handoff updated 2026-10-21; dated hardware/service evidence below is un
 
 ## Each time you switch machines
 
-Before leaving, update the [local tracker](../../.scratch/TRACKER.md) if status or the next action changed, and append a brief handoff to `records/sessions.md`. Commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`. On the receiving machine, first check `git status`; preserve any local work before switching or pulling. During the trial, use `trial/local-tracking` on both machines; `main` retains the prior workflow. With a clean checkout:
+Before leaving, update the [local tracker](../../.scratch/TRACKER.md) if status or the next action changed, and append a brief handoff to `records/sessions.md`. Commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`. On the receiving machine, first check `git status`; preserve any local work before switching or pulling. Use `main` on both machines; permanent local tracking was accepted on 2026-10-23. Firmware development uses `snorr/develop`, while this repository pins its exact source. With a clean checkout:
 
 ```sh
 git fetch origin
-git switch trial/local-tracking
-git pull --ff-only origin trial/local-tracking
+git switch main
+git pull --ff-only origin main
 git submodule update --init --recursive
 ```
 
-If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Start with `AGENTS.md`, the local tracker and the latest session entry. Consult `PROJECT.md` for mission/constraints, and `.scratch/pilot/map.md` or domain records when the task needs their decisions or evidence. Follow the [local workflow](local-tracking.md); the tracker and linked evidence travel with Git. Imported issue history remains available [locally](../../records/tracking-import/index.md), while GitHub issues and the Project board stay untouched during the trial.
+If histories diverge, inspect and reconcile them; do not force-push or discard local changes. Use a separate branch when both machines have unfinished work. Start with `AGENTS.md`, the local tracker and the latest session entry. Consult `PROJECT.md` for mission/constraints, and `.scratch/pilot/map.md` or domain records when the task needs their decisions or evidence. Follow the [local workflow](local-tracking.md); the tracker and linked evidence travel with Git. Imported issue history remains available [locally](../../records/tracking-import/index.md), while GitHub issues and the Project board remain historical references.
 
 Keep the WSL clone in its Linux filesystem, for example `~/repos/snorr-meshlink`. Reinstall dependencies locally from the pinned versions/lockfiles; do not copy `.venv`, `node_modules` or built binaries between machines. Frontend checks are `npm ci` then `npm run check` inside `portal/`. Backend setup/check commands are in [backend/README.md](../../backend/README.md). Native local development uses fictional data; do not reinitialize the hosted database.
 

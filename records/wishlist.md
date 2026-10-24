@@ -2,7 +2,7 @@
 
 These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
-During the `trial/local-tracking` branch trial, current status is maintained in the [local tracker](../.scratch/TRACKER.md) under the [local workflow](../docs/operations/local-tracking.md). Capture each new requested idea here and add one deferred tracker line linked to its section. This file preserves the owner's requested ideas and deferral decisions. Existing GitHub links below are historical references; issues and the Project board stay untouched during the trial, while `main` retains the prior workflow.
+With permanent local tracking accepted on 2026-10-23, current status is maintained in the [local tracker](../.scratch/TRACKER.md) under the [local workflow](../docs/operations/local-tracking.md). Capture each new requested idea here and add one deferred tracker line linked to its section. This file preserves the owner's requested ideas and deferral decisions. Existing GitHub links below are historical references; issues and the Project board remain historical references, while `main` uses local tracking.
 
 Keep these ideas available as context: mention a parked item when it is relevant and useful in a future conversation. Mentioning it does not activate it or authorize work.
 

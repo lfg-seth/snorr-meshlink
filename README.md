@@ -8,13 +8,13 @@ Priority order: member location awareness, member communications, and later supp
 
 ## Start here
 
-- [Local tracker](.scratch/TRACKER.md): current work, next actions, verification and deferred ideas during the `trial/local-tracking` branch trial.
+- [Local tracker](.scratch/TRACKER.md): current work, next actions, verification and deferred ideas on `main`.
 - [Latest session entry](records/sessions.md): the most recent handoff; read older entries when the task needs their history.
 - [Board flashing and configuration](docs/operations/board-flashing-handoff.md): new-chat entry point, pinned builds, preserved profiles, sensor wiring and portal verification gaps.
 - [Local development](README.local.md): start commands, demo credentials, database dashboard and frontend builds.
 - [Project brief](PROJECT.md): mission, priorities and constraints; consult when choosing work or interpreting scope.
-- [Tracking workflow](docs/operations/local-tracking.md): compact local updates, branch trial and return to `main`.
-- [Imported tracking history](records/tracking-import/index.md): preserved GitHub issue snapshots; existing issues and the Project board stay untouched during the trial.
+- [Tracking workflow](docs/operations/local-tracking.md): permanent local updates and acceptance history.
+- [Imported tracking history](records/tracking-import/index.md): preserved GitHub issue snapshots; existing issues and the Project board remain historical references.
 - [Private monitoring](docs/operations/meshmonitor-lxc.md): internal MeshMonitor and the existing Grafana/Prometheus integration, credentials handoff, retention and recovery.
 - [Decision map](.scratch/pilot/map.md): historical pilot questions and durable decision answers.
 - [Roadmap](docs/roadmap.md): checkpoints from inventory through deployment and reporting.
@@ -35,4 +35,13 @@ Priority order: member location awareness, member communications, and later supp
 
 Current state (2026-10-17): two member trackers deliver bench GPS through two gateways to the deployed authenticated portal; RAK neighbor and signed sensor-power ingestion are deployed. Sustained GPS freshness/runtime, forced relaying, local viewing through outages, sensor accuracy and field readiness remain unverified. The planned six-member pilot is separate from confirmed available hardware. Positions become stale at 15 minutes; runtime minimum is four hours, with a 12-hour target. See the [roadmap](docs/roadmap.md) for evidence checkpoints and the [local tracker](.scratch/TRACKER.md) for current work. Passive tracking remains first, communications second, law-enforcement expansion later.
 
-Git history is the change record. The GitHub repository is [lfg-seth/snorr-meshlink](https://github.com/lfg-seth/snorr-meshlink), configured as `origin` using SSH. `main` tracks `origin/main`; push each completed commit to its corresponding branch. The local tracker owns current execution status on `trial/local-tracking`; `main` retains the prior workflow until the owner accepts the trial. Markdown preserves durable decisions and measured evidence. Credentials and raw member location data belong in ignored `private/` or `local-data/`; keep summarized evidence and references here. Ignored operational data needs its own backup.
+Git history is the change record. The GitHub repository is [lfg-seth/snorr-meshlink](https://github.com/lfg-seth/snorr-meshlink), configured as `origin` using SSH. `main` tracks `origin/main`; push each completed commit to its corresponding branch. The local tracker permanently owns current execution status on `main`. Markdown preserves durable decisions and measured evidence. Credentials and raw member location data belong in ignored `private/` or `local-data/`; keep summarized evidence and references here. Ignored operational data needs its own backup.
+
+## Releases and tracking
+
+MeshLink application **0.1.0** is versioned independently of SNORR Firmware.
+See [release operations](docs/operations/meshlink-releases.md),
+[changelog](CHANGELOG.md) and [firmware releases](records/firmware-releases/README.md).
+Builds emit `version.json` with source/version/compatibility metadata.
+[Repository-local tracking](docs/operations/local-tracking.md) is permanent on
+`main`; firmware source development uses `snorr/develop`.

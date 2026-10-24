@@ -1,6 +1,10 @@
 # Current work
 
-Local-tracking trial, 2026-10-21, on `trial/local-tracking`. This file owns current status on this branch; [workflow and rollback](../docs/operations/local-tracking.md). GitHub issues/Project remain unchanged. Linked `GH-N` files preserve the one-time import; open only the selected task's details. Priority stays passive member GPS, communications, then law-enforcement expansion. Listing work is not authorization to execute it.
+Permanent local tracking accepted 2026-10-23. This file owns current status on
+`main`; [workflow](../docs/operations/local-tracking.md). GitHub issues/Project
+remain historical references, without automatic synchronization. Linked GH-N
+imports retain original requirements. Priority stays passive member GPS,
+communications, then law-enforcement expansion. Listing work is not authorization.
 
 ## Current
 
@@ -32,6 +36,7 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 | Task | Remaining check / evidence |
 | --- | --- |
+| MeshLink 0.1.0 release validation | Version metadata, changelog/tag/package validation and 56 portal checks/build pass. Windows backend cutover test connection leak fixed; full-suite runs still show intermittent connection resets and skip seven POSIX-only tests. Next: confirm Linux CI before tagging/publishing the combined release; source merge is not server deployment. [Release procedure](../docs/operations/meshlink-releases.md). |
 | [GH-9 — Expanded demo release](../records/tracking-import/github-9.md) | Preserve completed release evidence; finish native review of battery/power/humidity/neighbor examples and remaining imported acceptance. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-21 — Neighbor minimap navigation](../records/tracking-import/github-21.md) | Deployed; verify native desktop/mobile endpoint interaction and retained relationship/viewport behavior. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-23 — MeshMonitor acceptance](../records/tracking-import/github-23.md) | Native views, two-gateway behavior, storage growth and off-host recovery remain; retain read-only/isolation boundaries. [Operations](../docs/operations/meshmonitor-lxc.md). |

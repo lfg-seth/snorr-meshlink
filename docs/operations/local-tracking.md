@@ -1,6 +1,6 @@
-# Local tracking trial
+# Permanent local tracking
 
-Authorized on 2026-10-21 for `trial/local-tracking`. This branch uses [the repository tracker](../../.scratch/TRACKER.md) as the single current queue. `main` retains the earlier GitHub workflow until the owner accepts the trial. GitHub still hosts source, CI and useful PRs. Issues and the Project board are preserved unchanged during the trial.
+Owner accepted the trial on 2026-10-23. `.scratch/TRACKER.md` is the single current task queue on `main`, with decisions/evidence in existing records. GitHub hosts source, CI and useful PRs; historical issues/Project remain unchanged. Automated GitHub tracking provisioning is disabled.
 
 ## Daily work
 
@@ -8,9 +8,9 @@ Authorized on 2026-10-21 for `trial/local-tracking`. This branch uses [the repos
 2. Read the tracker and the newest session entry. Open the selected task's linked requirements or evidence as needed, rather than loading the entire project history. Work follows the owner's request and priority order: passive member GPS, communications, later law-enforcement expansion.
 3. Do the authorized work. Keep measurements, decisions and procedures in their existing records. Use a short `session/machine; awaiting ...` note in Current only if another session could overlap; the solo workflow needs no separate claim ceremony.
 4. At handoff, update the affected tracker entry with its remaining action, blocker and evidence link. Add a brief dated entry at the top of `records/sessions.md`, including validation and material limits. Move completed work out of the queue; its session/evidence record and Git history preserve the result.
-5. Stage explicit coherent paths, commit and push to the matching branch on `origin`. Source publication alone does not deploy the portal or authorize hardware work. Application/firmware changes continue to use useful PRs and existing CI; documentation can be committed directly. During the trial, target trial-specific PRs at `trial/local-tracking` to keep the workflow out of `main` until accepted.
+5. Stage explicit coherent paths, commit and push to the matching branch on `origin`. Source publication alone does not deploy the portal or authorize hardware work. Application/firmware changes continue to use useful PRs and existing CI; documentation can be committed directly. Target ordinary project PRs at `main`.
 
-No routine GitHub issue reads/writes or Project reconciliation are required. Existing issue numbers remain useful historical references, not a second status to maintain. Old log entries mentioning pending board synchronization describe the previous workflow and create no trial task.
+No routine GitHub issue reads/writes or Project reconciliation are required. Existing issue numbers remain useful historical references, not a second status to maintain. Old log entries mentioning pending board synchronization describe the previous workflow and create no current task.
 
 ## Tracker format
 
@@ -29,14 +29,23 @@ Completion means the task's scoped acceptance criteria pass. Separate source/bui
 
 The [one-time GitHub import](../../records/tracking-import/index.md) preserves every open issue's requirements, labels and discussion as of migration. The tracker carries the current local status; imported files are a historical baseline, read only when needed for that task. Existing durable records can supersede an older imported claim or acceptance checkbox when dated evidence supports it; preserve the explanation at handoff. Completed/closed issue history remains available on GitHub and is not loaded at startup.
 
-Imported deferred ideas and blocked work retain their holds. Importing an issue does not accept a design, authorize work, close it on GitHub or overwrite an active session. The existing neighbor-signal draft PR and firmware decisions remain separate from this tracking trial.
+Imported deferred ideas and blocked work retain their holds. Importing an issue does not accept a design, authorize work, close it on GitHub or overwrite an active session. The existing neighbor-signal draft PR and firmware decisions remain separate from local tracking.
 
-## Try, keep or roll back
+## Acceptance and recovery
 
-The trial starts from `origin/main` commit `0713f7ea60d7bd839d246630655d6d9f70a736db`. The original desktop branch is `docs/telemetry-release-record` at the same baseline. Both remain available; this trial creates no archive, merge or deletion yet.
+The trial started at `0713f7ea60d7bd839d246630655d6d9f70a736db`.
+Owner acceptance on 2026-10-23 promotes the trial history into `main` with a
+normal merge. Pre-acceptance `origin/main` is preserved on
+`archive/pre-local-tracking-20261023`; the trial branch remains historical.
+Fetched `origin/main` had no changes absent from the trial, so no concurrent
+main work needed reconciliation. GitHub issue/board retirement remains a
+separate request; imported evidence and all existing holds are preserved.
 
-- **Try on another machine:** fetch `origin`, switch to `trial/local-tracking`, confirm it tracks `origin/trial/local-tracking`, and pull with `--ff-only`. Commit/push before switching machines. Keep credentials, databases and raw locations in ignored private storage with their separate backups.
-- **Roll back the trial:** commit/push useful trial work, then switch to `main` in an available checkout. On this desktop, `main` is already checked out in another worktree; switching this checkout back to `docs/telemetry-release-record` restores the original baseline workflow. Keep the trial branch so its new records can be reconciled if needed. A branch switch changes repository instructions, not GitHub issue/Project state; these were left untouched. Any ordinary source changes made during the trial need their own normal merge/reconciliation.
-- **Accept later:** after explicit owner acceptance, preserve the then-current pre-merge `main` commit with an archive branch or tag, reconcile any concurrent `main` work, and merge the trial normally into `main`. Keep `main` tracking `origin/main`; push both the archive reference and updated `main`. Retiring the old issues/board is a separate, explicit migration step after acceptance, using a final comparison for work added elsewhere during the trial.
+Other machines: fetch origin, preserve local changes, switch to main and pull
+with `--ff-only`. Track main against origin/main. Firmware development follows
+`snorr/develop`; initialize/update the pinned submodule rather than fetching its
+latest branch head implicitly. Keep raw evidence and credentials private.
 
-Compare the number of tracking calls and amount of startup reading during actual tasks. No measured time, token or cost saving is claimed by this migration.
+Recovery uses the archived reference for inspection and deliberate new commits;
+do not reset published main or rewrite remote history. Restoring source does
+not itself restore production application data or radio settings.

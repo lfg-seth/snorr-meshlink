@@ -1,6 +1,6 @@
 # Define an owned-hardware field pilot
 
-**Local tracking trial — 2026-10-21:** On `trial/local-tracking`, the [local tracker](../TRACKER.md) owns current work status under the [local workflow](../../docs/operations/local-tracking.md). This map and its tickets preserve decision history; historical open/claimed fields do not define today's frontier. The [imported GitHub history](../../records/tracking-import/index.md) preserves the 2026-10-17 migration's issue records. Existing GitHub issues and the Project board stay untouched during this branch trial; `main` retains the prior workflow. See the [current roadmap](../../docs/roadmap.md) for evidence checkpoints.
+**Permanent local tracking - accepted 2026-10-23:** The [local tracker](../TRACKER.md) owns current task status on `main` under the [local workflow](../../docs/operations/local-tracking.md). This map preserves decision history; historical open/claimed fields are not the current queue. GitHub imports remain reference evidence, with no routine board synchronization.
 
 Formerly open questions: [private monitoring scope](https://github.com/lfg-seth/snorr-meshlink/issues/10), [held repeater survey](https://github.com/lfg-seth/snorr-meshlink/issues/11), and [deferred WebSockets alternative](https://github.com/lfg-seth/snorr-meshlink/issues/12). Their original questions remain below and in the linked decision files.
 

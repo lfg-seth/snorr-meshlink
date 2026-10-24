@@ -1,5 +1,38 @@
 # Session log
 
+## 2026-10-23 - Accept permanent local tracking, migrate firmware branch and version MeshLink
+
+- Owner selects `snorr/develop` and commits to local tracking. Publish firmware
+  commit **b23f09d5b** on that branch, update workflow/provenance validation and
+  submodule branch/pin; all 10 release-tool checks pass. Keep the former remote
+  branch as historical evidence; no firmware runtime change or hardware flash.
+- Archive pre-acceptance main **0713f7e** at
+  `archive/pre-local-tracking-20261023`; fetched main has no commits absent from
+  the trial. Promote the accepted trial through a normal merge into main, retain
+  historical trial/archive refs, and keep main tracking origin/main. Update
+  agent/workflow/handoff instructions and disable automated GitHub tracking
+  provisioning. Historical issues/Project remain intact.
+- Implement independent MeshLink **0.1.0** using `meshlink-release.json`,
+  CHANGELOG.md, package/lockfile/tag checks, generated portal version.json and
+  HTML version/source metadata, plus main/tag CI. Version covers portal/backend
+  source together; firmware versions remain separate. Document release/rollback
+  and the distinction between portal metadata and actual backend deployment.
+- Validation: 56 portal tests, typecheck/build, generated metadata/HTML checks,
+  four workflow YAML parses, tracking schema and whitespace checks pass. System
+  Python initially lacks dependencies; use the project virtual environment and
+  add missing Windows tzdata there. Fix the repeated cutover-test database lock
+  by explicitly closing its SQLite inspection connection; targeted check passes.
+  Full backend Windows runs still show intermittent connection resets and skip
+  seven POSIX-only tests. Hold the combined release tag pending clean Linux CI;
+  no claim of an all-green backend suite or production deployment.
+- GitHub metadata still identifies the project as `lfg-seth/snorr-meshlink`;
+  repository rename has not occurred. Preserve origin until the actual rename.
+  Existing untracked image is untouched. Use the writing-for-agents skill for
+  permanent agent instructions.
+
+Next useful step: confirm backend/Linux CI, then tag the accepted application
+release; proceed with LOCAL-3/LOCAL-4/LOCAL-6 firmware work on snorr/develop.
+
 ## 2026-10-23 - Establish SNORR firmware 0.1.0 development baseline
 
 - Owner selects 0.1.0 for the current state, without beta suffixes, and requests

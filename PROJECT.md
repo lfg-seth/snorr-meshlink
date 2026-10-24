@@ -4,7 +4,14 @@ Project name: **SNORR MeshLink** — Search and Rescue Tracking & Communications
 
 Recorded from the project owner's instructions on 2026-10-12.
 
-On `trial/local-tracking`, current execution status is tracked in the [local tracker](.scratch/TRACKER.md) under the [local workflow](docs/operations/local-tracking.md). The trial preserves [imported GitHub tracking history](records/tracking-import/index.md) and leaves existing issues and the Project board untouched; `main` retains the prior workflow. The [roadmap](docs/roadmap.md) summarizes evidence checkpoints; the brief and historical notes below preserve decisions and may describe earlier states superseded by dated evidence.
+Owner accepted permanent repository-local tracking on 2026-10-23. The
+[local tracker](.scratch/TRACKER.md) owns current execution status on `main` under
+[the workflow](docs/operations/local-tracking.md). GitHub hosts source, CI and
+PRs; historical issues/Project remain preserved. Pre-acceptance main is archived.
+MeshLink application versioning is defined in `meshlink-release.json` and
+[release operations](docs/operations/meshlink-releases.md), independently of
+SNORR Firmware. Firmware development now uses `snorr/develop`.
+
 
 ## Mission and priorities
 
