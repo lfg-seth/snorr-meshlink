@@ -1,5 +1,42 @@
 # Session log
 
+## 2026-10-24 - Global fleet current-sign correction prepared
+
+- Owner confirms all sensor wiring is the same: **R002/R004/R006 charging,
+  G003 discharging**, and requests a global flip. [Record corrected values for
+  the earlier snapshot](field-results.md#2026-10-24---owner-confirmed-fleet-current-direction).
+  Polarity is settled for these owner-confirmed conditions; GH-4 physical
+  accuracy, bridge state and battery-only measurements remain separate.
+- Reproduce the actual API error with a regression: raw **-86.7 mA** appears
+  instead of expected **+86.7 mA**. MeshLink **0.1.1** adds one shared state-API
+  conversion for environment current and PowerMetrics channels 1-8 across
+  all infrastructure devices. Existing caches and new reports use the same
+  conversion. API currents retain original `rawValue` and declare
+  `currentConvention: "positive-charging"`; the portal explains positive
+  charging/negative discharging and renders explicit positive signs.
+- No firmware/schema/replay or historical data rewrite. Preserve raw worker
+  packets, queues, observations, cached readings and archive bytes. Regression
+  covers both roles, all channels, zero, existing caches, duplicate receipts
+  and repeated API reads while verifying stored evidence stays unchanged.
+  Voltage, source/channel identities and freshness are preserved.
+- Full Windows backend suite: **75 tests, seven POSIX skips**. All **56 portal
+  tests**, TypeScript and production build pass. [Linux backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40119586758)
+  and [portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40119586743)
+  pass for implementation **`be56f19`**. Clean live-mode build identifies that
+  exact commit with `trackedChanges: false`. Fix the record-check failure by
+  linking telemetry.proto to its exact pinned upstream commit, avoiding an
+  unavailable nested-submodule path in CI.
+- Publish [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59) from
+  **`codex/current-polarity-fix`**, based on `origin/main` without unrelated
+  bench history. Work remains in ignored `private/worktrees/current-polarity`;
+  the root checkout's concurrent G004/firmware/inventory/3DModels work is
+  untouched. Production and hardware are unchanged by source publication.
+
+Next useful step: review/merge PR #59 and select its manual production rollout
+under the [release policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
+Then verify served source metadata, corrected/raw API pairs and native views;
+physical calibration and runtime gates stay open.
+
 ## 2026-10-23 - Complete LOCAL-3 saved SNNS interval software
 
 - Complete the bounded [saved-interval assignment](../.scratch/tasks/local-3-snns-interval.md)

@@ -6,6 +6,33 @@
 
 ## Data contract
 
+### Fleet current polarity correction - 2026-10-24
+
+Owner confirms all fleet sensors share the same wiring: R002/R004/R006 are
+charging while G003 is discharging. Their literal sensor signs are opposite
+the application's positive-charging convention. MeshLink **0.1.1** corrects
+this once in `telemetry.powerReadings`, the shared state API projection for
+`sensorCurrentMa` and `power1CurrentMa` through `power8CurrentMa` on every
+infrastructure device. Positive means charging, negative discharging; zero
+stays zero. Bus/device battery voltage, channel/source identity and all clocks
+remain separate and unchanged.
+
+API current entries expose the corrected `value`, original `rawValue`, and
+`currentConvention: "positive-charging"`. Both cached pre-upgrade readings and
+newly ingested reports pass through this same projection. Frontend consumers
+render the API value without another inversion. Direct database analysis must
+negate raw current values explicitly; historical summaries predating this
+correction retain their recorded raw-sign convention.
+
+The adapter, worker/spool, MQTT archive, packet receipts, observations and saved
+latest-reading cache retain their original values. No migration/replay or
+firmware change is needed, and rollback cannot double-invert stored evidence.
+This settles the owner's requested sign convention, not shunt accuracy,
+calibration, capacity/runtime or whole-battery versus sensor-path accounting.
+Source/test publication and selected production deployment remain separate.
+
+### Original raw storage and radio contract
+
 - The encrypted private-channel adapter recognizes `SNNS` v1 on private port 256. It checks exact header/row lengths, version/reserved flags, reporter/sender agreement, row/total counts, bounded hearing ages, unique non-self node IDs, nonzero counts and valid RSSI/quarter-dB SNR. Other private applications remain unsupported. SNNS zero SNR and zero hearing age are valid.
 - `neighbors` ingestion stores one private `neighbor_reports` record per source/content packet key, with a unique index, and its directional `link_observations` in the same transaction. All gateway receipts remain in `packet_receipts` and the original MQTT archive. A second gateway or replay cannot add another report or set of links, including for an empty standard report.
 - Each SNNS row identifies the reporting receiver, full heard radio ID, mapped device when known, RSSI/SNR, hearing age at encoding, accepted observation count, boot ID, sequence, reporter uptime, subset/capacity flags and first transport gateway. Unknown radio IDs remain visible in the table; maps require known endpoints/locations. The original source of the traffic heard by the RAK is unknown. These rows describe a direct observation at the RAK, independently of the report's path to the gateway.
@@ -14,7 +41,7 @@
 - Infrastructure `PowerMetrics` channels 1–8 preserve independently present `powerNVoltage` (V) and `powerNCurrentMa` (signed mA). Legacy environment voltage/current use separate `sensorVoltage` / `sensorCurrentMa`. Zero is valid; absent fields never become zero. Neither source overwrites device battery voltage, solar readings or the existing battery-current interpretation. These observations are accepted even before a declared capability is configured, without enabling health rules.
 - Each power metric retains measurement/receipt clocks separately. Unknown, delayed and future measurements cannot displace a newer valid reading. Future is evaluated against original receipt time, including during historical replay. The UI shows channel/source and stale/unknown timing. Wiring, current polarity, calibration and charger/load accounting remain unverified; the UI does not interpret the raw sign as battery charging/discharging.
 
-The source of record is the pinned firmware's [`SnorrNeighborSignals.h`](../../firmware/src/modules/SnorrNeighborSignals.h), [`INA219Sensor.cpp`](../../firmware/src/modules/Telemetry/Sensor/INA219Sensor.cpp) and [`telemetry.proto`](../../firmware/protobufs/meshtastic/telemetry.proto). The INA219 driver writes legacy environment union members even when PowerMetrics is selected; observed channel 3 is retained literally. No channel remapping or firmware fix is hidden in the portal. [Official telemetry configuration](https://meshtastic.org/docs/configuration/module/telemetry/) distinguishes sensor power reporting from device battery voltage. Private channel encryption does not cryptographically authenticate these reports.
+The source of record is the pinned firmware's [`SnorrNeighborSignals.h`](../../firmware/src/modules/SnorrNeighborSignals.h), [`INA219Sensor.cpp`](../../firmware/src/modules/Telemetry/Sensor/INA219Sensor.cpp) and pinned [`telemetry.proto`](https://github.com/meshtastic/protobufs/blob/6b1ded439633cd03d4af85b44231b91d1d106278/meshtastic/telemetry.proto). The INA219 driver writes legacy environment union members even when PowerMetrics is selected; observed channel 3 is retained literally. No channel remapping or firmware fix is hidden in the portal. [Official telemetry configuration](https://meshtastic.org/docs/configuration/module/telemetry/) distinguishes sensor power reporting from device battery voltage. Private channel encryption does not cryptographically authenticate these reports.
 
 ## Archive recovery
 

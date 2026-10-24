@@ -1,5 +1,26 @@
 # Field testing and tangible results
 
+## 2026-10-24 - Owner-confirmed fleet current direction
+
+Following the [10:27 to 10:57 Pacific fleet snapshot](https://github.com/lfg-seth/snorr-meshlink/blob/ac58f6b/records/field-results.md#2026-10-24---thirty-minute-fleet-telemetry-snapshot),
+the owner confirms **R002, R004 and R006 are charging; G003 is discharging**,
+and all devices are wired the same way. Apply a global polarity inversion in
+MeshLink: positive is charging, negative is discharging. This establishes
+direction for the owner's reported conditions; it does not measure shunt
+accuracy, capacity or runtime.
+
+Corrected channel-1 values for that earlier snapshot are R002 **+86.7 mA**,
+R004 **+101.9 mA**, R006 **+110.0 mA** and G003 **-166.1 mA**. Separate
+environment currents are R002 **+86.1 mA** and R004 **+101.5 mA**. These are
+sign corrections of recorded samples, not new measurements. The published
+snapshot preserves its original raw values as evidence.
+
+MeshLink **0.1.1**, [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59),
+applies the inversion once to every environment/current channel in the state
+API, including existing cached values. Raw observations, receipts, queues and
+MQTT bytes remain unchanged; API consumers receive both corrected `value`
+and original `rawValue`. [Contract and rollout boundary](../docs/operations/radio-report-ingestion.md#fleet-current-polarity-correction---2026-10-24).
+
 ## 2026-10-23 - R006 three-minute firmware/profile bench acceptance
 
 At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected

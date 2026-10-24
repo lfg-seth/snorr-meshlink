@@ -8,7 +8,7 @@ The owner-authorized [Ubuntu LXC portal](../docs/operations/portal-lxc.md) runs 
 
 The hosted worker uses `MESHLINK_WORKER_CREDENTIALS` to read a separate worker-only JSON credential file, under its own OS account. Native development keeps the existing default private credentials file. No worker or admin credential is sent to the browser.
 
-RAK `SNNS` v1/standard neighbor reports and signed sensor voltage/current are now supported. The additive `1792201000_radio_reports.js` migration creates private report deduplication storage and adds link metadata. [Contract, archive replay and verification](../docs/operations/radio-report-ingestion.md). Current channel/sign is preserved literally; calibration and battery/solar interpretation remain unverified.
+RAK `SNNS` v1/standard neighbor reports and signed sensor voltage/current are now supported. The additive `1792201000_radio_reports.js` migration creates private report deduplication storage and adds link metadata. [Contract, archive replay and verification](../docs/operations/radio-report-ingestion.md). Storage retains the literal current sign. Since MeshLink 0.1.1, the state API inverts every environment/power-channel current once to the owner-confirmed fleet convention: positive charging, negative discharging. Current entries include original `rawValue` and `currentConvention: "positive-charging"`; API consumers must not invert again. Existing caches need no rewrite. Calibration and exact sensor-path accounting remain unverified.
 
 ## Start and inspect the database demo
 
