@@ -1,5 +1,17 @@
 # Heltec V3 gateway neighbor collector — 2026-10-19
 
+## Saved-interval bench update - 2026-10-24
+
+The owner-selected application-only update installs dedicated
+`heltec-v3-gateway / 2.7.26.4c96b9b` on the independently identified G002 after
+its USB reconnection. Full private profile/flash backups, exact image/partition
+verification and complete intended identity/key/channel/local/module equality
+pass through explicit reboot. CLIENT, LoRa TX disabled, local-only collector,
+Wi-Fi/MQTT and enabled 300-second device telemetry retain their original values.
+Local SNNS keeps its separate baseline.
+[Shared image, controller, measurements and remaining gates](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24).
+Historical images and portal acceptance below describe the earlier runs.
+
 ## Clifford INT24 Wi-Fi update - 2026-10-21
 
 Owner requests a second Wi-Fi replacement on connected G002. Independently identify COM6 as HELTEC_V3 **`!849ad7a0`**, unchanged firmware **2.7.26.9d2fd8f**. Preserve a new complete private profile before writing the supplied Wi-Fi settings. Independent readback after the network-setting restart passes exact user/metadata/local/module/channel comparison: **only `localConfig.network.wifiSsid` differs**; the supplied password already matches and Wi-Fi was already enabled. Identity/security/channel keys, CLIENT role, disabled LoRa TX, MQTT, local-only neighbor collector and enabled 300-second device telemetry remain preserved.

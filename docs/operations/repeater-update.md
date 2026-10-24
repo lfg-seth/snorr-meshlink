@@ -10,8 +10,9 @@ ignored storage.
 
 - LOCAL-3's saved-interval source work is recorded in
   [the software verification record](#saved-snns-interval-software-verification).
-  It changes the source pin, not the installed fleet or production download
-  pointer. The installed `0634b77` image below still uses a compiled baseline.
+  The owner-selected [October 24 bench](#r006-and-gateway-admin-bench---2026-10-24)
+  installs `4c96b9b` on R006 and both gateways. The production download pointer
+  remains unset; earlier installed-image results below are historical.
 - Firmware source **`0634b775f65804968f5a18a7e8824db415556db2`** is built for
   ordinary `rak4631`, including the INA219 fixes and the RAK-specific
   180-second passive-neighbor cadence. Source/build success is separate from
@@ -30,7 +31,7 @@ ignored storage.
   inferred. The tag in that manifest is a planned release label. Its hardware
   flag records pre-bench build provenance; the later installed-board result
   is recorded separately below.
-- **R006 passes the corrected native Windows UF2 updater** at
+- **Previous R006 updater run:** the corrected native Windows UF2 path passes at
   **2026-10-24 00:51:19 UTC / October 23 17:51:19 Pacific**. Ordinary
   `rak4631 / 2.7.26.0634b77`, device/power **180 seconds**, environment off,
   private SNNS compiled at 180 seconds and standard NeighborInfo 21,600
@@ -54,6 +55,190 @@ The owner authorizes this repeater rollout. Every other repeater still needs
 its own physical connection and independent identity/backup checks. This tool
 supports RAK4631 repeaters R001–R006; member trackers and Heltec gateways keep
 their separate update procedures.
+
+## R006 and gateway admin bench - 2026-10-24
+
+The owner selects R006, G001 and G002 for flashing and B002 as the transmitting
+admin controller. One worker owns all four serial/API connections under the
+[bench assignment](../../.scratch/tasks/local-3-admin-bench.md). This run uses
+reviewed source **`4c96b9ba0360f01752892a41d09ccacda82747bb`**, already published
+on `snorr/develop`. These are explicitly selected local build images, not new
+published release assets or a changed production download pointer.
+
+### Application images and recovery
+
+| Selected board | Installed target / version | Application image and SHA256 |
+| --- | --- | --- |
+| R006 `!da581e5f` | Ordinary `rak4631` / `2.7.26.4c96b9b` | UF2, 1,519,104 bytes; `f83039d32c8637beff30f1a8d06e8addd106ad817f611dbc440b9bac04c65206` |
+| G001 `!9ea13cc0`, G002 `!849ad7a0` | Dedicated `heltec-v3-gateway` / `2.7.26.4c96b9b` | BIN, 2,110,992 bytes; `1fbe3acf8f91d8d9ae563cbeef8b412c17b58e830ebc79f96ee60767612e8cfe` |
+
+The RAK image is the exact saved ordinary build from the reviewed software
+assignment. UF2 application bounds and matching USB identity pass; API-driven
+DFU/UF2 update preserves the bootloader and stored configuration. The retained
+application-only Nordic OTA ZIP is 760,310 bytes, SHA256
+`09ecab0ce889d5b7b5001644f61384882973f346e30e535d485fa0366f9c84e3`.
+
+The gateway target is rebuilt successfully from the clean pinned source using
+the project PlatformIO environment and temporary Windows package-cache drive
+mapping: **357.361 seconds**, static RAM **132,096/327,680 bytes**, reported
+flash **2,110,561/3,342,336 bytes**. These are build statistics, not peak memory
+or runtime measurements. Each original 8,388,608-byte flash is privately backed
+up. Original partition bytes match the build and OTA sequence 1 selects app0;
+write only **0x10000**, within its **0x330000-byte** allocation. Independent
+esptool verification passes for each application. Original full-flash SHA256:
+G001 `3d91a591bb24f4d205c14448aa6dfb34482c97bf993f1d934693d3b7d64055ee`;
+G002 `8b1c09a03aa6cf66e1d8739d724c6e2ad9e0f61b871990ad2235063428e14f1f`.
+
+Fresh independent API snapshots verify the installed version and complete
+per-board local/module/channel profile, owner identity and keys, including
+after explicit reboot. Both V3s retain CLIENT, LoRa TX disabled, local-only
+neighbor reporting and their individual Wi-Fi/MQTT credentials. G001 retains
+disabled device telemetry and its saved 2,147,483,647-second value; G002 retains
+enabled 300-second device telemetry. B002 remains stock `2.7.26.54e0d8d`.
+R006 retains INA219-only, device/power 180 seconds and environment off.
+
+### Controller and session handling
+
+Use B002 **`!699ca878` / original HELTEC_V4** on its existing private channel
+and key pair. Before temporary enrollment, an encrypted telemetry-config read
+returns **`ADMIN_PUBLIC_KEY_UNAUTHORIZED`**: channel membership alone is
+insufficient. Append only B002's existing public key to R006's originally empty
+admin allowlist through the identified local serial recovery connection.
+Independent full-profile comparison permits only this deliberate difference.
+The authorized encrypted remote read then returns the actual 180-second setting.
+
+The installed Meshtastic Python SDK is **2.7.11**. Two-second remote reboot
+requests return **`ADMIN_BAD_SESSION_KEY`** in the initial helper, an SDK
+`requestConfig`/`reboot` probe and a later dedicated-key attempt. The controller
+requests **`SESSIONKEY_CONFIG` immediately before each mutation**, verifying
+the encrypted target response and eight-byte key. This permits the measured
+same-boot edits, but does not alone remove the reboot acknowledgment problem.
+A **15-second remote reboot** returns a successful acknowledgment and recovers
+the original saved value after an uncommitted edit.
+
+The automatically rebooting 900-second save also returns the session-key error;
+independent encrypted/local readback nevertheless finds 900, and a distinct
+new SNNS boot identifies the restarted node. The save executed despite the
+negative acknowledgment. A retry reaching the restarted node with an expired
+key is consistent with this result; the exact transport cause remains
+unproven. Do not blindly repeat a rebooting write after such an error: read the
+result and verify boot/profile independently. Preserve the failed/ambiguous
+attempts. No firmware fix, arbitrary app/CLI compatibility or unattended admin
+readiness is claimed; physical serial recovery remains required.
+
+Before recovery, identify R006 by node/hardware/USB identity, not an old COM
+number. Stop the controller and gateway capture handles. The private rollback
+helper restores R006's original telemetry and security sections in a local
+settings transaction, commits/reboots, reconnects independently and compares
+the entire original profile. Concealed complete rollback profiles for all
+four boards and the observer credentials are stored in 1Password
+**SNORR MeshLink — Pilot** as `SNORR_BENCH_20261024_*` variables. Raw profiles,
+full flash images, API/console evidence and captures remain ignored under
+`private/bench/local-3-admin-20261024/`; secret values and locations are omitted
+from this record.
+
+### Live cadence measurement method
+
+The serial collector listens on B002 and both receive-only gateways; an
+independent read-only MQTT subscriber uses hostname/certificate-validating TLS
+and the real backend wire adapter. Capture only selected SNNS/device/power
+observations, excluding location content. Match R006 observer/boot/sequence
+and payload hashes across gateways; duplicate gateway copies are one source
+report. Use SNNS source uptime for cooldown comparisons and monotonic host
+receipt gaps separately. Unknown absolute source clocks stay unknown.
+
+To keep passive observations dirty during the long intervals, B002 broadcasts
+its existing NodeInfo at BACKGROUND priority every 45 seconds while the bench
+controller runs. This is an intentional fixture/load, not a new configuration,
+synthetic GPS track or production delivery-rate denominator. Reported channel
+utilization and timing describe this close bench and its existing traffic.
+Same-boot interval changes use an open settings transaction; saved-interval
+tests commit and independently reconnect after reboot. Every readback checks
+the complete original local/module/channel profile, allowing only the test
+device interval and temporary B002 admin authorization.
+
+The same-boot source sequence is consecutive, with identical payload copies
+through both gateways:
+
+| Transition / condition | Required minimum | Measured source-uptime gap |
+| --- | --- | --- |
+| Saved 180 seconds after remote reboot | 180 s | 195 s |
+| Lengthen to 300 in the open edit transaction | 300 s | 315 s |
+| Shorten to 180 while the 300-second cooldown is outstanding | 300 s | 315 s |
+| Following cycle uses the new 180-second value | 180 s | 195 s |
+| Saved 900 seconds, distinct reboot and next same-boot report | 900 s | 915 s |
+| Restore saved 180, distinct reboot and two periodic cycles | 180 s | 195 / 195 s |
+
+The first report after the initial remote reboot is sequence 1 at source
+uptime **80 seconds**. A temporary uncommitted 300-second edit is then
+interrupted by the 15-second remote reboot: encrypted readback returns the
+saved **180**, full intended profile comparison passes, and a distinct new
+boot starts at sequence 1 / uptime **67 seconds**. This tests interruption of
+an open edit, not RF-path or backhaul outage recovery. The subsequent saved
+900-second write passes complete readback and starts another distinct boot at
+sequence 1 / uptime **77 seconds**; its next source report is sequence 2 at
+uptime **992 seconds**, a **915-second** gap. Startup remains separate from
+the long periodic baseline. A complete 900-second device-telemetry gap is not
+claimed from this SNNS observation.
+
+### Final receipts, restoration and limits
+
+All seven measured periodic gaps have consecutive source sequences, identical
+payload hashes on G001/G002 and corresponding MQTT copies through both. The
+gateway serial receipt gaps, in table order, are **195.410/195.427,
+315.196/315.169, 314.830/314.840, 195.039/195.040, 915.590/915.591,
+195.772/195.773 and 194.486/194.486 seconds** (G001/G002). Source uptime is
+quantized separately from host receipt clocks; an individual receipt gap is
+not the scheduler baseline or an upstream hearing-age bound.
+
+The main SNNS MQTT capture contains **13 distinct R006 reports through each
+gateway**, plus **39 own-observer reports from each gateway**. Each gateway
+spans two observed boot identities, around serial reconnection: all **37
+consecutive within-boot pairs** are **75 seconds (32 pairs)** or **76 seconds
+(five pairs)**, with no skipped captured sequence within those boots. G001's
+disabled/extreme device interval and G002's enabled 300-second interval do not
+replace their separate local SNNS cadence. Fresh R006 DeviceMetrics source
+uptimes **186 → 486 → 666 → 846 → 1026** also show the 300-second then
+180-second device gaps during the same-boot edits. These captures are not a
+transmit-attempt denominator, sustained uptime or delivery percentage.
+
+At **2026-10-24T15:48:14Z**, final local transaction/reboot verification restores
+R006's complete original owner/security/channel/local/module profile,
+including device/power **180 seconds**, environment off and its **empty admin
+allowlist**. A separate final pass independently compares all four original
+profiles and expected installed versions; both V3s remain TX-disabled/local-only
+and B002 is unchanged. A final encrypted B002 admin request is rejected again
+as **`ADMIN_PUBLIC_KEY_UNAUTHORIZED`**. All serial/subscriber sessions close;
+the temporary package-cache drive mapping is removed. Nine concealed
+1Password variables preserve four original profiles, four final profiles and
+the observer configuration. No new keys or shared profiles are substituted.
+
+Private `summarize.py --final` writes `sanitized-summary.json` and requires all seven gaps,
+both serial/MQTT paths, interrupted-edit recovery, final board comparisons and
+the successful restored follow-up run. The first two runtime attempts stop on
+the reboot/session error and independently restore the original profile; both
+failed verdicts remain alongside the successful focused remainder. Existing
+project-environment checks pass again: **34 updater tests and 10 release
+tests**. The reviewed source is unchanged; actual-module extreme/rollover/gate
+coverage remains the earlier software evidence, not a physical 49-day test.
+
+Fixed capture references under `private/bench/local-3-admin-20261024/`:
+
+| Evidence | Bytes | SHA256 |
+| --- | --- | --- |
+| `runtime-events.jsonl` | 120,115 | `ccd212bcc51d5c173b42eddcd6ccd5fd7dc0831646adce38e417a1a8b833602d` |
+| `mqtt-events.jsonl` | 109,131 | `c4ffac63f422e54f86e3c2944b8a54f373dd2b0dc84e473dd6c6b26e81c48f40` |
+
+The next required bench test is **remote administration through a forced relay
+path**, using an identified transmitting intermediate and proof excluding direct
+reception. B002/R006 are the two controlled transmitters here; receive-only
+V3s are not repurposed. Include interrupted/lost commands and robust
+read-after-error handling before accepting an operator tool or inaccessible
+deployment. This run does not pass authenticated portal receipt/map metadata,
+backhaul-outage freshness, gateway TLS/reconnect acceptance, independent RF
+silence, INA219 calibration, battery-only soak, release publication or field
+coverage. Continue the independent software freshness/release work while those
+bench/access gates remain open.
 
 ## Saved SNNS interval software verification
 

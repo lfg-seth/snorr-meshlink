@@ -1,5 +1,17 @@
 # G001 passive gateway neighbor collection — 2026-10-19
 
+## Saved-interval bench update - 2026-10-24
+
+The owner-selected application-only update installs dedicated
+`heltec-v3-gateway / 2.7.26.4c96b9b` on the independently identified G001.
+Full private profile/flash backups, exact image/partition verification and
+complete intended identity/key/channel/local/module equality pass through
+explicit reboot. CLIENT, LoRa TX disabled, local-only collector, Wi-Fi/MQTT
+and disabled device telemetry retain their original values. Its saved device
+interval remains 2,147,483,647 seconds; local SNNS keeps its separate baseline.
+[Shared image, controller, measurements and remaining gates](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24).
+Historical images and portal acceptance below describe the October 19 run.
+
 Owner connects G001 to complete [Enable richer passive neighbor measurements on Heltec V3 gateways](https://github.com/lfg-seth/snorr-meshlink/issues/31). Both gateways now run the dedicated collector with local MQTT reporting and LoRa transmission disabled. [G002's build, contract, source publication and initial portal mapping](g002-neighbor-gateway.md) remain the shared reference.
 
 ## Image, backup and preservation

@@ -1,5 +1,17 @@
 # Hardware inventory
 
+2026-10-24 saved-interval bench - Existing R006 `!da581e5f` receives ordinary
+`rak4631 / 2.7.26.4c96b9b`; G001 `!9ea13cc0` and G002 `!849ad7a0` receive
+dedicated `heltec-v3-gateway / 2.7.26.4c96b9b`, all from reviewed source
+`4c96b9ba0`. Application-only writes and independent complete original
+identity/key/channel/local/module comparison pass through reboot. Both V3s
+remain CLIENT/TX disabled/local-only with individual Wi-Fi/MQTT profiles;
+G001 device telemetry stays disabled, G002 stays enabled at 300 seconds.
+B002 `!699ca878` is the existing original V4 controller on unchanged stock
+`2.7.26.54e0d8d`. R006 retains INA219-only and intended 180-second device/power
+settings. No purchase, quantity, antenna, sensor or pack allocation change.
+[Images, preservation and bench evidence](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24).
+
 2026-10-23 planned gateway outdoor configuration - Owner retains Heltec V3
 and selects INA219 sensing and a Muzi whip antenna. Per-gateway battery option
 is **four or eight 18650 cells**; solar option is **two 60 x 100 mm panels** or

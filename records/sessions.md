@@ -1,5 +1,55 @@
 # Session log
 
+## 2026-10-24 - Selected R006 and gateway admin/cadence bench
+
+- After PR #57 merges, owner explicitly authorizes flashing R006/G001/G002,
+  using B002 for admin, preserving keys/profiles, keeping V3s receive-only,
+  restoring intended settings and storing secrets in 1Password. One worker
+  owns the [bounded bench](../.scratch/tasks/local-3-admin-bench.md). G002 is
+  re-identified after its USB reconnect; MC00 and other boards are untouched.
+- Install ordinary `rak4631` and dedicated `heltec-v3-gateway`
+  **2.7.26.4c96b9b**, reviewed/published source
+  **4c96b9ba0360f01752892a41d09ccacda82747bb**. Exact image/partition/hash,
+  application-only write and independent original owner/security/channel/local/
+  module comparisons pass through reboot. Gateway rebuild succeeds in 357.361
+  seconds; use the prior exact reviewed RAK build. No new firmware source or
+  published release asset/pointer, server deployment or map write.
+- Actual R006 source SNNS gaps **195 / 315 / 315 / 195 / 915 / 195 / 195
+  seconds** verify 180/300/900, retained cooldown on shortening, saved reboot
+  and restored cadence. All seven measured reports match across gateway
+  serial/MQTT paths. Each gateway contributes 39 own reports, with consecutive
+  gaps 75–76 seconds within two observed boots. Record source clocks, host
+  receipt gaps and boot/sequence identity separately.
+- B002's existing stock V4/Python SDK 2.7.11 controller is unauthorized before
+  temporary key enrollment, then supports encrypted read/change/readback.
+  Two-second reboot attempts return session-key errors; a 15-second remote
+  reboot successfully discards an uncommitted edit. A saved 900-second write
+  returns an error ACK but independently survives a distinct reboot. Preserve
+  failures and use result/boot readback; the precise transport cause and generic
+  operator-tool compatibility remain unproven. No firmware fix is claimed.
+- At 15:48:14 UTC, original R006 telemetry/security are restored through reboot.
+  Separate final all-board comparisons pass; R006 device/power 180, environment
+  off and empty admin allowlist, V3 TX disabled/local-only and individual network
+  profiles, B002 stock firmware/profile unchanged. B002 is rejected again after
+  restoration. All serial/subscriber handles close and temporary build mapping
+  is removed. Nine concealed original/final profile/observer entries are verified
+  in **SNORR MeshLink — Pilot**; raw evidence remains ignored/private.
+- Validation: strict actual-receipt aggregation, 34 existing updater tests and
+  ten release tests pass in the project environment; changed-record links and
+  whitespace pass. Source extreme/rollover/
+  airtime-gate tests and read-only review remain the prior software evidence;
+  no physical rollover, calibrated power, battery soak, field/forced-relay,
+  outage-age bound, independent RF silence or authenticated portal acceptance
+  is inferred. [Exact images, measurements, failed/restored attempts and limits](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24),
+  [TEST-006](field-results.md#test-006--saved-snns-interval-and-selected-controller-admin-bench).
+- Publish sanitized root records on short-lived branch
+  `bench/local-3-admin-cadence`; preserve unrelated untracked `3DModels/`.
+
+Next required bench: a transmitting intermediate and proof excluding direct
+reception for remote changes, interrupted/lost commands and restoration; resolve
+operator-tool ACK/result handling before inaccessible placement. Continue the
+independent software freshness/release assignments while bench/access gates wait.
+
 ## 2026-10-23 - Complete LOCAL-3 saved SNNS interval software
 
 - Complete the bounded [saved-interval assignment](../.scratch/tasks/local-3-snns-interval.md)

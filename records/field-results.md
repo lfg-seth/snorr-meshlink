@@ -305,6 +305,7 @@ Source: [Define the dispatch portal MVP](../.scratch/pilot/issues/06-dispatch-po
 | TEST-002 | 2026-10-14 | Bench | Each V4 fixture received by both V3s | Same release; private channel, US LONG_FAST, slot 35, configured 10dBm, hop limit 3 | Ignored `private/bench/radio-smoke-20261014T180221Z.json` | All four reception checks pass; no GPS or MQTT claim |
 | TEST-003 | 2026-10-14 | Bench / software | Hotspot association, broker subscriber, MQTT fixture delivery | Same stock firmware and private channel | Ignored `private/bench/connection-status.json`, `mqtt-saved/`, `mqtt-radio-smoke-20261014T183218Z.json` | Initial 0/4 before password correction; subsequent actual encrypted gateway MQTT delivery 4/4 PASS |
 | TEST-004 | 2026-10-14 | Bench | Automatic GPS positions from both V4s through both V3s | Same stock build/channel; replacement hotspot | Ignored `private/bench/gps-mqtt-20261015T002434Z.json`, `gps-herrera/`, `herrera-saved/` | 4/4 GPS member/gateway paths PASS; fix ages about 21–35 seconds |
+| TEST-006 | 2026-10-24 | Bench | Saved SNNS intervals, B002 PKI admin and gateway local behavior | R006/G001/G002 `2.7.26.4c96b9b`; B002 unchanged stock `2.7.26.54e0d8d` | [Images, measurements, restoration and limits](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24); ignored `private/bench/local-3-admin-20261024/` | Cadence, preservation and interrupted-edit recovery pass; rebooting-write ACK ambiguity and forced-relay acceptance remain explicit |
 
 ### TEST-001 — Stock Heltec provisioning
 
@@ -369,6 +370,41 @@ Independent gateway reboot follow-up — Both saved profiles, including exact pr
 - New live backup `meshlink-20261015T024051Z.tar.gz` passes checksum, SQLite integrity and isolated API recovery: four accounts, four devices, zero members/assignments/messages/infrastructure observations/incidents/events, three positions and six packet receipts. Expanded backups include private worker configuration, queue and service definitions. Local API/proxy authentication boundaries, per-client throttling and credential-free public HTTPS/certificate/protected-route checks pass. The public browser entry renders the new sign-in-only page; authenticated live map/history browser review is still outstanding.
 - Software checks: 36 backend tests pass on the LXC's Python 3.12 runtime with the isolated pinned MQTT dependencies, including encrypted-wire decoding, API retries, durable queue restart, subscription/outage state, transactional cutover rollback and stale timestamp behavior. Eight frontend tests, TypeScript and production build pass on pinned Node 22.23.1; existing MapLibre bundle-size warning remains. Shell/service/Python syntax and Git whitespace checks pass.
 - Limits: no sustained field reliability, runtime, RF coverage, broker/Wi-Fi outage hardware test, phone-free cold start, full browser/device matrix or off-host backup demonstrated. Radio messaging, remote naming, member battery and infrastructure telemetry remain unintegrated. This completes receive-only bench GPS integration, not operational deployment readiness.
+
+### TEST-006 — Saved SNNS interval and selected-controller admin bench
+
+- Owner authorizes application-only flashing of R006 and G001/G002, with B002
+  as the existing transmitting controller; preserve individual keys/profiles,
+  keep both V3s receive-only and restore intended settings. One worker owns
+  serial/admin access. No member GPS test, placement or server mutation.
+- Reviewed firmware source `4c96b9ba0`; exact image/partition/hash checks and
+  complete saved owner/security/channel/local/module comparisons pass through
+  reboot. Full private gateway recovery images and concealed original/final
+  profiles in 1Password Pilot are retained. B002 firmware/profile is unchanged.
+- Seven actual R006 SNNS source gaps are **195 / 315 / 315 / 195 / 915 / 195 /
+  195 seconds**, covering 180/300/900, lengthening, outstanding cooldown after
+  shortening, saved reboot and return to 180. Matching serial/MQTT copies pass
+  through both gateways. Each gateway supplies 39 local reports; consecutive
+  source gaps within each observed boot are 75–76 seconds despite their
+  different saved device-telemetry settings.
+- Unauthorized PKI read is explicitly rejected; temporary B002 authorization
+  permits encrypted read/change/readback. A 15-second remote reboot discards an
+  uncommitted 300-second edit and recovers saved 180. Short rebooting commands
+  can return `ADMIN_BAD_SESSION_KEY`; a 900-second save nevertheless executes
+  and survives a distinct boot. Require independent result/boot checks rather
+  than blindly repeating the write. The underlying transport cause and general
+  app/CLI compatibility are unproven.
+- Final all-board original-profile comparisons pass. R006 returns to
+  device/power 180, environment off and its original empty admin allowlist;
+  B002 is rejected again afterward. V3 TX remains disabled/local-only. All
+  serial/subscriber sessions close. Exact clocks, paired receipts, capture
+  fingerprints and failed/restored attempts are in the linked operation record.
+- Result: selected cadence/profile/recovery checks pass with the admin ACK
+  caveat. No forced relay excluding direct reception, authenticated portal
+  acceptance, outage-age bound, calibrated current, battery-only duration,
+  delivery percentage, independent RF silence or field coverage established.
+  Next: forced-relay admin/interrupted-command test with a transmitting
+  intermediate and robust operator-tool result handling.
 
 ## Copy for each test
 

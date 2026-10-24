@@ -7,8 +7,19 @@ with RAK 180-second fallback/minimum, retained jitter/cooldown and explicit
 long-interval saturation. Gateway local reporting remains 60 seconds plus
 jitter with RF TX disabled. The source pin does not select a new image for
 flashing; release artifacts, updater integration and selected-board/admin
-acceptance remain separate. Installed images below retain their recorded
-compiled SNNS intervals.
+acceptance remain separate. Historical entries retain their original image
+and compiled-interval evidence.
+
+2026-10-24 selected saved-interval bench: **R006 `!da581e5f`**, **G001
+`!9ea13cc0`** and **G002 `!849ad7a0`** now run **`2.7.26.4c96b9b`** from
+reviewed source `4c96b9ba0`, using ordinary `rak4631` and dedicated
+`heltec-v3-gateway` respectively. Application-only image verification and
+complete original profile/identity/key comparison pass through reboot. Both
+V3s retain CLIENT, disabled LoRa TX, local-only SNNS and individual network
+profiles. B002's existing stock V4 identity is the temporary radio admin
+controller. [Exact images, measured behavior, recovery and limits](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24)
+supersede the older installed versions below for these three boards. This does
+not publish release assets or change the production download pointer.
 
 2026-10-23 owner-requested three-minute rollout: the new
 [repeater updater and acceptance procedure](repeater-update.md) covers
@@ -92,7 +103,8 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 | --- | --- | --- |
 | RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R002/R004 flashed/verified**; R001 remains stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R002 update](r002-release-update.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
 | Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
-| Heltec V3 gateways G001/G002 | Both verified dedicated `heltec-v3-gateway` 2.7.26.9d2fd8f, CLIENT/receive-only with enabled NeighborInfo/local-only collector reports; no portal downlink provisioned. | [G001 image/profile/evidence](g001-neighbor-gateway.md); [G002 build/evidence](g002-neighbor-gateway.md); [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
+| R006 selected interval bench | Ordinary `rak4631` 2.7.26.4c96b9b; intended device/power 180 seconds, INA219-only, saved-interval radio SNNS. | [Exact images, admin/cadence and limits](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24). |
+| Heltec V3 gateways G001/G002 | Both verified dedicated `heltec-v3-gateway` 2.7.26.4c96b9b, CLIENT/receive-only with enabled NeighborInfo/local-only collector reports; no portal downlink provisioned. | [G001 image/profile/evidence](g001-neighbor-gateway.md); [G002 build/evidence](g002-neighbor-gateway.md); [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
 
 For routine RAK flashing on any machine, **download and verify the published binaries; do not rebuild them**. After initializing the pinned submodule, run from the project root:
 
