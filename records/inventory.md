@@ -1,5 +1,20 @@
 # Hardware inventory
 
+## 2026-10-24 - R004 battery and solar allocation
+
+Owner confirms **R004 has four standard EVE 18650 cells and one solar panel**.
+Live metadata now uses `eve-26v-1s`, the confirmed cell/panel counts and solar
+equipment present. This supersedes R004's unknown allocation below. Total pack
+capacity remains unset pending wiring confirmation; panel electrical ratings,
+sensor calibration and runtime remain unverified. No stock-total or purchase
+change inferred.
+
+Private consistent pre-update backup:
+`/var/lib/meshlink/private-inventory-updates/20261024T185832Z/before.db`.
+Authenticated portal snapshot verifies the profile, four-cell description and
+one-panel description. Preserve all other R004 configuration. No radio,
+firmware, deployment or demo change.
+
 ## 2026-10-24 - Active-device battery and solar allocations
 
 Owner decommissions **B001** and **R005** and requests removal. Their active

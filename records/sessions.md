@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-24 - R004 battery and solar configuration
+
+- Owner confirms R004 has four standard EVE 18650 cells and one solar panel; update its live equipment descriptions, solar flag and `eve-26v-1s` profile. [Inventory and backup](inventory.md#2026-10-24---r004-battery-and-solar-allocation).
+- Private consistent backup and authenticated portal snapshot verification pass. Preserve all other configuration and unrelated working-tree records. Documentation checks pass; publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: refresh R004's card; total pack capacity awaits wiring confirmation. Sensor calibration and existing bench/field gates remain open.
+
 ## 2026-10-24 - Live battery allocations and decommissioned nodes
 
 - Owner removes decommissioned B001/R005 from the active portal list; preserve history and take a consistent private database backup first. B001's former board remains assigned to G004.
