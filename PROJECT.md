@@ -16,6 +16,13 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Firmware versioning (2026-10-23): owner establishes **SNORR 0.1.0** as the
+  current development baseline, without a beta suffix; production starts at
+  **1.0.0**. The [release record](records/firmware-releases/0.1.0.md) pins current
+  source and records existing mixed installed builds separately. LOCAL-6 parents
+  RAK/shared LOCAL-3 and gateway LOCAL-4 readiness. Future coordinated artifacts
+  and device-reported product versioning remain implementation work.
+
 - Current neighbor expiry (2026-10-21): owner-authorized application **443ba03** is deployed from the local-tracking trial. Separate durable current state uses installed SNNS relative hearing evidence, excludes cached standard tables and expires at two hours of estimated age. All 74 backend/55 portal server checks, public assets/access boundaries, migrated live/demo recovery, fresh reports through both gateways and actual-component expiry replay pass. Native/sustained acceptance and unseen upstream delivery delay remain separate; no absolute hearing timestamp requirement or firmware rollout. [Release evidence](docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).
 
 - Telemetry receipt fallback (2026-10-21): merged [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54), application **8c5350e**, is deployed. Telemetry selection/display/health prefer valid device calendar time and otherwise use original receipt time; missing source clocks remain null/empty and uptime is unused. Battery history includes unknown-time reports, while GPS/neighbor clocks remain separate. All 63 backend/49 portal checks and server live build pass; public assets/services/authentication, isolated live/demo recovery and fresh R002/R004 selection/history pass. Native/sustained acceptance remains separate. [Release evidence and remaining limits](docs/operations/battery-contact-freshness-20261021.md#deployment---2026-10-21).

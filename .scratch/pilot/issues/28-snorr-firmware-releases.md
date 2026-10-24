@@ -25,13 +25,17 @@ release scope infrastructure-only. Do not call the entire fleet SNORR-versioned
 while member nodes remain stock. Diagnostic R004 and MC00 sniffer must also be
 explicitly accounted for or excluded from the operational production fleet.
 
-## Recommended release naming
+## Accepted release naming - 2026-10-23
 
-Use a separate product version: **SNORR Firmware 1.0.0** for the first accepted
-production release. Starting with the first coordinated beta build, use
-`1.0.0-beta.1`, `1.0.0-beta.2`, then `1.0.0-rc.1` and finally `1.0.0`.
-Existing mixed images remain recorded by their actual versions; do not
-retroactively label them beta.1. Example future tag: `snorr-v1.0.0-beta.1`.
+Owner selects **0.1.0 as what we have now**, without a beta suffix.
+[Recorded 0.1.0 baseline](../../../records/firmware-releases/0.1.0.md) pins current
+source and maps the existing mixed fleet to its last verified images. It does
+not falsely claim that old binaries now contain the latest source or report a
+new embedded version. This explicitly supersedes the earlier beta.N proposal.
+
+Use `0.1.1` for fixes, `0.2.0` for the next development feature milestone and
+**1.0.0** for first accepted production. Breaking changes during 0.x require
+explicit migration/compatibility notes. Dates/names remain supplemental.
 
 Use release dates as metadata and optional names as display subtitles. Neither
 replaces the version used by tooling. Keep upstream Meshtastic version and full
@@ -77,7 +81,7 @@ and configuration behavior, and persisted configuration migrations.
 - [ ] Maintain a changelog entry per release: date, changes since prior release,
   affected targets, fixes/features, defaults/profile changes, upstream changes,
   decoder compatibility, upgrade/rollback steps, test evidence and known limits.
-  Keep beta/RC/production status explicit and link the relevant work tickets.
+  Keep development/production status explicit and link the relevant work tickets.
 - [ ] Keep a fleet ledger with device number, hardware/target, desired release,
   last verified installed release/source/image checksum provenance, profile
   revision/overrides, verification date/evidence and rollout state. Distinguish
@@ -90,11 +94,12 @@ and configuration behavior, and persisted configuration migrations.
   operation and required hardware/field acceptance. A tag or successful build
   alone does not approve mountain deployment. Name the supported fleet and
   unresolved exclusions in the release record.
-- [ ] Publish first beta only after identifying its exact target set and source.
-  Increment beta/RC identities for subsequent candidates. Production promotion
-  creates a new immutable 1.0.0 release with provenance and validation of its
-  exact shipped bytes; do not claim rebuilt version-labelled bytes are identical
-  to an earlier RC. Preserve prior candidates for recovery.
+- [x] Record owner-selected 0.1.0 current source/fleet baseline and initial
+  changelog, preserving the exact historical image evidence.
+- [ ] Publish the next numbered development release only after identifying its
+  exact source and target set. Production 1.0.0 requires validation of its exact
+  shipped bytes and all selected release gates. Do not rebuild or replace 0.1.0
+  bytes under an unchanged identity; preserve older releases for recovery.
 
 ## What "all nodes are on version X" means
 
@@ -106,9 +111,9 @@ trackers remain stock" is an illustrative format, not a current measurement.
 
 Current source is one fork/branch, but installed images span several commits.
 Existing manifests, inventory and board logs remain authoritative until the
-ledger migration is verified. No version or rollout state changes by creating
-this ticket.
+ledger migration is verified. The owner-assigned product baseline is now 0.1.0; installed runtime versions
+and rollout states are unchanged.
 
 Next: implement the version/manifest/changelog and target-matrix foundation,
-coordinate LOCAL-3/LOCAL-4 builds, and choose the first beta's explicit fleet
+coordinate LOCAL-3/LOCAL-4 builds, and choose the next numbered release's explicit fleet
 scope before publication. Hardware rollout retains per-board authorization.

@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-10-23 - Establish SNORR firmware 0.1.0 development baseline
+
+- Owner selects 0.1.0 for the current state, without beta suffixes, and requests
+  GitHub/project updates. Add [release index](firmware-releases/README.md) and
+  [immutable baseline/changelog](firmware-releases/0.1.0.md) pinned to firmware
+  source 5c2c1adad098eea1e4795158d19c9debe306eded, with last-verified fleet builds
+  and linked checksum/profile evidence. No fresh device audit is implied.
+- Update LOCAL-6, tracker and project brief: 0.1.1 fixes, 0.2.0 next development
+  milestone, 1.0.0 first accepted production. Supersede beta.N/RC naming advice.
+  Preserve child tickets and existing runtime versions, stock member images,
+  diagnostic exceptions and publication/acceptance limits.
+- Validation: release/parent links and Git whitespace. No firmware code, build,
+  tag rewrite, flash or site deployment. GitHub publication is the authorized
+  trial-branch record push; issues/Project board retain trial behavior.
+
+Next useful step: implement product-version embedding and coordinated target
+manifests for the next numbered development release under LOCAL-6.
+
 ## 2026-10-23 - Parent SNORR firmware release and fleet-version tracking
 
 - Owner identifies the current phase as beta and requests a parent firmware
