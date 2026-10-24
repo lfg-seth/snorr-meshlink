@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-24 - Device-card battery summary ticket
+
+- Capture **LOCAL-8** in the [wishlist](wishlist.md#device-card-battery-summary-without-duplicate-sensor-readings) and Deferred tracker: remove the Sensor voltage & current section and consolidate battery percentage, voltage, charging/discharging state and current at the top of device cards.
+- Link overlapping GH-44/GH-45 requests; leave measurement selection and truthful unknown/stale/charge-state handling for activation. No frontend implementation or deployment.
+- Changed-document link and whitespace checks pass. Preserve unrelated hardware records and `3DModels/`; publish on `codex/map-infrastructure-health-ticket` alongside the preceding ticket.
+
+Next useful step: owner activates LOCAL-8 for frontend implementation and measurement-source verification.
+
 ## 2026-10-24 - Large-map infrastructure health ticket
 
 - Capture **LOCAL-7** in the [wishlist](wishlist.md#large-map-router-and-gateway-health-colors) and Deferred tracker: router/repeater and gateway indicators match client last-heard colors, with yellow/red low-battery overrides.

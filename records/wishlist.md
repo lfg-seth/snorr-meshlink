@@ -193,3 +193,20 @@ Requested behavior / future acceptance:
 - When activated, define the yellow/red battery thresholds and treatment of missing or stale battery readings; the owner has not specified these values. Verify both device roles, normal last-heard colors, and both battery override states.
 
 Related parked work: [LOCAL-1 infrastructure page overhaul](#infrastructure-page-overhaul). This request concerns large-map indicators and does not activate that page overhaul, implementation or deployment.
+
+## Device-card battery summary without duplicate sensor readings
+
+Local task: **LOCAL-8** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests a frontend ticket; implementation is deferred.
+Owner reports two or more current sensor readings on device cards.
+
+Requested behavior / future acceptance:
+
+- Remove the **Sensor voltage & current** section from device cards, including cards for devices with sensors.
+- Keep one consolidated battery summary in the top part of the card showing **battery percentage, battery voltage, charging/discharging state, and current**.
+- Eliminate duplicate current readings in the card. Apply the consolidated presentation consistently to member, router/repeater and gateway device cards where these fields are available.
+- Preserve truthful unknown/stale values. When activated, establish which available measurement represents battery voltage/current and how charging/discharging is determined; unrelated sensor channels or an unverified current sign must not be presented as confirmed battery flow.
+- Future verification covers populated, missing and stale readings, charging/discharging states, and desktop/mobile card layout. This is presentation scope; telemetry collection and stored history are unchanged by the request.
+
+Related parked requests: [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present) and [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout). This newer request calls for removing the sensor section entirely and consolidating the top summary; reconcile overlapping presentation criteria when activated. Historical issues remain unchanged.
