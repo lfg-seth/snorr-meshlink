@@ -14,6 +14,16 @@ public asset hashes, protected-state preservation and verified pre/post live
 and demo recovery. Root source marker and public `/version.json` agree on the
 merged commit. [Exact deployment, current samples and recovery evidence](radio-report-ingestion.md#meshlink-011-deployment---2026-10-24).
 
+## Recovery verifier maintenance - 2026-10-24
+
+Installed live/demo recovery now compares exact provisioned/restored device
+identities and the exact newest bounded battery history for all three windows.
+The normal verifier commands pass on a fresh backup, including over-cap demo
+history; task-local replacement scripts are no longer required. Carry
+`recovery_checks.py` with both verifiers during future updates.
+[Source, checksum, installation and recovery proof](backup-recovery-verifiers.md).
+Application source/version and radio behavior are unchanged by this maintenance.
+
 ## Current neighbor signals and relative expiry - 2026-10-21
 
 Owner explicitly authorizes deployment of the trial branch's reviewed GH-47 correction. Application **443ba03** is deployed with explicit additive migrations to both live/demo databases, preserving all pre-existing records, configuration and saved demo work. Server 74 backend/55 portal checks, live build, nine public assets, access/isolation boundaries and migrated backup recovery pass. Fresh SNNS reports produce useful current readings; cached standard tables cannot renew them. Actual-component replay verifies exact two-hour estimated-age expiry. Native/sustained acceptance and unseen upstream delay remain separate. [Release evidence and limits](neighbor-signal-visibility.md#deployment---2026-10-21). `main` and draft PR #50 remain unchanged.

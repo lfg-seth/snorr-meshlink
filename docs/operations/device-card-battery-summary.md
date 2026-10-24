@@ -176,3 +176,8 @@ calibration remain separate prerequisites for stronger battery-flow claims.
 - These initial source checks preceded merge/versioning and the separately
   authorized production release recorded above. Native authenticated live/owner
   phone acceptance and calibrated whole-battery flow remain separate gates.
+
+2026-10-24 follow-up: the installed recovery-verifier device-count and bounded
+history assumptions are now corrected and both installed live/demo recoveries
+pass. [Maintenance evidence](backup-recovery-verifiers.md). The earlier
+release-time task-local checks above remain historical evidence.

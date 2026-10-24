@@ -1,5 +1,34 @@
 # Session log
 
+## 2026-10-24 - Installed recovery verifiers corrected; GH-39 complete
+
+- Owner activates installed verifier maintenance and live/demo recovery. Fix
+  the hardcoded B001/B002 counts and the assumption that every battery history
+  response is untruncated. Exact provisioned/backup/restored identities now
+  match; all three history windows verify newest bounded saved values, order,
+  provenance and correct cap/truncation. Retain mapping, missing-history,
+  checksum/integrity, authentication and live/demo separation checks.
+- Both original assertion failures reproduce in a fast call-site check before
+  the fix. Eight focused regressions pass locally; **83 Linux backend tests**
+  and Backend CI pass. [PR #61](https://github.com/lfg-seth/snorr-meshlink/pull/61)
+  merges checked fix **`b738d73`** as **`340feba`**. Install the exact three helper
+  files with rollback retained and `VERIFIER_COMMIT` separate from application
+  **0.1.2 / `359e6ba`**. App/source/configuration hashes are preserved.
+- Fresh backup **`meshlink-20261024T194543Z.tar.gz`** passes both installed
+  verifiers directly: one member/nine infrastructure identities, isolated
+  integrity/API/record recovery and all auth/isolation checks. Demo histories
+  prove **17,056 / 17,056**, **50,000 / 65,531**, **50,000 / 68,843** samples for
+  24/168/720 hours with false/true/true truncation. No data replacement, pruning,
+  API expansion, schema or hardware change. [Checksum, scripts and results](../docs/operations/backup-recovery-verifiers.md).
+- All six services are healthy; four fresh archive receipts and the newest
+  200 envelope records validate, with an empty queue. Documentation checks pass.
+  Remove completed GH-39 from Next and the installed-verifier hold from LOCAL-8;
+  historical GitHub issues remain unchanged. Publish records from
+  **`codex/recovery-verifier-fix`**, preserving concurrent root-checkout edits.
+
+Next useful step: continue already-recorded owner-phone acceptance or select the
+GH-7 off-host destination/recovery work; this verifier maintenance is complete.
+
 ## 2026-10-24 - PR 60 merged; MeshLink 0.1.2 deployed
 
 - Owner authorizes merge/deployment of [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60).
