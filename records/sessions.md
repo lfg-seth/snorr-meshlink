@@ -1,5 +1,41 @@
 # Session log
 
+## 2026-10-24 - PR 60 merged; MeshLink 0.1.2 deployed
+
+- Owner authorizes merge/deployment of [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60).
+  Final-head checks pass; merge **`6ac0937`** is followed by the coordinated
+  **0.1.2** metadata/changelog commit **`359e6ba237d74d23ead5b9c2d88081604447c197`**
+  and immutable annotated **`meshlink-v0.1.2`**, published to origin/main.
+- Exact clean LXC source passes **75 backend / 60 portal tests**, TypeScript and
+  the live build on Node 22.23.1; main/tag Portal and Backend CI pass. No backend
+  behavior or migration difference from deployed 0.1.1. Retain existing helpers,
+  one-off migration records and rollback source/assets.
+- Promote under the deployment lock with exact preservation of live/demo DB,
+  queue and private configuration hashes. All ten public build hashes and
+  served **0.1.2 / 359e6ba** metadata pass; all six services and feed are healthy.
+  Post-recovery check sees three fresh archive receipts, validates the latest
+  200 envelopes and finds an empty queue. No radio or device-configuration change.
+- Actual-component checks against authenticated loopback data pass all nine
+  infrastructure devices and one member: four measured currents, six Unknown,
+  retained humidity and one summary per detail. Deployed public demo desktop
+  1280 × 720/mobile 390 × 844 checks pass: member percentage/GPS/icon, repeater
+  measured current, gateway unknowns and retained graphs/environment/configuration.
+  Authenticated native live/owner-phone acceptance is still unverified.
+- Pre/post backup checksums and isolated live/demo integrity/API/history recovery
+  pass. Complete source/static supplements verify matching database bytes and
+  release identity/assets. The installed verifier's retired two-member assertion
+  needs a task-local exact provisioned-ID comparison; installed files stay intact.
+  Existing bounded demo check proves 50,000 of 68,643 newest samples without
+  pruning history. [Hashes, rollback, proof and limits](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
+- Publish handoff from **`codex/local-8-deployment`**, advance local `main` by
+  fast-forward against origin/main and preserve the original checkout's unrelated
+  hardware work. Deployment evidence is a separate records commit from the
+  immutable application tag.
+
+Next useful step: owner confirms the cards on their signed-in phone/browser.
+Physical current accounting/calibration, installed verifier maintenance and
+existing off-host backup gates remain separate work; LOCAL-7 stays deferred.
+
 ## 2026-10-24 - LOCAL-8 device-card battery summary
 
 - Owner explicitly activates LOCAL-8. Add one shared top battery summary to

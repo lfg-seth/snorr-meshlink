@@ -201,3 +201,8 @@ percentage, places member GPS quality to its right, and preserves independent
 battery/current freshness. This supersedes GH-44's conditional section retention
 and implements GH-45's overlapping layout request. Review/merge and manual
 production deployment remain separate. [Source decisions and verification](../docs/operations/device-card-battery-summary.md).
+
+2026-10-24 deployment: PR #60 is merged and MeshLink 0.1.2 is deployed from
+`359e6ba`. Source/build, all-device live-data component checks, public demo
+native desktop/mobile cards and isolated backup recovery pass. Owner-phone
+live acceptance remains separate. [Deployment evidence](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
