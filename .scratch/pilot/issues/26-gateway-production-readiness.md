@@ -1,5 +1,9 @@
 # LOCAL-4 - Heltec V3 gateway hardware and production readiness
 
+Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shared product
+versioning, cross-target manifests/changelog and fleet rollout accounting live
+there; this child supplies its implementation and target-specific acceptance.
+
 Created 2026-10-23. Status: Next; owner requests ticket creation and scope.
 Plan and characterize existing Heltec V3 gateways before mountain placement.
 No hardware installation, purchase, flash, print or field result is claimed.

@@ -1,5 +1,9 @@
 # LOCAL-3 — Production firmware readiness before mountain redeployment
 
+Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shared product
+versioning, cross-target manifests/changelog and fleet rollout accounting live
+there; this child supplies its implementation and target-specific acceptance.
+
 Created 2026-10-23 at the owner's request. Status: **Next — scoped, not implemented**.
 This is the consolidated firmware release and board-acceptance ticket for
 R001–R006, with explicitly identified G001/G002 dependencies. The current request

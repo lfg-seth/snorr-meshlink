@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-10-23 - Parent SNORR firmware release and fleet-version tracking
+
+- Owner identifies the current phase as beta and requests a parent firmware
+  ticket. Create [LOCAL-6](../.scratch/pilot/issues/28-snorr-firmware-releases.md)
+  above LOCAL-3 RAK/shared firmware and LOCAL-4 gateway readiness; add reciprocal
+  parent links and one tracker entry. Child implementation and hardware gates
+  remain intact; shared SNNS timing still belongs to LOCAL-3.
+- Recommend SNORR 1.0.0-beta.N, rc.N and production 1.0.0, with semantic version
+  rules tied to an explicit compatibility contract. Dates/names are supplemental.
+  Record separate upstream/source/target/checksum identity, profile revisions,
+  immutable manifests, release notes and a verified per-device rollout ledger.
+- Current mixed installed builds are not relabelled. Stock member trackers need
+  explicit build/test inclusion before an all-node SNORR version claim; otherwise
+  name the release infrastructure-only. No tag, firmware edit/build or flash.
+- Validation: consult the SemVer specification, check new/parent links, tracker
+  membership and Git whitespace. Existing untracked image remains untouched.
+
+Next useful step: implement the release metadata/target-matrix foundation and
+select the first coordinated beta's scope alongside child readiness work.
+
 ## 2026-10-23 - Scope gateway hardware readiness and public Markdown documentation
 
 - Create [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md)
