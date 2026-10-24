@@ -1,5 +1,19 @@
 # Candidate sites and backhaul
 
+## 2026-10-24 - Kyle Canyon cellular backhaul candidate
+
+Owner reports mostly reliable AT&T service in Kyle Canyon and requests a
+solar-only gateway, preferably using 5 V and inventoried 18650 cells. This is
+regional owner-reported availability, not a measured serving tower, coverage
+map, selected installation site or permission. Exact location, AT&T signal/band,
+LoRa path, winter temperature, shade, access and maintenance remain unknown.
+Existing Heltec Wi-Fi/MQTT gateways can use a subscribed cellular router;
+[research and preliminary sizing](../docs/research/cellular-gateway-backhaul.md)
+distinguish native 5 V consumer equipment from a higher-voltage cold-rated
+candidate. Next: identify an authorized candidate point and verify actual AT&T
+and mesh delivery before selecting hardware/power. No installation or service
+activation occurred.
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

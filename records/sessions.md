@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-10-24 - Kyle Canyon AT&T solar gateway research
+
+- Owner requests cheapest/easiest cellular gateway, confirms AT&T and solar-only
+  power, and prefers 5 V/18650. [Primary-source comparison and sizing](../docs/research/cellular-gateway-backhaul.md)
+  reuse an existing Heltec Wi-Fi/MQTT gateway; distinguish attended hotspot tests
+  from unverified unattended operation. Collie is a conditional higher-voltage
+  candidate; native 5 V Puli has a 0 C operating minimum.
+- Record regional availability in sites and dated quotations in finances, without
+  inventing coverage, hardware allocation, purchase or activation. Link remaining
+  exact-parts/load/site prerequisites from LOCAL-4. No hardware/service changes.
+- Documentation links and whitespace checked; research-only source published on
+  `codex/cellular-backhaul-notes`. Preserve unrelated application and bench edits.
+
+Next useful step: verify an authorized candidate location with an AT&T hotspot,
+then confirm exact modem/SIM activation and measure combined power, cold charging
+and automatic outage/depletion recovery before sizing or purchasing.
+
 ## 2026-10-24 - Installed recovery verifiers corrected; GH-39 complete
 
 - Owner activates installed verifier maintenance and live/demo recovery. Fix

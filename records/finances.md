@@ -45,3 +45,14 @@ Track donated or already-owned hardware separately from project cash expenditure
 | Funding applications or awards | None recorded |
 
 For grant reporting, reconcile expenses to receipts and distinguish requested, committed, and received funding. Keep original receipts in `private/receipts/` if they contain personal information and track the reference here; originals require their own backup.
+
+## 2026-10-24 - Cellular backhaul price research
+
+[Candidate quotes and sources](../docs/research/cellular-gateway-backhaul.md):
+GL.iNet Collie advertised USD 125.99 before tax/shipping; EIOTCLUB lists an
+AT&T/T-Mobile 2 GB/30-day option at USD 15, subject to selected SKU/renewal
+verification. Direct AT&T lists USD 35/month for 15 GB, or USD 240 upfront for
+12 months of 20 GB/month, plus taxes/fees. Exact modem/plan eligibility remains
+unverified. Panel, battery, charger, enclosure, converters and complete build
+cost are unknown. These are research quotations only: no approved purchase,
+service activation, spending ceiling, transaction or donated value.
