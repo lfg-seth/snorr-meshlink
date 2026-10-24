@@ -1,5 +1,42 @@
 # Session log
 
+## 2026-10-24 - R002 latest firmware and three-minute INA219 reporting
+
+- Owner reconnects **R002** for the same update as R004 and explicitly confirms
+  fitted **INA219**. Identify **`!b456f760` / USB `BADB1E79E9739FC4` / COM9**;
+  privately back up the full original profile/keys from ordinary
+  `2.7.26.0b65f2e`. Published `snorr/develop` and the project pin remain
+  **`4c96b9ba0`**. Reuse the exact reviewed ordinary **rak4631 /
+  2.7.26.4c96b9b** application; image hash/bounds, matching RAK USB volume and
+  complete original-profile comparison pass. No rebuild, reset or source change.
+- Complete intended owner/identity/keys/channel/local/module comparison passes
+  through explicit reboot at **17:45:48 UTC / 10:45:48 Pacific**: CLIENT,
+  device/environment/INA219 power enabled at **180 seconds**, over-LoRa SNNS
+  using the saved 180-second baseline, separate standard NeighborInfo 21,600
+  seconds. Preserve other settings and unset battery-INA address; set time
+  locally afterward. SDK serial-close double-flush races with the requested
+  reboot disconnect; a fresh independent API read passes without repeating
+  flash/configuration writes. Update R002's durable sensor exception and its
+  existing offline expectation to retain INA219 power.
+- Validating-TLS MQTT capture receives **two fresh automatic reports of every
+  device/environment/power/SNNS type through both G001 and G002** after final
+  verification, excluding earlier boot/history and duplicates. Device,
+  environment and power measurement gaps are **180 seconds**; same-boot SNNS
+  sequences 1/2 differ by **195 source-uptime seconds** including jitter.
+  Device voltage **4.093 V**, channel-1 power **4.068 V / -229.2 mA**; environment
+  packets carry INA219 voltage/current without temperature/humidity. These
+  values do not establish sensor calibration, physical path or net charging.
+- All **34 offline bench checks** and changed-document link/whitespace checks
+  pass. Serial and MQTT handles close; other radios/server/portal and unrelated
+  `3DModels/` remain unchanged. Raw profiles/logs stay ignored.
+  [Exact image, automatic cadence and remaining gates](../docs/operations/r002-three-minute.md).
+  Publish coherent records/profile on **`codex/r002-three-minute`**.
+
+Next useful step: with authenticated server/portal access, reconcile R002's
+180-second cadence and confirmed INA219 metadata and verify portal receipts/
+freshness. INA219 path/calibration, temperature-sensor operation, battery-only
+behavior, runtime and sustained/field acceptance remain unverified.
+
 ## 2026-10-24 - R004 latest ordinary firmware and three-minute INA219 reporting
 
 - Owner reconnects **R004 with INA219** and requests latest firmware plus

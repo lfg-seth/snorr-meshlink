@@ -19,7 +19,11 @@ verifies 180/300/900-second SNNS behavior through both gateways, preservation
 and interrupted-edit recovery, with rebooting-write ACK ambiguity recorded.
 R006 is restored to device/power 180, environment disabled and its original
 empty admin allowlist; both gateways remain receive-only/local-only.
-Authenticated portal acceptance remains pending. R001–R003/R005 still have ordinary `2.7.26.0b65f2e`.
+Authenticated portal acceptance remains pending. R001/R003/R005 still have ordinary `2.7.26.0b65f2e`.
+Owner-requested [R002 update](../../../docs/operations/r002-three-minute.md) installs
+ordinary `2.7.26.4c96b9b`; owner confirms INA219, with enabled
+device/environment/power 180-second settings and full profile/keys verified
+through reboot. Its previous no-INA219 sensor selection is superseded.
 Owner-requested [R004 update](../../../docs/operations/r004-three-minute.md) replaces
 its diagnostic image with ordinary `2.7.26.4c96b9b`; device/environment/INA219
 power 180-second settings and full profile/key preservation pass through reboot.

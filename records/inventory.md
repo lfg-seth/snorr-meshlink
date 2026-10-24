@@ -1,5 +1,21 @@
 # Hardware inventory
 
+2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing
+R002 **`!b456f760`**, USB **`BADB1E79E9739FC4`**, COM9, also has an **INA219**.
+This supersedes its earlier no-INA219 bench sensor selection, without adding
+stock or inferring a purchase. Verified ordinary **rak4631 / 2.7.26.4c96b9b**
+replaces `2.7.26.0b65f2e`; complete original-profile equality passes after flashing.
+Full intended profile/keys/channel/radio settings persist through explicit
+reboot: CLIENT, enabled device/environment/**INA219 power** at **180 seconds**,
+over-LoRa SNNS using the saved 180-second baseline, separate standard
+NeighborInfo at 21,600 seconds. Existing temperature telemetry stays enabled;
+actual fresh environment packets contain INA219 voltage/current, with no
+temperature/humidity fields. Fresh channel-1 power **4.068 V / -229.2 mA**
+reaches both gateways; physical path/calibration remain unverified.
+Battery-INA address remains unset. No site, battery/antenna allocation,
+stock quantity or purchase change inferred.
+[Image, sensor delivery and limits](../docs/operations/r002-three-minute.md).
+
 2026-10-24 R004 ordinary firmware / INA219 telemetry - Reconnected existing
 **`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, COM17, replaces diagnostic
 `2.7.26.09d8a9d` with verified ordinary **rak4631 / 2.7.26.4c96b9b** at the

@@ -8,6 +8,11 @@ ignored storage.
 
 ## Current rollout status
 
+- **2026-10-24 R002:** owner requests the same latest/three-minute update and
+  confirms fitted INA219. Ordinary **2.7.26.4c96b9b** and complete original
+  profile preservation pass; [saved profile and delivery evidence](r002-three-minute.md)
+  records the selected device/environment/INA219 power 180-second settings.
+  The updater now retains R002's environment plus INA219 power exception.
 - **2026-10-24 R004:** owner-requested ordinary **2.7.26.4c96b9b** replaces
   its INA219 diagnostic image. Full profile/key preservation and enabled
   device/environment/power **180-second** settings pass through explicit reboot;
@@ -413,8 +418,8 @@ public release publication or CI verification.
 
 | Repeater | Device/battery | Temperature/environment | INA219 power | Passive SNNS |
 | --- | --- | --- | --- | --- |
-| R001–R003 / R005 | Enabled, 180 s | Enabled, 180 s | Disabled | Enabled, 180 s baseline |
-| R004 | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s baseline |
+| R001 / R003 / R005 | Enabled, 180 s | Enabled, 180 s | Disabled | Enabled, 180 s baseline |
+| R002 / R004 | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s baseline |
 | R006 | Enabled, 180 s | Disabled; interval remains dormant at 180 s | Enabled, 180 s | Enabled, 180 s baseline |
 
 These are the existing owner-selected sensor profiles with the new cadence.

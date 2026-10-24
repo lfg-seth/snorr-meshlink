@@ -1,5 +1,31 @@
 # Field testing and tangible results
 
+## 2026-10-24 - R002 latest firmware and confirmed INA219 profile
+
+Owner reconnects **R002 `!b456f760` / USB `BADB1E79E9739FC4`** and explicitly
+confirms fitted INA219. Same reviewed ordinary **rak4631 / 2.7.26.4c96b9b**
+application as R004 passes image hash/bounds, application-only flash and full
+original-profile equality. Complete intended owner/keys/channel/local/module
+comparison passes through explicit reboot: CLIENT, enabled device/environment/
+INA219 power at **180 seconds**, private over-LoRa SNNS with saved 180-second
+baseline and separate standard NeighborInfo at 21,600 seconds.
+
+Fresh automatic encrypted device/environment/power/SNNS reports reach **both
+G001 and G002** over validating TLS after the final profile check. First device
+voltage is **4.093 V**; INA219 channel-1 power is **4.068 V / -229.2 mA**.
+Environment packets carry INA219 voltage/current without temperature/humidity;
+temperature-sensor operation remains unverified. New SNNS boot sequence 1 has
+source uptime 66 seconds. Values are reported readings, not calibrated
+physical-current/charging measurements.
+Two distinct automatic packets of each type reach each gateway. Device,
+environment and power measurement gaps are **180 seconds**; same-boot SNNS
+sequences 1/2 have **195-second** source-uptime spacing, including jitter.
+[Image, automatic cadence and private evidence](../docs/operations/r002-three-minute.md).
+
+Authenticated portal ingestion/cadence metadata, INA219 physical path/accuracy,
+battery-only behavior, sustained operation, runtime and field coverage remain
+separate gates. No other radio/server/portal or site change occurs.
+
 ## 2026-10-24 - R004 ordinary firmware and INA219 three-minute profile
 
 Owner-requested R004 **`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, receives

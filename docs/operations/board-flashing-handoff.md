@@ -1,5 +1,14 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **R002 `!b456f760`** now runs ordinary **rak4631 /
+2.7.26.4c96b9b**, with complete original-profile preservation and intended
+profile verification through explicit reboot. Owner confirms fitted INA219;
+CLIENT, enabled device/environment/**INA219 power** telemetry at **180 seconds**
+and private over-LoRa SNNS using the saved 180-second baseline are verified.
+Preserve original keys/channel/radio settings and unset battery-INA address.
+[Exact image, fresh delivery and limits](r002-three-minute.md). This supersedes
+its earlier no-INA219 bench selection; physical path/calibration remains unknown.
+
 2026-10-24 **R004 `!77fdb9f1`** now runs ordinary **rak4631 /
 2.7.26.4c96b9b**, replacing its INA219 diagnostic image at the owner's request.
 Application hash and complete original-profile preservation pass. CLIENT,
