@@ -8,6 +8,27 @@ Created 2026-10-23. Status: Next; owner requests ticket creation and scope.
 Plan and characterize existing Heltec V3 gateways before mountain placement.
 No hardware installation, purchase, flash, print or field result is claimed.
 
+## Assignment boundaries
+
+Use the tracker to select one outcome; the sections below retain full criteria.
+Hardware preparation can proceed while software checks run, with one session
+owning any actual gateway, serial port or intentional service interruption.
+
+| Outcome | Lane / prerequisite | Completion boundary |
+| --- | --- | --- |
+| [Power measurement plan](../../tasks/local-4-power-plan.md) | Bench preparation; inventory and exact-parts questions | Section A procedure, required inputs and criteria for owner agreement; no physical run. |
+| Reference power and solar measurements | Bench; confirmed components/path and agreed plan | Section A measured energy, peaks, charging/recovery and selected supply; unresolved accuracy stays open. |
+| Enclosure fit prototype | Bench/CAD; measured parts and selected supply | Section B editable CAD/print settings and physical fit result; weather acceptance follows separately. |
+| TLS identity and credential-log hardening | Software; exact source, trust/time contract | Section C valid/invalid identity and cold-start tests; keep credentials out of logs. Hardware acceptance remains pending until selected. |
+| Reconnect diagnosis and regression | Software then selected bench; GH-40 evidence | Section C reproduced cause, regression checks and repeated outage/queue/memory acceptance; split source completion from live run. |
+| Gateway SNNS freshness integration | Software; LOCAL-3's selected shared contract | Section C forwarding/delay tests; preserve local cadence and RF silence. |
+| Gateway sensor and cadence acceptance | Bench; calibrated reference and verified target | Section C independent G001/G002 battery/INA219/cadence and profile checks. |
+| Gateway release and receipt checks | Software then selected bench; LOCAL-6 and reviewed target | Section C verified artifacts/rollback, then section D individual readback/live receipts. |
+| Environmental/energy soak and field gate review | Bench; prototype, supply, accepted firmware and agreed criteria | Sections B/D measured weather, energy, recovery and dependency disposition. |
+
+Create a bounded brief from the template when selecting a later outcome; use
+existing criteria instead of copying the entire parent into every assignment.
+
 ## Owner-selected hardware direction
 
 - Heltec V3, with INA219 sensing and a Muzi whip antenna.

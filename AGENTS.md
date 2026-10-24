@@ -4,6 +4,8 @@
 
 Run `git status` before editing. Read `.scratch/TRACKER.md` and the newest entry in `records/sessions.md`; follow only the records relevant to the requested work. Read `PROJECT.md` for mission/constraints, `.scratch/pilot/map.md` for a pilot decision, and `CONTEXT.md` when interpreting project terminology. Older session entries and imported issue discussions are reference material, read when the current task needs them.
 
+For task dispatch, concurrent workers or bench ownership, follow `docs/operations/local-tracking.md`. Use one bounded outcome per implementation assignment; `.scratch/tasks/` holds briefs, while the tracker alone owns status. Default to one implementation worker. Delegate independent work or review only when requested, and keep one session in control of a board/serial port or live mutation. For repeated local checks, use the documented scopes of `scripts/check-project.py`; hardware and deployment acceptance remain separate.
+
 This repository is the durable project record. Preserve the user's priority order: passive member GPS tracking first, communications second, law enforcement expansion later. Keep planning simple and reuse inventoried hardware before proposing purchases.
 
 ## When doing work
@@ -26,7 +28,7 @@ Permanent local tracking was accepted on 2026-10-23. `.scratch/TRACKER.md` owns 
 
 ## Finishing a session
 
-Update `records/sessions.md` with completed work, outstanding questions, and the next useful step. Commit coherent completed changes as requested by the user; stage explicit paths and preserve unrelated edits. Do not amend or rewrite existing history unless requested. Report the commit and material verification limits.
+Update `records/sessions.md` with completed work, outstanding questions, and the next useful step. Commit coherent completed changes as requested by the user; stage explicit paths and preserve unrelated edits. Do not amend or rewrite existing history unless requested. Handoff changed behavior, checks/results and unverified gates, commit/branch and the next action.
 
 The owner has authorized publishing project records to `git@github.com:lfg-seth/snorr-meshlink.git` (remote `origin`) and accepted permanent repository-local tracking on 2026-10-23. Keep this repository updated and push every completed commit to its corresponding branch on `origin`; report any failed push. Track `main` against `origin/main`; use short-lived branches for changes. The pre-acceptance main is preserved at `archive/pre-local-tracking-20261023`. Do not force-push or rewrite remote history without explicit authorization. Markdown owns task status and durable decision/evidence record; GitHub continues to host source, CI and useful PRs.
 

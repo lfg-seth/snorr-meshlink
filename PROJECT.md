@@ -1,152 +1,105 @@
 # Project brief
 
-Project name: **SNORR MeshLink** — Search and Rescue Tracking & Communications. Repository: [lfg-seth/snorr-meshlink](https://github.com/lfg-seth/snorr-meshlink). The owner authorized GitHub publication and pushing every completed commit on 2026-10-12.
-
-Recorded from the project owner's instructions on 2026-10-12.
-
-Owner accepted permanent repository-local tracking on 2026-10-23. The
-[local tracker](.scratch/TRACKER.md) owns current execution status on `main` under
-[the workflow](docs/operations/local-tracking.md). GitHub hosts source, CI and
-PRs; historical issues/Project remain preserved. Pre-acceptance main is archived.
-MeshLink application versioning is defined in `meshlink-release.json` and
-[release operations](docs/operations/meshlink-releases.md), independently of
-SNORR Firmware. Firmware development now uses `snorr/develop`.
-
+SNORR MeshLink supports Search and Rescue on Mount Charleston, Nevada.
 
 ## Mission and priorities
 
-Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
+1. Passive member GPS tracking for dispatch.
+2. Member communications.
+3. Later law-enforcement expansion.
 
-1. Attach a passive GPS tracker to every member so their location can be available to dispatch.
-2. Provide a device that helps members communicate.
-3. Explore later expansion to law enforcement communications.
+Reuse inventoried hardware before proposing purchases. The first destination is
+an evidence-backed field pilot, followed by broader deployment when its gates
+pass. The [tracker](.scratch/TRACKER.md) owns current work; the
+[latest session](records/sessions.md) records the last handoff.
 
 ## Confirmed direction
 
-- Housekeeping policy (2026-10-23): retain `lfg-seth/snorr-meshlink`; reviewed
-  source on main, manual production deployments, no staging site now. Most
-  project material should become human-readable public documentation with owner
-  copyediting. Internal agent material is excluded from site rendering; issue
-  pages are provisionally excluded. Existing secrets/member/raw-location privacy
-  remains. [Deployment](docs/operations/meshlink-releases.md),
-  [public content policy](records/content.md#public-documentation-direction---2026-10-23).
+- Passive tracking means power on and automatically report GPS without a phone
+  or repeated member interaction. Show position age from the GPS measurement;
+  stale at **15 minutes**. Member runtime is **four hours minimum, twelve hours
+  target**. These are requirements, not accepted field results.
+- Initial scale is roughly 20 members. The planned first trial uses six
+  GPS-equipped Heltec V4 member trackers, two selected RAK relays and two Heltec
+  V3 backhauls. Only B001/B002 are the established member bench pair; planned
+  purchases/recoveries and 3000 mAh allocations require confirmation in
+  [inventory](records/inventory.md). T-Decks are outside the first trial.
+- Meshtastic is selected for pilot evaluation; firmware/protocol suitability
+  remains subject to measured hardware and field evidence. LoRaWAN, Meshtastic
+  and MeshCore are distinct systems. The [decision map](.scratch/pilot/map.md)
+  retains selection history and later amendments.
+- The pilot data path is member radio → optional RAK relay → Heltec V3 gateway
+  → private MQTT → Python ingestion worker → PocketBase → dispatch portal. Preserve GPS
+  measurement times, per-gateway receipts and deduplication. Current G001/G002
+  are receive-only. The earlier designated-gateway message-downlink design is
+  future communications scope; implementing it requires a selected assignment.
+- The portal uses React, approachable TypeScript, Vite and MapLibre/USGS layers
+  on an Ubuntu Proxmox LXC, with HTTPS through Cloudflare Tunnel. Demo and live
+  data stay isolated. [Live MQTT](docs/operations/live-mqtt.md) and
+  [portal operations](docs/operations/portal-lxc.md) own deployment details.
+- Local command-post and companion-app location viewing must be useful without
+  internet. Phone use is optional for tracking; offline maps and stale/missing
+  behavior remain acceptance gates. Repeaters/gateways need measured power,
+  solar, enclosure and environmental performance before unattended placement.
+- Device numbers and assignment history remain independent of mutable radio
+  names. [Identity](.scratch/pilot/issues/12-assignment-radio-names.md) and
+  [infrastructure warnings](.scratch/pilot/issues/10-infrastructure-warning-rules.md)
+  retain their detailed requirements; capability, battery, solar and antenna
+  metadata must distinguish known, planned and unknown equipment.
 
-- Firmware versioning (2026-10-23): owner establishes **SNORR 0.1.0** as the
-  current development baseline, without a beta suffix; production starts at
-  **1.0.0**. The [release record](records/firmware-releases/0.1.0.md) pins current
-  source and records existing mixed installed builds separately. LOCAL-6 parents
-  RAK/shared LOCAL-3 and gateway LOCAL-4 readiness. Future coordinated artifacts
-  and device-reported product versioning remain implementation work.
+## Releases and project records
 
-- Current neighbor expiry (2026-10-21): owner-authorized application **443ba03** is deployed from the local-tracking trial. Separate durable current state uses installed SNNS relative hearing evidence, excludes cached standard tables and expires at two hours of estimated age. All 74 backend/55 portal server checks, public assets/access boundaries, migrated live/demo recovery, fresh reports through both gateways and actual-component expiry replay pass. Native/sustained acceptance and unseen upstream delivery delay remain separate; no absolute hearing timestamp requirement or firmware rollout. [Release evidence](docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).
+[MeshLink application releases](docs/operations/meshlink-releases.md) and
+[SNORR Firmware releases](records/firmware-releases/README.md) have independent
+versions. The application release JSON owns its version. Firmware development
+uses `snorr/develop`; this repository pins published source through `firmware`.
+A source pin or product baseline does not establish a device's installed bytes.
 
-- Telemetry receipt fallback (2026-10-21): merged [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54), application **8c5350e**, is deployed. Telemetry selection/display/health prefer valid device calendar time and otherwise use original receipt time; missing source clocks remain null/empty and uptime is unused. Battery history includes unknown-time reports, while GPS/neighbor clocks remain separate. All 63 backend/49 portal checks and server live build pass; public assets/services/authentication, isolated live/demo recovery and fresh R002/R004 selection/history pass. Native/sustained acceptance remains separate. [Release evidence and remaining limits](docs/operations/battery-contact-freshness-20261021.md#deployment---2026-10-21).
+Keep `snorr-meshlink` as the repository name. Reviewed source goes to main;
+production deployments are manual and explicitly selected. No staging site now.
+[Local tracking](docs/operations/local-tracking.md) owns task dispatch, concurrent
+work and handoff. GitHub hosts source, CI and useful PRs; historical issues and
+the Project board remain unchanged unless requested.
 
-- Gateway battery graph release (2026-10-21): merged [PR #46](https://github.com/lfg-seth/snorr-meshlink/pull/46), application **fa03550**, is deployed. Exact isolated voltage readings now appear with unknown cadence. Both gateways have owner-confirmed 1000 mAh LiPo portal profiles; G002's verified five-minute cadence renders its actual history as a curve. G001 has no battery reports yet. All 47 portal checks/server build, public assets and isolated live/demo recovery pass. [Evidence and limits](docs/operations/gateway-battery-graphs.md).
+## Boundaries and evidence
 
-- Demo/minimap release (2026-10-20): merged [PR #38](https://github.com/lfg-seth/snorr-meshlink/pull/38), application `5d07d61`, is deployed. Expanded synthetic battery/weather/power/SNNS examples and clickable neighbor minimap endpoints pass 59 backend/46 portal checks locally/on LXC, public source/assets and isolated live/demo recovery. Prior demo edits are preserved privately; live data/configuration remain intact. Native review and fresh radio delivery remain unverified. [Release evidence](docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20).
+Keep secrets, identifiable rosters and raw tracks in ignored `private/` or
+`local-data/`; publish sanitized evidence. Member consent and a private network
+do not settle operational access, retention, radio compliance or publication
+permission. Verify actual radio/antenna settings and site permission before use.
+Candidate locations are not installation permission. Track spending and measured
+outcomes for potential grants; no funding is promised.
 
-- Gateway neighbor collection (2026-10-19): **G001/G002** run verified dedicated V3 `2.7.26.9d2fd8f` with richer passive RSSI/SNR/hearing-age/count reports sent locally through MQTT while LoRa TX remains disabled. Complete individual profiles/keys survive reboot. Each gateway's own reports reach normalized/authenticated portal state, and fresh repeater gateway copies retain correct deduplication. Both node IDs are allowed report sources. [G001 rollout/evidence](docs/operations/g001-neighbor-gateway.md), [G002 build/evidence](docs/operations/g002-neighbor-gateway.md). Sustained cadence/runtime and field acceptance remain separate.
-
-- Repeater bench rollout (2026-10-19): R001–R005 run verified released neighbor-signal firmware `2.7.26.0b65f2e` as **CLIENT**, with device/environment telemetry at 900 seconds, power telemetry disabled and no battery INA address configured. Independent identity/key/channel/profile checks pass through reboot. R005's former GPIO31 HIGH dummy-load override is removed. Fresh G001/MQTT and normalized portal receipts pass for all five; temperature observations pass for R003/R004/R005 with measurement clocks still unknown. R001/R002 temperature and G002 remain unverified; no utilization/runtime/field-readiness result claimed. [Receipt evidence](docs/operations/repeater-gateway-check-20261019.md), [flashing handoff](docs/operations/board-flashing-handoff.md).
-
-- Private monitoring (2026-10-17): owner-selected MeshMonitor 4.17.0 runs on its separate existing LXC as a read-only encrypted MQTT subscriber, using existing Grafana/Prometheus with internal access and 30-day metrics. Live telemetry comparison, restart persistence and isolated backup recovery pass. No packet/history pruning; exact portal archive, GPS measurement freshness and gateway receipts remain authoritative. Native views, two-gateway behavior, storage growth and off-host recovery remain follow-ups. [Operations](docs/operations/meshmonitor-lxc.md).
-
-- Dedicated airtime debug receiver (2026-10-16): existing V3 MC00 runs receive-only `2.7.26.f95a443`, preserving identity/keys on US channel 35. [Windows/Linux GUI and console tool](scripts/airtime-sniffer/README.md) retains raw/decoded frames, repeats and per-run airtime logs. Ten live receptions/seven duplicates, opaque/keyed/GUI replay and Windows/Linux core checks pass; Linux GUI/USB and high-load completeness remain unverified. [Hardware and limits](docs/operations/airtime-sniffer.md). Operational gateways/repeaters are unchanged.
-
-- INA219 reinvestigation (2026-10-21): owner-authorized R004 diagnostics reproduce amp-scale errors with correct R100 config/calibration. Held conversion reads are repeatable and mathematically consistent; between-conversion variation and physical input/current accuracy remain unresolved. R004 runs diagnostic 2.7.26.09d8a9d with full profile/keys preserved. Same-path meter and wiring confirmation are next. [Audit](docs/operations/ina219-audit.md#r004-reinvestigation--2026-10-21), [issue](https://github.com/lfg-seth/snorr-meshlink/issues/4).
-
-- RAK portal integration (2026-10-16, deployed `bed40dd`): strict SNNS/standard neighbor decoding now fills directional tables/map relationships; channel-preserving signed sensor power appears on Infrastructure and node cards. Live archive recovery plus fresh R005 G001 receipt normalization pass, with all nine devices and prior records preserved. 57 backend/45 frontend checks, public assets/boundaries and isolated live/demo backup recovery pass. Current calibration/polarity, fresh G002 delivery and authenticated native/mobile visual review remain unverified. [Contract and release evidence](docs/operations/radio-report-ingestion.md).
-
-- R005 one-off preparation (2026-10-16): custom `2.7.26.8dd4dac` holds AIN1/GPIO31 HIGH during normal operation for an owner-fitted 2N2222 dummy load through a 2 kΩ base resistor. Flash/profile/key preservation, reboot readback, live registration at R001's planned site, G001 battery/weather ingestion and nine-device backup recovery pass. INA219 reports roughly −1.1 A with batteries, then −0.4 / −0.3 mA after their removal; the expected 50 mA load and its supply path remain unverified. [Evidence](docs/operations/r005-preparation.md).
-
-- R002 update (2026-10-16): owner confirms no external sensors. Released `2.7.26.0b65f2e` is flashed with exact original local/channel/identity preservation through reboot; battery telemetry remains 900 seconds, external sensors disabled and neighbor transmission enabled. Portal metadata and fresh G001 battery/SNNS archive delivery pass; G002 and normalized neighbor decoding remain unverified. [Evidence](docs/operations/r002-release-update.md).
-
-- R004 preparation (2026-10-16): fourth inventoried RAK4631 now runs checksum-verified released `2.7.26.0b65f2e`, with preserved keys, saved pilot profile, 900-second device/environment/power telemetry and enabled neighbor transmission verified through reboot. Registered at R001's private planned location; new G001 battery/weather reports reach the live portal and SNNS reaches the archive. INA219 current interpretation, normalized current/neighbor decoding and fresh G002 delivery remain unverified. [Preparation/evidence](docs/operations/r004-preparation.md).
-
-- RAK prerelease (2026-10-16): cached `2.7.26.0b65f2e` UF2/OTA ZIP plus manifest/checksums are [published for download](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Routine flashing uses verified released assets, with no rebuild. The source submodule pins release-tooling commit `8fe47325e`; binary source stays `0b65f2e84`. Public asset/cache verification and the fork release job pass; upstream publishing jobs are skipped. [Download and flash handoff](docs/operations/board-flashing-handoff.md). No hardware update claimed.
-
-- RAK neighbor firmware (2026-10-16): owner activates the parked passive-report proposal. Branch `snorr/rak-survey`, source `0b65f2e84`, now adds bounded direct-neighbor RSSI/SNR, hearing age and observation counts in background companion reports while retaining the AHT fix and standard GPS/NeighborInfo behavior. Portable collector/module checks pass; flashing, both-gateway delivery and portal companion decoding remain follow-ups. [Source and rollout boundary](docs/operations/rak-neighbor-signals.md).
-
-- Demo-first entry (2026-10-16, deployed source `60ea977`): anonymous visitors automatically open the separate database demo in production builds too, with **Sign in** in the top header for live account access. Saved live sessions retain server-validated refresh behavior. Demo/API isolation remains intact; sign-in inputs use a minimum 16px font to address iPhone focus zoom. Server checks, public assets and live/demo recovery pass; native iPhone behavior remains to verify. [Release evidence](docs/operations/portal-lxc.md#demo-first-entry-and-iphone-login-fields--2026-10-16).
-
-- Accumulated portal release (2026-10-16): application source `3ca3a94` deploys GPS quality, neighbor maps/table, assignment-aware card mini maps, infrastructure battery history and a separate database demo at `meshlink.spp.lol`. Frontend/backend checks, public build/API separation and isolated live/demo recovery pass; native visuals, fresh live receipt observation and real neighbor ingestion remain separate verification limits. [Release evidence](docs/operations/portal-lxc.md#gps-neighbor-maps-battery-history-and-database-demo-release--2026-10-16).
-
-- Map neighbor signals (2026-10-16, deployed): a toggle beside Fit area draws selectable colored connections without line labels. Legend help expands independently behind an info button. Node cards list relationship/pill rows that open the relationship card, including with the overlay hidden or locations missing. One line per mapped pair uses the weakest known latest SNR; relationship cards preserve RSSI/SNR, original/final-hop identities, separate hearing/report times and planned/recorded endpoint context. Missing readings stay unknown. [Behavior and checks](.scratch/pilot/issues/18-map-neighbor-signals.md).
-
-- Database demo and neighbor table (2026-10-16, deployed): demo viewing now reads a separate PocketBase with a tracked synthetic SQLite checkpoint, a persistent ignored working copy and ten illustrative directional signal rows. Production remains on the VM; ordinary migrations do not seed samples. The Infrastructure table preserves receiver/original-source distinctions, missing readings and separate hearing/report times. Fork reporting improvements remain parked. [Inspect and run the demo](backend/demo/README.md).
-
-- Sign-in refresh fix (2026-10-16): deployed source `ee5e57e`. Account tokens persist for the current tab and are validated by the backend on reload; sign-out clears them, rejected authentication returns to sign-in and temporary connection failures offer retry. Frontend checks pass locally/on the LXC; public assets, protected token reuse and worker/service health pass. Native browser verification remains outstanding. [Release operations](docs/operations/portal-lxc.md#sign-in-refresh-fix--2026-10-16).
-
-- Map/card release (2026-10-15): deployed responsive map sheets, simplified tracker indicators/session summary and member map shortnames. Sign-in offers View demo without an account, using explicitly labelled synthetic browser state; live records remain authenticated. Source `3964f46`, local/server checks, public asset/authentication/heartbeat checks and isolated backup recovery pass. Native browser visual review, area boundaries, complete long-session aggregation and measured INA219 ingestion remain follow-ups. [Release operations](docs/operations/portal-lxc.md#map-and-demo-release--2026-10-15).
-
-- Member battery support (2026-10-15): live backend now accepts member battery-voltage telemetry independently of GPS, with admin battery type/capacity configuration and selected-tracker voltage/approximate charge UI. Generic 1S LiPo lookup supports the inventoried 1000/1100/3000 mAh sizes without assuming installed packs. 44 backend checks pass locally/on LXC; isolated frontend checks/build and backup recovery pass. No B001/B002 voltage packets were present in the checked archive; real member voltage reception, calibration and pack assignment remain unverified. [Profile and behavior](docs/research/member-battery-charge.md).
-
-- MQTT archival update (2026-10-15): owner authorizes storing all received project MQTT traffic for later interpretation. The live worker now saves exact payloads and receipt metadata to private PocketBase `mqtt_archive`, including unsupported/rejected packets, before existing GPS/telemetry normalization. Root subscription is broader; documented broker ACL still limits delivery to the encrypted subtree until a broker admin expands read access. Live receipt, 42 backend checks on both runtimes and isolated backup recovery pass. [Operations and limits](docs/operations/live-mqtt.md#raw-mqtt-archive--2026-10-15).
-
-- Three-repeater portal update (2026-10-14): R001/R002/R003 are registered with private owner-provided planned sites/equipment. Live voltage from all three and R003 temperature/humidity reach PocketBase with two-gateway deduplication. Installation, calibrated sensors, solar input and endurance remain unverified; planned-site warnings await activation. [Operations](docs/operations/repeater-telemetry.md), [TEST-009](records/field-results.md#test-009--live-repeater-provisioning-and-telemetry). This supersedes the earlier two-repeater-only allocation and GPS-only portal limitations below.
-
-- Additional R003 preparation (2026-10-14): a third on-hand RAK4631 now runs owner-authorized custom `2.7.26.cc5907b`, carrying the existing fork's targeted AHT detection fix onto the pinned release. Actual temperature/humidity and battery reports reach both V3s (4/4 new receipts); entire pilot profile/keys retained, with device/environment telemetry enabled at 900 seconds. R001/R002 remain stock and original two-repeater field allocation is unchanged. Sensor calibration, sustained cadence/runtime and sustained portal telemetry remain unverified. [Build and source](docs/operations/r003-aht-build.md), [TEST-008](records/field-results.md#test-008--r003-custom-aht-build-and-radio-telemetry).
-
-- RAK bench preparation (2026-10-14): two connected RAK4631s now run stock Meshtastic `2.7.26.54e0d8d` as visible R001/R002 routers on the private pilot channel. Saved profiles match the Heltec bench radio settings at 10 dBm; direct encrypted packets reach the other RAK and both V3s (6/6 checks). Forced V4 GPS relaying, field coverage, solar/battery endurance and site readiness remain unmeasured. [Setup](docs/operations/rak-pilot-setup.md), [TEST-006](records/field-results.md#test-006--stock-rak-pilot-repeater-preparation).
-
-- Development moves regularly between the Dell laptop running Linux and the Windows desktop running WSL. GitHub is the shared source/decision record: pull before starting, commit and push before switching, and keep machine-local credentials, databases, raw tracks and environments out of Git. Current handoff and resume steps: [development handoff](docs/operations/development-handoff.md).
-
-- Heltec bench preparation (2026-10-14): two on-hand original V4s and two V3s run verified stock Meshtastic `2.7.26.54e0d8d`, with private-channel profiles/roles checked through reboot. Both V4s deliver automatic GPS through both receive-only V3s and MQTT. The live portal adapter now saves actual positions and per-gateway receipts, preserving GPS solution timestamps and deduplicating display records. Owner supplies replacement gateway Wi-Fi and restores B001 reporting during integration. This is a four-device local bench, not the six-member field pilot; sustained freshness/runtime remain unmeasured. [Evidence](records/field-results.md#test-005--live-portal-gps-ingestion).
-
-- The [Ubuntu LXC deployment](docs/operations/portal-lxc.md) now runs the authenticated real-device GPS portal behind the owner's Cloudflare Tunnel at `meshlink.spp.lol`. Fictional operational records are archived in verified private backups and replaced by B001/B002 trackers and G001/G002 gateways. Project secrets are stored in the owner-authorized SNORR MeshLink — Pilot 1Password Environment; the LXC uses a private worker configuration. [Live operations](docs/operations/live-mqtt.md). Survey and other held work remain deferred.
-- Survey prototype requirements are recorded: RAK4631 cores, always-available survey-only native-PKI authorization with a transferable V4 tester keypair, and Dell-driven touchscreen GUI including live GPS/signal mapping. No survey firmware, tester GUI, build/flash or hardware verification completed; see [survey draft](docs/research/repeater-operations-survey.md).
-
-- Design and install repeaters; design and distribute member client nodes.
-- Inventory the owner's significant existing hardware supply and use it before buying more.
-- Repeaters are intended to use solar power and 18650 batteries. Specific pack, charging, protection, and weather designs remain open.
-- Every member node is intended to have dedicated GPS.
-- Initial scale: roughly 20 member trackers. First-trial plan: 6 Heltec V4s only (2 on hand, 2 planned purchases, 2 planned recoveries), each intended to have GPS and a 3000mAh battery. T-Decks are excluded to reduce device/firmware complexity. Planned additions are not yet confirmed available or working.
-- Pilot infrastructure also includes 2 owned RAK repeaters (exact units/builds to select) and 2 owned Heltec V3 internet backhauls. Initially both were receive-only; the portal interview now authorizes one designated V3 to transmit portal-originated replies, with the other remaining receive-only. V4-only applies to member trackers. Verify forwarding and the required transmit/silence behavior under the selected firmware/configuration.
-- Initial relay evaluation will use 2 undamaged, on-hand RAKs, subject to core identification and bench verification. Both app and laptop/portal viewing are intended; the Meshtastic app is acceptable for the first local-viewing MVP. An owned rugged Dell laptop/tablet running Linux is available for field use, with compatibility unverified.
-- Dispatch stale-position threshold: 15 minutes since GPS measurement, with an obvious stale indication and visible position age. Prefer aggressive broadcasting initially and tune based on measured congestion; exact intervals and movement/power-based modes remain for evaluation. These are requirements and preferences, not tested guarantees.
-- Member battery runtime: minimum 4 hours, target 12 hours. Consider larger batteries if runtime tests justify them; no additional battery purchase specified.
-- Passive-tracking MVP: power on and automatically broadcast GPS without a phone or repeated member interaction. Device-only SOS remains deferred work.
-- Support members who use companion apps and members who operate entirely from the device. Some may use a keyboard-equipped, BlackBerry-style node.
-- Provide a web portal/dashboard for dispatch and members to see nodes and status.
-- Member tracker radio short names stay tied to device numbers across carrier changes. Keep portal device identity/assignment history separate from names and remote-update success; [naming decision](.scratch/pilot/issues/12-assignment-radio-names.md). Remote admin integration is planned, not implemented/tested.
-- Portal baseline has Map, Users, Messages, and Infrastructure pages. Repeaters/backhaul devices are viewable by role with an optional map layer, recorded battery charge/discharge and solar information, weather/intrusion readings where equipped, and configurable health/intrusion warnings. Actual sensors, measurable values, telemetry cadence and warning thresholds remain to verify/define; retain all received infrastructure observations under the pilot-data policy.
-- Infrastructure warning behavior is [agreed](.scratch/pilot/issues/10-infrastructure-warning-rules.md): silent persistent badges, sensor-capability-specific rules, default missing timeout of three expected reporting intervals, automatic health recovery and admin-resolved intrusion incidents. Device setup records battery type/chemistry, cell count, nominal mAh capacity and per-cell/pack scope, plus pack arrangement where applicable. Actual battery thresholds and fitted sensors/readings remain to verify.
-- Device setup also records solar-panel configuration (options to be determined later) and antenna configuration, including Muzi whip or fiberglass, with unknown/unconfigured values explicit. These are configuration records; panel output and antenna performance remain unverified.
-- Portal pilot evaluation: PocketBase with a separate MQTT worker and MapLibre/USGS topo/aerial layers on the owner's Ubuntu Proxmox LXC, with no inbound router port forwarding. Cloudflare Tunnel serves the authenticated portal at `meshlink.spp.lol`. The worker verifies hostname/certificate on public TLS `mqtt.snorr.org:8883`, through Nginx to private Mosquitto 1883; Mike handles certificates. Real GPS ingestion and two-gateway deduplication pass for both V4s. Keep outbound messages, remote naming and field readiness separate from this receive-only GPS integration.
-- Broker hosting: Mike Rollins hosts Mosquitto at `mqtt.snorr.org:8883` behind Nginx TLS termination. Separate V3 uplink/read-only worker accounts and ACLs pass recorded authentication/delivery checks; source-restricted private 1883 preserves loopback, and public 1883 times out from the test origin. Automatic same-release updates are enabled at 03:00 Pacific with required-only reboots at 04:00 Pacific; future automated runs remain unobserved. Live portal GPS integration now passes. Certificate renewal and unrelated-LAN denial remain to test; see [hosting record](records/sites.md#broker-hosting-record--mike-rollins).
-- Backend: PocketBase accounts/persistent records with server-enforced roles and transactional assignments, a native simulation/replay worker for development, and a separate persistent live MQTT GPS worker. Live data, worker restart, Tunnel HTTPS boundaries and isolated live-backup recovery pass. Public browser entry displays sign-in; authenticated browser map review, actual radio sends/name updates and off-host backups remain outstanding. See [backend setup](backend/README.md), [deployment](docs/operations/portal-lxc.md) and [contract](docs/research/portal-backend-contract.md).
-- Portal stack accepted 2026-10-13: React + TypeScript + Vite, PocketBase and a Python worker. Keep TypeScript approachable with plain types/components and short explanations. Develop natively on the Dell or Windows desktop, syncing through GitHub; the owner's WSL/Docker environment remains optional. The Ubuntu Proxmox LXC runs the live receive-only GPS pilot with verified isolated backup recovery. See the [build environment plan](docs/research/portal-build-environment.md) and [deployment](docs/operations/portal-lxc.md).
-- Pilot remote dispatch path: both V3 backhauls forward received member position packets to one private MQTT broker for dispatch ingestion, preserving measurement times and handling duplicates. Permit dispatch-message downlink only through one designated V3; keep other tracking uplinks from accepting internet-to-LoRa commands. Companion-app/cellular member backhauls are an optional extension only after compatibility and multi-gateway testing show acceptable behavior.
-- Pilot viewing must remain available locally at the field command post without internet backhaul. Members who use the companion app must also be able to see other members' received locations in the field without internet backhaul; phone use remains optional for passive tracking. Offline map availability and missing/stale-position behavior need verification.
-- Use a closed private network. The owner reports all participating members consent to tracking and its privacy implications; operational access, retention, and public-content permissions still need definition.
-- Evaluate a fork or modification of Meshtastic or MeshCore, especially configurable update frequency. The actual need for code changes remains to be established.
-- Document planning, execution, and results; create social media content.
-- Track spending and tangible outcomes to support possible grant requests to Clark County / Mount Charleston stakeholders. No funding is awarded or promised.
+Most public project material should be human-readable and owner-copyedited.
+[Content policy](records/content.md#public-documentation-direction---2026-10-23)
+owns editorial boundaries; agent internals stay outside site rendering and issue
+pages are provisionally excluded. Existing GitHub source publication is
+authorized; other publishing and outreach require authorization.
 
 ## Deferred wishlist
 
-The [feature wishlist](records/wishlist.md) records known-Wi-Fi automatic MQTT backhaul and browser-based flashing of project firmware for a small supported subset of member-owned devices. Both are parked until the owner explicitly brings them forward; no research or implementation is scheduled.
+[Wishlist](records/wishlist.md) work starts only when the owner brings it forward.
+Communications/SOS, public-site implementation and UI improvements retain their
+existing holds in the tracker. Mentioning or decomposing work does not activate it.
 
 ## Possible backhaul
 
-Some vehicles may provide internet through Starlink or cellular service. One or two repeaters may have internet through the Kyle Canyon and Lee Canyon fire department locations. Member homes in Las Vegas may also connect to a mountain repeater and contribute internet access. These are candidates, with availability, RF paths, and permission unverified.
+Vehicle Starlink/cellular, fire-department locations and member homes remain
+candidates. [Sites](records/sites.md) owns availability, permission and evidence.
 
 ## Open choices
 
-- Network architecture: the owner said “LoRaWAN” while also naming Meshtastic and MeshCore. Establish whether the intended system is a LoRa mesh, LoRaWAN, or a combination before choosing firmware.
-- Pilot terrain/routes, field-test duration, acceptable stale/missing-position rate, and exact reporting settings. Trial scope is 6 GPS-equipped Heltec V4s after 2 purchases and 2 recoveries, each intended to use a 3000mAh battery. Stale threshold is 15 minutes; runtime minimum is 4 hours with a 12-hour target.
-- Current hardware counts, condition, radio variants, and GPS capabilities. A 32-row historical purchase list is imported in [Inventory](records/inventory.md); the owner reports most items are retained, but quantities are not yet confirmed.
-- Message workflow, display/button needs, and behavior without a phone or internet.
-- Site permission, radio configuration/compliance, link coverage, and service access.
-- Dispatch data access, track retention, and handling of delayed/stale positions.
-- Power sizing, environmental limits, and maintainability.
-- Budget ceiling, ownership of equipment, grant applicant, and partners.
-
-The initial [protocol baseline](docs/research/protocol-baseline.md) records official-source findings and configuration options. It supports a bench evaluation after inventory; it does not settle firmware selection or prove that a fork is required.
+The tracker and parent acceptance records own remaining GPS/runtime, relay,
+outage, power, release and field gates. Exact devices/routes, acceptable missing
+rates, access/retention, operational maintenance and budgets require evidence or
+owner decisions. Use the [roadmap](docs/roadmap.md) for acceptance checkpoints.
 
 ## First planning destination
 
-Prepare a small, measurable field pilot using owned hardware: define the participating node set, choose a justified firmware/network approach, sketch how positions reach dispatch, and agree on success criteria. Keep values undecided until evidence or owner input settles them.
+Pass the measured pilot gates with owned hardware before expanding deployment.
+Implementation, release, native presentation, live delivery, sustained operation
+and field acceptance are separate evidence stages.
 
-The field pilot is a checkpoint toward the full mission, not a claim that the system is ready for operational deployment.
+Dated development details were moved intact to the
+[historical brief](records/project-brief-history-20261023.md). Consult it only for
+an earlier decision or evidence reference; current status belongs in the tracker.

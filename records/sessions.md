@@ -1,5 +1,41 @@
 # Session log
 
+## 2026-10-23 - Structure bounded agent assignments and repeatable checks
+
+- Owner requests implementation of the agent-efficiency workflow. Keep the
+  tracker as the only status queue; add Software/Bench lanes and focused next
+  briefs for LOCAL-3 SNNS interval, GH-2 run preparation, LOCAL-4 power planning
+  and LOCAL-6 release foundation. Partition parent criteria into independently
+  verifiable assignment boundaries without marking implementation or hardware
+  acceptance complete. Deferred work and imported GitHub records stay held.
+- Reduce PROJECT.md from 29,760 to 5,812 bytes (80%); preserve the original prose
+  and adjusted evidence links in
+  [the historical brief](project-brief-history-20261023.md). README now points to
+  canonical status rather than maintaining a dated status copy. Add the
+  [assignment template](../docs/operations/task-template.md), resource ownership,
+  scoped context/review rules and compact handoff to the existing local workflow;
+  align machine-switch instructions and AGENTS.md using writing-for-agents.
+- Add [check-project.py](../scripts/check-project.py) and
+  [scope documentation](../scripts/README.md), reusing existing updater,
+  firmware-release, portal and backend suites. Default docs checks validate
+  changed/untracked inline local file/heading links and Git whitespace. Add
+  runner regression coverage and a source-only project-record CI workflow.
+- Validation: eight runner regression tests, 34 updater tests and ten pinned
+  firmware-release tests pass. Changed-document links/whitespace and exact
+  archive-content preservation pass; project-record CI YAML parses and its
+  read-only check wiring validates. Initial Windows sandbox temp/submodule
+  access and system-Python dependency failures are resolved using approved
+  execution and the existing project environment. No application suite rerun,
+  Linux CI result, live-system check, firmware build or hardware action claimed.
+- Publication uses short-lived branch `docs/agent-workflow`; preserve the
+  pre-existing untracked image. Source publication does not deploy the portal.
+
+Next useful step: select
+[the SNNS interval assignment](../.scratch/tasks/local-3-snns-interval.md) for
+software implementation and
+[the B001/B002 run-plan assignment](../.scratch/tasks/gh-2-run-plan.md) for the
+next bench preparation; actual runs retain their hardware/access/criteria gates.
+
 ## 2026-10-23 - Settle repository name, manual deployments and public editorial policy
 
 - Owner keeps `snorr-meshlink`, selects manual production deployments from
