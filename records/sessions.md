@@ -1,5 +1,38 @@
 # Session log
 
+## 2026-10-24 - LOCAL-8 device-card battery summary
+
+- Owner explicitly activates LOCAL-8. Add one shared top battery summary to
+  member, repeater/router and gateway details; keep GPS quality beside member
+  percentage and the battery icon in the header. Remove the entire sensor-power
+  section and repeated current from history. Preserve environment readings,
+  graphs, exact history, configuration and unrelated card details.
+- Trace device voltage versus sensor channels and the newer deployed 0.1.1
+  polarity contract on main. Prefer the documented sole channel 1 over legacy
+  environment current; other/ambiguous channels remain Unknown. Measured current
+  and direction identify the sensor path, with battery flow/calibration
+  unverified. Only the explicit normalized convention supports signed direction;
+  voltage-trend direction is labeled an estimate and never becomes mA.
+  [Implementation, source trace and limits](../docs/operations/device-card-battery-summary.md).
+- `python scripts/check-project.py portal`: **60 tests pass**, TypeScript and
+  production build pass; existing bundle-size warning remains. Changed-document
+  links and whitespace pass. Actual components
+  visually checked with synthetic data at desktop 985 × 782 and mobile 390 × 844,
+  including member GPS alignment, current wrapping and missing/offline gateway.
+  Authenticated deployed cards and owner phone acceptance remain unverified.
+- Isolate the implementation from the diverged original checkout on short-lived
+  **`codex/local-8-battery-summary`**, based on `origin/main` **`520fbfc`**, under
+  ignored `local-data/local-8-worktree`. Preserve the original branch, hardware
+  edits and earlier ticket records. Carry LOCAL-8's canonical wishlist section
+  onto this main-based branch; reconcile GH-44/GH-45 locally without changing
+  imported issues. No LOCAL-7, ingestion/history, live configuration or deployment
+  changes. Implementation commit **`16404f4`** is pushed to origin;
+  [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60) targets main.
+
+Next useful step: review/merge the PR, then select a manual production release
+and verify authenticated cards on the owner's browser/phone. Physical accuracy
+and multi-channel battery-path mapping remain separate prerequisites.
+
 ## 2026-10-24 - PR 59 merged; MeshLink 0.1.1 deployed
 
 - Owner explicitly authorizes merging/deploying [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59).

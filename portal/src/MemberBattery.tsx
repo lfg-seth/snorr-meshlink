@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Tracker } from './demo';
 import { timeLabel } from './demo';
-import { memberBatteryState } from './battery-charge';
+import BatterySummary from './BatterySummary';
 import { telemetryTime } from './telemetry-time';
 
 export type BatteryConfiguration = {
@@ -19,19 +19,10 @@ export default function MemberBattery({ device, now, online, onConfigure }: {
   const [capacity, setCapacity] = useState(String(device.batteryCapacityMah ?? ''));
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const estimate = memberBatteryState(device, now, online);
   return (
     <section aria-label="Member battery">
-      <h3>Battery</h3>
+      <BatterySummary member={device} now={now} online={online} />
       <dl className="detail-grid">
-        <div><dt>Estimated battery percentage</dt><dd>
-          {estimate.percent === null ? 'Unknown' : `≈${estimate.percent}%`}
-          <small>{estimate.reason}</small>
-        </dd></div>
-        <div><dt>Battery voltage</dt><dd>
-          {device.batteryVoltage == null ? 'Unknown' : `${device.batteryVoltage.toFixed(3)} V`}
-          <small>{estimate.status}</small>
-        </dd></div>
         <div><dt>Battery measured at</dt><dd>{timeLabel(telemetryTime(device.batteryMeasuredAt, device.batteryReceivedAt, now))}</dd></div>
         <div><dt>Battery received at</dt><dd>{timeLabel(device.batteryReceivedAt ?? null)}</dd></div>
         <div><dt>Configured battery</dt><dd>

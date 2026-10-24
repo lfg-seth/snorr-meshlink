@@ -2,11 +2,10 @@ import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
 import BatteryHistory from './BatteryHistory';
-import PowerReadings from './PowerReadings';
+import BatterySummary from './BatterySummary';
 import type { LoadBatteryHistory } from './BatteryChart';
 import NeighborTable from './NeighborTable';
 import type { LinkObservation } from './NeighborTable';
-import { batteryPower } from './battery';
 import { metricTime } from './telemetry-time';
 import {
   ageLabel,
@@ -63,7 +62,6 @@ export default function InfrastructurePage({
     return (
       <p className="empty">No infrastructure devices have been provisioned.</p>
     );
-  const power = batteryPower(selected, now);
   const incident = incidents.find(
     (i) => i.deviceId === selected.id && !i.resolvedAt,
   );
@@ -185,20 +183,11 @@ export default function InfrastructurePage({
             ? 'Fresh evidence is required to recover existing warnings.'
             : 'Outage suppresses new missing incidents and preserves existing warnings. Reconnect grace applies before new missing warnings.'}
         </p>
+        <BatterySummary infrastructure={selected} now={now} online={online} />
         <dl className="detail-grid">
           <div>
             <dt>Placement</dt>
             <dd>{selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>
-          </div>
-          <div>
-            <dt>Battery voltage</dt>
-            <dd>
-              {selected.battery === null
-                ? selected.disabledMonitoring?.includes('battery')
-                  ? 'Monitoring disabled · awaiting first reading'
-                  : 'Awaiting first reading'
-                : `${selected.battery.toFixed(2)} V · ${metricState('battery')}`}
-            </dd>
           </div>
           <div>
             <dt>Solar input</dt>
@@ -235,10 +224,6 @@ export default function InfrastructurePage({
                   ? 'Awaiting first reading'
                   : `${selected.intrusion ? 'Triggered' : 'Reported normal'} · ${metricState('intrusion')}`}
             </dd>
-          </div>
-          <div>
-            <dt>{power.label}</dt>
-            <dd>{power.amount}</dd>
           </div>
           <div>
             <dt>Gateway direction</dt>
@@ -314,8 +299,7 @@ export default function InfrastructurePage({
             )}
           </div>
         )}
-        <PowerReadings device={selected} now={now} />
-        <BatteryHistory loadHistory={loadBatteryHistory} key={`battery-${selected.id}`} device={selected} now={now} online={online} />
+        <BatteryHistory loadHistory={loadBatteryHistory} key={`battery-${selected.id}`} device={selected} now={now} />
         <div className="infra-detail-columns">
           <div>
             <h3>Declared hardware configuration</h3>

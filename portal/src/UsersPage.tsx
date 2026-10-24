@@ -145,7 +145,7 @@ export default function UsersPage({
       </section>
       {inspected && <TrackerDetail key={inspected.id} selected={inspected} label={trackerLabel(inspected)}
         mapLabel={trackerMapLabel(inspected, assignments, members)}
-        now={now} showTrail={trailId === inspected.id}
+        now={now} online={online} showTrail={trailId === inspected.id}
         onTrailChange={(visible) => onTrailChange(visible ? inspected.id : null)}
         onClose={() => setInspectedId(null)} />}
       <section className="panel">
