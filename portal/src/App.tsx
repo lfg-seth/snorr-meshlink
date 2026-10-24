@@ -11,6 +11,7 @@ import BackendLogin from './BackendLogin';
 import { BackendError, login, request, savedToken, saveToken } from './backend';
 import type { BackendSession, BackendState } from './backend';
 import type { LoadBatteryHistory } from './BatteryChart';
+import { currentSignalRows } from './signal-freshness';
 type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure';
 const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure'];
 const icons = { Map: '◎', Users: '♙', Messages: '☷', Infrastructure: '⌁' };
@@ -59,6 +60,7 @@ function Portal() {
   const incidents = snapshot?.incidents ?? [];
   const events = snapshot?.events ?? [];
   const rules = snapshot?.rules ?? {};
+  const currentLinks = snapshot ? currentSignalRows(snapshot) : [];
   const admin = session?.account.role === 'admin';
   const feedOnline = Boolean(snapshot?.feedOnline && backendConnected);
   const selfMemberId = session?.account.memberId ?? '';
@@ -423,7 +425,7 @@ function Portal() {
               onSelect={setSelectedId}
               labels={labels}
               infrastructureNodes={infrastructureNodes}
-              links={snapshot.links}
+              links={currentLinks}
             />
           )}
           {snapshot && page === 'Users' && (
@@ -475,7 +477,7 @@ function Portal() {
               key={session?.account.id ?? 'demo'}
               now={now}
               infrastructureNodes={infrastructureNodes}
-              links={snapshot?.links ?? []}
+              links={currentLinks}
               trackers={trackers}
               warnings={snapshot?.warnings}
               onAckWarning={

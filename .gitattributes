@@ -3,5 +3,6 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+deploy/portal/update-r006-metadata.js text eol=lf
 scripts/airtime-sniffer/run-linux.sh text eol=lf
 deploy/meshmonitor/*.sh text eol=lf

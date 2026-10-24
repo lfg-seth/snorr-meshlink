@@ -1,5 +1,324 @@
 # Session log
 
+## 2026-10-23 - Accept permanent local tracking, migrate firmware branch and version MeshLink
+
+- Owner selects `snorr/develop` and commits to local tracking. Publish firmware
+  commit **b23f09d5b** on that branch, update workflow/provenance validation and
+  submodule branch/pin; all 10 release-tool checks pass. Keep the former remote
+  branch as historical evidence; no firmware runtime change or hardware flash.
+- Archive pre-acceptance main **0713f7e** at
+  `archive/pre-local-tracking-20261023`; fetched main has no commits absent from
+  the trial. Promote the accepted trial through a normal merge into main, retain
+  historical trial/archive refs, and keep main tracking origin/main. Update
+  agent/workflow/handoff instructions and disable automated GitHub tracking
+  provisioning. Historical issues/Project remain intact.
+- Implement independent MeshLink **0.1.0** using `meshlink-release.json`,
+  CHANGELOG.md, package/lockfile/tag checks, generated portal version.json and
+  HTML version/source metadata, plus main/tag CI. Version covers portal/backend
+  source together; firmware versions remain separate. Document release/rollback
+  and the distinction between portal metadata and actual backend deployment.
+- Validation: 56 portal tests, typecheck/build, generated metadata/HTML checks,
+  four workflow YAML parses, tracking schema and whitespace checks pass. System
+  Python initially lacks dependencies; use the project virtual environment and
+  add missing Windows tzdata there. Fix the repeated cutover-test database lock
+  by explicitly closing its SQLite inspection connection; targeted check passes.
+  Full backend Windows runs still show intermittent connection resets and skip
+  seven POSIX-only tests. Hold the combined release tag pending clean Linux CI;
+  no claim of an all-green backend suite or production deployment.
+- GitHub metadata still identifies the project as `lfg-seth/snorr-meshlink`;
+  repository rename has not occurred. Preserve origin until the actual rename.
+  Existing untracked image is untouched. Use the writing-for-agents skill for
+  permanent agent instructions.
+
+Next useful step: confirm backend/Linux CI, then tag the accepted application
+release; proceed with LOCAL-3/LOCAL-4/LOCAL-6 firmware work on snorr/develop.
+
+## 2026-10-23 - Establish SNORR firmware 0.1.0 development baseline
+
+- Owner selects 0.1.0 for the current state, without beta suffixes, and requests
+  GitHub/project updates. Add [release index](firmware-releases/README.md) and
+  [immutable baseline/changelog](firmware-releases/0.1.0.md) pinned to firmware
+  source 5c2c1adad098eea1e4795158d19c9debe306eded, with last-verified fleet builds
+  and linked checksum/profile evidence. No fresh device audit is implied.
+- Update LOCAL-6, tracker and project brief: 0.1.1 fixes, 0.2.0 next development
+  milestone, 1.0.0 first accepted production. Supersede beta.N/RC naming advice.
+  Preserve child tickets and existing runtime versions, stock member images,
+  diagnostic exceptions and publication/acceptance limits.
+- Validation: release/parent links and Git whitespace. No firmware code, build,
+  tag rewrite, flash or site deployment. GitHub publication is the authorized
+  trial-branch record push; issues/Project board retain trial behavior.
+
+Next useful step: implement product-version embedding and coordinated target
+manifests for the next numbered development release under LOCAL-6.
+
+## 2026-10-23 - Parent SNORR firmware release and fleet-version tracking
+
+- Owner identifies the current phase as beta and requests a parent firmware
+  ticket. Create [LOCAL-6](../.scratch/pilot/issues/28-snorr-firmware-releases.md)
+  above LOCAL-3 RAK/shared firmware and LOCAL-4 gateway readiness; add reciprocal
+  parent links and one tracker entry. Child implementation and hardware gates
+  remain intact; shared SNNS timing still belongs to LOCAL-3.
+- Recommend SNORR 1.0.0-beta.N, rc.N and production 1.0.0, with semantic version
+  rules tied to an explicit compatibility contract. Dates/names are supplemental.
+  Record separate upstream/source/target/checksum identity, profile revisions,
+  immutable manifests, release notes and a verified per-device rollout ledger.
+- Current mixed installed builds are not relabelled. Stock member trackers need
+  explicit build/test inclusion before an all-node SNORR version claim; otherwise
+  name the release infrastructure-only. No tag, firmware edit/build or flash.
+- Validation: consult the SemVer specification, check new/parent links, tracker
+  membership and Git whitespace. Existing untracked image remains untouched.
+
+Next useful step: implement the release metadata/target-matrix foundation and
+select the first coordinated beta's scope alongside child readiness work.
+
+## 2026-10-23 - Scope gateway hardware readiness and public Markdown documentation
+
+- Create [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md)
+  with power characterization, four/eight 18650 alternatives, two 60 x 100 mm
+  panels or external advertised 6 W/5 V USB solar, INA219, Muzi whip, enclosure
+  CAD/print/fit/weather tests, gateway firmware and end-to-end acceptance.
+  Record planned hardware without overwriting installed LiPo allocations.
+- Move gateway-specific LOCAL-3 readiness and GH-40 remaining reconnect
+  acceptance into LOCAL-4. Shared SNNS timing remains LOCAL-3; imported history
+  and GitHub issues/Project remain unchanged. Source confirms a shared firmware
+  tree but distinct Heltec ESP32-S3 and RAK nRF52840 build targets/binaries.
+- Create deferred [LOCAL-5](../.scratch/pilot/issues/27-public-markdown-blog-wiki.md)
+  for public Markdown blog/wiki, automatic content updates through site releases
+  and illustrated pages per node type. Add hardware index and initial gateway
+  source page; pictures, wiring/CAD and public site rendering remain pending.
+- Validation: local link and whitespace checks. Documentation only; no
+  implementation, purchases, prints, hardware/configuration changes or site
+  publication. Wi-Fi power, solar yield, INA219 accuracy and autonomy remain
+  unknown; advertised power is not a measurement.
+
+Next useful step: identify actual gateway power components and agree a measured
+energy/charging run before selecting the pack, solar option and enclosure.
+
+## 2026-10-23 - Consolidate production firmware readiness before mountain redeployment
+
+- Owner requests a ticket covering configurable SNNS timing and other firmware
+  needs before placing RAK nodes back on the mountain. Create
+  [LOCAL-3](../.scratch/pilot/issues/25-production-firmware-readiness.md), separating
+  required changes, configuration acceptance, gateway prerequisites and physical
+  deployment gates. Current source confirms compiled SNNS timing, standard
+  remote-admin support, and gateway MQTT credential logging/insecure TLS.
+- Consume local GH-51/GH-52 timing work, remaining GH-26/GH-27 acceptance and
+  firmware release/rollout ownership into LOCAL-3. Preserve immutable imports,
+  completed evidence and GitHub state. Keep R006 map/portal handoff current;
+  retain INA219, utilization, reconnect and field/runtime tasks as dependencies.
+- Specify the proposed device-telemetry interval coupling, minimum/fallback,
+  preserved jitter/airtime behavior, remote key authorization checks and ordinary
+  production images without diagnostic/dummy-load flags. Absolute timestamps
+  remain an open choice; existing portal freshness behavior is not replaced.
+- Validation: inspect pinned source and current operational records; check local
+  ticket links, consolidation membership and Git whitespace. Documentation only:
+  no firmware build, hardware action, remote command or deployment. Production
+  readiness and physical power/current accuracy remain unverified.
+
+Next useful step: implement/test LOCAL-3's configurable SNNS interval, then
+verify remote administration on a selected bench controller/board; resolve the
+shared freshness and gateway prerequisites before final release acceptance.
+
+## 2026-10-23 - Prepare three-minute repeater rollout and reusable updater
+
+- Owner requests all available repeater statistics every **180 seconds**, a
+  prompt-driven firmware/configuration updater for R001–R006, and R006's map
+  placement. Retain R001–R005's temperature/environment profile and R006's
+  **INA219-only/no-temperature** exception. Exact site coordinates stay private.
+- Build ordinary RAK source **`0634b775f65804968f5a18a7e8824db415556db2`**
+  with the RAK-specific 180-second private SNNS baseline; standard NeighborInfo
+  remains separate at 21,600 seconds with its existing 14,400-second minimum.
+  Jitter, empty-report suppression, congestion and airtime gates still apply.
+- Add the reusable updater, tracked sensor/identity profiles, pinned helper
+  dependencies and download-only release selection. Full private profile/key
+  backups, recorded USB/node/hardware matching, checksum/application-only UF2
+  guards and complete independent post-reboot comparison protect each board.
+  Thirty-four offline checks and Python compilation pass; no hardware is touched
+  by those checks. [Procedure and rollout status](../docs/operations/repeater-update.md).
+- Release CI/public download verification is pending and the production tag
+  pointer stays unset. Add an explicit `--local-bundle` fallback, checked
+  against the fixed tracked source/image manifest and staged privately with
+  exact manifest/checksums/UF2/OTA files; `publishedArtifact: false` preserves
+  its actual local-build provenance. R006's local three-minute firmware/profile
+  acceptance now passes; other boards require individual physical connection. R006's
+  map write is pending because server DNS is unavailable; no portal data has
+  changed during this preparation.
+- The first native R006 attempt used a 1200-baud touch, entered serial-only
+  DFU on the same USB identity/COM26 and stopped before an application write
+  because no UF2 volume appeared. Correct the updater to request DFU through
+  the verified open Meshtastic API after complete backups; remove the touch.
+  Six additional offline checks prove mode boundaries and backup/DFU/close
+  ordering. Verified application-only serial OTA recovery completes with
+  759,304 application bytes, no SoftDevice/bootloader bytes and `Device
+  programmed` after 45.03 seconds.
+- At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected full
+  native Windows UF2 updater exits successfully on R006, ordinary
+  **2.7.26.0634b77**, UF2 SHA256
+  **0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba**.
+  Full intended owner/key/channel/local/module configuration persists through
+  explicit reboot: CLIENT, device/power 180 seconds, environment off, compiled
+  SNNS 180 seconds and standard NeighborInfo 21,600 seconds. Serial closed;
+  private gate is `private/bench/R006-local-0634b77-verified/finalverified-radio.json`.
+  Independent comparison of original pre-failure profile against the
+  corrected run's before-profile also passes, along with intended/final
+  reboot equality: original full configuration, identity/keys and channels
+  survive serial recovery. Private evidence is the same directory's
+  `recovery-chain-verification.json`. R001–R005 remain unchanged and
+  unconnected. Linux hardware, current calibration,
+  battery-only behavior, runtime and field coverage remain unverified.
+- Independent subscribe-only TLS MQTT capture records **three automatic
+  nonretained cycles each of device, power and SNNS through both gateways**,
+  nine source packets / 18 gateway copies after the final clock gate. Eligible
+  receipts span **00:52:07.802–00:58:53.068 UTC**. Device and power measurement
+  gaps are **180/180 seconds**; same-boot consecutive SNNS report gaps are
+  **195/195 seconds**, including normal jitter/scheduling. Latest battery is
+  4.164 V; INA219 channel 1 is 4.196 V / -0.2 mA; no environment packet.
+  Overlapping observer copies are excluded. Authenticated portal ingestion
+  and sustained/field acceptance remain separate. [Measurements/evidence](../docs/operations/repeater-update.md#r006-installed-verification).
+- Firmware source/build and release tooling are pushed as **0634b775f**;
+  external-app workflow-comment retry **5c2c1ad** is also published and pinned
+  by this repository. Neither push starts the new Actions workflow; local
+  build, sensor/neighbor/release checks and strict workflow lint pass. Public
+  release publishing remains pending Actions investigation; no default-branch
+  or repository-setting change is made. Add the reviewed manual R006 metadata
+  migration, with coordinates kept private, for the server-access handoff.
+
+Next useful step: when server access recovers,
+apply/verify the private map placement
+and portal cadence metadata with backup/recovery checks, and publish/verify
+the exact release before setting the public production pin. Connect other
+repeaters one at a time for the same updater and acceptance checks.
+
+## 2026-10-23 - Prepare R006 with INA219-only production telemetry
+
+- Owner assigns fresh assembly **R006** and requests production preparation
+  with INA219 only/no temperature sensor. Build ordinary `rak4631` from clean
+  published **09d8a9dbf**, retaining INA219 fixes/SNNS without diagnostic or
+  dummy-load flags. Flash verified UF2 SHA256 **8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e**;
+  preserve node/hardware identity. [Manifest](../docs/operations/r006-production-image.json)
+  and [full preparation/evidence](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+- Independently verify the complete intended CLIENT/private-US-pilot profile
+  through reboot: device and power telemetry **900 seconds**, environmental
+  reporting disabled, neighbors enabled, GPS off and random-PIN Bluetooth.
+  The formerly keyless UNSET profile creates its first PKI pair, which persists
+  through reboot. Two fresh local power requests verify corrected **channel 1**.
+- At **14:10:51 Pacific**, register R006 unlocated with no weather capability
+  and unknown battery capacity/arrangement. Exact quiesced fingerprints preserve
+  all old rows across 31 live/32 demo tables/schema; only R006 device/event/
+  migration marker and provisioning/mapping/manifest changes are added. All
+  other protected private files are preserved. Application **443ba03** stays
+  deployed; no application or other-radio change.
+- After final startup/clock setting, three unique automatic reports arrive
+  through **both G001/G002**, with six retained gateway copies and correct
+  accepted/duplicate outcomes. Device battery **3.882 V**, INA219 channel 1
+  **3.856 V / −275.7 mA** and one SNNS neighbor report reach authenticated
+  portal state. Device/power measurement clocks are valid; SNNS calendar
+  hearing time remains unknown. Temperature/humidity absent; serial closed.
+  This completes GH-5's remaining fresh power check; remove its local Verify
+  entry without changing GitHub issues/Project.
+- Complete pre/post backups pass isolated live and independent demo recovery;
+  final archive **meshlink-20261023T211331Z.tar.gz**, SHA256
+  **7730b6aa4f633cf0119c42e83921d92ba8f2a1ad18c1732807a8971555655f76**.
+  The installed demo verifier hits known GH-39 bounded-history assumptions;
+  private archived database/table/API-window/isolation verification passes
+  without modifying that verifier or any history. All four services active.
+- Validation: ordinary build/UF2-OTA payload checks, final full profile/PKI
+  readback, actual local power replies, live isolated provisioning/deduplication
+  and full recovery pass. Retained artifacts match the recorded manifest;
+  applied provisioning source matches its tracked copy. Documentation links
+  and whitespace checks pass. No sustained cadence/runtime, physical current
+  calibration, native UI or field acceptance claimed.
+
+Next useful step: choose an actual R006 site and record its battery assembly,
+then observe repeated 15-minute delivery and battery runtime. GH-4's physical
+same-path calibration/marking/polarity and R004 bridge confirmation remain
+separate; startup acceptance does not establish field readiness.
+
+## 2026-10-23 - Flash and test fresh INA219 assembly
+
+- Owner brings a brand-new RAK19003/RAK4631 and INA219 inline with an 18650
+  forward for troubleshooting and authorizes flashing/testing. Identify
+  `!da581e5f` / default `1e5f`, USB `E9B12C5CA98FBCB8`; **R006 stays
+  provisional**, without rename or portal registration. Record the new
+  assembly without inferring purchases or stock totals.
+- Record stock version **2.7.15.567b8ea** and privately back up complete configuration.
+  Verify the existing diagnostic UF2 hash, match bootloader identity and flash
+  **2.7.26.09d8a9d** without rebuilding/resetting. Independent version and
+  post-restart intended-profile checks pass. Identity/security/channels
+  survive; enable only environmental measurement, record five automatic
+  firmware-upgrade setting differences, and retain region UNSET. R004 and
+  other boards are untouched. [Detailed image/profile evidence](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+- Two USB-charging captures provide five fresh request-matched readings
+  **−270.7 to −279.4 mA / 3.844–3.848 V**. Six initialized held conversions,
+  each read three times, pass stability and exact current/shunt arithmetic
+  with calibration **0x1000**, restored continuous configuration and no
+  captured overflow/diagnostic I2C errors. Exclude one pre-initialization
+  zero-calibration triple. The amp-scale symptom is absent; this is not an
+  independent accuracy result. Owner's USB **280 mA / 5 V** is a different
+  path. Raw evidence stays private and serial is closed.
+- Update inventory, bench results, flashing handoff and GH-4's local next
+  action. Physical shunt marking/polarity, same-path current accuracy and
+  battery-only testing remain pending. No RF/MQTT/portal, runtime or field
+  acceptance result; no firmware source/submodule or GitHub tracking change.
+- Documentation verification: whitespace checks and all 303 relative file
+  targets in changed records pass; new evidence heading/anchor resolves.
+
+Next useful step: confirm the fresh shunt marking and VIN orientation, then
+compare physical millivolts directly across the shunt and series battery
+current with simultaneous diagnostic readings under unchanged USB charging.
+Retain R004's separate pending bridge-state confirmation.
+
+## 2026-10-21 - Deploy relative-age current neighbor signals
+
+- Owner explicitly authorizes deployment. Release pinned trial source **443ba03** at **19:18:53 Pacific**, preserving concurrent LOCAL-1/LOCAL-2 wishlist records and leaving `main`, draft PR #50 and GitHub issue/Project status unchanged. The tracking trial is not accepted into `main`, and no general deployment-branch policy is selected. [Deployment evidence](../docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).
+- Isolated server 74 backend/55 portal checks, TypeScript/live build and trial migrations on consistent live/demo copies pass. Back up and verify recovery before promotion. Quiesce both APIs/workers, retain rollback source/static/state, then explicitly migrate live and demo together. Exact fingerprints of all 19 live/20 demo pre-existing application tables and all 11 protected configuration/credential/queue files are preserved; current collections initially empty, with no history backfill or demo reset.
+- Nine public asset hashes, live/public authentication and isolation boundaries, all six services, fresh MQTT archival and empty queue pass. Fresh SNNS from G001/G002/R003 creates ten useful current readings; null absolute hearing clocks and standard-table exclusion remain honest. Actual React renders of those readings pass offline estimated-age presentation and exact two-hour clock-advanced expiry. B002/G001's unchanged count-81 snapshots remain excluded; the pair becomes eligible only after newer source hearing/count-82 evidence. No independent physical-link or delay-bound claim.
+- Pre- and post-release backups pass separate live/demo recovery. Additional isolated restore confirms all ten saved current readings and three observer frontiers preserve exact IDs, relative-age anchors and historical references. Keep archives, logs, manifests and rollback private on the host. No radio/firmware/configuration action or R004 diagnostic change. GH-47 remains Verify for native and sustained/outage acceptance; the unseen upstream delay limit remains GH-51/GH-52 work.
+
+Next useful step: refresh the portal and verify native desktop/mobile neighbor presentation, then observe sustained expiry/outage behavior. Select and verify bounded source/queue work before claiming a strict two-hour hearing limit through upstream delays.
+
+## 2026-10-21 - Capture five-minute member status and battery reporting
+
+- Owner endorses the Infrastructure-page feedback; retain it with LOCAL-1 without selecting the exact neighbor layout/page name or starting implementation.
+- Add [LOCAL-2](wishlist.md#member-node-and-battery-reports-without-a-gps-fix) to the wishlist and Deferred queue. Capture owner-reported missing member battery data and the requested five-minute (300-second) node/status and battery broadcasts, even without a satellite fix or phone. Retain 15 minutes as the maximum baseline reporting interval and five minutes as the current requested setting; GPS staleness requirements remain separate.
+- Preserve separate node identity, battery telemetry, receiver-measured signal and GPS freshness semantics. Future acceptance follows actual member transmissions through both available gateways and portal ingestion, including no-fix operation, repeated cycles, fix recovery, reboot and cadence/runtime effects. The cause is unverified and no radios/settings, code, live data or GitHub issues/Project changed.
+- Verification: captured requirements reviewed against the request; relative documentation file targets resolve and whitespace checks pass. Documentation only; no device or application tests performed.
+
+Next useful step: activate LOCAL-2 when ready and identify available member trackers/settings before diagnosing the missing reports or applying the five-minute profile.
+
+## 2026-10-21 - Capture Infrastructure page overhaul
+
+- Owner requests a tracker entry and feedback. Record [LOCAL-1](wishlist.md#infrastructure-page-overhaul) in the wishlist and Deferred queue: richer device summary cards with last heard, battery and GPS highlights; include member devices; open full node cards; replace the main neighbor table with a readable current-state view; optionally retain a collapsed, sortable, paginated debug table with timestamps; consolidate useful unique detail into full cards.
+- Recommend keeping contact, GPS and battery freshness distinct. Preserve tentative choices about neighbor presentation, debug-table retention and a broader page name. Cross-link related parked card requests and keep GH-47 release/acceptance plus GH-51/GH-52 timing limits separate. No implementation or other deferred item activated; GitHub issues/Project stay unchanged under the local-tracking trial.
+- Verification: captured requirements reviewed against the owner's request; relative documentation file targets resolve and whitespace checks pass. Documentation only; no application tests or native UI validation performed.
+
+Next useful step: activate LOCAL-1 when ready, then settle the current-neighbor presentation and audit which unique details/controls must move into the full card before implementation.
+
+## 2026-10-21 - Correct current neighbor signals with relative age
+
+- Owner selects GH-47 on the local-tracking trial and requests comparison before design selection. Compare per-row relative-age filtering, persistent current state, stale-queue/source expiry and the optional absolute-clock alternative. Select a small durable current state using installed SNNS evidence; no absolute hearing timestamp requirement. [Decision and source evidence](../.scratch/pilot/issues/24-neighbor-current-state.md).
+- Reproduce cached standard NeighborInfo replacing valid SNNS signal strength. Preserve standard tables and all raw reports/history, but exclude them from current signals. Retain each unchanged hearing's original receipt anchor and expire estimated age at two hours, including offline across map lines, directions/colors, node relationships, selected details/minimap and the Infrastructure table. Persist ordering and expired hearing guards across restart; handle partial tables, duplicates, known old boots, count reset/saturation and monotonic-counter rollover. Review finds and fixes a rejected-old-boot bootstrap loophole before publication. No fabricated UTC hearing time or historical anchor backfill.
+- Publish source **1282463** and merge [PR #55](https://github.com/lfg-seth/snorr-meshlink/pull/55) into `trial/local-tracking` as **3d6bd1e** after [74 backend](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39709144039) and [55 portal](https://github.com/lfg-seth/snorr-meshlink/actions/runs/39709144081) CI checks pass, including TypeScript/build on pinned Node 22.23.1. Eleven focused actual PocketBase regressions and migration down/up pass locally. Existing neighbor atomic and 17 adapter/queue checks pass; the local Windows demo simulation lacks timezone data, while full Linux CI passes. [Behavior, storage, checks and limits](../docs/operations/neighbor-signal-visibility.md).
+- Update only the affected local tracker entries at handoff: GH-47 moves to Verify for separately authorized release and fresh/native acceptance; GH-51/GH-52 retain the unselected firmware/transport scope. Reported age excludes unseen delay before worker receipt, so a strict actual-hearing limit across radio/MQTT outages remains unverified. Sequence rollback/wrap fails closed; large networks retain the snapshot cap. Preserve R004 diagnostics, GH-4's pending owner reply, all deferred layout work, `main`, production and draft PR #50. No GitHub issue/Project change, firmware build/flash, device action or deployment.
+
+Next useful step: separately authorize the backend/portal release and verify fresh passive reports plus offline calculated expiry. Select bounded source/queue work under GH-51/GH-52 before claiming a strict two-hour hearing limit through upstream outages.
+
+## 2026-10-21 - Remove the temporary neighbor-options worktree
+
+- Inspect `.scratch/worktrees/neighbor-options` after the owner's cleanup question. Its tracked, untracked and ignored-file status is clean; verify HEAD **22fcd7f** exactly matches the published `origin/fix/neighbor-signal-freshness` branch through remote readback.
+- Remove the temporary checkout with normal `git worktree remove`. Preserve the local/remote branch and its draft implementation, comparison notes and history. Remaining worktrees are the local-tracking trial and the separate private main checkout; the trial working tree is clean after removal. No application, firmware, device, deployment or GitHub tracking changes; no application tests needed for checkout removal.
+
+Next useful step: continue from the local tracker. Recreate an isolated checkout from the preserved neighbor branch only when that work is selected.
+
+## 2026-10-21 - Trial compact repository tracking
+
+- Owner authorizes the proposed reversible trial. Create `trial/local-tracking` from `origin/main` **0713f7ea60d7bd839d246630655d6d9f70a736db**, preserving the original `docs/telemetry-release-record` branch, other worktrees and unrelated untracked files. Keep `main`, GitHub issues and the Project board unchanged; no merge, archive or deletion yet.
+- Make [.scratch/TRACKER.md](../.scratch/TRACKER.md) the single current queue with Current, Next, Verify and Deferred entries. Preserve all **36 open issues and 25 comments** in the [one-time local import](tracking-import/index.md), including original requirements, labels, timestamps, holds and handoffs. Retain GH-4's existing R004 diagnostic claim awaiting owner bridge-state confirmation; GH-47/GH-51/GH-52 remain Triage with no selected timing design. Migration activates no deferred work.
+- Update agent instructions and project navigation for tracker/latest-session startup, with detailed history read only for the selected task. Replace routine issue claims, label updates and Project synchronization with a local handoff update. Preserve existing evidence records and publication/hardware boundaries. [Trial, machine handoff, acceptance and rollback procedure](../docs/operations/local-tracking.md).
+- Verification passes: all 36 issue IDs appear once in their imported status groups, all 25 comments are accounted for, 243 relative documentation links resolve and whitespace/scope checks pass. Read-only review corrects GH-5's summary to retain already-passed G002 neighbor delivery while preserving the pending sensor-power scope. This is a documentation/tracking change with no application, firmware, service or hardware action. No measured speed, token or cost saving is claimed; assess during actual work.
+
+Next useful step: use this branch for the next owner-selected task and assess the simpler handoff. If rejected, keep trial records and return to the prior workflow; if accepted later, archive the pre-merge main state and merge normally before separately retiring old issue tracking.
+
 ## 2026-10-21 - Deploy telemetry receipt-time fallback
 
 - Owner explicitly says deploy. Reclaim [Prevent battery display freezing when telemetry loses its measurement clock #53](https://github.com/lfg-seth/snorr-meshlink/issues/53), update the demo recovery verifier for the new history provenance and merge [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54) as **8c5350e8834a771781d594414bd6b7c812a5f136**. Final PR CI and isolated LXC 63 backend/49 portal checks, TypeScript/live build pass. Preserve concurrent worktrees; use a separate main-based release-record branch.

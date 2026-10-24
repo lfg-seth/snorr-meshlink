@@ -1,5 +1,52 @@
 # Board flashing and configuration handoff
 
+2026-10-23 owner-requested three-minute rollout: the new
+[repeater updater and acceptance procedure](repeater-update.md) covers
+R001–R006, preserving their identities/private profiles and fitted-sensor
+exceptions. Ordinary source `0634b775f` is built; published release/download
+verification and R006's private map placement remain pending. **R006
+`!da581e5f` now passes the native Windows updater on ordinary
+`rak4631 / 2.7.26.0634b77`**, UF2 SHA256
+`0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba`.
+CLIENT/device/power **180 seconds**, environment off, compiled private SNNS
+180 seconds and standard NeighborInfo 21,600 seconds pass full intended
+profile/identity/key verification through explicit reboot at
+2026-10-24T00:51:19Z. Serial closed; first serial-only DFU failure is recovered
+and the corrected API-driven UF2 path passes. Three automatic device/power/SNNS
+cycles reach both gateways: device/power measurement gaps 180/180 s, private
+SNNS 195/195 s including jitter. Portal acceptance and map write remain
+pending server access. Only R006 is connected;
+**R001–R005 remain unchanged**. The production release pointer remains unset
+until publication passes; an explicitly selected,
+checksum-verified [unpublished local bundle](repeater-update.md#explicit-local-bundle-while-public-publication-is-pending)
+supports the remaining authorized board updates. This supersedes R006's
+900-second installed profile below; [acceptance and limits](repeater-update.md#r006-installed-verification).
+
+2026-10-23 R006 production exception supersedes its diagnostic-only profile
+below: **R006 `!da581e5f`** now runs ordinary **`rak4631` / 2.7.26.09d8a9d**,
+UF2 SHA256 `8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e`.
+This is a new ordinary build from the published pinned source, with INA219
+fixes and no diagnostic/dummy-load flags; it is distinct from both the older
+published prerelease and R004's same-version diagnostic target. Owner selects
+**INA219 only, no temperature sensor**. CLIENT pilot profile, device and power
+telemetry enabled at **900 seconds**, environmental measurement disabled;
+private channel and newly initialized PKI pair persist through reboot. Local
+fresh power replies verify **channel 1**. [Image, profile and acceptance](ina219-audit.md#r006-production-preparation--2026-10-23).
+Other repeaters retain their separate current profiles.
+
+2026-10-23 fresh-board diagnostic: owner-authorized new RAK19003/4631
+`!da581e5f` / default `1e5f` now runs checksum-verified existing
+**`rak4631-ina219-debug` / 2.7.26.09d8a9d**. **R006 remains provisional**.
+Environmental measurement is enabled; region remains UNSET and no pilot
+radio profile is applied. Identity/keys/channels are preserved; five automatic
+upgrade-setting differences are explicitly recorded. Five fresh USB-charging
+responses report **−270.7 to −279.4 mA / 3.844–3.848 V**; six initialized held
+triples are stable and mathematically consistent. Physical calibration,
+polarity and battery-only behavior remain unverified. Serial closed; retain
+the diagnostic image for the next controlled comparison. [Image, profile,
+measurements and limits](ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+R004 and all other boards are unchanged.
+
 2026-10-21 R004 exception: owner activates the INA219 investigation and authorizes diagnostic flashing. R004 now runs **`rak4631-ina219-debug` / 2.7.26.09d8a9d**, with its complete original owner/keys/channel/local/module profile independently preserved. It logs continuous and held single-shot register snapshots, restoring sensor configuration before normal telemetry. Device/environment stay 900 seconds; power telemetry remains disabled and battery INA address unset. Correct R100 calibration is captured, but physical accuracy/current variation remain unresolved. Diagnostic image is retained for the next measurement; restore ordinary released firmware when collection is complete. [Audit, hashes and measurements](ina219-audit.md#r004-reinvestigation--2026-10-21). Other boards retain their prior state.
 
 2026-10-19 gateway collector: **G001/G002** now run dedicated **`heltec-v3-gateway` / 2.7.26.9d2fd8f**, with enabled/local-only neighbor collection, CLIENT and LoRa TX disabled. Individual full identity/keys/intended profiles persist through reboot. Fresh own-observer measurements pass MQTT/archive/normalized and authenticated portal state for each gateway. Both gateway source IDs are registered in the live worker. [G001 image/profile/evidence](g001-neighbor-gateway.md), [G002 exact build/source/hash and evidence](g002-neighbor-gateway.md). This is separate from MC00 and the RAK prerelease.

@@ -2,14 +2,34 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Infrastructure, Tracker } from './demo.ts';
 import type { LinkObservation } from './NeighborTable.tsx';
-import { signalColor, signalConnections, signalValue } from './signal-links.ts';
+import { signalColor, signalConnections as connectionsAt, signalValue } from './signal-links.ts';
+
+const signalConnections = (links: LinkObservation[], trackers: Tracker[], infrastructure: Infrastructure[],
+  now = Date.parse('2026-10-16T12:20:00Z')) => connectionsAt(links, trackers, infrastructure, now);
+
+test('fresh SNNS remains usable when a cached standard neighbor row arrives later, then expires at two hours', () => {
+  const anchor = '2026-10-21T20:00:00Z';
+  const snns = row({ id: 'snns', source: 'neighbor', reportType: 'snns-v1', snrDb: 0,
+    observedAt: null, receivedAt: anchor, hearingAgeSeconds: 60,
+    freshness: { basis: 'relative', anchorReceivedAt: anchor, ageAtAnchorSeconds: 60 } });
+  const cached = row({ id: 'cached-standard', source: 'neighbor', reportType: 'neighbor-info', snrDb: -20,
+    receivedAt: '2026-10-21T21:58:00Z', observedAt: '2026-10-21T21:57:00Z' });
+  const links = [snns, cached];
+  const before = signalConnections(links, [tracker], [receiver], Date.parse('2026-10-21T21:58:59.999Z'));
+  assert.equal(before.connections[0].snrDb, 0, 'cached standard rows must not replace SNNS signal evidence');
+  assert.deepEqual(before.connections[0].observations.map(link => link.id), ['snns']);
+  assert.equal(signalConnections(links, [tracker], [receiver], Date.parse('2026-10-21T21:59:00Z')).relationships.length, 0,
+    'expiry is inclusive at two hours of estimated hearing age, independent of receipt age');
+});
 
 test('late SNNS delivery keeps the later report sequence without inventing a hearing time', () => {
   const early = row({ id: 'early', source: 'neighbor', reportType: 'snns-v1', bootId: 10,
-    sequence: 1, observedAt: null, receivedAt: '2026-10-16T20:05:00.000Z', snrDb: 10 });
+    sequence: 1, observedAt: null, receivedAt: '2026-10-16T20:05:00.000Z', snrDb: 10,
+    freshness: { basis: 'relative', anchorReceivedAt: '2026-10-16T20:05:00.000Z', ageAtAnchorSeconds: 0 } });
   const late = row({ id: 'late', source: 'neighbor', reportType: 'snns-v1', bootId: 10,
-    sequence: 2, observedAt: null, receivedAt: '2026-10-16T20:00:00.000Z', snrDb: 0 });
-  const result = signalConnections([early, late], [tracker], [receiver]);
+    sequence: 2, observedAt: null, receivedAt: '2026-10-16T20:00:00.000Z', snrDb: 0,
+    freshness: { basis: 'relative', anchorReceivedAt: '2026-10-16T20:00:00.000Z', ageAtAnchorSeconds: 0 } });
+  const result = signalConnections([early, late], [tracker], [receiver], Date.parse('2026-10-16T20:06:00Z'));
   assert.equal(result.connections[0].snrDb, 0);
   assert.equal(result.connections[0].latest[0].observedAt, null);
 });
@@ -23,7 +43,8 @@ const row = (changes: Partial<LinkObservation> = {}): LinkObservation => ({ id: 
   observedAt: '2026-10-16T12:00:00Z', receivedAt: '2026-10-16T12:01:00Z', ...changes });
 
 test('one line per pair preserves direction, report sources and weaker reverse SNR', () => {
-  const rows = [row(), row({ id: 'neighbor', source: 'neighbor', snrDb: 5, observedAt: null }),
+  const rows = [row(), row({ id: 'neighbor', source: 'neighbor', reportType: 'snns-v1', snrDb: 5, observedAt: null,
+      freshness: { basis: 'relative', anchorReceivedAt: '2026-10-16T12:01:00Z', ageAtAnchorSeconds: 0 } }),
     row({ id: 'reverse', observerDeviceId: 'd1', heardDeviceId: 'r1', source: 'neighbor', snrDb: -2, rssiDbm: null })];
   const { connections, omitted } = signalConnections(rows, [tracker], [receiver]);
   assert.equal(omitted, 0);

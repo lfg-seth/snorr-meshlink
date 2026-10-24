@@ -1,5 +1,50 @@
 # Hardware inventory
 
+2026-10-23 planned gateway outdoor configuration - Owner retains Heltec V3
+and selects INA219 sensing and a Muzi whip antenna. Per-gateway battery option
+is **four or eight 18650 cells**; solar option is **two 60 x 100 mm panels** or
+an external larger **5 V USB solar charger advertised as 6 W**. These are design
+requirements/alternatives, not installed allocations or new stock counts.
+Exact models, capacities, pack topology/protection/charging path, panel output,
+antenna specifications and quantities on hand remain unverified. The last
+confirmed G001/G002 installed packs remain one 1000 mAh LiPo each until a
+physical change is recorded. No purchase, cost, measured power or runtime is
+inferred. Custom 3D-printed enclosure and Wi-Fi/solar characterization are
+planned in [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md).
+[Hardware documentation](../docs/hardware/README.md).
+
+2026-10-23 R006 three-minute update - Existing RAK19003/RAK4631 **R006
+`!da581e5f`**, hardware `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB
+`E9B12C5CA98FBCB8`, now runs ordinary **rak4631 / 2.7.26.0634b77** from the
+explicitly verified unpublished local bundle. Corrected native Windows UF2
+update and full intended owner/key/channel/local/module profile equality pass
+through explicit reboot at **2026-10-24T00:51:19Z**. CLIENT, device/power
+telemetry **180 seconds**, environmental reporting disabled, private SNNS
+compiled at 180 seconds and standard NeighborInfo 21,600 seconds. Retain
+**INA219 only/no temperature sensor**. The initial serial-only DFU attempt
+stopped before an application write; verified application-only serial OTA
+recovery precedes the successful corrected UF2 retry. Independent comparison
+also preserves the entire original profile/identity/keys/channels across
+recovery, with only intended final changes. Serial closed; three automatic
+device/power/SNNS cycles reach both gateways, with device/power measurement
+gaps 180/180 s and SNNS 195/195 s including jitter. Portal acceptance remains
+unverified. R001–R005 unchanged/unconnected; battery allocation,
+current calibration and map placement remain unverified. No purchase, stock
+quantity or fitted-hardware change. [Image and acceptance](../docs/operations/repeater-update.md#r006-installed-verification).
+
+2026-10-23 R006 commissioning - Owner assigns the fresh RAK19003/RAK4631
+assembly **R006**, with **INA219 only and no temperature sensor**. Identity
+`!da581e5f`, hardware ID `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB
+`E9B12C5CA98FBCB8`. Ordinary `rak4631` **2.7.26.09d8a9d** replaces the
+diagnostic image; CLIENT pilot profile, device and power telemetry at 900
+seconds, environmental reporting off. Initial PKI keys are created from the
+previously keyless UNSET profile and persist through reboot. 18650 source
+count/capacity/arrangement, antenna and site remain unconfigured; shunt polarity
+and independent accuracy remain unverified. No purchase or stock-total change
+inferred. [Production preparation](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+
+2026-10-23 fresh INA219 bench assembly - Owner confirms a brand-new RAK19003/RAK4631 and INA219 inline with the 18650 battery, currently USB-powered and charging. Device identifies as `!da581e5f`, default short name `1e5f`, USB serial `E9B12C5CA98FBCB8`; **R006 remains provisional and is not assigned**. Original firmware **2.7.15.567b8ea** is replaced with diagnostic `rak4631-ina219-debug` **2.7.26.09d8a9d**, verified by device version readback. Owner reports approximately **280 mA at 5 V** on the USB input meter, a separate measurement path from the battery-inline sensor. Exact shunt value, polarity, carrier revision and calibrated current accuracy remain unverified. Relationship to previously inventoried stock is unknown; no purchase, cost or stock-total change inferred. [Diagnostic evidence](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+
 2026-10-21 G002 second Wi-Fi replacement - Existing HELTEC_V3 `!849ad7a0`, COM6, retains **2.7.26.9d2fd8f** and enabled five-minute telemetry. Exact independent full profile comparison shows only the owner-requested Wi-Fi SSID differs; supplied password already matches. IP acquisition/MQTT connection and publication activity observed. LoRa TX remains disabled; quantities and other boards unchanged. [Evidence and limits](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21).
 
 2026-10-21 gateway batteries - Owner confirms **G001 and G002 each have one installed 1000 mAh LiPo**. This supersedes the prior unspecified gateway pack allocation and earlier 1100 mAh description for these two packs. Preserve the previously reported total of six small V3 packs; no purchase or additional stock inferred. Both portal records now independently verify `lipo-1s`, 1000 mAh and the owner-confirmed pack description. G002 battery cadence is five minutes; G001 still has no battery reports and no cadence inferred. Remaining pack labels, actual capacity, calibration and runtime are unverified. [Graph investigation and deployment](../docs/operations/gateway-battery-graphs.md).

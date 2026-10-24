@@ -1,5 +1,7 @@
 # GitHub progress tracking
 
+**Historical workflow on this trial branch.** The owner authorized a branch-only local-tracking trial on 2026-10-21. Use [local tracking](local-tracking.md) and [the repository tracker](../../.scratch/TRACKER.md) here. The rules below preserve the earlier workflow for reference and rollback; routine issue/Project operations are suspended on the trial. `main`, existing issues and the Project board remain unchanged.
+
 Adopted by the owner on 2026-10-17. [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) owns the current work queue. Repository Markdown owns durable decisions, measured evidence and operating procedures. Keep one status in GitHub and link the supporting record instead of copying its history.
 
 ## Find work

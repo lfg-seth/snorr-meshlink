@@ -4,7 +4,14 @@ Project name: **SNORR MeshLink** — Search and Rescue Tracking & Communications
 
 Recorded from the project owner's instructions on 2026-10-12.
 
-Current execution status is tracked in [GitHub Issues](https://github.com/lfg-seth/snorr-meshlink/issues) under the [tracking workflow](docs/operations/github-tracking.md), adopted 2026-10-17. The [roadmap](docs/roadmap.md) summarizes evidence checkpoints; the brief and historical notes below preserve decisions and may describe earlier states superseded by dated evidence.
+Owner accepted permanent repository-local tracking on 2026-10-23. The
+[local tracker](.scratch/TRACKER.md) owns current execution status on `main` under
+[the workflow](docs/operations/local-tracking.md). GitHub hosts source, CI and
+PRs; historical issues/Project remain preserved. Pre-acceptance main is archived.
+MeshLink application versioning is defined in `meshlink-release.json` and
+[release operations](docs/operations/meshlink-releases.md), independently of
+SNORR Firmware. Firmware development now uses `snorr/develop`.
+
 
 ## Mission and priorities
 
@@ -15,6 +22,15 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 3. Explore later expansion to law enforcement communications.
 
 ## Confirmed direction
+
+- Firmware versioning (2026-10-23): owner establishes **SNORR 0.1.0** as the
+  current development baseline, without a beta suffix; production starts at
+  **1.0.0**. The [release record](records/firmware-releases/0.1.0.md) pins current
+  source and records existing mixed installed builds separately. LOCAL-6 parents
+  RAK/shared LOCAL-3 and gateway LOCAL-4 readiness. Future coordinated artifacts
+  and device-reported product versioning remain implementation work.
+
+- Current neighbor expiry (2026-10-21): owner-authorized application **443ba03** is deployed from the local-tracking trial. Separate durable current state uses installed SNNS relative hearing evidence, excludes cached standard tables and expires at two hours of estimated age. All 74 backend/55 portal server checks, public assets/access boundaries, migrated live/demo recovery, fresh reports through both gateways and actual-component expiry replay pass. Native/sustained acceptance and unseen upstream delivery delay remain separate; no absolute hearing timestamp requirement or firmware rollout. [Release evidence](docs/operations/neighbor-signal-visibility.md#deployment---2026-10-21).
 
 - Telemetry receipt fallback (2026-10-21): merged [PR #54](https://github.com/lfg-seth/snorr-meshlink/pull/54), application **8c5350e**, is deployed. Telemetry selection/display/health prefer valid device calendar time and otherwise use original receipt time; missing source clocks remain null/empty and uptime is unused. Battery history includes unknown-time reports, while GPS/neighbor clocks remain separate. All 63 backend/49 portal checks and server live build pass; public assets/services/authentication, isolated live/demo recovery and fresh R002/R004 selection/history pass. Native/sustained acceptance remains separate. [Release evidence and remaining limits](docs/operations/battery-contact-freshness-20261021.md#deployment---2026-10-21).
 
@@ -82,7 +98,7 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 - Initial relay evaluation will use 2 undamaged, on-hand RAKs, subject to core identification and bench verification. Both app and laptop/portal viewing are intended; the Meshtastic app is acceptable for the first local-viewing MVP. An owned rugged Dell laptop/tablet running Linux is available for field use, with compatibility unverified.
 - Dispatch stale-position threshold: 15 minutes since GPS measurement, with an obvious stale indication and visible position age. Prefer aggressive broadcasting initially and tune based on measured congestion; exact intervals and movement/power-based modes remain for evaluation. These are requirements and preferences, not tested guarantees.
 - Member battery runtime: minimum 4 hours, target 12 hours. Consider larger batteries if runtime tests justify them; no additional battery purchase specified.
-- Passive-tracking MVP: power on and automatically broadcast GPS without a phone or repeated member interaction. Device-only SOS is deferred to a future issue.
+- Passive-tracking MVP: power on and automatically broadcast GPS without a phone or repeated member interaction. Device-only SOS remains deferred work.
 - Support members who use companion apps and members who operate entirely from the device. Some may use a keyboard-equipped, BlackBerry-style node.
 - Provide a web portal/dashboard for dispatch and members to see nodes and status.
 - Member tracker radio short names stay tied to device numbers across carrier changes. Keep portal device identity/assignment history separate from names and remote-update success; [naming decision](.scratch/pilot/issues/12-assignment-radio-names.md). Remote admin integration is planned, not implemented/tested.

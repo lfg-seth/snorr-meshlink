@@ -1,0 +1,11 @@
+{
+  "product": "MeshLink",
+  "version": "0.1.0",
+  "stage": "development",
+  "components": ["portal", "backend"],
+  "compatibility": {
+    "snnsWireVersions": [1],
+    "firmware": "Existing stock Meshtastic telemetry and SNORR SNNS v1; not a required matching SNORR product version",
+    "unknownClockPolicy": "Preserve unknown source time; telemetry receipt fallback is approximate"
+  }
+}

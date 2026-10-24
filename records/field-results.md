@@ -1,5 +1,82 @@
 # Field testing and tangible results
 
+## 2026-10-23 - R006 three-minute firmware/profile bench acceptance
+
+At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected
+native Windows UF2 updater completes on R006 `!da581e5f`, ordinary
+**rak4631 / 2.7.26.0634b77**, source `0634b775f65804968f5a18a7e8824db415556db2`,
+UF2 SHA256 **0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba**.
+Complete intended identity/keys/channel/local/module configuration matches
+after an explicit reboot: CLIENT, device/power telemetry **180 seconds**,
+environment disabled for INA219-only/no-temperature hardware, SNNS compiled
+at 180 seconds and separate standard NeighborInfo at 21,600 seconds.
+Serial closed; [acceptance evidence and procedure](../docs/operations/repeater-update.md#r006-installed-verification).
+
+The earlier 1200-baud attempt selected serial-only DFU and stopped before an
+application write. Verified application-only serial OTA recovery completes
+with 759,304 application bytes and zero SoftDevice/bootloader bytes in
+45.03 seconds before the successful corrected API-driven UF2 retry. The
+local bundle remains explicitly unpublished; public CI/download verification
+is pending. Independent original-before/corrected-before and
+intended-final/reboot comparisons preserve the entire original
+profile/identity/keys/channels through recovery.
+
+After the final clock gate, three automatic nonretained device, power and
+private SNNS packets each reach both G001/G002: nine source packets / 18
+gateway copies during **00:52:07.802–00:58:53.068 UTC**. Device and power
+measurement gaps are **180 / 180 seconds**; same-boot consecutive SNNS gaps
+are **195 / 195 seconds**, including jitter/scheduling. Latest device voltage
+is 4.164 V; signed INA219 channel 1 is **4.196 V / -0.2 mA**. No environmental
+packet is observed. Independent TLS MQTT receipt passes; authenticated portal
+ingestion, upstream queue-age bounds, sustained cadence, physical current
+accuracy, battery-only behavior, runtime and field coverage remain unverified.
+Linux hardware is untested. R001–R005 are unchanged/unconnected;
+R006's owner-requested map point is still pending server access.
+
+## 2026-10-23 - R006 INA219-only production preparation
+
+Owner assigns **R006**, INA219 only/no temperature sensor. Ordinary
+**rak4631 / 2.7.26.09d8a9d** replaces the diagnostic target, with verified
+INA219 fixes and no diagnostic/dummy-load flags. Full intended profile and
+new initial PKI pair persist through reboot: CLIENT, existing US/private
+pilot channel at 10 dBm, device/power **900 seconds**, environmental reporting
+off, GPS off, neighbor transmission enabled and random-PIN Bluetooth.
+
+Register the unlocated R006 in the live portal without copying a site or
+battery capacity. Exact quiesced preservation checks pass for all 31 live /
+32 demo tables/schema and protected files, apart from the intended additive
+R006 provisioning records/mappings. After the final startup, **three unique
+reports / six fresh G001+G002 copies** produce one battery observation,
+one channel-1 power observation and one SNNS report, retaining both gateways'
+receipts with correct deduplication. At **14:13:05 Pacific**, INA219 reports
+**3.856 V / −275.7 mA**; first portal receipt **14:13:08.071**. Device battery
+is **3.882 V**; no temperature/humidity and weather capability false.
+
+Fresh delivery passes for both gateways, including GH-5's outstanding power
+path. Independent physical current accuracy, battery-only behavior, repeated
+15-minute cadence, runtime, native UI and installed-site/field acceptance
+remain unverified. Serial closed; other radios unchanged. [Full evidence,
+image hash and recovery checks](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23).
+
+## 2026-10-23 - Fresh RAK19003/4631 INA219 comparison
+
+Owner-authorized new assembly `!da581e5f` / default `1e5f`, provisional R006,
+is flashed to checksum-verified existing diagnostic **2.7.26.09d8a9d**.
+Independent version and intended-profile verification pass; identity/keys and
+channels are preserved, environmental measurement enabled, and five automatic
+firmware-upgrade field changes are recorded. Region stays UNSET. With USB
+connected and the 18650 charging, **five fresh replies** give **−270.7 to
+−279.4 mA at 3.844–3.848 V**. **Six initialized held triples** repeat their
+individual values exactly, with correct calibration/configuration and raw
+current arithmetic; no captured overflow or diagnostic transport errors.
+An early uninitialized zero-calibration triple is excluded.
+
+The prior amp-scale symptom is absent in these two short captures. Owner's
+**280 mA at 5 V USB-input** observation is a separate measurement path;
+physical current accuracy, shunt marking/polarity and battery-only behavior
+remain unverified. No RF/MQTT/portal, runtime or field-readiness test. Serial
+closed; R004 unchanged. [Detailed evidence and next measurement](../docs/operations/ina219-audit.md#fresh-rak190034631-comparison--2026-10-23).
+
 ## 2026-10-21 - G002 second Wi-Fi replacement bench check
 
 Owner-authorized COM6 G002 `!849ad7a0`, unchanged **2.7.26.9d2fd8f**. New complete private backup and independent post-restart comparison pass; only Wi-Fi SSID differs, with supplied password already matching. Retained console observes IP acquisition, MQTT connected and publication activity. Five-minute telemetry, identity/keys/channel/MQTT and LoRa TX disabled preserved. Serial closed. Short local bench result; independent broker/production receipt, sustained reconnect, runtime and field coverage unverified. [Evidence](../docs/operations/g002-neighbor-gateway.md#clifford-int24-wi-fi-update---2026-10-21).

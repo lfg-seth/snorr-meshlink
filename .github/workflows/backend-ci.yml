@@ -3,9 +3,10 @@ name: Backend CI
 on:
   push:
     branches: [main]
-    paths: ['backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
+    tags: ['meshlink-v*']
+    paths: ['meshlink-release.json', 'CHANGELOG.md', 'backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
   pull_request:
-    paths: ['backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
+    paths: ['meshlink-release.json', 'CHANGELOG.md', 'backend/**', 'deploy/portal/**', '.github/workflows/backend-ci.yml']
   workflow_dispatch:
 
 permissions:

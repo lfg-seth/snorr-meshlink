@@ -3,9 +3,10 @@ name: Portal CI
 on:
   push:
     branches: [main]
-    paths: ['portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
+    tags: ['meshlink-v*']
+    paths: ['meshlink-release.json', 'CHANGELOG.md', 'portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
   pull_request:
-    paths: ['portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
+    paths: ['meshlink-release.json', 'CHANGELOG.md', 'portal/**', '.nvmrc', '.github/workflows/portal-ci.yml']
   workflow_dispatch:
 
 permissions:
@@ -34,8 +35,8 @@ jobs:
           cache-dependency-path: portal/package-lock.json
       - run: npm ci
       - run: npm run check
-      - name: Save build from main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Save versioned build
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/meshlink-v'))
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: portal-${{ github.sha }}

@@ -1,4 +1,5 @@
 const c = require(`${__hooks}/common.js`);
+const current = require(`${__hooks}/neighbor_current.js`);
 function validate(app, data, deviceId) {
   const node = (id) => typeof id === 'string' && /^![0-9a-f]{8}$/.test(id) && id !== '!00000000';
   const integer = (value, low, high) => Number.isInteger(value) && value >= low && value <= high;
@@ -32,6 +33,7 @@ function validate(app, data, deviceId) {
 function save(app, packetKey, b, receivedAt) {
   const data = b.data;
   const report = c.create(app, 'neighbor_reports', { packetKey, deviceId: b.deviceId, receivedAt, payload: data });
+  const links = [];
   data.rows.forEach((row) => {
     const details = { reportType: data.reportType, observerNodeId: data.observerNodeId,
       heardNodeId: row.heardNodeId, transportGatewayId: b.gatewayId };
@@ -41,12 +43,13 @@ function save(app, packetKey, b, receivedAt) {
       details.hearingAgeSeconds = row.hearingAgeSeconds;
       details.observationCount = row.observationCount;
     }
-    c.create(app, 'link_observations', {
+    links.push(c.create(app, 'link_observations', {
       reportId: report.id, observerDeviceId: b.deviceId, heardDeviceId: row.heardDeviceId || '',
       originalSourceDeviceId: '', source: 'neighbor', path: 'direct',
       signal: { snrDb: row.snrDb, rssiDbm: row.rssiDbm }, details,
       receivedAt, observedAt: '',
-    });
+    }));
   });
+  current.advance(app, report, b, receivedAt, links);
 }
 module.exports = { validate, save };

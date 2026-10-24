@@ -1,6 +1,6 @@
 """Integration tests against the actual pinned PocketBase binary and fresh databases."""
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import ExitStack
+from contextlib import ExitStack, closing
 from datetime import datetime, timedelta, timezone
 import os
 from pathlib import Path
@@ -369,7 +369,7 @@ class BackendTests(unittest.TestCase):
         # Missing physical identity is discovered after deletes; transaction must
         # restore the complete fictional input, including accounts/members.
         import sqlite3
-        with sqlite3.connect(self.data / 'data.db') as db:
+        with closing(sqlite3.connect(self.data / 'data.db')) as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM devices').fetchone()[0], 10)
             self.assertEqual(db.execute('SELECT COUNT(*) FROM members').fetchone()[0], 5)
         for node_id, key in {**config['members'], **config['gateways']}.items():

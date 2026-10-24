@@ -27,6 +27,7 @@ export type BackendState = {
   messages: Message[];
   infrastructure: Infrastructure[];
   links: LinkObservation[];
+  currentLinks?: LinkObservation[];
   incidents: Incident[];
   warnings: {
     id: string;

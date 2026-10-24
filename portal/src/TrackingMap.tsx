@@ -253,7 +253,8 @@ export default function TrackingMap(props: Props) {
           <span><i style={{ background: '#6b756f' }} /> Unknown</span>
           <button className="signal-info-button" aria-label="About signal strength" aria-expanded={signalInfo}
             aria-controls="signal-legend-help" onClick={() => setSignalInfo(!signalInfo)}>i</button>
-          {signalInfo && <small id="signal-legend-help">{props.signalConnections.length ? 'Weakest known latest reading · tap a line or a relationship in a node card for details' : 'No neighbor connections with known endpoints and locations'}
+          {signalInfo && <small id="signal-legend-help">{props.signalConnections.length ? 'Weakest known current reading · tap a line or a relationship in a node card for details' : 'No recent neighbor connections with known endpoints and locations'}
+            {' · Readings expire at two hours; estimated hearing age excludes delivery delay before server receipt'}
             {props.omittedSignals > 0 && ` · ${props.omittedSignals} observations without distinct mapped endpoints omitted`}</small>}
         </div>}
       </div>

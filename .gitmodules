@@ -1,4 +1,4 @@
 [submodule "firmware"]
 	path = firmware
 	url = git@github.com:lfg-seth/firmware.git
-	branch = snorr/rak-survey
+	branch = snorr/develop
