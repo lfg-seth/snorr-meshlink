@@ -74,6 +74,7 @@ Owner activation is required before research, design, implementation or testing.
 | [GH-45 — Member battery percentage](../records/tracking-import/github-45.md) | Wishlist: percentage beside GPS quality on node cards. |
 | [GH-48 — Remove Endpoint locations](../records/tracking-import/github-48.md) | Wishlist: remove the neighbor-card section. |
 | [GH-49 — Longer sign-in persistence](../records/tracking-import/github-49.md) | Wishlist: reproduce roughly hourly reauthentication when activated; cause/lifetime remain unknown. |
+| [LOCAL-7 — Large-map router/gateway health colors](../records/wishlist.md#large-map-router-and-gateway-health-colors) | Match client last-heard colors; low battery overrides with yellow/red. Battery thresholds and stale/missing handling await activation. |
 | [LOCAL-1 — Infrastructure page overhaul](../records/wishlist.md#infrastructure-page-overhaul) | Wishlist: richer clickable device summary cards including member devices; readable current-neighbor overview; optional collapsed, sortable, paginated debug table with timestamps; move useful unique detail into full cards. Await owner activation. |
 | [LOCAL-2 — Member node/battery reports without GPS](../records/wishlist.md#member-node-and-battery-reports-without-a-gps-fix) | Owner reports missing member battery data. Target node/status and battery broadcasts every five minutes (300 seconds), including without a fix or phone, with truthful contact/signal freshness. Await activation; verify actual member settings and end-to-end delivery before choosing a fix. |
 

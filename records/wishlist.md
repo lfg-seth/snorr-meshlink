@@ -177,3 +177,19 @@ location privacy. See [content policy](content.md#public-documentation-direction
 staging and automatic-release connection/implementation remain deferred, not
 required for the current workflow. Revisit only when the owner brings them
 forward. [Accepted policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
+
+## Large-map router and gateway health colors
+
+Local task: **LOCAL-7** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests ticket capture only; implementation is deferred.
+
+Requested behavior / future acceptance:
+
+- On the large/main map, routers/repeaters and gateways need a color health indicator based on last heard and battery level.
+- Use the same last-heard color rules and freshness thresholds as client/member nodes.
+- Low battery overrides the last-heard color: yellow for low battery and red for the more severe battery state.
+- Preserve access to both last heard and battery level so the reason for the indicator is understandable. Battery-reading age and contact age remain distinct; missing battery values must not imply a healthy battery.
+- When activated, define the yellow/red battery thresholds and treatment of missing or stale battery readings; the owner has not specified these values. Verify both device roles, normal last-heard colors, and both battery override states.
+
+Related parked work: [LOCAL-1 infrastructure page overhaul](#infrastructure-page-overhaul). This request concerns large-map indicators and does not activate that page overhaul, implementation or deployment.

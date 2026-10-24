@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-24 - Large-map infrastructure health ticket
+
+- Capture **LOCAL-7** in the [wishlist](wishlist.md#large-map-router-and-gateway-health-colors) and Deferred tracker: router/repeater and gateway indicators match client last-heard colors, with yellow/red low-battery overrides.
+- Battery thresholds and missing/stale battery handling remain open for activation. No implementation or deployment requested.
+- Preserve unrelated hardware records and `3DModels/`. Initial Git status cannot inspect the restricted firmware submodule; parent status with submodules ignored succeeds.
+- Documentation checks pass. Publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: owner activates LOCAL-7 when ready to define thresholds and implement map indicators.
+
 ## 2026-10-24 - Read-only last-thirty-minute fleet summary
 
 - Owner requests online devices' battery voltage, current and temperature.
