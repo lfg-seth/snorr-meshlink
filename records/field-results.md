@@ -1,5 +1,27 @@
 # Field testing and tangible results
 
+## 2026-10-24 - Four-gateway Wi-Fi-loss fallback bench
+
+G001/G002/G003 Heltec V3 and replacement G004 Heltec V4 run checked
+**2.7.26.6fea6aa**, with complete intended profiles preserved through reboot,
+private radio TX/over-LoRa SNNS enabled and 180-second device/active-power
+intervals. Fresh own reports reach peer gateways; fitted INA219 reports
+continue on G003/G004. [Full evidence, image hashes and limits](../docs/operations/gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
+
+G001 is deliberately given an unavailable SSID and a single serial-supplied
+clock after that settings reboot. Two disconnected-health, two subsequent
+device-telemetry and two SNNS generations reach peers while its own Wi-Fi/MQTT
+is unavailable. The public authenticated MeshLink 0.1.3 portal opens a backhaul
+warning with separate fresh radio-alive evidence. Restore the exact original
+profile through reboot; a fresh connected generation recovers the warning.
+All four gateways then show connected health and peer-radio receipts publicly.
+
+Measured device/power gaps include 180–181 seconds; same-boot SNNS/health gaps
+include 195–255 seconds with jitter/scheduling and recorded polite channel-utilization
+deferrals. This is a controlled direct bench test, not forced-relay, autonomous
+unknown-clock bootstrap, sustained reconnect/runtime, calibration or field
+coverage acceptance. No new hardware quantity, purchase or field installation.
+
 ## 2026-10-24 - B002 three-minute telemetry and SNNS bench
 
 Owner-selected original V4 **B002 `!699ca878`** receives selected

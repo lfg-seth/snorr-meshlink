@@ -1,5 +1,39 @@
 # Session log
 
+## 2026-10-24 - Four-gateway radio fallback and backhaul health
+
+- Owner authorizes all four connected gateways and one read-only review.
+  Publish firmware **`6fea6aa68`** on `snorr/develop`; actual V3/V4 builds and
+  five sanitizer configurations pass. G001/G002/G003 V3s and replacement G004
+  V4 run **`2.7.26.6fea6aa`**, with checked full-flash backups, application-only
+  digest verification and complete intended-profile preservation through reboot.
+- Enable private TX/over-LoRa SNNS and **180-second device/active power**
+  reporting. Preserve individual keys, network credentials, GPS and RF power;
+  align portal cadences to three minutes. Every gateway delivers fresh own
+  reports through peers; G003/G004 power remains enabled. [Evidence and hashes](../docs/operations/gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
+- Add independent Wi-Fi/direct-MQTT health, source-time/generation ordering,
+  persistent backhaul warnings, peer-radio evidence and browser expiry.
+  Correct independent-review findings; 87 Linux backend checks, Windows checks
+  (seven platform skips), 61 portal checks/build and PR CI pass.
+- Owner explicitly approves PR #62 merge/deployment. **MeshLink 0.1.3 / main
+  `d509250` / `meshlink-v0.1.3`** is deployed and public metadata verified.
+  Verified backups, protected-state hashes, live/demo isolated recovery and
+  rollback assets pass. Existing battery-card/current-polarity work is retained.
+- Real G001 unavailable-SSID test passes two automatic health, telemetry and
+  SNNS generations through peers; public authenticated outage badge opens and
+  recovers on fresh evidence. Restore its complete original intended profile
+  through reboot. Supply the bench clock once over serial after the deliberate
+  outage reboot; autonomous unknown-clock bootstrap remains unverified.
+- Device/power gaps include 180–181 s; SNNS/health include 195–255 s with
+  channel-utilization deferral. Do not claim exact cadence, field/forced-relay,
+  sensor calibration, runtime or sustained outage acceptance. Preserve unrelated
+  hardware/research edits. Serial/MQTT close at handoff; publish completed
+  evidence on `codex/gateway-backhaul-health`.
+
+Next useful step: native authenticated owner-phone check, then an agreed
+sustained outage/airtime and power run under LOCAL-4/GH-3; do not expand radio
+traffic or waive airtime gates to force a three-minute delivery deadline.
+
 ## 2026-10-24 - B002 latest firmware and three-minute telemetry/SNNS
 
 - Flash existing B002 **`!699ca878`** with latest published source **`a56466d8c`**,

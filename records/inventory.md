@@ -365,3 +365,16 @@ Photos, labels, receipts, and bench tests can support entries later. Record unkn
 ## Dedicated debug V3 — 2026-10-16
 
 Owner allocates an existing Heltec V3 to airtime debugging: **MC00 `!9ea0432c`**, currently COM6, distinct from G001/G002. API/flash inspection confirms HELTEC_V3 / ESP32-S3 / 8 MB flash; exact subrevision and antenna model remain unknown. Original `2.7.17.55580d10f` configuration, identity, channel/security keys and full flash are privately backed up. Dedicated application `2.7.26.f95a443` is flashed/verified with CLIENT_MUTE, TX/Wi-Fi/Bluetooth/MQTT disabled and original RF/key/identity preservation. It receives on US channel 35 / 910.625 MHz, BW250/SF11/CR4/5. Total V3 ownership remains **nine**, with one now allocated to debugging; no purchase or operational-gateway change. [Operation and verification](../docs/operations/airtime-sniffer.md).
+
+## 2026-10-24 - Four-gateway firmware and radio fallback
+
+Confirm the four connected operational gateways as G001 `!9ea13cc0`, G002
+`!849ad7a0`, G003 `!9e9f167c` (Heltec V3), and replacement G004 `!699c2ed8`
+(OLED Heltec V4, formerly B001). No purchase or hardware quantity change.
+All four now run checked **2.7.26.6fea6aa**, with CLIENT/private radio TX,
+180-second device telemetry and over-LoRa SNNS; G003/G004 retain enabled
+180-second INA219 power telemetry. Preserve each identity, keys, RF/GPS and
+network profile. G001's original network is restored through reboot after the
+controlled outage test. [Image hashes, full backups and live outage/recovery](../docs/operations/gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
+This supersedes earlier receive-only/local-only gateway profiles. Sensor
+calibration, battery/runtime and field installation remain unverified.

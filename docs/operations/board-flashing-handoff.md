@@ -1,5 +1,17 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **G001/G002/G003/G004** now run checked **2.7.26.6fea6aa**
+from published **6fea6aa68**: V3 target for G001–G003, OLED V4 target for
+replacement G004 **`!699c2ed8`**. CLIENT, **LoRa TX enabled**, over-LoRa SNNS,
+device telemetry **180 seconds**, and retained G003/G004 INA219 power **180
+seconds** pass full intended-profile comparison through reboot. Preserve
+individual keys, channel/radio power, Wi-Fi/MQTT and GPS pins/settings; MQTT
+downlinks remain disabled. Real G001 Wi-Fi outage delivers health, telemetry
+and SNNS through peers, raises a public portal warning and recovers after
+exact network restoration. [Current hashes, acceptance and limits](gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
+This **supersedes earlier receive-only/local-only gateway entries below**.
+SNNS/health timing remains subject to jitter/scheduling and airtime admission.
+
 2026-10-24 **B002 `!699ca878`** now runs selected original OLED V4 target
 **heltec-v4-gateway / 2.7.26.a56466d**, published source **`a56466d8c`**.
 The target enables SNNS while B002 retains its **CLIENT member profile**,
@@ -162,7 +174,7 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 | RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R002/R004 flashed/verified**; R001 remains stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R002 update](r002-release-update.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
 | Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
 | R006 selected interval bench | Ordinary `rak4631` 2.7.26.4c96b9b; intended device/power 180 seconds, INA219-only, saved-interval radio SNNS. | [Exact images, admin/cadence and limits](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24). |
-| Heltec V3 gateways G001/G002 | Both verified dedicated `heltec-v3-gateway` 2.7.26.4c96b9b, CLIENT/receive-only with enabled NeighborInfo/local-only collector reports; no portal downlink provisioned. | [G001 image/profile/evidence](g001-neighbor-gateway.md); [G002 build/evidence](g002-neighbor-gateway.md); [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
+| Heltec gateways G001–G004 | G001–G003: `heltec-v3-gateway`; replacement G004: `heltec-v4-gateway`; all `2.7.26.6fea6aa`, CLIENT/private TX and over-LoRa SNNS, 180-second device/active power telemetry. Preserve individual profiles; no MQTT downlink. | [Current four-board evidence](gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24). |
 
 For routine RAK flashing on any machine, **download and verify the published binaries; do not rebuild them**. After initializing the pinned submodule, run from the project root:
 
@@ -202,7 +214,7 @@ This is an assessment from source inspection, not an instruction to implement ev
 | Solar display | The reported INA219 placement does not measure solar input. Leave solar unavailable unless a verified measurement path exists. |
 | GPS quality | Adapter supports PDOP and satellite count. Verify actual V4 position flags include the required fields and GPS measurement timestamp. HVDOP selects separate HDOP/VDOP instead of PDOP in the pinned build. Existing flags were deliberately preserved; configuration changes require the current task's scope. |
 | Battery/weather health | Voltage and temperature/humidity ingestion exist. Verify fitted capabilities, calibration, valid/unknown clocks, saved intervals and corresponding missing-report/recovery rules. |
-| Messages / remote names | Live worker remains receive-only; radio text and remote-admin execution are not integrated. Preserve receive-only gateways unless explicitly bringing downlink forward. Portal assignment labels remain independent of radio names. |
+| Messages / remote names | Live worker remains receive-only; radio text and remote-admin execution are not integrated. Gateways now transmit their own radio reports; preserve disabled MQTT downlinks unless separately authorized. Portal assignment labels remain independent of radio names. |
 | Intrusion | Needs fitted input hardware, selected device configuration and an event-to-portal mapping; UI capability alone does not supply events. |
 | Gateway MQTT | Pinned gateway source logs credentials and uses `setInsecure()` for direct TLS. Keep logs private and address that gateway firmware issue before field rollout; the RAK neighbor build does not fix the stock V3 images. |
 

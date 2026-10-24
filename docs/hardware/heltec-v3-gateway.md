@@ -1,6 +1,7 @@
 # Heltec V3 gateway hardware and setup
 
-Status: design brief, 2026-10-23. Existing gateways are Heltec V3; the planned
+Status: design brief, updated 2026-10-24. G001–G003 are Heltec V3; replacement
+G004 is an OLED Heltec V4. The planned
 outdoor power/enclosure configuration below is not yet assembled or validated.
 Work is tracked in [LOCAL-4](../../.scratch/pilot/issues/26-gateway-production-readiness.md).
 
@@ -26,8 +27,11 @@ Use a Heltec-specific build from the shared Meshtastic fork. The dedicated
 `heltec-v3-gateway` target enables SNNS in addition to ordinary V3 functionality.
 The RAK4631 binary targets a different processor and cannot be reused.
 
-Current verified gateway image is `2.7.26.9d2fd8f`, configured CLIENT,
-receive-only LoRa, private Wi-Fi/MQTT and local-only neighbor reporting.
+Current verified gateway image is `2.7.26.6fea6aa`, configured CLIENT,
+enabled private LoRa TX, private Wi-Fi/MQTT and over-LoRa neighbor reporting.
+Device/active power telemetry and SNNS use a 180-second baseline. Independent
+gateway health reports support outage warnings while radio reports continue
+through a peer. [Four-board flash and real outage/recovery evidence](../operations/gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
 Production work includes INA219 acceptance, TLS/logging fixes, reconnect tests,
 shared timing changes and release verification. Preserve each board's identity
 and keys; credentials are supplied privately, never in this page.
@@ -45,7 +49,8 @@ Strip location metadata and obscure secrets before public use.
 
 ## Acceptance evidence
 
+Controlled G001 Wi-Fi outage/recovery and four-board reboot/profile checks pass.
 Pending: measured Wi-Fi operating/reconnect power, battery/solar energy balance,
-reference-meter INA219 validation, cold boot/outage recovery, enclosure fit and
+reference-meter INA219 validation, sustained cold boot/outage recovery, enclosure fit and
 weather/thermal behavior, sustained end-to-end reporting and field acceptance.
 Record actual results in the project field log before replacing these unknowns.
