@@ -26,7 +26,8 @@
   edits and earlier ticket records. Carry LOCAL-8's canonical wishlist section
   onto this main-based branch; reconcile GH-44/GH-45 locally without changing
   imported issues. No LOCAL-7, ingestion/history, live configuration or deployment
-  changes. Publish explicit implementation/record paths and prepare a PR to main.
+  changes. Implementation commit **`16404f4`** is pushed to origin;
+  [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60) targets main.
 
 Next useful step: review/merge the PR, then select a manual production release
 and verify authenticated cards on the owner's browser/phone. Physical accuracy
