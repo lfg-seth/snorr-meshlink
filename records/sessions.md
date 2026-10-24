@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-24 - Purge obsolete R004 channel 3 readings
+
+- Owner requests purging the wrong R004 readings causing `No unambiguous
+  current source`. Under the shared maintenance lock, back up the live database,
+  remove exactly four obsolete channel 3 observations and their two cached
+  metrics, then restart the live API/worker.
+- Protected-state hashes match across all 29 user tables; SQLite integrity
+  passes. Authenticated state has only channel 1 current, **+237.6 mA** at
+  12:46:13 Pacific; no channel 3 values remain. Both services are active.
+  [Scope, rollback and checks](../docs/operations/r004-stale-power-cleanup.md).
+- Publish records on `codex/r004-stale-power-purge`; preserve raw archive,
+  valid telemetry, other devices, demo state and concurrent hardware work.
+
+Next useful step: refresh R004's card. Existing physical INA219 accuracy and
+field acceptance remain unresolved; no application/firmware change is made.
+
 ## 2026-10-24 - PR 60 merged; MeshLink 0.1.2 deployed
 
 - Owner authorizes merge/deployment of [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60).
