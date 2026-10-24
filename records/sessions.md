@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-10-24 - Excel energy, external-pack and recharge calculator
+
+- Create the [Excel planner](../docs/operations/energy-planner.md) with fleet
+  solar/autonomy, four/eight-cell external-pack support and node recharging,
+  external-pack 1/2/4 A recharge comparisons, sizing matrices/chart and a
+  measurement workpad. Editable SOC/reserve, efficiencies, current/power limits,
+  condition factors and concurrent loads drive ordinary formulas.
+- Owner identifies LOCAL-10 through LOCAL-13; use wishlist revision `84e9c136`
+  as the planning reference. Preserve last interactive scenario values separately
+  from historical raw bench readings. No circuit/CAD/hardware activation or
+  claimed solar/endurance acceptance.
+- Recalculation, changed-input/boundary checks, independent energy/current spot
+  checks, saved XLSX formula/validation/chart inspection and visual review pass.
+  Native Microsoft Excel execution remains untested. Documentation checks pass;
+  publish workbook and records on `codex/solar-runtime-20261024`, preserving
+  unrelated hardware work in the coordinating checkout.
+
+Next useful step: owner changes amber cells for actual parts and measurements;
+use the existing LOCAL-4/GH-4 gates before accepting physical solar/autonomy.
+
 ## 2026-10-24 - Infrastructure solar and battery runtime scenarios
 
 - Owner asks for R002/R004/R006/G003/G004 solar balance and battery autonomy;
