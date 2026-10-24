@@ -73,21 +73,35 @@ prior private evidence remains historical.
 
 ## Backups and recovery
 
-Both archives remain root-private under `/var/backups/meshlink/`:
+Recovery archives remain root-private under `/var/backups/meshlink/`:
 
 | Stage | Archive | SHA256 |
 | --- | --- | --- |
 | Before registration | `meshlink-20261024T163547Z.tar.gz` | `ca1b97b1d1aa3df1745c17b1d93bf08c589ee144db05a8dcca0aaba8909d037c` |
 | After registration | `meshlink-20261024T164157Z.tar.gz` | `50e044a31e92c4533f98db1fb1a7554058e02f000d98819073e910d5b867b95b` |
+| Approved verifier installed | `meshlink-20261024T173336Z.tar.gz` | `0555ab7af1027f1f9ff3f73ab038ddd2f8767dd2549e457905b4df5cb0689435` |
 
 Pre-change installed verifier passes isolated restore, credentials, assignments,
 history, proxy/authentication and throttling checks. Post-change it rejects G003
 because its expected gateway set is hard-coded to G001/G002. A tested correction
 derives infrastructure from the trusted worker mappings and retained repeater
 plan. Two focused regression tests and the staged full post-change restore pass
-with **11 devices**. Production verifier replacement awaits explicit approval
-after automatic approval review rejected it as outside registration/location
-scope; its original installed file is unchanged.
+with **11 devices**. Automatic approval review initially rejected persistent
+replacement as outside registration/location scope; the owner then explicitly
+approved the verifier update.
+
+The approved `bfeab97` verifier was installed atomically after checking the staged
+and installed hashes, preserving ownership/mode and a private rollback copy at
+`/root/g003-registration-20261024/verify-before-20261024T173141Z.py`.
+Installed SHA256 is
+`9c8886b4b92bc1f6e693683406c52480c1f301e429ba27159e778a1486671728`.
+The installed verifier passes frontend live-mode, proxy/protected routes/sign-in,
+per-client authentication throttling, and isolated database integrity,
+credentials, assignments, history and API restoration with **11 devices**.
+Private installation evidence is
+`/root/g003-registration-20261024/verifier-install-20261024T173141Z.json`.
+A fresh standard backup contains the corrected tool; the installed full restore
+check against that archive also passes with **11 devices**.
 
 Live SQLite integrity and authenticated marker/identity readback pass. Private
 before/intended/after records and exact points are under

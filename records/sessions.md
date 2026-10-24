@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-10-24 - Approved gateway-aware recovery verifier installed
+
+- Owner explicitly approves the previously staged portal recovery verifier.
+  Installed the exact `bfeab97` version atomically, checking old/new hashes and
+  retaining the root-private original for rollback. The verifier now derives
+  required infrastructure from registered mappings and the repeater plan,
+  including G003. Application source remains `443ba03`.
+- Ran the installed verifier successfully: live-mode declaration, proxy and
+  protected routes, sign-in, per-client throttling, isolated database integrity,
+  credentials, assignments, history and API restore pass with **11 devices**.
+  Created a fresh standard private backup including the corrected tool, then
+  repeated the installed full check against that archive successfully.
+  [Installation hash, private rollback and recovery evidence](../docs/operations/g003-portal.md#backups-and-recovery).
+- Removed the completed verifier approval item from the tracker; preserved the
+  G003 radio cutover follow-up and other chats' checkout/hardware ownership.
+  Publish this handoff on `codex/g003-portal`.
+
+Next: owner reconnects G003 for its MQTT credential change, complete profile
+verification through reboot and fresh delivery using its dedicated account.
+
 ## 2026-10-24 - G003 dedicated account, portal registration and map defaults
 
 - Owner activates G003's dedicated MQTT account/portal registration and random
