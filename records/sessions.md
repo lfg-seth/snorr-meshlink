@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-10-23 - Accept agent-workflow restructuring for merge
+
+- Owner requests merging [PR #56](https://github.com/lfg-seth/snorr-meshlink/pull/56)
+  into main through a normal merge, preserving implementation **3ce31bd**.
+  Mergeability passes and no review findings are present. The
+  [Linux project-record check](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40065582334)
+  passes on that implementation: runner regression tests and changed-record
+  links/whitespace. This does not establish the separate backend Linux release gate.
+- This handoff adds only the merge acceptance record. Keep existing task states,
+  hardware/live-access blockers and the unrelated untracked image unchanged.
+
+Next useful step: select the saved SNNS interval assignment and prepare the
+B001/B002 GPS/runtime plan from the tracker; bench execution still needs its
+agreed devices, access and criteria.
+
 ## 2026-10-23 - Structure bounded agent assignments and repeatable checks
 
 - Owner requests implementation of the agent-efficiency workflow. Keep the
