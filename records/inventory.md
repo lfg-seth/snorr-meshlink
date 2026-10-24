@@ -1,5 +1,15 @@
 # Hardware inventory
 
+2026-10-24 G004 owner-reported assembly - Owner assigns another Heltec V3
+with **INA219 and GT-U7 GPS** to **G004**, for mesh time supporting telemetry;
+location is not needed for its application role. Clarified wiring is **GT-U7
+TX → GPIO45, GT-U7 RX → GPIO46**, corresponding to MCU GPS RX=45/TX=46.
+This supersedes the earlier blanket statement that no V3 has GPS. Hardware
+identity, installed firmware, GPS operation/baud, power wiring, INA219 address
+and measurement path, battery, antenna and site remain unverified. Retain the
+last confirmed nine-V3 total; this report does not establish a purchase or an
+additional stock count. [Source review and bench follow-up](../docs/operations/g004-gps-time.md).
+
 2026-10-24 G003 commissioning - Owner assigns the attached Heltec V3 with
 INA219 **G003**, independently identified as ESP32-S3 revision v0.2 / 8 MB,
 MAC `9c:13:9e:9f:16:7c`, Meshtastic **`!9e9f167c`**, hardware device ID
@@ -144,7 +154,7 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 | HW-009 | 10 | Client | Battery; source 1000mAh, earlier owner report 1100mAh | 4 | 6 | Owner previously reported six small V3 LiPo packs; on 2026-10-21 confirms G001/G002 each have an installed 1000mAh pack. Retain total without adding stock; remaining capacity labels, connectors and condition unverified |
 | HW-010 | 11 | Client | Battery; 3000mAh | 2 | 2 | Owner confirms 2 × 3000mAh batteries for V4 units; LiPo per owner; exact pack label, connector and condition unverified. Owner suspects larger batteries are needed; capacity choice awaits runtime testing |
 | HW-011 | 12 | Client | Whip antenna; labelled 915MHz | 16 | 11 | Owner identifies these as Muzi whip antennas; exact model, condition, and connectors unverified. 5 fewer on hand than listed; disposition unknown |
-| HW-012 | 13 | Client | Heltec V3 | 4 | 9 | Owner confirms no GPS on these units. Proposed use: silent internet/backhaul nodes, possibly repeaters depending on installation; capability/configuration unverified. Count is 5 above source quantity; provenance, exact radio variant, and condition unknown |
+| HW-012 | 13 | Client | Heltec V3 | 4 | 9 | Earlier no-GPS report superseded 2026-10-24 for G004: owner reports fitted GT-U7 GPS plus INA219, intended for mesh time. Other units' GPS status and G004 operation remain unverified. Proposed use: internet/backhaul nodes, possibly repeaters depending on installation. Count is 5 above source quantity; provenance, exact radio variant, and condition unknown |
 | HW-013 | 14 | Client | Heltec V4 | 6 | 2 | Owner confirms both have GPS modules. On 2026-10-12 owner plans to order 2 more and recover 2 member-held units, all with GPS and 3000mAh batteries. Planned additions are not available stock; purchase, recovery, exact variants, and condition remain unverified |
 | HW-014 | 15 | Client | SMA roof mount / antenna base | 2 | Unknown | Verify connector and cable |
 | HW-015 | 16 | Both | Case filament; first source entry | 2 | Unknown | Separate source product link; amount remaining unknown |
@@ -189,7 +199,14 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 The updated pass accounts for 21 radio boards/devices on hand: 8 RAK (1 with a broken carrier board), 9 Heltec V3, 2 Heltec V4, and 2 LILYGO T-Deck. Excluding the damaged RAK leaves 20 candidates for inspection, not 20 bench-verified working devices. Another 2 RAK units are deployed and unavailable for the bench pilot pending replacement and recovery. Member-held Heltec V4 quantities remain unknown.
 
-Four on-hand devices have owner-confirmed GPS modules: 2 Heltec V4 and 2 T-Deck. All 9 V3 units have no GPS; RAK GPS status remains unknown. No device has bench-verified passive tracking recorded. Identify exact radio/core builds and GPS models, then confirm operation and HW-002 cells before a pilot parts decision. The source-listed quantities are historical references and are preserved even where current counts differ.
+The first pass recorded four on-hand devices with owner-confirmed GPS modules:
+2 Heltec V4 and 2 T-Deck. On 2026-10-24 the owner also reports GT-U7 GPS on V3
+G004, superseding the original all-V3s-without-GPS statement. RAK GPS status
+remains unknown. These inventory reports alone do not establish working GPS
+or passive tracking; later device-specific bench records own those results.
+Identify exact radio/core builds and GPS models, then confirm operation and
+HW-002 cells before a pilot parts decision. Source-listed quantities remain
+historical references even where current counts differ.
 
 Owner-directed planning baseline: use only confirmed on-hand stock. Exclude the 2 deployed RAK units, possible member-held V4s, and the damaged RAK until its carrier board is replaced and operation verified. The newly found RAK closes the numerical difference against the source-listed 10; the prior possible third repeater/destroyed-unit explanation is no longer needed to reconcile that count. Historical differences do not block this first-pass inventory closure.
 

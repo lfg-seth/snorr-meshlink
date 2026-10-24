@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-10-24 - G004 GPS time support review
+
+- Owner reports another Heltec V3 with INA219 and GT-U7 as **G004**, intended
+  for mesh time supporting telemetry. Clarify GPS-module TX→GPIO45/RX→GPIO46,
+  hence MCU `position.rx_gpio=45` / `position.tx_gpio=46`. Update inventory,
+  superseding the earlier blanket no-GPS-on-V3 statement without adding stock.
+- Inspect pinned **4c96b9ba0** GPS, position, RTC and device/power telemetry
+  source, plus current official Meshtastic/Espressif documentation. Existing
+  UART configuration/GPS time support needs no source change for ordinary NMEA
+  output. Sharing time requires RF TX and ordinary primary-channel position
+  packets; precision zero suppresses them, and remote manual-source time is
+  rejected. Strict coordinate-free time transmission would need a separate
+  bounded firmware change, not selected by this request.
+- Save [source evidence and bench criteria](../docs/operations/g004-gps-time.md),
+  including powered-GPS cold boot on strapping pins and a second node adopting
+  mesh time before generating telemetry. Board identity, installed image,
+  GPS/INA219 operation and actual mesh delivery remain unverified. No hardware,
+  firmware source, radio or server mutation. Preserve unrelated `3DModels/`.
+
+Validation: documentation link/whitespace checks pass for four changed/new
+Markdown files; diff review confirms records-only scope and clean pinned
+firmware source. Publish the sanitized records on `codex/g004-gps-time`.
+
+Next useful step: select G004 for profile backup/identification and GPS clock
+verification, then prove time transfer to a node without another time source.
+
 ## 2026-10-24 - Default bench Wi-Fi saved in 1Password
 
 - At the owner's request, retry 1Password authentication successfully and select
