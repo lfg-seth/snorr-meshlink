@@ -1,10 +1,10 @@
 # Roadmap
 
-Evidence checkpoints updated 2026-10-17 from recorded evidence, not a new live-service or hardware inspection. These are acceptance checkpoints, not promised dates. On `trial/local-tracking`, the [local tracker](../.scratch/TRACKER.md) owns current work status under the [local workflow](operations/local-tracking.md); `main` retains the prior workflow.
+Evidence checkpoints updated 2026-10-17 from recorded evidence, not a new live-service or hardware inspection. These are acceptance checkpoints, not promised dates. With permanent local tracking accepted 2026-10-23, the [local tracker](../.scratch/TRACKER.md) owns current work status under the [local workflow](operations/local-tracking.md) on `main`.
 
 | Checkpoint | Recorded state | Evidence still needed |
 | --- | --- | --- |
-| Project record and tracking | Repository records and local decisions established; compact local tracking under trial on a separate branch, with imported issue history | Record meaningful status changes and the next action in the local tracker; keep evidence in its existing records; leave GitHub issues and the Project board untouched during the trial |
+| Project record and tracking | Repository records and local decisions established; compact local tracking under trial on a separate branch, with imported issue history | Record meaningful status changes and the next action in the local tracker; keep evidence in its existing records; preserve historical GitHub issues/Project; permanent local tracking accepted |
 | Inventory and pilot requirements | First inventory and pilot needs decisions complete; two member trackers used in bench integration | Confirm condition/availability of additions before treating the planned six-member set as ready; reuse stock first |
 | Network and firmware evaluation | Meshtastic pilot baseline; real GPS/MQTT path and selected RAK fork work recorded | Broader readiness depends on measured relay, outage, freshness and power evidence; protocols remain distinct |
 | Reliable bench tracking | Two-tracker/two-gateway GPS ingestion, worker restart and isolated recovery recorded; neighbor/power portal integration deployed | Sustained phone-free freshness/runtime; forced relaying; local viewing/outage recovery; fresh G002 neighbor/power path; accurate power diagnosis; off-host recovery |

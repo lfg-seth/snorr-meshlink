@@ -25,6 +25,11 @@
   Full backend Windows runs still show intermittent connection resets and skip
   seven POSIX-only tests. Hold the combined release tag pending clean Linux CI;
   no claim of an all-green backend suite or production deployment.
+- Final publication: implementation **b876ab9**, normal main merge **25ef83b**,
+  both pushed. This workspace now uses main/origin-main. A clean main build
+  emits MeshLink 0.1.0, source 25ef83b and trackedChanges=false. Final Windows
+  backend run: 74 tests, three connection-reset errors and seven POSIX skips;
+  cutover cleanup passes. Keep the release tag pending Linux validation.
 - GitHub metadata still identifies the project as `lfg-seth/snorr-meshlink`;
   repository rename has not occurred. Preserve origin until the actual rename.
   Existing untracked image is untouched. Use the writing-for-agents skill for
