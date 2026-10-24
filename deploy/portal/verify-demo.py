@@ -2,7 +2,7 @@
 """Verify hosted demo separation and restore its latest backup in isolation."""
 import hashlib
 from contextlib import closing
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 import sqlite3
@@ -16,6 +16,7 @@ import urllib.request
 
 sys.path.insert(0, '/opt/meshlink/backend')
 from client import Client
+from recovery_checks import assert_device_ids, device_ids, assert_history_shape, assert_saved_history
 
 PASSWORD = 'fictional-demo-only-password'
 
@@ -41,11 +42,11 @@ def main():
     proxy.login('meshlink-admin', PASSWORD)
     state = proxy.request('GET', '/api/meshlink/state')
     assert state['simulation'] is True and state['feedOnline'] is True
-    assert len(state['trackers']) == 6 and len(state['infrastructure']) == 4
+    assert_device_ids(state, device_ids('/var/lib/meshlink-demo/pb_data/data.db'))
     assert len(state['links']) >= 10  # Saved workspaces may retain older examples or add reports.
     for hours in [24, 168, 720]:
         history = proxy.request('GET', f'/api/meshlink/battery-history/r1?hours={hours}')
-        assert history['samples'] and history['truncated'] is False
+        assert_history_shape(history)
     # Tokens are signed by separate databases, even for matching account names.
     live = Client('http://127.0.0.1:8080')
     live.token = proxy.token
@@ -95,26 +96,15 @@ def main():
                 restored.login('meshlink-admin', PASSWORD)
                 snapshot = restored.request('GET', '/api/meshlink/state')
                 assert snapshot['simulation'] is True
-                assert len(snapshot['trackers']) + len(snapshot['infrastructure']) == counts['devices']
+                assert_device_ids(snapshot, device_ids(data / 'data.db'))
                 assert len(snapshot['members']) == counts['members']
                 assert len(snapshot['links']) == counts['link_observations']
-                history = restored.request('GET', '/api/meshlink/battery-history/r1?hours=720')
-                end = datetime.now(timezone.utc)
-                cutoff = (end - timedelta(hours=720)).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
-                # Older backups expose measured-only samples; new releases include clock provenance.
-                clock = "COALESCE(NULLIF(measuredAt, ''), receivedAt)" if any(
-                    'measuredAt' in sample for sample in history['samples']) else 'measuredAt'
                 with closing(sqlite3.connect(data / 'data.db')) as database:
-                    expected = [{'at': at, 'volts': volts} for at, volts in database.execute(
-                        f"SELECT {clock}, json_extract(payload, '$.battery') FROM observations "
-                        f"WHERE deviceId='r1' AND {clock} >= ? AND {clock} <= ? "
-                        f"AND json_extract(payload, '$.battery') > 0 ORDER BY {clock}, receivedAt, id",
-                        (cutoff, end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')))]
-                actual = [{'at': sample['at'], 'volts': sample['volts']} for sample in history['samples']]
-                assert expected and actual == expected and history['truncated'] is False
-                for sample in history['samples']:
-                    if 'measuredAt' in sample:
-                        assert sample['at'] == (sample['measuredAt'] or sample['receivedAt'])
+                    for hours in (24, 168, 720):
+                        started = datetime.now(timezone.utc)
+                        history = restored.request('GET', f'/api/meshlink/battery-history/r1?hours={hours}')
+                        total = assert_saved_history(history, database, 'r1', hours, started, datetime.now(timezone.utc))
+                        print(f'Exact saved {hours}h history/cap/truncation: {len(history["samples"])} of {total}: PASS')
             finally:
                 process.terminate()
                 process.wait(timeout=10)
