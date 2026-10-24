@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-10-24 - Infrastructure solar and battery runtime scenarios
+
+- Owner asks for R002/R004/R006/G003/G004 solar balance and battery autonomy;
+  clarifies recalled Heltec 160 mA was at the battery lead. Record conditional
+  capacity/load/current calculations and fresh read-only 12:24 Pacific current
+  evidence in the [power budget](../docs/research/solar-runtime-20261024.md).
+- Four useful hours require about 889 mA **net battery charging** for a 160 mA
+  Heltec at 90% charge retention. Four-cell RAKs at an assumed 20 mA need 111
+  mA net; their actual average load remains unmeasured. Full-to-reserve estimates
+  at 80% usable are RAK 17 d, G003 4.25 d and G004 2.13 d. No endurance or solar
+  acceptance inferred from bench current; polarity/path/source remain open.
+- Inline scenario controls cover sunlight, load, usable capacity, retention and
+  per-node sunny current. Formula/interaction checks and changed-document checks
+  pass. Preserve unrelated hardware edits using isolated branch
+  `codex/solar-runtime-20261024`; no hardware/server mutation or deployment.
+
+Next useful step: measure normal battery-only average and real net solar charge
+below taper, verify pack wiring and integrate a day/night cycle under LOCAL-4 /
+existing INA219 accuracy gates.
+
 ## 2026-10-24 - Infrastructure card eyebrow model ticket
 
 - Capture **LOCAL-9** in the [wishlist](wishlist.md#router-and-gateway-card-eyebrow-device-model) and Deferred tracker: add recorded hardware model to router/gateway card eyebrows like clients, retaining role text.
