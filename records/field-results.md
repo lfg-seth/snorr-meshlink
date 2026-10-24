@@ -1,5 +1,38 @@
 # Field testing and tangible results
 
+## 2026-10-23 - R006 three-minute firmware/profile bench acceptance
+
+At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected
+native Windows UF2 updater completes on R006 `!da581e5f`, ordinary
+**rak4631 / 2.7.26.0634b77**, source `0634b775f65804968f5a18a7e8824db415556db2`,
+UF2 SHA256 **0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba**.
+Complete intended identity/keys/channel/local/module configuration matches
+after an explicit reboot: CLIENT, device/power telemetry **180 seconds**,
+environment disabled for INA219-only/no-temperature hardware, SNNS compiled
+at 180 seconds and separate standard NeighborInfo at 21,600 seconds.
+Serial closed; [acceptance evidence and procedure](../docs/operations/repeater-update.md#r006-installed-verification).
+
+The earlier 1200-baud attempt selected serial-only DFU and stopped before an
+application write. Verified application-only serial OTA recovery completes
+with 759,304 application bytes and zero SoftDevice/bootloader bytes in
+45.03 seconds before the successful corrected API-driven UF2 retry. The
+local bundle remains explicitly unpublished; public CI/download verification
+is pending. Independent original-before/corrected-before and
+intended-final/reboot comparisons preserve the entire original
+profile/identity/keys/channels through recovery.
+
+After the final clock gate, three automatic nonretained device, power and
+private SNNS packets each reach both G001/G002: nine source packets / 18
+gateway copies during **00:52:07.802–00:58:53.068 UTC**. Device and power
+measurement gaps are **180 / 180 seconds**; same-boot consecutive SNNS gaps
+are **195 / 195 seconds**, including jitter/scheduling. Latest device voltage
+is 4.164 V; signed INA219 channel 1 is **4.196 V / -0.2 mA**. No environmental
+packet is observed. Independent TLS MQTT receipt passes; authenticated portal
+ingestion, upstream queue-age bounds, sustained cadence, physical current
+accuracy, battery-only behavior, runtime and field coverage remain unverified.
+Linux hardware is untested. R001–R005 are unchanged/unconnected;
+R006's owner-requested map point is still pending server access.
+
 ## 2026-10-23 - R006 INA219-only production preparation
 
 Owner assigns **R006**, INA219 only/no temperature sensor. Ordinary

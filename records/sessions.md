@@ -1,5 +1,75 @@
 # Session log
 
+## 2026-10-23 - Prepare three-minute repeater rollout and reusable updater
+
+- Owner requests all available repeater statistics every **180 seconds**, a
+  prompt-driven firmware/configuration updater for R001–R006, and R006's map
+  placement. Retain R001–R005's temperature/environment profile and R006's
+  **INA219-only/no-temperature** exception. Exact site coordinates stay private.
+- Build ordinary RAK source **`0634b775f65804968f5a18a7e8824db415556db2`**
+  with the RAK-specific 180-second private SNNS baseline; standard NeighborInfo
+  remains separate at 21,600 seconds with its existing 14,400-second minimum.
+  Jitter, empty-report suppression, congestion and airtime gates still apply.
+- Add the reusable updater, tracked sensor/identity profiles, pinned helper
+  dependencies and download-only release selection. Full private profile/key
+  backups, recorded USB/node/hardware matching, checksum/application-only UF2
+  guards and complete independent post-reboot comparison protect each board.
+  Thirty-four offline checks and Python compilation pass; no hardware is touched
+  by those checks. [Procedure and rollout status](../docs/operations/repeater-update.md).
+- Release CI/public download verification is pending and the production tag
+  pointer stays unset. Add an explicit `--local-bundle` fallback, checked
+  against the fixed tracked source/image manifest and staged privately with
+  exact manifest/checksums/UF2/OTA files; `publishedArtifact: false` preserves
+  its actual local-build provenance. R006's local three-minute firmware/profile
+  acceptance now passes; other boards require individual physical connection. R006's
+  map write is pending because server DNS is unavailable; no portal data has
+  changed during this preparation.
+- The first native R006 attempt used a 1200-baud touch, entered serial-only
+  DFU on the same USB identity/COM26 and stopped before an application write
+  because no UF2 volume appeared. Correct the updater to request DFU through
+  the verified open Meshtastic API after complete backups; remove the touch.
+  Six additional offline checks prove mode boundaries and backup/DFU/close
+  ordering. Verified application-only serial OTA recovery completes with
+  759,304 application bytes, no SoftDevice/bootloader bytes and `Device
+  programmed` after 45.03 seconds.
+- At **2026-10-24T00:51:19Z / October 23 17:51:19 Pacific**, the corrected full
+  native Windows UF2 updater exits successfully on R006, ordinary
+  **2.7.26.0634b77**, UF2 SHA256
+  **0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba**.
+  Full intended owner/key/channel/local/module configuration persists through
+  explicit reboot: CLIENT, device/power 180 seconds, environment off, compiled
+  SNNS 180 seconds and standard NeighborInfo 21,600 seconds. Serial closed;
+  private gate is `private/bench/R006-local-0634b77-verified/finalverified-radio.json`.
+  Independent comparison of original pre-failure profile against the
+  corrected run's before-profile also passes, along with intended/final
+  reboot equality: original full configuration, identity/keys and channels
+  survive serial recovery. Private evidence is the same directory's
+  `recovery-chain-verification.json`. R001–R005 remain unchanged and
+  unconnected. Linux hardware, current calibration,
+  battery-only behavior, runtime and field coverage remain unverified.
+- Independent subscribe-only TLS MQTT capture records **three automatic
+  nonretained cycles each of device, power and SNNS through both gateways**,
+  nine source packets / 18 gateway copies after the final clock gate. Eligible
+  receipts span **00:52:07.802–00:58:53.068 UTC**. Device and power measurement
+  gaps are **180/180 seconds**; same-boot consecutive SNNS report gaps are
+  **195/195 seconds**, including normal jitter/scheduling. Latest battery is
+  4.164 V; INA219 channel 1 is 4.196 V / -0.2 mA; no environment packet.
+  Overlapping observer copies are excluded. Authenticated portal ingestion
+  and sustained/field acceptance remain separate. [Measurements/evidence](../docs/operations/repeater-update.md#r006-installed-verification).
+- Firmware source/build and release tooling are pushed as **0634b775f**;
+  external-app workflow-comment retry **5c2c1ad** is also published and pinned
+  by this repository. Neither push starts the new Actions workflow; local
+  build, sensor/neighbor/release checks and strict workflow lint pass. Public
+  release publishing remains pending Actions investigation; no default-branch
+  or repository-setting change is made. Add the reviewed manual R006 metadata
+  migration, with coordinates kept private, for the server-access handoff.
+
+Next useful step: when server access recovers,
+apply/verify the private map placement
+and portal cadence metadata with backup/recovery checks, and publish/verify
+the exact release before setting the public production pin. Connect other
+repeaters one at a time for the same updater and acceptance checks.
+
 ## 2026-10-23 - Prepare R006 with INA219-only production telemetry
 
 - Owner assigns fresh assembly **R006** and requests production preparation

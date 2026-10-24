@@ -1,5 +1,24 @@
 # Hardware inventory
 
+2026-10-23 R006 three-minute update - Existing RAK19003/RAK4631 **R006
+`!da581e5f`**, hardware `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB
+`E9B12C5CA98FBCB8`, now runs ordinary **rak4631 / 2.7.26.0634b77** from the
+explicitly verified unpublished local bundle. Corrected native Windows UF2
+update and full intended owner/key/channel/local/module profile equality pass
+through explicit reboot at **2026-10-24T00:51:19Z**. CLIENT, device/power
+telemetry **180 seconds**, environmental reporting disabled, private SNNS
+compiled at 180 seconds and standard NeighborInfo 21,600 seconds. Retain
+**INA219 only/no temperature sensor**. The initial serial-only DFU attempt
+stopped before an application write; verified application-only serial OTA
+recovery precedes the successful corrected UF2 retry. Independent comparison
+also preserves the entire original profile/identity/keys/channels across
+recovery, with only intended final changes. Serial closed; three automatic
+device/power/SNNS cycles reach both gateways, with device/power measurement
+gaps 180/180 s and SNNS 195/195 s including jitter. Portal acceptance remains
+unverified. R001–R005 unchanged/unconnected; battery allocation,
+current calibration and map placement remain unverified. No purchase, stock
+quantity or fitted-hardware change. [Image and acceptance](../docs/operations/repeater-update.md#r006-installed-verification).
+
 2026-10-23 R006 commissioning - Owner assigns the fresh RAK19003/RAK4631
 assembly **R006**, with **INA219 only and no temperature sensor**. Identity
 `!da581e5f`, hardware ID `b8bc8fa95c2cb1e95f1e58dafebb06cc`, USB

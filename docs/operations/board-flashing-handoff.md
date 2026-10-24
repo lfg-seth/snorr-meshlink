@@ -1,5 +1,27 @@
 # Board flashing and configuration handoff
 
+2026-10-23 owner-requested three-minute rollout: the new
+[repeater updater and acceptance procedure](repeater-update.md) covers
+R001–R006, preserving their identities/private profiles and fitted-sensor
+exceptions. Ordinary source `0634b775f` is built; published release/download
+verification and R006's private map placement remain pending. **R006
+`!da581e5f` now passes the native Windows updater on ordinary
+`rak4631 / 2.7.26.0634b77`**, UF2 SHA256
+`0734127c43d85ef846caff0f161590183aea964268fcf8fdf1649142970cc9ba`.
+CLIENT/device/power **180 seconds**, environment off, compiled private SNNS
+180 seconds and standard NeighborInfo 21,600 seconds pass full intended
+profile/identity/key verification through explicit reboot at
+2026-10-24T00:51:19Z. Serial closed; first serial-only DFU failure is recovered
+and the corrected API-driven UF2 path passes. Three automatic device/power/SNNS
+cycles reach both gateways: device/power measurement gaps 180/180 s, private
+SNNS 195/195 s including jitter. Portal acceptance and map write remain
+pending server access. Only R006 is connected;
+**R001–R005 remain unchanged**. The production release pointer remains unset
+until publication passes; an explicitly selected,
+checksum-verified [unpublished local bundle](repeater-update.md#explicit-local-bundle-while-public-publication-is-pending)
+supports the remaining authorized board updates. This supersedes R006's
+900-second installed profile below; [acceptance and limits](repeater-update.md#r006-installed-verification).
+
 2026-10-23 R006 production exception supersedes its diagnostic-only profile
 below: **R006 `!da581e5f`** now runs ordinary **`rak4631` / 2.7.26.09d8a9d**,
 UF2 SHA256 `8429d164a70d9b3d7ef3d0f58d28c568dbe2cff51aa32ac6363071427314784e`.

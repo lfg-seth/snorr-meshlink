@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+2026-10-23 R006 map point request - Owner supplies a point for **R006** and
+authorizes placing its portal marker there. Exact coordinates and the
+requested change remain private under `private/bench/repeater-location-20261023/`.
+No portal map write has occurred: server DNS is unavailable. R006's local
+three-minute firmware/profile update passes separately; it does not establish
+the saved map location, a physical installation, site permission or coverage.
+Next: regain server access, back up the saved state, apply only R006's
+requested point/cadence metadata, and independently verify preservation and
+recovery. [Current acceptance and limits](../docs/operations/repeater-update.md#r006-installed-verification).
+
 2026-10-19 infrastructure location update — Owner supplies replacement coordinates for R001–R005 and G001–G002 and authorizes production database updates. All seven saved configuration locations exactly match the request through the authenticated live portal state; all nine device records and other configuration fields are preserved. This supersedes earlier shared-location assignments for current portal coordinates. Exact coordinates and before/after records remain private at `/root/meshlink-maintenance/location-update-20261020T022905Z`; pre-change verified backup is `meshlink-20261020T022820Z.tar.gz`. Historical provisioning files remain historical inputs, not location-update interfaces. No installation, site permission, coverage or radio-setting change is established. [Tracking/evidence](https://github.com/lfg-seth/snorr-meshlink/issues/32).
 
 2026-10-17 private monitoring — Owner authorizes MeshMonitor on the separate existing Ubuntu LXC, reusing existing Grafana and Prometheus. Native MeshMonitor 4.17.0 now subscribes read-only to the encrypted MQTT feed; internal-only authenticated access, 30-day server-wide Prometheus retention, a separate Grafana dashboard, service restart persistence and isolated backup boot/row preservation pass. No packet/history pruning, public route, broker/radio configuration or field installation. Backups remain local; two-gateway/native-browser/storage-growth checks remain open. [Deployment and recovery](../docs/operations/meshmonitor-lxc.md).
