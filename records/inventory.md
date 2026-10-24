@@ -1,5 +1,19 @@
 # Hardware inventory
 
+2026-10-24 G004 application installation / power hold - Independently identify
+the owner's V3/INA219/GT-U7 assembly on COM6 as ESP32-S3 v0.2 / 8 MB, MAC
+`b0:81:84:9a:e6:64`, node **`!849ae664`**, hardware ID
+`74bdf87af2ebb4a61d657eb19bf72422`. Application-only installation and independent
+verification of **heltec-v3-gateway / 2.7.26.4c96b9b** pass; boot/partition/old
+OTA/filesystem retained. INA219 is detected at **0x40**. Owner requests G003's
+profile plus GPS RX45/TX46 and RF TX, but five logged **brownout resets**
+interrupt configuration. Full-profile verification fails: only G004's name
+persists; region/GPS/network/telemetry remain unprovisioned in last readback.
+Do not treat this as a working gateway or mesh time source. Await stable power
+and another saved-profile/reboot check, then GPS/telemetry/time-transfer tests.
+GPS operation, supply fault, battery, antenna/site and sensor path remain
+unverified. No new stock or purchase inferred. [Evidence and next check](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+
 2026-10-24 G004 owner-reported assembly - Owner assigns another Heltec V3
 with **INA219 and GT-U7 GPS** to **G004**, for mesh time supporting telemetry;
 location is not needed for its application role. Clarified wiring is **GT-U7

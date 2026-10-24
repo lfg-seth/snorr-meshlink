@@ -1,5 +1,39 @@
 # Session log
 
+## 2026-10-24 - G004 firmware installed; configuration stopped by brownouts
+
+- Owner authorizes G003-style G004 provisioning, with GPS enabled, RF TX on
+  and ordinary position packets; subsequently makes the old config disposable.
+  Identify COM6 as V3 / ESP32-S3 v0.2 / 8 MB, MAC `b0:81:84:9a:e6:64`, node
+  **`!849ae664`**, hardware ID `74bdf87af2ebb4a61d657eb19bf72422`.
+- The old application does not complete an API connection. Install and
+  independently verify G003's reviewed **heltec-v3-gateway / 2.7.26.4c96b9b**
+  application at `0x10000`; no source/build/full erase/factory reset. Preserve
+  boot/partitions/existing OTA/filesystem. New firmware answers with the exact
+  expected target/version/identity. A full original flash was already saved
+  privately before the owner's no-backup instruction; no further preservation.
+- Attempt the latest corrected, reboot-verified G003 Wi-Fi/pilot/MQTT profile,
+  three-minute device/INA219 telemetry and local-only collector, adding GPS
+  RX45/TX46, TX on and periodic five-minute positions/120-second GPS refresh.
+  Full-profile readback **fails**: console captures five **BROWNOUT_RST** resets,
+  first during the open transaction before commit. Last readback has G004's
+  name but region/GPS/network/telemetry unprovisioned. Firmware verifies;
+  saved profile, GPS time, outgoing reports and mesh time are not accepted.
+- INA219 boot detection at **0x40** passes; actual telemetry/calibration/path
+  remains unverified. Read-only chip identification reports flash voltage
+  fixed to 3.3 V by eFuse. Ask owner to reconnect with reliable USB power/short
+  cable and a charged battery if fitted; exact power fault remains unmeasured.
+  Close serial handles. Other boards/server/source unchanged. Preserve unrelated
+  `3DModels/`; raw logs/profiles/location evidence stay ignored.
+
+[Exact image, evidence and retry criteria](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+Private helper syntax checks and documentation link/whitespace checks pass
+(four changed Markdown files). Publish sanitized records on `codex/g004-gps-time`.
+
+Next useful step: stable G004 power/reconnect, then repeat configuration and
+require complete intended-profile equality through explicit reboot before
+GPS/telemetry/position reception and a second node's mesh-time acceptance.
+
 ## 2026-10-24 - G004 GPS time support review
 
 - Owner reports another Heltec V3 with INA219 and GT-U7 as **G004**, intended

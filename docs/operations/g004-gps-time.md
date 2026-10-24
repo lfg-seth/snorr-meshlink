@@ -1,5 +1,67 @@
 # G004 GPS time support
 
+## Commissioning attempt - 2026-10-24
+
+Owner authorizes setting G004 up like G003 with GPS enabled, RF TX on and
+normal position packets, then explicitly makes the old configuration disposable.
+Only the connected **COM6 / Heltec V3** is written. Independently identify
+ESP32-S3 revision v0.2 / embedded 8 MB flash, MAC **`b0:81:84:9a:e6:64`**,
+node **`!849ae664`**, hardware device ID **`74bdf87af2ebb4a61d657eb19bf72422`**.
+
+The original application does not complete a Meshtastic API connection. Its
+partition table matches the existing gateway layout, with app0 selected. Install
+and independently verify the **application only at `0x10000`**, dedicated
+**heltec-v3-gateway / 2.7.26.4c96b9b**, SHA256
+`1fbe3acf8f91d8d9ae563cbeef8b412c17b58e830ebc79f96ee60767612e8cfe`,
+from reviewed source **4c96b9ba0360f01752892a41d09ccacda82747bb**. No build,
+full-chip erase or factory-reset command. Bootloader, partition table, existing
+**Meshtastic-OTA 0.3.0.47c250a** recovery app and filesystem are not overwritten.
+The new application answers and identifies as HELTEC_V3 / heltec-v3-gateway.
+No claim of equality with the inaccessible pre-update profile is made.
+
+The original full flash had already been saved before the owner's later
+no-backup instruction, SHA256
+`42ba359d0f48d8076c3ee4ed79dab5a95d4f09c15d67accc283fb19fa0e40dc9`.
+No further preservation work is required. Private evidence and setup helpers
+are ignored under `private/bench/G004-preparation-20261024/`.
+
+### Requested profile and failed persistence check
+
+Use G003's **latest reboot-verified** corrected Wi-Fi/pilot/MQTT profile, which
+matches the saved default bench Wi-Fi. Do not copy G003's identity or PKI keys.
+Requested differences are G004's owner name, enabled GPS (MCU RX45/TX46), RF
+TX enabled, GPS refresh **120 seconds** and ordinary position broadcasts every
+**300 seconds**, smart/fixed position off. Device and INA219 power telemetry
+remain **180 seconds**, environment off, encrypted TLS MQTT/uplink enabled,
+MQTT downlink disabled and local-only neighbor collector as on G003. Reuse
+the same existing uplink account; no broker/server writes.
+
+**Setup is not complete.** The full-profile readback rejects the attempted
+configuration. The captured console shows **five `BROWNOUT_RST` resets**,
+also logged as `reset_reason=brownout`; the first interrupts the open settings
+transaction after the network write and before commit. The last complete
+readback has the owner name G004 but **region UNSET, GPS NOT_PRESENT, RX/TX
+GPIO zero, Wi-Fi/MQTT off and device/power telemetry disabled**. A true stored
+`tx_enabled` flag with region UNSET does not establish operational RF TX.
+No completed PKI provisioning, GPS clock, outgoing position, telemetry cadence
+or mesh time transfer is claimed. Serial handles are closed.
+
+Boot repeatedly detects **INA219 at 0x40**. This establishes detection only;
+power telemetry/calibration/path remain unverified. Chip identification also
+reports flash voltage fixed to **3.3 V by eFuse**, rather than selected by GPIO45
+on this chip. A physical cold-power test with the GPS fitted is still required.
+
+Next: owner reconnects using a reliable powered USB port/short cable and, if
+fitted, a charged battery. Then rerun configuration and require complete
+intended-profile equality through explicit reboot before observing GPS time,
+three-minute device/power telemetry and five-minute time-bearing position
+packets. The firmware image verification passes; the power/reset and saved
+configuration gates remain open. The exact supply/wiring fault is unmeasured;
+do not attribute the brownout to the cable, GPS, INA219 or regulator without
+further evidence, or disable brownout protection to bypass the failure.
+
+## Initial source review - 2026-10-24
+
 2026-10-24: owner reports another Heltec V3 with an INA219 and a GT-U7 GPS,
 assigned **G004**. Purpose is mesh time for telemetry; gateway location is not
 an operational requirement. Owner explicitly clarifies the physical wires as
