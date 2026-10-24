@@ -4,10 +4,10 @@ Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shar
 versioning, cross-target manifests/changelog and fleet rollout accounting live
 there; this child supplies its implementation and target-specific acceptance.
 
-Created 2026-10-23 at the owner's request. Status: **Next — scoped, not implemented**.
+Created 2026-10-23 at the owner's request. Status: **Saved-interval software complete; later acceptance pending**.
 This is the consolidated firmware release and board-acceptance ticket for
-R001–R006, with explicitly identified G001/G002 dependencies. The current request
-authorizes assessment and ticket consolidation; it does not flash boards or
+R001–R006, with explicitly identified G001/G002 dependencies. The creation request
+authorized assessment and ticket consolidation; it did not flash boards or
 authorize placement. Passive member GPS delivery remains the first priority.
 
 ## Baseline and scope
@@ -17,8 +17,10 @@ telemetry and SNNS, with device/power configured to 180 seconds and environment
 disabled. Three automatic cycles reach both gateways; device/power gaps are
 180 seconds and SNNS gaps 195 seconds. Portal acceptance for this update is
 pending access. R001–R003/R005 still have ordinary `2.7.26.0b65f2e`; R004 has
-the separate `2.7.26.09d8a9d` INA219 diagnostic image. Published source is pinned
-at `5c2c1adad`; the new production download pointer remains unset.
+the separate `2.7.26.09d8a9d` INA219 diagnostic image. Published source is now pinned
+at `4c96b9ba0`; the new production download pointer remains unset. The saved
+interval [software/build/review evidence](../../../docs/operations/repeater-update.md#saved-snns-interval-software-verification)
+does not change installed images or pass the later bench gates.
 
 Evidence: [rollout and release state](../../../docs/operations/repeater-update.md),
 [flashing handoff](../../../docs/operations/board-flashing-handoff.md),
@@ -46,23 +48,29 @@ can proceed while a selected-board test waits for access/hardware.
 
 ### 1. Remotely configurable SNNS interval
 
-- [ ] Make RAK over-LoRa SNNS use the saved
+- [x] Make RAK over-LoRa SNNS use the saved
   `telemetry.device_update_interval`, as discussed with the owner. Device and
   SNNS reporting then share a baseline; environment and power retain their
   separate settings. Document this coupling in the updater/profile guidance.
-- [ ] Define zero/unset as the existing RAK 180-second fallback and clamp values
+- [x] Define zero/unset as the existing RAK 180-second fallback and clamp values
   below 180 seconds for SNNS. Support longer configured intervals safely, with
   explicit overflow handling; do not silently retain the old one-hour compile
   limit. Standard `neighbor_info.update_interval` is not the selected setting:
   its existing admin validation enforces the separate standard-report minimum.
-- [ ] Preserve random 0–15-second post-report jitter, the 15-second scheduler,
+- [x] Preserve random 0–15-second post-report jitter, the 15-second scheduler,
   startup delay, empty-report suppression, bounded rotation/expiry, background
   priority and airtime/channel gates. Preserve gateway local-only reporting
   cadence and disabled RF TX. A configured interval is not a delivery guarantee.
-- [ ] Test actual module behavior for unset, below-minimum, 180/300/900 seconds,
+- [x] Test actual module behavior for unset, below-minimum, 180/300/900 seconds,
   extreme input, shortening/lengthening, reboot, timer rollover and local/radio
   mode changes. Verify how admin writes/reboots affect the next send, without
   burst catch-up or accidental loss of the cooldown.
+
+Section 1's source outcome passes actual-module/Throttle tests, affected ordinary
+RAK/gateway builds and one read-only review. The timer-safe saturation baseline
+is 2,147,468 seconds. Constructor reconstruction and admin source-path inspection
+do not establish real flash persistence, remote authorization or RF delivery;
+those remain section 2's selected-board acceptance.
 
 ### 2. Prove remote administration before nodes become inaccessible
 
@@ -163,8 +171,9 @@ ticket does not expand member firmware or implement those features.
 
 ## Next action and completion
 
-Next: implement and test the saved-interval change, then verify the chosen
-controller's admin setup on an explicitly selected bench board. Resolve the
+Next: verify the chosen controller's admin setup and saved interval on an
+explicitly selected bench board using independently verified selected firmware.
+The source/build interval outcome is complete. Resolve the
 shared freshness contract and gateway prerequisites before final release
 acceptance. Hardware actions require their identified board scope.
 
