@@ -2,6 +2,20 @@
 
 Updated: 2026-10-12. No content has been published or submitted from this project record.
 
+## Open-source project notes authorization - 2026-10-24
+
+Owner explicitly confirms SNORR MeshLink is an **open-source project** and
+these engineering notes and tickets may be public. Publishing routine project
+notes, proposals and local tickets to the project repository,
+`git@github.com:lfg-seth/snorr-meshlink.git` (`origin`), is authorized. Remember
+this standing preference; do not request per-ticket publication approval merely
+because the material is a project note. This includes LOCAL-10–LOCAL-13's solar
+and emergency-battery notes.
+
+Existing credentials, member-data and raw-location privacy boundaries still
+apply. Repository publication and the separately reviewed public website remain
+distinct workflows under the documentation direction below.
+
 ## Public documentation direction - 2026-10-23
 
 Owner confirms this is a very public project: make most project material

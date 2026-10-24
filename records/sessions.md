@@ -5,6 +5,7 @@
 - Capture **LOCAL-10–LOCAL-13** in the [wishlist](wishlist.md#rak-dual-panel-solar-housing) and Deferred tracker: RAK two-panel housing, V3/V4 two-large-panel charging, a hanging four/eight-cell 5 V emergency pack, and faster USB-C PD pack recharging.
 - Preserve the owner's TP4056, USB-C/3.5 mm connector and charging-path ideas as proposals. Single-panel insufficiency, the 1–2 A estimate and cited 3.5 A sensor rating remain unverified; future work must establish actual parts/path and combined-current measurement. Link existing LOCAL-4 power and GH-4 sensor work.
 - Documentation-only capture in an isolated checkout; preserve concurrent repository edits. Markdown link/whitespace checks pass. Publish on `docs/solar-backup-power-tickets`.
+- Owner explicitly authorizes the push and confirms the project is open source; these notes can be public. Save the standing [project-note publication preference](content.md#open-source-project-notes-authorization---2026-10-24) for future sessions.
 
 Next useful step: owner selects which ticket to activate; confirm actual panels, chargers, pack topology and desired no-sun duration before design or bench work.
 
