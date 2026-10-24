@@ -2,6 +2,16 @@
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
+## INA219 current graphs / MeshLink 0.1.4 - 2026-10-24
+
+Current deployment: owner-selected [PR #64](https://github.com/lfg-seth/snorr-meshlink/pull/64)
+is merged and deployed as **MeshLink 0.1.4 / `91d0ced` /
+`meshlink-v0.1.4`**. INA219-equipped cards show current history and a separate
+30-minute mean; both graphs offer 30min/6hr ranges. Same-commit 89 backend/63
+portal checks, public asset hashes, protected-state preservation, pre/post
+live/demo recovery and authenticated live average comparisons pass.
+[Deployment, backups and remaining acceptance](device-card-current-history.md#meshlink-014-deployment---2026-10-24).
+
 ## Fleet current polarity / MeshLink 0.1.1 - 2026-10-24
 
 Owner-selected [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59) is

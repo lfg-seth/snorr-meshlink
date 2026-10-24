@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-10-24 - INA219 current history merged and deployed
+
+- Owner explicitly requests PR #64 merge/deployment. Merge as **`8b92f2e`**;
+  release **MeshLink 0.1.4 / `91d0ced` / `meshlink-v0.1.4`** is published on
+  main and deployed to [the portal](https://meshlink.spp.lol).
+  [Exact behavior, checksums and recovery evidence](../docs/operations/device-card-current-history.md#meshlink-014-deployment---2026-10-24).
+- Clean same-commit server validation passes **89 backend/63 portal tests**,
+  TypeScript and live build. Main/tag CI passes; no migration changes or runs.
+  Verified pre/post backups, isolated live/demo recovery and retained rollback
+  pass. Exact protected database, credential, queue and configuration hashes
+  stay unchanged during promotion; no radio profiles or firmware change.
+- All ten public/loopback build files and source/version identity match.
+  Authenticated current-history checks cover all five ranges on nine live
+  infrastructure devices; the five supported current sources' 30-minute
+  means/counts agree with source observations. Both short voltage windows and
+  ten demo current windows pass. Public authenticated history/state and all six
+  services pass; three fresh MQTT archive receipts, 200 valid envelopes and an
+  empty queue confirm resumed ingestion.
+- Preserve unrelated original-checkout hardware edits. Publish release/evidence
+  on `codex/current-history-release` and main; the immutable source tag continues
+  to identify the tested/deployed application commit, independently of records.
+
+Next useful step: owner-phone authenticated card acceptance. The source's native
+desktop/mobile fictional-data review is already complete; live API/static-byte
+acceptance does not establish physical current accuracy or field runtime.
+
 ## 2026-10-24 - INA219 card current graphs and short history ranges
 
 - Add signed sensor-path current graphs to equipped repeater/backhaul map cards

@@ -3,7 +3,7 @@
 2026-10-24. Owner requests a current graph on INA219-equipped device cards,
 a 30-minute average and 30-minute/6-hour options on both current and voltage
 graphs. Source is prepared on `codex/device-current-history` from `origin/main`
-`198507e`. Production deployment remains a separately selected step.
+`198507e`. The subsequently authorized 0.1.4 deployment is recorded below.
 
 ## Presentation and measurements
 
@@ -76,7 +76,64 @@ configuration changes or production mutations.
   short-range buttons, readable axes/average and scrollable mobile layout.
   Screenshots remain in ignored `local-data/current-history-worktree/local-data/`.
 
-Next: review and merge the source, then select a versioned manual release with
-the existing backup/recovery process. Authenticated deployed history and owner
-phone acceptance remain unverified. Sensor calibration and runtime/field gates
-are unchanged.
+## MeshLink 0.1.4 deployment - 2026-10-24
+
+Owner explicitly requests merging and deploying [PR #64](https://github.com/lfg-seth/snorr-meshlink/pull/64).
+Final-head Portal/Backend/record CI passes before merge **`8b92f2e`**. Release
+metadata and changelog advance together in **`91d0cedb1385c6cc718b1f36f9ecc8f444b0eed4`**,
+published to main and immutable annotated **`meshlink-v0.1.4`**. The separate
+SNORR Firmware version and all installed radio profiles remain unchanged.
+
+- The exact clean release passes **89 backend tests**, **63 portal tests**,
+  TypeScript and a live build on server Node 22.23.1, in isolated
+  `/opt/meshlink-release-current-91d0ced`. All migration files match production;
+  no migration runs. Main/tag [Portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40140318190)
+  and [Backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40140318157)
+  pass. This full Linux run resolves the local Windows transport-check limit.
+- Promotion holds `/run/lock/meshlink-deploy.lock`, verifies a pre-release
+  backup and isolated live/demo recovery before source replacement, and keeps
+  prior source/metadata/static assets at
+  `/opt/meshlink-rollback-current-91d0ced`. Publish hashed assets before the
+  atomic index switch and retain old assets for open tabs.
+- While both APIs/workers are stopped, exact hashes of live/demo databases,
+  credentials, the worker queue and `/etc/meshlink` stay unchanged. No stored
+  reading, assignment, configuration, key, packet or observation is rewritten.
+- All **ten** build files match loopback and public HTTPS. Public
+  `/version.json` and installed `SOURCE_COMMIT` identify **0.1.4 / 91d0ced**,
+  live mode and `trackedChanges: false`. Public index SHA-256:
+  `f9e5011e957dc63a7bb6d007bfbc5415602786be2d0eb2d9dd34f98eb73c2eac`.
+- Authenticated production verification covers **45 current-history windows**
+  (all five periods for all nine infrastructure devices) and both short voltage
+  windows per device. Five devices select a supported measured-current source;
+  every returned 30-minute mean/count agrees with the deduplicated source
+  observations, including sign conversion. Unequipped/ambiguous devices retain
+  empty current histories and Unknown averages. Ten additional demo
+  current-history windows pass. Public authenticated current history and live
+  state/feed pass through HTTPS.
+- Post-release backup checksum, normal live/demo isolation, protected routes,
+  per-client sign-in throttling and isolated database/API/history recovery all
+  pass. All six services are active. Three new MQTT archive receipts arrive;
+  the latest **200** envelopes validate and the queue is empty.
+
+### Backup and rollback evidence
+
+Normal archives and verification logs remain root-private on the LXC:
+
+| Phase | Archive | SHA-256 |
+| --- | --- | --- |
+| Before | `meshlink-20261024T225142Z.tar.gz` | `ec22d921f6abc6847ee6e388482091b3b571173c290bd5f1648aab08fbb6f696` |
+| After | `meshlink-20261024T225316Z.tar.gz` | `5cddb791ab4927cf8e3473799d973b70baf70c71db4b26ee97b6a80d86d3611e` |
+
+`/root/current-history-20261024` retains the build manifest, protected hashes,
+deployment/acceptance summaries, pre/post recovery logs and exact release-source
+archive. Source archive SHA-256:
+`56385ce6f9d8beaf4497afd93dc5b7d51557cd8fd25ee275ab023826bbeb1d01`.
+Normal backups contain state, matching backend/deployment source and static
+frontend; the source archive and rollback directory additionally retain portal
+source and root release metadata. Backups share this LXC disk; existing GH-7
+off-host recovery remains open.
+
+Next: owner-phone authenticated native acceptance of the deployed cards. Native
+responsive presentation was checked with fictional data before release; this
+deployment verifies actual live data/API/static bytes. Physical calibration,
+whole-battery accounting, runtime and field gates remain separate.
