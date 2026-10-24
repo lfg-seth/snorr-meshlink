@@ -5,6 +5,8 @@ import { gatewayHealthLabel } from './gateway-health';
 import BatteryHistory from './BatteryHistory';
 import BatterySummary from './BatterySummary';
 import type { LoadBatteryHistory } from './BatteryChart';
+import CurrentChart from './CurrentChart';
+import type { LoadCurrentHistory } from './current';
 import NeighborTable from './NeighborTable';
 import type { LinkObservation } from './NeighborTable';
 import { metricTime } from './telemetry-time';
@@ -18,6 +20,7 @@ export default function InfrastructurePage({
   now,
   connected = false,
   loadBatteryHistory,
+  loadCurrentHistory,
   infrastructureNodes = [],
   links = [],
   trackers = [],
@@ -34,6 +37,7 @@ export default function InfrastructurePage({
   now: number;
   connected?: boolean;
   loadBatteryHistory?: LoadBatteryHistory;
+  loadCurrentHistory?: LoadCurrentHistory;
   infrastructureNodes?: import('./demo').Infrastructure[];
   links?: LinkObservation[];
   trackers?: import('./demo').Tracker[];
@@ -314,6 +318,7 @@ export default function InfrastructurePage({
           </div>
         )}
         <BatteryHistory loadHistory={loadBatteryHistory} key={`battery-${selected.id}`} device={selected} now={now} />
+        <CurrentChart loadHistory={loadCurrentHistory} device={selected} now={now} online={online} />
         <div className="infra-detail-columns">
           <div>
             <h3>Declared hardware configuration</h3>

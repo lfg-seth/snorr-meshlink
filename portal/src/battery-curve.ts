@@ -3,8 +3,11 @@ import type { BatterySample } from './battery.ts';
 
 // Unknown cadence keeps exact readings separate rather than inventing continuity.
 export function batterySegments(samples: BatterySample[], now: number, timeoutMinutes: number) {
-  const points = batterySamples(samples, now);
-  const segments: BatterySample[][] = [];
+  return historySegments(batterySamples(samples, now), timeoutMinutes);
+}
+
+export function historySegments<T extends { at: string }>(points: T[], timeoutMinutes: number) {
+  const segments: T[][] = [];
   for (const point of points) {
     const segment = segments.at(-1);
     if (!segment || !Number.isFinite(timeoutMinutes) || timeoutMinutes <= 0 ||
@@ -19,8 +22,13 @@ export function batterySegments(samples: BatterySample[], now: number, timeoutMi
 // Missing-report intervals start a new subpath rather than inventing recovery.
 export function batteryCurve(samples: BatterySample[], now: number, timeoutMinutes: number,
   x: (time: number) => number, y: (volts: number) => number) {
-  return batterySegments(samples, now, timeoutMinutes).filter(segment => segment.length > 1).map(segment => {
-    const p = segment.map(s => ({ x: x(Date.parse(s.at)), y: y(s.volts) }));
+  return historyCurve(batterySamples(samples, now), timeoutMinutes, x, s => y(s.volts));
+}
+
+export function historyCurve<T extends { at: string }>(points: T[], timeoutMinutes: number,
+  x: (time: number) => number, y: (point: T) => number) {
+  return historySegments(points, timeoutMinutes).filter(segment => segment.length > 1).map(segment => {
+    const p = segment.map(s => ({ x: x(Date.parse(s.at)), y: y(s) }));
     const slopes = p.slice(1).map((v, i) => (v.y - p[i].y) / (v.x - p[i].x));
     const tangents = p.map((_, i) => {
       if (!i) return slopes[0];

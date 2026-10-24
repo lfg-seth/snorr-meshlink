@@ -44,4 +44,37 @@ function batteryHistory(app, deviceId, cutoff, end, limit) {
   return { samples: samples.slice(0, limit).reverse(), truncated: samples.length > limit };
 }
 
-module.exports = { at, newer, powerReadings, batteryHistory };
+// Match the card's source selection; never combine unmapped power channels.
+function currentMetric(readings) {
+  const channels = Object.keys(readings).filter(metric => /^power[1-8]CurrentMa$/.test(metric));
+  if (channels.length) return channels.length === 1 && channels[0] === 'power1CurrentMa' ? channels[0] : null;
+  return readings.sensorCurrentMa ? 'sensorCurrentMa' : null;
+}
+
+function currentHistory(app, deviceId, metric, cutoff, end, limit) {
+  if (['power1CurrentMa', 'sensorCurrentMa'].indexOf(metric) < 0)
+    return { samples: [], truncated: false };
+  const params = { id: deviceId, cutoff, end };
+  const filter = `deviceId = {:id} && payload.${metric} != null && `;
+  const measured = c.rows(app, 'observations', filter +
+    'measuredAt != "" && measuredAt >= {:cutoff} && measuredAt <= {:end}',
+    '-measuredAt,-receivedAt,-id', params, limit + 1);
+  const received = c.rows(app, 'observations', filter +
+    'measuredAt = "" && receivedAt >= {:cutoff} && receivedAt <= {:end}',
+    '-receivedAt,-id', params, limit + 1);
+  const samples = measured.concat(received).map(o => {
+    const rawValue = c.object(o, 'payload')[metric];
+    return { at: o.getString('measuredAt') || o.getString('receivedAt'),
+      milliamps: rawValue === 0 ? 0 : -rawValue, rawValue, metric,
+      currentConvention: 'positive-charging', measuredAt: o.getString('measuredAt') || null,
+      receivedAt: o.getString('receivedAt'), timestampQuality: o.getString('timestampQuality') };
+  }).filter(s => typeof s.rawValue === 'number' && Number.isFinite(s.rawValue))
+    .sort((a, b) => b.at.localeCompare(a.at) || b.receivedAt.localeCompare(a.receivedAt));
+  const unique = [];
+  const seen = new Set();
+  samples.forEach(s => { if (!seen.has(s.at)) { seen.add(s.at); unique.push(s); } });
+  return { samples: unique.slice(0, limit).reverse(),
+    truncated: unique.length > limit || measured.length > limit || received.length > limit };
+}
+
+module.exports = { at, newer, powerReadings, batteryHistory, currentMetric, currentHistory };

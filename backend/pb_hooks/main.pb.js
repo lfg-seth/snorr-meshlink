@@ -1,6 +1,12 @@
 // Each PocketBase handler runs in its own scope; shared code is a local module.
 routerAdd(
   'GET',
+  '/api/meshlink/current-history/{id}',
+  (e) => require(`${__hooks}/meshlink.js`).currentHistory(e),
+  $apis.requireAuth('accounts'),
+);
+routerAdd(
+  'GET',
   '/api/meshlink/battery-history/{id}',
   (e) => require(`${__hooks}/meshlink.js`).batteryHistory(e),
   $apis.requireAuth('accounts'),

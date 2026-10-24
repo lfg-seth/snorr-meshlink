@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import type { Assignment, Tracker, Member, Infrastructure } from './demo';
 import InfrastructureQuickStats from './InfrastructureQuickStats';
 import type { LoadBatteryHistory } from './BatteryChart';
+import type { LoadCurrentHistory } from './current';
 import TrackerDetail from './TrackerDetail';
 import { trackerMapLabel } from './tracker';
 import { latestRecordedSession } from './recorded-session';
@@ -25,9 +26,11 @@ export default function MapPage({
   trailId,
   onTrailChange,
   loadBatteryHistory,
+  loadCurrentHistory,
 }: {
   online?: boolean;
   loadBatteryHistory?: LoadBatteryHistory;
+  loadCurrentHistory?: LoadCurrentHistory;
   assignments: Assignment[];
   trackers?: Tracker[];
   members?: Member[];
@@ -92,6 +95,7 @@ export default function MapPage({
         onClose={() => setSelection(null)} />}
       {selectedInfrastructure && <InfrastructureQuickStats key={selectedInfrastructure.id}
         loadBatteryHistory={loadBatteryHistory}
+        loadCurrentHistory={loadCurrentHistory}
         device={selectedInfrastructure} now={now} online={online} onClose={() => setSelection(null)}
         relationships={relationships(selectedInfrastructure.id)} />}
       {selectedSignal && <SignalLinkDetail key={selectedSignal.id} connection={selectedSignal}

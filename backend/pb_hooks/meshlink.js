@@ -471,11 +471,33 @@ function batteryHistory(e) {
   if (device.getString('kind') === 'member')
     throw new BadRequestError('Infrastructure device required.');
   const hours = Number(e.request.url.query().get('hours') || '24');
-  if ([24, 168, 720].indexOf(hours) < 0)
-    throw new BadRequestError('Choose 24, 168 or 720 hours.');
+  if ([0.5, 6, 24, 168, 720].indexOf(hours) < 0)
+    throw new BadRequestError('Choose 0.5, 6, 24, 168 or 720 hours.');
   const end = c.now();
   const cutoff = new Date(Date.parse(end) - hours * 3600000).toISOString();
   return e.json(200, telemetry.batteryHistory(e.app, device.getString('key'), cutoff, end, 50000));
+}
+function currentHistory(e) {
+  c.human(e);
+  e.response.header().set('Cache-Control', 'no-store');
+  const device = c.device(e.app, e.request.pathValue('id'));
+  if (device.getString('kind') === 'member')
+    throw new BadRequestError('Infrastructure device required.');
+  const hours = Number(e.request.url.query().get('hours') || '24');
+  if ([0.5, 6, 24, 168, 720].indexOf(hours) < 0)
+    throw new BadRequestError('Choose 0.5, 6, 24, 168 or 720 hours.');
+  const end = c.now();
+  const cutoff = new Date(Date.parse(end) - hours * 3600000).toISOString();
+  const metric = telemetry.currentMetric(c.object(device, 'readings'));
+  const history = telemetry.currentHistory(e.app, device.getString('key'), metric, cutoff, end, 50000);
+  const recent = hours === 0.5 ? history : telemetry.currentHistory(e.app, device.getString('key'), metric,
+    new Date(Date.parse(end) - 1800000).toISOString(), end, 50000);
+  const samples = recent.samples;
+  return e.json(200, { ...history, average30Minutes: {
+    milliamps: samples.length && !recent.truncated
+      ? samples.reduce((sum, s) => sum + s.milliamps, 0) / samples.length : null,
+    count: samples.length, at: samples.length ? samples[samples.length - 1].at : null,
+    truncated: recent.truncated, metric, asOf: end } });
 }
 function state(e) {
   c.human(e);
@@ -670,4 +692,5 @@ module.exports = {
   nameJob,
   state,
   batteryHistory,
+  currentHistory,
 };

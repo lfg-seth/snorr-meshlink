@@ -11,6 +11,7 @@ import BackendLogin from './BackendLogin';
 import { BackendError, login, request, savedToken, saveToken } from './backend';
 import type { BackendSession, BackendState } from './backend';
 import type { LoadBatteryHistory } from './BatteryChart';
+import type { LoadCurrentHistory } from './current';
 import { currentSignalRows } from './signal-freshness';
 type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure';
 const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure'];
@@ -48,6 +49,9 @@ function Portal() {
   const demoAttempt = useRef(0);
   const loadBatteryHistory = useCallback<LoadBatteryHistory>((id, hours, signal) =>
     request(`/api/meshlink/battery-history/${encodeURIComponent(id)}?hours=${hours}`,
+      session?.token ?? '', undefined, signal, session?.demo), [session]);
+  const loadCurrentHistory = useCallback<LoadCurrentHistory>((id, hours, signal) =>
+    request(`/api/meshlink/current-history/${encodeURIComponent(id)}?hours=${hours}`,
       session?.token ?? '', undefined, signal, session?.demo), [session]);
   const demoMode = session?.demo === true;
   const simulation = snapshot?.simulation === true;
@@ -413,6 +417,7 @@ function Portal() {
           {snapshot && page === 'Map' && (
             <MapPage
               loadBatteryHistory={loadBatteryHistory}
+              loadCurrentHistory={loadCurrentHistory}
               trailId={trailId}
               onTrailChange={setTrailId}
               online={feedOnline}
@@ -474,6 +479,7 @@ function Portal() {
           {snapshot && page === 'Infrastructure' && (
             <InfrastructurePage
               loadBatteryHistory={loadBatteryHistory}
+              loadCurrentHistory={loadCurrentHistory}
               key={session?.account.id ?? 'demo'}
               now={now}
               infrastructureNodes={infrastructureNodes}

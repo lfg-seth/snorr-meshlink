@@ -68,6 +68,14 @@ Messages are persisted with authenticated author identity, a display-name prefix
 
 ## Checks and next integration work
 
+Current history (2026-10-24): authenticated human accounts can read
+`/api/meshlink/current-history/{id}?hours=0.5|6|24|168|720` for infrastructure
+devices. Voltage history accepts the same ranges. Current uses the card's
+unambiguous INA219/legacy source, applies the existing polarity convention once,
+preserves clock provenance and returns an independent 30-minute sample mean.
+Reads are capped at 50,000 observations; no migration or evidence rewrite is
+required. See [current-history behavior and limits](../docs/operations/device-card-current-history.md).
+
 Telemetry clock fallback (2026-10-21, #53): unique telemetry readings are selected by valid measurement time, otherwise their original receipt time. The database keeps unknown measurement clocks null/empty with timestamp quality intact. The portal displays receipt time as the temporary measurement-time fallback, and supported telemetry health uses the same age. Infrastructure state retains actual `readingTimes` and adds per-metric `readingReceivedTimes`; `reportedAt` summarizes the effective telemetry clocks. Both snapshot samples and battery history merge measured-time and receipt-time observations before applying limits and return source/receipt clock provenance. Duplicate gateway receipts cannot advance a selected reading's fallback age. GPS and neighbor timing are unchanged; uptime is not used. [Evidence and limits](../docs/operations/battery-contact-freshness-20261021.md#receipt-fallback-correction).
 
 ```sh
