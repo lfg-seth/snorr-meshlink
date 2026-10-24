@@ -60,10 +60,9 @@ export type Infrastructure = {
   reportedAt: string | null;
   cadenceMinutes: number;
   battery: number | null;
-  // Signed battery current: positive charging, negative discharging.
-  batteryCurrentMa?: number | null;
   powerReadings?: { metric: string; value: number; measuredAt: string | null;
-    receivedAt: string; timestampQuality: string }[];
+    receivedAt: string; timestampQuality: string; rawValue?: number;
+    currentConvention?: 'positive-charging' }[];
   temperature: number | null;
   humidity?: number | null;
   solar: number | null;

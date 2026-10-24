@@ -3,6 +3,49 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.1.2 - 2026-10-24
+
+Consolidate device-card battery presentation (LOCAL-8, PR #60). Member,
+repeater/router and gateway details show one top summary of estimated battery
+percentage, device voltage, charging/discharging state and current. Remove the
+entire sensor-power section and duplicate current readings. Member GPS quality
+sits beside percentage; preserve the battery icon, environment readings,
+history/graphs and configuration controls.
+
+Compatibility: existing Meshtastic telemetry and SNNS v1. Reuse existing battery
+profiles and the 0.1.1 normalized-current convention. Measured current identifies
+its sensor path and requires the explicit polarity marker for direction;
+voltage-trend direction remains an estimate. Missing/ambiguous sources remain
+unknown, with independent battery/current freshness. No migration, ingestion,
+stored-history, radio or live-configuration change is required.
+
+Rollback: restore the previous matching portal source/build and root release
+metadata using the verified backup procedure. Backend behavior and schema are
+unchanged. Calibration, whole-battery accounting and owner-phone acceptance
+remain separate gates. Deployment follows the selected manual release procedure.
+
+## 0.1.1 - 2026-10-24
+
+Correct fleet sensor-current polarity in the authenticated API and portal.
+All environment and PowerMetrics channels now use positive for charging and
+negative for discharging, following owner-confirmed common wiring: R002/R004/
+R006 charge while G003 discharges. Previously the API passed through the
+opposite sensor sign. Existing cached readings and new reports use the same
+conversion once; API current readings retain `rawValue` and declare
+`currentConvention: "positive-charging"`. Voltage, clocks and freshness are
+unchanged. The portal explains the convention and shows explicit positive signs.
+
+Compatibility: existing Meshtastic telemetry and SNNS v1; firmware is unchanged.
+No schema migration, history rewrite or packet replay is required. MQTT bytes,
+worker envelopes, queued packets, saved observations and latest-reading caches
+retain their original sensor signs. Direct database consumers must apply the
+documented conversion; API consumers must not invert it again. Calibration and
+sensor-path versus whole-battery current remain separate questions.
+
+Rollback: restore the matching previous backend hooks and portal build using
+the normal verified backup procedure. Stored evidence needs no reverse migration.
+Source publication does not deploy production; rollout remains manual.
+
 ## 0.1.0 - 2026-10-23
 
 Initial application development release, recording existing GPS/member tracking,

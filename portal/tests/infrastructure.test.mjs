@@ -46,6 +46,85 @@ registerHooks({
   },
 });
 
+test('LOCAL-8 cards consolidate battery/current and retain environment/history across roles', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { default: QuickStats } = await import('../src/InfrastructureQuickStats.tsx');
+  const { default: InfrastructurePage } = await import('../src/InfrastructurePage.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.parse('2026-10-24T20:00:00Z');
+  for (const role of ['Repeater', 'Backhaul']) {
+    const at = '2026-10-24T19:59:00Z';
+    const device = { ...infrastructure[0], role, battery: 3.72, batteryProfile: 'lipo-1s',
+      temperature: 20, humidity: 40, equipped: { solar: false, weather: true, intrusion: false },
+      readingTimes: { battery: at, temperature: at, humidity: at }, cadenceMinutes: 5,
+      powerReadings: ['sensorCurrentMa', 'power1CurrentMa'].map(metric => ({ metric, value: 106.3,
+        rawValue: -106.3, currentConvention: 'positive-charging', measuredAt: at, receivedAt: at })),
+    };
+    const cards = [createElement(QuickStats, { device, now, online: true, onClose() {} }),
+      createElement(InfrastructurePage, { infrastructureNodes: [device], now, online: true,
+        admin: false, incidents: [], events: [], rules: {}, onRule() {}, onIncident() {} })];
+    for (const card of cards) {
+      const html = renderToStaticMarkup(card);
+      const dom = new JSDOM(html);
+      const summaries = dom.window.document.querySelectorAll('[aria-label="Battery summary"]');
+      assert.equal(summaries.length, 1);
+      assert.equal((html.match(/106.3 mA/g) ?? []).length, 1);
+      assert.match(summaries[0].textContent, /≈50%.*3.720 V.*Charging \(sensor path\).*\+106.3 mA/);
+      assert.match(summaries[0].textContent, /Measured · Power channel 1 · battery flow\/calibration unverified/);
+      assert.doesNotMatch(html, /Sensor voltage|Reported sensor power|Battery &amp; power/);
+      assert.match(html, /Relative humidity.*40.0% RH/);
+      assert.match(html, /Temperature|temperature/);
+      assert.match(html, /24hr.*7day.*30day/);
+      dom.window.close();
+    }
+  }
+});
+
+test('LOCAL-8 keeps independent voltage/current freshness, zero and unknowns', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { default: BatterySummary } = await import('../src/BatterySummary.tsx');
+  const { infrastructure } = await import('../src/demo.ts');
+  const now = Date.parse('2026-10-24T20:00:00Z');
+  const fresh = '2026-10-24T19:59:00Z', old = '2026-10-24T19:40:00Z';
+  const base = { ...infrastructure[0], battery: 3.72, batteryProfile: 'lipo-1s', cadenceMinutes: 5,
+    readingTimes: { battery: old }, lastContactAt: fresh, samples: [] };
+  const render = (device, online = true) => {
+    const dom = new JSDOM(renderToStaticMarkup(createElement(BatterySummary, { infrastructure: device, now, online })));
+    const fields = Object.fromEntries([...dom.window.document.querySelectorAll('dl > div')].map(row =>
+      [row.querySelector('dt').textContent, row.querySelector('dd').textContent]));
+    dom.window.close();
+    return fields;
+  };
+  for (const [value, state] of [[25, 'Charging'], [-25, 'Discharging'], [0, 'Steady']]) {
+    const reading = { metric: 'power1CurrentMa', value, measuredAt: null, receivedAt: fresh,
+      currentConvention: 'positive-charging' };
+    const device = { ...base, powerReadings: [reading] };
+    const fields = render(device);
+    assert.match(fields['Battery voltage'], /3.720 V.*20m 0s ago · stale/);
+    assert.match(fields.Current, new RegExp(`${value === 0 ? '0.0' : '25.0'} mA`));
+    assert.doesNotMatch(fields.Current, /stale/);
+    assert.ok(fields['Charging/discharging'].startsWith(`${state} (sensor path)`));
+    assert.match(fields['Charging/discharging'], /1m 0s ago/);
+    const stale = render({ ...device, readingTimes: { battery: fresh }, powerReadings: [{ ...reading, measuredAt: old }] });
+    assert.doesNotMatch(stale['Battery voltage'], /stale/);
+    assert.match(stale.Current, /stale/);
+    assert.match(stale['Charging/discharging'], /stale/);
+    assert.match(render(device, false).Current, /Feed offline · historical reading/);
+    assert.match(render({ ...device, powerReadings: [{ ...reading, currentConvention: undefined }] })['Charging/discharging'], /^Unknown/);
+  }
+  for (const voltage of [null, NaN, 0]) {
+    const fields = render({ ...base, battery: voltage });
+    assert.match(fields['Battery voltage'], /^Unknown/);
+    assert.match(fields['Estimated battery percentage'], /^Unknown/);
+    assert.match(fields.Current, /^Unknown/);
+  }
+  assert.match(render({ ...base, battery: null, disabledMonitoring: ['battery'] })['Battery voltage'], /Unknown.*Monitoring disabled/);
+  const other = render({ ...base, powerReadings: [{ metric: 'power3CurrentMa', value: 99,
+    measuredAt: fresh, receivedAt: fresh, currentConvention: 'positive-charging' }] });
+  assert.match(other.Current, /^Unknown/);
+  assert.match(other['Charging/discharging'], /^Unknown/);
+});
+
 test('telemetry views fall back to each metric receipt without changing valid measurement ages', async () => {
   const { renderToStaticMarkup } = await import('react-dom/server');
   const { default: QuickStats } = await import('../src/InfrastructureQuickStats.tsx');
@@ -69,7 +148,8 @@ test('telemetry views fall back to each metric receipt without changing valid me
   assert.doesNotMatch(renderToStaticMarkup(createElement(BatteryHistory, { device, now, online: true })), /measurement time unknown/i);
   const page = renderToStaticMarkup(createElement(InfrastructurePage, { now, online: true, admin: false,
     infrastructureNodes: [device], incidents: [], events: [], rules: {}, onRule() {}, onIncident() {} }));
-  assert.match(page, /4.05 V.*current reading/);
+  assert.match(page, /4\.050 V/);
+  assert.equal((page.match(/aria-label="Battery summary"/g) ?? []).length, 1);
   assert.doesNotMatch(page, /measurement time unknown/i);
   const charge = renderToStaticMarkup(createElement(BatteryCharge, { device, now, online: true }));
   assert.doesNotMatch(charge, /Historical reading/);
@@ -77,24 +157,12 @@ test('telemetry views fall back to each metric receipt without changing valid me
   assert.match(renderToStaticMarkup(createElement(BatteryCharge, { device: stale, now, online: true })), /Historical reading/);
 });
 
-test('reported RAK current preserves sign and channel with separate hearing age and count', async () => {
+test('neighbor hearing age/count remains independent of sensor current', async () => {
   const { renderToStaticMarkup } = await import('react-dom/server');
-  const { default: PowerReadings } = await import('../src/PowerReadings.tsx');
   const { default: NeighborTable } = await import('../src/NeighborTable.tsx');
   const { infrastructure } = await import('../src/demo.ts');
   const now = Date.parse('2026-10-16T20:00:00.000Z');
-  const device = { ...infrastructure[0], powerReadings: [
-    { metric: 'power3CurrentMa', value: -323.1, measuredAt: null, receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'unknown' },
-    { metric: 'power1CurrentMa', value: 0, measuredAt: '2026-10-16T18:00:00.000Z', receivedAt: '2026-10-16T19:58:00.000Z', timestampQuality: 'valid' },
-  ] };
-  const html = renderToStaticMarkup(createElement(PowerReadings, { device, now }));
-  assert.match(html, /Power channel 3/);
-  assert.match(html, /-323.1 mA/);
-  assert.match(html, /0.0 mA/);
-  assert.doesNotMatch(html, /Measurement time unknown/);
-  assert.match(html, /2m 0s ago/);
-  assert.match(html, /Stale/);
-  assert.match(html, /polarity and calibration are unverified/);
+  const device = infrastructure[0];
   const table = renderToStaticMarkup(createElement(NeighborTable, { infrastructure: [device], trackers: [], now, online: true,
     links: [{ id: 'one', observerDeviceId: device.id, heardDeviceId: null, heardNodeId: '!00000123',
       originalSourceDeviceId: null, source: 'neighbor', reportType: 'snns-v1', path: 'direct',
@@ -555,7 +623,7 @@ test('map selections and device sheets keep infrastructure always visible withou
     let detail = document.querySelector('.infrastructure-quick-stats');
     assert.equal(detail.dataset.mode, 'modal');
     assert.match(detail.textContent, /Discharging/);
-    assert.match(detail.textContent, /— mA/);
+    assert.match(detail.textContent, /CurrentUnknown/);
     assert.match(detail.textContent, /Estimated battery percentage/);
     assert.doesNotMatch(detail.textContent, /trend|mV\/h|overstate|cutoff|load and temperature/i);
     assert.match(detail.textContent, /42.3% RH/);
@@ -583,7 +651,10 @@ test('map selections and device sheets keep infrastructure always visible withou
     assert.match(document.querySelector('.tracker-detail').textContent, /Location/);
     assert.match(document.querySelector('.device-sheet-header').textContent, /Heltec V4 - S001/);
     assert.equal(document.querySelector('.tracker-detail .sheet-title .badge').textContent, 'Active');
-    assert.doesNotMatch(document.querySelector('.tracker-detail').textContent, /Older fix|Reported battery|Battery voltage|Save battery configuration|Estimated battery percentage/);
+    assert.doesNotMatch(document.querySelector('.tracker-detail').textContent, /Older fix|Reported battery|Save battery configuration/);
+    assert.equal(document.querySelectorAll('.tracker-detail [aria-label="Battery summary"]').length, 1);
+    assert.match(document.querySelector('.tracker-detail').textContent, /Estimated battery percentage.*Battery voltage/);
+    assert.match(document.querySelector('.tracker-detail').textContent, /Feed offline/);
     assert.ok(document.querySelector('.sheet-title .badge').nextElementSibling.matches('.tracker-battery-icon'));
     assert.equal(document.querySelector('.tracker-battery-icon text'), null);
     assert.equal(document.querySelector('.tracker-battery-icon').getAttribute('aria-label'), 'Battery 100%');

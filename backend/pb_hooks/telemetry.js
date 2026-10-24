@@ -9,6 +9,22 @@ function newer(reading, latest) {
   return !latest || at(reading) > at(latest);
 }
 
+function powerReadings(readings) {
+  return Object.keys(readings).filter((metric) =>
+    /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(metric))
+    .map((metric) => {
+      const reading = { metric, ...readings[metric] };
+      if (metric.endsWith('CurrentMa')) {
+        // All fleet sensors share owner-confirmed wiring: invert only at the
+        // API boundary so cached/history/queued evidence retains its wire sign.
+        reading.rawValue = reading.value;
+        reading.value = reading.value === 0 ? 0 : -reading.value;
+        reading.currentConvention = 'positive-charging';
+      }
+      return reading;
+    });
+}
+
 function batteryHistory(app, deviceId, cutoff, end, limit) {
   const params = { id: deviceId, cutoff, end };
   const filter = 'deviceId = {:id} && payload.battery > 0 && ';
@@ -28,4 +44,4 @@ function batteryHistory(app, deviceId, cutoff, end, limit) {
   return { samples: samples.slice(0, limit).reverse(), truncated: samples.length > limit };
 }
 
-module.exports = { at, newer, batteryHistory };
+module.exports = { at, newer, powerReadings, batteryHistory };

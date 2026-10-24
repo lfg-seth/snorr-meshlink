@@ -16,6 +16,7 @@ import urllib.request
 
 sys.path.insert(0, '/opt/meshlink/backend')
 from client import Client
+from recovery_checks import assert_device_ids, device_ids
 
 
 def status(base, path):
@@ -24,6 +25,18 @@ def status(base, path):
             return response.status
     except urllib.error.HTTPError as error:
         return error.code
+
+
+def expected_infrastructure(mqtt_path=Path('/etc/meshlink/mqtt.json'), repeaters_path=Path('/etc/meshlink/repeaters.json')):
+    # Retain the installed gateway-aware mapping check. Retired mappings may
+    # remain for archive interpretation; every active infrastructure ID must map.
+    config = json.loads(mqtt_path.read_text())
+    if not isinstance(config.get('gateways'), dict) or not config['gateways']:
+        raise RuntimeError('Verified gateway mappings are required for live verification.')
+    result = set(config['gateways'].values()) | set(config.get('infrastructure', {}).values())
+    if repeaters_path.exists():
+        result.update(d['key'] for d in json.loads(repeaters_path.read_text())['devices'])
+    return result
 
 
 def main():
@@ -58,7 +71,8 @@ def main():
             html = response.read().decode()
         assert '<meta name="meshlink-portal-mode" content="live">' in html, 'Live backend is serving a frontend without verified live mode'
         print('Hosted frontend declares live mode: PASS')
-    assert len(live['trackers']) == (6 if simulation else 2)
+    provisioned = device_ids('/var/lib/meshlink/pb_data/data.db')
+    assert_device_ids(live, provisioned)
     # Respect the enabled 2-auth-requests/3-second policy; the worker can log in too.
     time.sleep(3.1)
     if simulation:
@@ -66,12 +80,7 @@ def main():
         member.login(secrets['member']['username'], secrets['member']['password'])
         assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
     else:
-        assert {d['id'] for d in live['trackers']} == {'b001', 'b002'}
-        infrastructure = {'g001', 'g002'}
-        repeaters = Path('/etc/meshlink/repeaters.json')
-        if repeaters.exists():
-            infrastructure.update(d['key'] for d in json.loads(repeaters.read_text())['devices'])
-        assert {d['id'] for d in live['infrastructure']} == infrastructure
+        assert provisioned['infrastructure'] <= expected_infrastructure()
         assert not live['members']
     print('Proxy, protected routes and sign-in: PASS')
 
@@ -135,6 +144,7 @@ def main():
             assert counts['accounts'] == account_count
             assert counts['devices'] == len(live['trackers']) + len(live['infrastructure'])
             assert counts['positions'] > 0 and counts['packet_receipts'] > 0
+        assert_device_ids(live, device_ids(state / 'pb_data/data.db'))
         restored_secret = json.loads((state / 'credentials.json').read_text())
         assert restored_secret == secrets
         backend = root / 'release/backend'
@@ -161,7 +171,8 @@ def main():
                 restored.login(restored_secret['admin']['username'], restored_secret['admin']['password'])
                 snapshot = restored.request('GET', '/api/meshlink/state')
                 assert snapshot['simulation'] == simulation
-                assert snapshot['trackers'] and snapshot['members'] == live['members']
+                assert_device_ids(snapshot, provisioned)
+                assert snapshot['members'] == live['members']
                 assert snapshot['assignments'] == live['assignments']
                 assert snapshot['messages'] == live['messages']
                 assert snapshot['incidents'] == live['incidents']

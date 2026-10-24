@@ -1,5 +1,6 @@
 # Session log
 
+<<<<<<< HEAD
 ## 2026-10-24 - B002 latest firmware and three-minute telemetry/SNNS
 
 - Flash existing B002 **`!699ca878`** with latest published source **`a56466d8c`**,
@@ -351,6 +352,180 @@ Next required bench: a transmitting intermediate and proof excluding direct
 reception for remote changes, interrupted/lost commands and restoration; resolve
 operator-tool ACK/result handling before inaccessible placement. Continue the
 independent software freshness/release assignments while bench/access gates wait.
+=======
+## 2026-10-24 - Installed recovery verifiers corrected; GH-39 complete
+
+- Owner activates installed verifier maintenance and live/demo recovery. Fix
+  the hardcoded B001/B002 counts and the assumption that every battery history
+  response is untruncated. Exact provisioned/backup/restored identities now
+  match; all three history windows verify newest bounded saved values, order,
+  provenance and correct cap/truncation. Retain mapping, missing-history,
+  checksum/integrity, authentication and live/demo separation checks.
+- Both original assertion failures reproduce in a fast call-site check before
+  the fix. Eight focused regressions pass locally; **83 Linux backend tests**
+  and Backend CI pass. [PR #61](https://github.com/lfg-seth/snorr-meshlink/pull/61)
+  merges checked fix **`b738d73`** as **`340feba`**. Install the exact three helper
+  files with rollback retained and `VERIFIER_COMMIT` separate from application
+  **0.1.2 / `359e6ba`**. App/source/configuration hashes are preserved.
+- Fresh backup **`meshlink-20261024T194543Z.tar.gz`** passes both installed
+  verifiers directly: one member/nine infrastructure identities, isolated
+  integrity/API/record recovery and all auth/isolation checks. Demo histories
+  prove **17,056 / 17,056**, **50,000 / 65,531**, **50,000 / 68,843** samples for
+  24/168/720 hours with false/true/true truncation. No data replacement, pruning,
+  API expansion, schema or hardware change. [Checksum, scripts and results](../docs/operations/backup-recovery-verifiers.md).
+- All six services are healthy; four fresh archive receipts and the newest
+  200 envelope records validate, with an empty queue. Documentation checks pass.
+  Remove completed GH-39 from Next and the installed-verifier hold from LOCAL-8;
+  historical GitHub issues remain unchanged. Publish records from
+  **`codex/recovery-verifier-fix`**, preserving concurrent root-checkout edits.
+
+Next useful step: continue already-recorded owner-phone acceptance or select the
+GH-7 off-host destination/recovery work; this verifier maintenance is complete.
+
+## 2026-10-24 - PR 60 merged; MeshLink 0.1.2 deployed
+
+- Owner authorizes merge/deployment of [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60).
+  Final-head checks pass; merge **`6ac0937`** is followed by the coordinated
+  **0.1.2** metadata/changelog commit **`359e6ba237d74d23ead5b9c2d88081604447c197`**
+  and immutable annotated **`meshlink-v0.1.2`**, published to origin/main.
+- Exact clean LXC source passes **75 backend / 60 portal tests**, TypeScript and
+  the live build on Node 22.23.1; main/tag Portal and Backend CI pass. No backend
+  behavior or migration difference from deployed 0.1.1. Retain existing helpers,
+  one-off migration records and rollback source/assets.
+- Promote under the deployment lock with exact preservation of live/demo DB,
+  queue and private configuration hashes. All ten public build hashes and
+  served **0.1.2 / 359e6ba** metadata pass; all six services and feed are healthy.
+  Post-recovery check sees three fresh archive receipts, validates the latest
+  200 envelopes and finds an empty queue. No radio or device-configuration change.
+- Actual-component checks against authenticated loopback data pass all nine
+  infrastructure devices and one member: four measured currents, six Unknown,
+  retained humidity and one summary per detail. Deployed public demo desktop
+  1280 × 720/mobile 390 × 844 checks pass: member percentage/GPS/icon, repeater
+  measured current, gateway unknowns and retained graphs/environment/configuration.
+  Authenticated native live/owner-phone acceptance is still unverified.
+- Pre/post backup checksums and isolated live/demo integrity/API/history recovery
+  pass. Complete source/static supplements verify matching database bytes and
+  release identity/assets. The installed verifier's retired two-member assertion
+  needs a task-local exact provisioned-ID comparison; installed files stay intact.
+  Existing bounded demo check proves 50,000 of 68,643 newest samples without
+  pruning history. [Hashes, rollback, proof and limits](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
+- Publish handoff from **`codex/local-8-deployment`**, advance local `main` by
+  fast-forward against origin/main and preserve the original checkout's unrelated
+  hardware work. Deployment evidence is a separate records commit from the
+  immutable application tag.
+
+Next useful step: owner confirms the cards on their signed-in phone/browser.
+Physical current accounting/calibration, installed verifier maintenance and
+existing off-host backup gates remain separate work; LOCAL-7 stays deferred.
+
+## 2026-10-24 - LOCAL-8 device-card battery summary
+
+- Owner explicitly activates LOCAL-8. Add one shared top battery summary to
+  member, repeater/router and gateway details; keep GPS quality beside member
+  percentage and the battery icon in the header. Remove the entire sensor-power
+  section and repeated current from history. Preserve environment readings,
+  graphs, exact history, configuration and unrelated card details.
+- Trace device voltage versus sensor channels and the newer deployed 0.1.1
+  polarity contract on main. Prefer the documented sole channel 1 over legacy
+  environment current; other/ambiguous channels remain Unknown. Measured current
+  and direction identify the sensor path, with battery flow/calibration
+  unverified. Only the explicit normalized convention supports signed direction;
+  voltage-trend direction is labeled an estimate and never becomes mA.
+  [Implementation, source trace and limits](../docs/operations/device-card-battery-summary.md).
+- `python scripts/check-project.py portal`: **60 tests pass**, TypeScript and
+  production build pass; existing bundle-size warning remains. Changed-document
+  links and whitespace pass. Actual components
+  visually checked with synthetic data at desktop 985 × 782 and mobile 390 × 844,
+  including member GPS alignment, current wrapping and missing/offline gateway.
+  Authenticated deployed cards and owner phone acceptance remain unverified.
+- Isolate the implementation from the diverged original checkout on short-lived
+  **`codex/local-8-battery-summary`**, based on `origin/main` **`520fbfc`**, under
+  ignored `local-data/local-8-worktree`. Preserve the original branch, hardware
+  edits and earlier ticket records. Carry LOCAL-8's canonical wishlist section
+  onto this main-based branch; reconcile GH-44/GH-45 locally without changing
+  imported issues. No LOCAL-7, ingestion/history, live configuration or deployment
+  changes. Implementation commit **`16404f4`** is pushed to origin;
+  [PR #60](https://github.com/lfg-seth/snorr-meshlink/pull/60) targets main.
+
+Next useful step: review/merge the PR, then select a manual production release
+and verify authenticated cards on the owner's browser/phone. Physical accuracy
+and multi-channel battery-path mapping remain separate prerequisites.
+
+## 2026-10-24 - PR 59 merged; MeshLink 0.1.1 deployed
+
+- Owner explicitly authorizes merging/deploying [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59).
+  All final-head checks pass; merge **`a405987dc849acf9f609ed3764c967ceb292a333`**
+  has the reviewed source tree. Publish immutable annotated
+  **`meshlink-v0.1.1`**. Local `main` advances by fast-forward and continues
+  tracking `origin/main`; the root checkout's unrelated G004/firmware and
+  inventory/3DModels work remains untouched.
+- Stage the exact merged source with Git identity on the existing LXC. Server
+  **75 backend / 56 portal tests**, TypeScript and clean live build pass on
+  Node **22.23.1**; migration sources match. Promote backend/portal/version
+  files while preserving private configuration, raw caches/observations,
+  queue and live/demo database hashes. Keep the approved gateway-aware
+  recovery verifier. Rollback source/assets remain private on the server.
+- All **ten public build hashes** and root/public source/version identity
+  pass. Live API first verifies ten cached current/raw pairs and unchanged
+  voltage/clocks; actual component rendering with sanitized live values
+  passes. Fresh current receipts then pass for R002/R004/R006 through all
+  four registered gateways and G003 locally; independently provisioned G004
+  also uses the global inversion. At **11:35:28 Pacific** the selected currents
+  are **+106.3 / +109.0 / +111.0 / -165.0 mA**, respectively. All six services
+  and live feed are healthy.
+- Verified pre/post backups include complete state and matching source/static
+  files. Both isolated live and demo integrity/API recoveries pass. A delayed
+  retry clears the existing post-restart sign-in throttle. For the known GH-39
+  demo-cap assertion, a task-private bounded check proves exact newest
+  **50,000 of 67,903 / 67,983** samples and correct truncation, without pruning
+  rows or changing the installed verifier. [Exact hashes, paths and limits](../docs/operations/radio-report-ingestion.md#meshlink-011-deployment---2026-10-24).
+- Remove the completed polarity rollout and superseded 0.1.0 release-validation
+  follow-ups from Verify; the 0.1.1 release now has Linux/source/build/tag and
+  deployed recovery evidence. GH-4 calibration/battery-only, GH-39 verifier
+  maintenance, native browser/mobile, sustained and field gates remain open.
+  Publish these coherent handoff records from **`codex/current-polarity-deployment`**.
+
+Next useful step: owner/native portal confirmation; continue the existing
+physical-accuracy and runtime work only when selected. No board/profile or
+credential changes are part of this release.
+
+## 2026-10-24 - Global fleet current-sign correction prepared
+
+- Owner confirms all sensor wiring is the same: **R002/R004/R006 charging,
+  G003 discharging**, and requests a global flip. [Record corrected values for
+  the earlier snapshot](field-results.md#2026-10-24---owner-confirmed-fleet-current-direction).
+  Polarity is settled for these owner-confirmed conditions; GH-4 physical
+  accuracy, bridge state and battery-only measurements remain separate.
+- Reproduce the actual API error with a regression: raw **-86.7 mA** appears
+  instead of expected **+86.7 mA**. MeshLink **0.1.1** adds one shared state-API
+  conversion for environment current and PowerMetrics channels 1-8 across
+  all infrastructure devices. Existing caches and new reports use the same
+  conversion. API currents retain original `rawValue` and declare
+  `currentConvention: "positive-charging"`; the portal explains positive
+  charging/negative discharging and renders explicit positive signs.
+- No firmware/schema/replay or historical data rewrite. Preserve raw worker
+  packets, queues, observations, cached readings and archive bytes. Regression
+  covers both roles, all channels, zero, existing caches, duplicate receipts
+  and repeated API reads while verifying stored evidence stays unchanged.
+  Voltage, source/channel identities and freshness are preserved.
+- Full Windows backend suite: **75 tests, seven POSIX skips**. All **56 portal
+  tests**, TypeScript and production build pass. [Linux backend CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40119586758)
+  and [portal CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/40119586743)
+  pass for implementation **`be56f19`**. Clean live-mode build identifies that
+  exact commit with `trackedChanges: false`. Fix the record-check failure by
+  linking telemetry.proto to its exact pinned upstream commit, avoiding an
+  unavailable nested-submodule path in CI.
+- Publish [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59) from
+  **`codex/current-polarity-fix`**, based on `origin/main` without unrelated
+  bench history. Work remains in ignored `private/worktrees/current-polarity`;
+  the root checkout's concurrent G004/firmware/inventory/3DModels work is
+  untouched. Production and hardware are unchanged by source publication.
+
+Next useful step: review/merge PR #59 and select its manual production rollout
+under the [release policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
+Then verify served source metadata, corrected/raw API pairs and native views;
+physical calibration and runtime gates stay open.
+>>>>>>> origin/main
 
 ## 2026-10-23 - Complete LOCAL-3 saved SNNS interval software
 

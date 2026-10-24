@@ -62,8 +62,10 @@ class DemoDatabaseTests(unittest.TestCase):
             self.assertIsNone(infra['r2']['humidity'])
         with self.subTest(feature='signed sensor power and channel identity'):
             readings = {r['metric']: r for r in infra['r1']['powerReadings']}
-            self.assertGreater(readings['power1CurrentMa']['value'], 0)
-            self.assertLess(readings['power3CurrentMa']['value'], 0)
+            self.assertLess(readings['power1CurrentMa']['value'], 0)
+            self.assertGreater(readings['power1CurrentMa']['rawValue'], 0)
+            self.assertGreater(readings['power3CurrentMa']['value'], 0)
+            self.assertLess(readings['power3CurrentMa']['rawValue'], 0)
             self.assertEqual(readings['sensorCurrentMa']['value'], 0)
             self.assertTrue(all(r['timestampQuality'] == 'valid' for r in readings.values()))
             self.assertEqual(infra['b2']['powerReadings'], [])
