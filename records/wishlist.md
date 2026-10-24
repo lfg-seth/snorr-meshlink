@@ -210,3 +210,18 @@ Requested behavior / future acceptance:
 - Future verification covers populated, missing and stale readings, charging/discharging states, and desktop/mobile card layout. This is presentation scope; telemetry collection and stored history are unchanged by the request.
 
 Related parked requests: [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present) and [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout). This newer request calls for removing the sensor section entirely and consolidating the top summary; reconcile overlapping presentation criteria when activated. Historical issues remain unchanged.
+
+## Router and gateway card eyebrow device model
+
+Local task: **LOCAL-9** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests ticket capture only; implementation is deferred.
+
+Requested behavior / future acceptance:
+
+- Show the device hardware model in the eyebrow at the top of router/repeater and gateway cards, following the client/member card presentation.
+- Retain the role label alongside the model: the eyebrow can still say Backhaul or Router (or the existing repeater role label). Model and operational role are separate information.
+- Use recorded device-model metadata; do not infer a hardware model from the role or device number. Preserve a truthful fallback when the model is unknown.
+- Future verification covers both roles, known/unknown models, longer labels and desktop/mobile layouts, with client cards retaining their existing presentation.
+
+Related parked work: [LOCAL-8 battery summary](#device-card-battery-summary-without-duplicate-sensor-readings). This is a separate card-header request; capturing it does not activate either implementation.

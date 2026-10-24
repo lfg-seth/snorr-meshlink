@@ -1,5 +1,12 @@
 # Session log
 
+## 2026-10-24 - Infrastructure card eyebrow model ticket
+
+- Capture **LOCAL-9** in the [wishlist](wishlist.md#router-and-gateway-card-eyebrow-device-model) and Deferred tracker: add recorded hardware model to router/gateway card eyebrows like clients, retaining role text.
+- No implementation or deployment. Documentation link/whitespace checks pass; preserve unrelated hardware edits and publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: owner activates LOCAL-9 for the card-header change; LOCAL-8 remains separate.
+
 ## 2026-10-24 - R004 battery and solar configuration
 
 - Owner confirms R004 has four standard EVE 18650 cells and one solar panel; update its live equipment descriptions, solar flag and `eve-26v-1s` profile. [Inventory and backup](inventory.md#2026-10-24---r004-battery-and-solar-allocation).
