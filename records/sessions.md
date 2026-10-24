@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-24 - Default bench Wi-Fi saved
+
+- Owner selects G003's corrected, working Wi-Fi as the default for future
+  bench provisioning. Save exact supplied credentials in ignored
+  `private/bench/default-wifi.json`, retaining the `ssid` / `password` format.
+  Verify equality with G003's final reboot-verified network profile and confirm
+  Git ignores the file; credentials stay out of public records and command output.
+- Record default selection and override/preservation behavior in the
+  [flashing handoff](../docs/operations/board-flashing-handoff.md#default-bench-wi-fi).
+  No device, firmware or server configuration is changed. Existing G003 portal
+  follow-ups remain unchanged. Documentation link/whitespace checks pass;
+  publish on `codex/g003-preparation` with unrelated model files preserved.
+
+Next useful step: use the saved default for future authorized bench provisioning;
+provide a specific network when a device needs an override.
+
 ## 2026-10-24 - G003 first installation and three-minute INA219 telemetry
 
 - Owner asks to flash the attached V3/INA219 as G003 and enable three-minute

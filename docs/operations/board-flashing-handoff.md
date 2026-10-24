@@ -98,6 +98,19 @@ Subsequent [R002 update](r002-release-update.md): released prerelease installed 
 
 Portal follow-up: [RAK neighbor and sensor power ingestion](radio-report-ingestion.md) is deployed in `bed40dd`, with SNNS/standard neighbor normalization and signed, channel-preserving INA219 data. Archive recovery, fresh R005/G001 normalization and isolated backup recovery pass. Historical gap statements below describe the earlier flashing sessions; current polarity/calibration and fresh G002 delivery still need verification.
 
+## Default bench Wi-Fi
+
+Owner selects the corrected, G003-verified network as the default bench Wi-Fi
+on **2026-10-24**. Read its exact case-sensitive SSID and password from ignored
+`private/bench/default-wifi.json` (`ssid` / `password`). Use this default when
+provisioning a bench device or when the owner requests the default bench Wi-Fi;
+an owner-supplied network override takes precedence. Ordinary updates preserve
+the device's existing network unless reconfiguration is part of the request.
+
+The local file matches G003's final profile through reboot and its successful
+MQTT observation. Keep credentials out of Git and command output. This saved
+preference does not change any currently configured board.
+
 ## Identify the requested board
 
 1. Check project and firmware Git status, preserving unrelated edits. With clean checkouts, pull the project with `--ff-only` and initialize its pinned submodules. Use the pinned commit rather than `git submodule update --remote`.
