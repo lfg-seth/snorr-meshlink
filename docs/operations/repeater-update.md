@@ -8,6 +8,12 @@ ignored storage.
 
 ## Current rollout status
 
+- **2026-10-24 R004:** owner-requested ordinary **2.7.26.4c96b9b** replaces
+  its INA219 diagnostic image. Full profile/key preservation and enabled
+  device/environment/power **180-second** settings pass through explicit reboot;
+  saved device cadence also supplies SNNS's 180-second baseline.
+  [Board evidence and limits](r004-three-minute.md). R004 now retains both
+  environment and INA219 power in the updater profile.
 - LOCAL-3's saved-interval source work is recorded in
   [the software verification record](#saved-snns-interval-software-verification).
   The owner-selected [October 24 bench](#r006-and-gateway-admin-bench---2026-10-24)
@@ -407,7 +413,8 @@ public release publication or CI verification.
 
 | Repeater | Device/battery | Temperature/environment | INA219 power | Passive SNNS |
 | --- | --- | --- | --- | --- |
-| R001–R005 | Enabled, 180 s | Enabled, 180 s | Disabled | Enabled, 180 s baseline |
+| R001–R003 / R005 | Enabled, 180 s | Enabled, 180 s | Disabled | Enabled, 180 s baseline |
+| R004 | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s | Enabled, 180 s baseline |
 | R006 | Enabled, 180 s | Disabled; interval remains dormant at 180 s | Enabled, 180 s | Enabled, 180 s baseline |
 
 These are the existing owner-selected sensor profiles with the new cadence.

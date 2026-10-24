@@ -1,5 +1,31 @@
 # Field testing and tangible results
 
+## 2026-10-24 - R004 ordinary firmware and INA219 three-minute profile
+
+Owner-requested R004 **`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, receives
+ordinary **rak4631 / 2.7.26.4c96b9b** from the reviewed local application image;
+its original diagnostic captures remain retained. Exact image hash and full
+original-profile equality pass after flashing. Complete intended
+owner/identity/keys/channel/local/module equality passes through an explicit
+reboot: CLIENT, enabled device/environment/INA219 power at **180 seconds**,
+over-LoRa SNNS with saved 180-second baseline, and separate standard
+NeighborInfo at 21,600 seconds. INA219 initializes/opens.
+
+Fresh automatic encrypted MQTT reports reach **both G001 and G002** over a
+validating-TLS subscription after the final reboot. Device **3.654 V**,
+environment **27.317 degrees C / 27.094% RH**, channel-1 INA219 power
+**3.660 V / -298.2 mA**, and the new boot's SNNS sequence 1/source uptime
+113 seconds pass independent wire-adapter validation. These are reported
+values, not calibrated physical-current/charging measurements.
+Two distinct automatic reports per type reach each gateway. Device/environment/
+power measurement gaps are **180 seconds**; SNNS sequences 1/2 share one boot
+and differ by **195 source-uptime seconds**, including the baseline and jitter.
+[Exact image, cadence and private evidence references](../docs/operations/r004-three-minute.md).
+
+Authenticated portal ingestion/cadence metadata, physical accuracy/bridge state,
+battery-only behavior, runtime, sustained operation and field coverage remain
+unverified. No other board/server/portal mutation or site installation occurs.
+
 ## 2026-10-24 - G003 first installation and INA219 gateway telemetry
 
 Owner-requested **G003 `!9e9f167c`** receives dedicated

@@ -1,5 +1,43 @@
 # Session log
 
+## 2026-10-24 - R004 latest ordinary firmware and three-minute INA219 reporting
+
+- Owner reconnects **R004 with INA219** and requests latest firmware plus
+  three-minute telemetry/SNNS. Identify **`!77fdb9f1` / USB
+  `820C9B4F0C2D7675` / COM17**, back up the full private profile and retain
+  historical diagnostic captures. Verify published `snorr/develop` and the
+  project pin both select **`4c96b9ba0`**; reuse the exact reviewed ordinary
+  **rak4631 / 2.7.26.4c96b9b** UF2, SHA256
+  `f83039d32c8637beff30f1a8d06e8addd106ad817f611dbc440b9bac04c65206`.
+  Application-only flash and fresh independent original-profile comparison
+  pass. Initial helper reconnect times out; a new read verifies the write
+  without another flash. No rebuild, factory reset or firmware-source change.
+- Complete intended profile/identity/keys/channel comparison passes through
+  explicit reboot at **17:33:47 UTC / 10:33:47 Pacific**: CLIENT, enabled
+  device/environment/INA219 power at **180 seconds**, private over-LoRa SNNS
+  using the saved 180-second baseline, separate standard NeighborInfo 21,600
+  seconds. INA219 initializes/opens; preserve other settings and set local
+  time afterward. Update R004's durable updater profile to retain INA219 power
+  and correct sensor-profile evidence for combined environment/INA219 boards.
+- Validating-TLS MQTT capture receives **two fresh automatic reports of each
+  device/environment/power/SNNS type through both G001 and G002** after final
+  reboot, with earlier boot/history packets excluded. Device/environment/power
+  measurement gaps are **180 seconds**. Same-boot SNNS sequences 1/2 differ by
+  **195 source-uptime seconds** (180 baseline plus jitter/scheduling); receipts
+  differ by 193.540/193.549 seconds. First channel-1 power is
+  **3.660 V / -298.2 mA**; physical accuracy/charging interpretation is unverified.
+- All **34 offline bench checks** and changed-document link/whitespace checks
+  pass. Initial sandbox COM/temp-directory restrictions require host-access
+  retries. Serial and MQTT handles close. Other boards/server/portal and
+  unrelated `3DModels/` remain untouched. Raw profiles/logs stay ignored.
+  [Exact evidence, values and limits](../docs/operations/r004-three-minute.md).
+  Publish coherent changes on **`codex/r004-three-minute`**.
+
+Next useful step: with authenticated server/portal access, reconcile R004's
+180-second cadence metadata and verify portal receipts/freshness. GH-4 retains
+physical bridge-state, calibration and battery-only questions; this flash does
+not resolve them. Release publication, sustained/field and runtime gates remain.
+
 ## 2026-10-24 - G004 disconnected; hardware investigation on hold
 
 - Owner disconnects G004 pending hardware investigation and requests closing

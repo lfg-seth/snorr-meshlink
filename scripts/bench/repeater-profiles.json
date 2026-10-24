@@ -7,7 +7,7 @@
     "R001": {"nodeId": "!a65601b3", "usbSerial": "AA474A4710B85C2C", "environment": true, "power": false},
     "R002": {"nodeId": "!b456f760", "usbSerial": "BADB1E79E9739FC4", "environment": true, "power": false},
     "R003": {"nodeId": "!05237743", "usbSerial": "397EBE4F36E1F126", "environment": true, "power": false},
-    "R004": {"nodeId": "!77fdb9f1", "usbSerial": "820C9B4F0C2D7675", "environment": true, "power": false},
+    "R004": {"nodeId": "!77fdb9f1", "usbSerial": "820C9B4F0C2D7675", "environment": true, "power": true},
     "R005": {"nodeId": "!f95b5501", "usbSerial": "E93C5FF0F97DD76B", "environment": true, "power": false},
     "R006": {"nodeId": "!da581e5f", "usbSerial": "E9B12C5CA98FBCB8", "environment": false, "power": true}
   }

@@ -19,8 +19,12 @@ verifies 180/300/900-second SNNS behavior through both gateways, preservation
 and interrupted-edit recovery, with rebooting-write ACK ambiguity recorded.
 R006 is restored to device/power 180, environment disabled and its original
 empty admin allowlist; both gateways remain receive-only/local-only.
-Authenticated portal acceptance remains pending. R001–R003/R005 still have ordinary `2.7.26.0b65f2e`; R004 has
-the separate `2.7.26.09d8a9d` INA219 diagnostic image. Published source is now pinned
+Authenticated portal acceptance remains pending. R001–R003/R005 still have ordinary `2.7.26.0b65f2e`.
+Owner-requested [R004 update](../../../docs/operations/r004-three-minute.md) replaces
+its diagnostic image with ordinary `2.7.26.4c96b9b`; device/environment/INA219
+power 180-second settings and full profile/key preservation pass through reboot.
+Historical diagnostic evidence remains retained; physical accuracy and
+battery-only behavior remain unresolved. Published source is now pinned
 at `4c96b9ba0`; the new production download pointer remains unset. The saved
 interval [software/build/review evidence](../../../docs/operations/repeater-update.md#saved-snns-interval-software-verification)
 is separate from the selected-board bench and remaining acceptance gates.
@@ -135,7 +139,8 @@ fix or completed verification; LOCAL-4 is an end-to-end deployment dependency.
 
 - [ ] Retain AHT detection and INA219 union/channel-1/error/multiplier fixes.
   Ordinary production images exclude INA219 debug and GPIO31 dummy-load flags.
-  Complete R004's evidence handoff before replacing its diagnostic image.
+  R004's diagnostic evidence is retained in the linked October 24 handoff;
+  its owner-requested ordinary-image update does not resolve physical accuracy.
 - [ ] Resolve release Actions publication, publish verified UF2/OTA artifacts,
   source/manifest/checksums and rollback version, then set the production pin.
   A successful local build or unpublished bundle is not a published release.

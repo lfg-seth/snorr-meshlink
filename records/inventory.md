@@ -1,5 +1,17 @@
 # Hardware inventory
 
+2026-10-24 R004 ordinary firmware / INA219 telemetry - Reconnected existing
+**`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, COM17, replaces diagnostic
+`2.7.26.09d8a9d` with verified ordinary **rak4631 / 2.7.26.4c96b9b** at the
+owner's request. Complete intended profile/keys/channel/radio settings persist
+through explicit reboot: CLIENT, enabled device/environment/**INA219 power**
+telemetry at **180 seconds**, over-LoRa SNNS with saved 180-second baseline,
+separate standard NeighborInfo at 21,600 seconds. INA219 initializes/opens.
+Historical temperature sensor remains enabled; no sensor removal is inferred.
+Accuracy, physical bridge state, battery-only behavior and runtime remain
+unverified. No stock quantity, purchase, site or equipment allocation change.
+[Exact image, delivery and limits](../docs/operations/r004-three-minute.md).
+
 2026-10-24 G004 disconnected / owner hold - Owner disconnects G004
 **`!849ae664`** pending hardware investigation and closes the chat. Retain the
 verified firmware installation and failed configuration evidence below. The

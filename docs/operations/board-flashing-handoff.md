@@ -1,5 +1,15 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **R004 `!77fdb9f1`** now runs ordinary **rak4631 /
+2.7.26.4c96b9b**, replacing its INA219 diagnostic image at the owner's request.
+Application hash and complete original-profile preservation pass. CLIENT,
+device/environment/**INA219 power** telemetry enabled at **180 seconds**, and
+over-LoRa SNNS using that saved 180-second baseline pass full intended-profile
+comparison through explicit reboot. Existing keys/channel/radio settings are
+preserved. [Exact image, delivery evidence and limits](r004-three-minute.md).
+Earlier diagnostic captures remain retained; physical calibration, bridge-state
+confirmation and battery-only behavior remain unresolved.
+
 2026-10-24 **G003 `!9e9f167c`** is commissioned from the Heltec factory demo
 with dedicated **heltec-v3-gateway / 2.7.26.4c96b9b**, a complete original
 flash backup and verified first-install images. CLIENT/receive-only private
