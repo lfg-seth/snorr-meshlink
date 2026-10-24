@@ -1,5 +1,12 @@
 # Hardware inventory
 
+2026-10-24 G004 disconnected / owner hold - Owner disconnects G004
+**`!849ae664`** pending hardware investigation and closes the chat. Retain the
+verified firmware installation and failed configuration evidence below. The
+board is not commissioned as a working gateway/time source. No additional
+hardware change, stock count or purchase is inferred; resume bench work only
+when the owner brings it forward.
+
 2026-10-24 G004 application installation / power hold - Independently identify
 the owner's V3/INA219/GT-U7 assembly on COM6 as ESP32-S3 v0.2 / 8 MB, MAC
 `b0:81:84:9a:e6:64`, node **`!849ae664`**, hardware ID

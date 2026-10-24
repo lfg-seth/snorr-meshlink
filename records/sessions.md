@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-10-24 - G004 disconnected; hardware investigation on hold
+
+- Owner disconnects G004 pending hardware investigation and requests closing
+  this chat. Stop bench work; serial handles were already closed. Move G004
+  out of Current into Next with an explicit owner hold.
+- Preserve the verified `2.7.26.4c96b9b` installation, five measured brownout
+  resets and incomplete configuration/GPS/time-sharing gates in the
+  [bench record](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+  No further hardware, firmware or server action; unrelated `3DModels/` stays
+  untouched. Publish the closure records on `codex/g004-gps-time` and archive
+  the chat after the handoff is saved.
+
+Next useful step: owner-led hardware investigation; resume provisioning and
+verification only when the owner brings G004 back. Documentation checks pass.
+
 ## 2026-10-24 - G004 firmware installed; configuration stopped by brownouts
 
 - Owner authorizes G003-style G004 provisioning, with GPS enabled, RF TX on

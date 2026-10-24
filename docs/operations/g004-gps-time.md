@@ -2,6 +2,12 @@
 
 ## Commissioning attempt - 2026-10-24
 
+**Owner hold:** on 2026-10-24 the owner disconnects G004 pending hardware
+investigation and requests closing the chat. Stop bench work; serial is already
+closed. Resume only when the owner brings the board/investigation forward.
+The verified firmware installation remains recorded below; commissioning and
+mesh time support remain incomplete.
+
 Owner authorizes setting G004 up like G003 with GPS enabled, RF TX on and
 normal position packets, then explicitly makes the old configuration disposable.
 Only the connected **COM6 / Heltec V3** is written. Independently identify
@@ -51,8 +57,9 @@ power telemetry/calibration/path remain unverified. Chip identification also
 reports flash voltage fixed to **3.3 V by eFuse**, rather than selected by GPIO45
 on this chip. A physical cold-power test with the GPS fitted is still required.
 
-Next: owner reconnects using a reliable powered USB port/short cable and, if
-fitted, a charged battery. Then rerun configuration and require complete
+When the owner resumes after hardware investigation/reconnect, check the power
+path, reliable powered USB/short cable and a charged battery if fitted. Then
+rerun configuration and require complete
 intended-profile equality through explicit reboot before observing GPS time,
 three-minute device/power telemetry and five-minute time-bearing position
 packets. The firmware image verification passes; the power/reset and saved
