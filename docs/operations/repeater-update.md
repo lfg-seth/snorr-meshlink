@@ -113,6 +113,11 @@ PlatformIO output; both final builds run sequentially with the same package
 path. The mapping is removed at handoff. Existing dependency/compiler warnings
 remain; no warning-free or hardware acceptance claim is made.
 
+PR #57's first Linux record check passes all eight runner regression tests but
+fails three links into the uninitialized firmware submodule. The read-only
+record workflow now checks out the pinned submodule before validating links;
+it does not build firmware or follow the development branch head.
+
 Private logs are under ignored `private/bench/local-3-snns-interval/`:
 `behavior-tests.log`, `sensor-tests.log`, `project-checks.log` and target build
 logs (`rak-reviewed-build.log`, `gateway-short-path-build.log`, plus initial
