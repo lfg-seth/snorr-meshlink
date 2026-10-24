@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-24 - Live battery allocations and decommissioned nodes
+
+- Owner removes decommissioned B001/R005 from the active portal list; preserve history and take a consistent private database backup first. B001's former board remains assigned to G004.
+- Update B002 to 3000 mAh LiPo/no solar; G003 to eight standard EVE cells/one large 5 V solar panel; G004 to four EVE cells/two panels; R006 to four EVE cells/one panel. Configure the supported battery profiles; retain unknown total 18650-pack capacity pending wiring confirmation. [Allocation and verification](inventory.md#2026-10-24---active-device-battery-and-solar-allocations).
+- Authenticated live snapshot verifies four profiles and removal of both old entries; history-table counts do not decrease. Documentation link/whitespace checks pass. No radio/source deployment/demo mutation; R004 allocation remains unknown.
+- Preserve unrelated working-tree hardware records, including earlier inventory edits; publish only this session's records on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: refresh the portal cards; confirm pack wiring/capacities and R004's battery allocation when available. LOCAL-7/LOCAL-8 remain deferred.
+
 ## 2026-10-24 - Device-card battery summary ticket
 
 - Capture **LOCAL-8** in the [wishlist](wishlist.md#device-card-battery-summary-without-duplicate-sensor-readings) and Deferred tracker: remove the Sensor voltage & current section and consolidate battery percentage, voltage, charging/discharging state and current at the top of device cards.
