@@ -40,6 +40,10 @@ The portal opens as demo admin automatically. To review member access, exit the 
 
 ## Build and check
 
+For focused checks from the repository root, see [the shared check runner](scripts/README.md).
+`python scripts/check-project.py` checks changed documentation; choose component
+scopes explicitly when code changes.
+
 ```sh
 # Build the frontend into portal/dist/
 npm --prefix portal run build

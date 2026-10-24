@@ -26,6 +26,24 @@ Evidence: [rollout and release state](../../../docs/operations/repeater-update.m
 
 ## Required firmware and configuration work
 
+### Assignment sequence
+
+Select one outcome at a time through the tracker. These boundaries partition
+the criteria below; they do not create a second queue or authorize a board run.
+
+| Outcome | Lane / inputs | Completion boundary |
+| --- | --- | --- |
+| [Saved SNNS interval](../../tasks/local-3-snns-interval.md) | Software; pinned source and toolchain | Section 1 code, actual-source tests and affected builds; hardware checks remain explicit. |
+| Selected-controller remote administration | Bench; interval implementation, identified board/controller and authorized keys | Section 2 authorized/unauthorized behavior, relay path, profile restoration and reboot evidence. |
+| Outage-safe neighbor freshness contract | Software; existing delay evidence and gateway coordination | Section 3 decision and replay/ingestion tests; delayed reports cannot revive stale links. Implement the selected contract before live acceptance. |
+| RAK release artifacts and updater integration | Software; reviewed changes and LOCAL-6 metadata foundation | Section 5 source/build/manifest/CI/public-download verification and rollback pointer; no board rollout. |
+| Selected-board rollout and receipt checks | Bench; verified artifacts, portal access and named board | Section 5 per-board identity/profile/reboot and both-gateway/authenticated receipts. |
+| Battery-only soak and deployment gate review | Bench; rollout, GH-4/GH-8/LOCAL-4 and agreed criteria | Section 5 sustained measurements plus dependency disposition; field gates remain separate. |
+
+Remote-admin setup and freshness design can be prepared independently; their
+implementation must coordinate shared firmware writes. A ready software step
+can proceed while a selected-board test waits for access/hardware.
+
 ### 1. Remotely configurable SNNS interval
 
 - [ ] Make RAK over-LoRa SNNS use the saved

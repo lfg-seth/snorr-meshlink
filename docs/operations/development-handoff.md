@@ -4,7 +4,7 @@ Tracking handoff updated 2026-10-21; dated hardware/service evidence below is un
 
 ## Each time you switch machines
 
-Before leaving, update the [local tracker](../../.scratch/TRACKER.md) if status or the next action changed, and append a brief handoff to `records/sessions.md`. Commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`. On the receiving machine, first check `git status`; preserve any local work before switching or pulling. Use `main` on both machines; permanent local tracking was accepted on 2026-10-23. Firmware development uses `snorr/develop`, while this repository pins its exact source. With a clean checkout:
+Before leaving, update the [local tracker](../../.scratch/TRACKER.md) if status or the next action changed, and add the compact [workflow handoff](local-tracking.md#completion-and-handoff) to `records/sessions.md`. Commit explicit publishable paths and push the current branch. Keep `main` tracking `origin/main`; use short-lived branches for assignments. On the receiving machine, first check `git status`; preserve any local work before switching or pulling. Resume an unfinished assignment on its published branch, or use main for new work. Permanent local tracking was accepted on 2026-10-23. Firmware development uses `snorr/develop`, while this repository pins its exact source. With a clean checkout and no unfinished assignment to resume:
 
 ```sh
 git fetch origin

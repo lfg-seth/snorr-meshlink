@@ -8,26 +8,30 @@ communications, then law-enforcement expansion. Listing work is not authorizatio
 
 ## Current
 
-| Task | Handoff / next action |
-| --- | --- |
-| R006 map placement / portal acceptance | Native firmware/profile and three automatic cycles through both gateways pass on ordinary `2.7.26.0634b77`. Next: restore portal access, apply the private map point/cadence metadata and verify authenticated receipts. Release/updater and remaining-board rollout now belong to [LOCAL-3](pilot/issues/25-production-firmware-readiness.md); R001-R005 remain unchanged. [Evidence](../docs/operations/repeater-update.md#r006-installed-verification). |
-| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | R006 ordinary 2.7.26.0634b77 has INA219-only/device+power 180 s; full profile/reboot and three signed channel-1 power cycles through both gateways pass. Portal verification for this update is pending access. Prior diagnostic held triples were stable without amp-scale spikes. Next: confirm shunt marking/polarity and compare simultaneous physical shunt mV/series battery current; accuracy and battery-only behavior remain unresolved. Serial closed. R004's diagnostic image and pending bridge-state confirmation are unchanged. [Current hardware](../docs/operations/repeater-update.md#r006-installed-verification), [INA219 evidence](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23). |
+| Task | Lane | Handoff / next action |
+| --- | --- | --- |
+| R006 map placement / portal acceptance | Software / live verification | Three automatic cycles through both gateways pass on `2.7.26.0634b77`. Blocker: portal access. Next: apply private map/cadence metadata and verify authenticated receipts. [Evidence](../docs/operations/repeater-update.md#r006-installed-verification); release/other-board work belongs to LOCAL-3. |
+| [GH-4 — INA219 same-path diagnosis](../records/tracking-import/github-4.md) | Bench | R006 profile/reboot and three signed power cycles pass; physical accuracy and battery-only behavior remain unresolved. Next: confirm shunt/polarity and compare simultaneous shunt mV/series battery current. Serial closed; R004 diagnostics/bridge-state question unchanged. [Hardware](../docs/operations/repeater-update.md#r006-installed-verification), [audit](../docs/operations/ina219-audit.md#r006-production-preparation--2026-10-23). |
 
 ## Next
 
 Ready follow-ups and items needing scope/prerequisites; select with the owner before starting. Imported Triage stays unresolved rather than becoming Ready by migration.
 
-| Task | Next action / prerequisite |
-| --- | --- |
-| [LOCAL-6 - SNORR firmware releases](pilot/issues/28-snorr-firmware-releases.md) | Parent of LOCAL-3 and LOCAL-4. Owner establishes [SNORR 0.1.0](../records/firmware-releases/0.1.0.md) as current development baseline; no beta suffix, production 1.0.0. Source and mixed installed-build ledger recorded. Next: implement embedded product version and coordinated target manifests/changelog/rollout for the next numbered release; no new build or flash claimed. |
-| [LOCAL-3 - Production firmware readiness](pilot/issues/25-production-firmware-readiness.md) | Child of LOCAL-6. Scoped before mountain redeployment: configurable SNNS using device telemetry interval, remote-admin acceptance, outage-safe neighbor freshness, gateway readiness dependency LOCAL-4, verified release and per-board soak/receipt checks. Consumes GH-51/GH-52, remaining GH-26/GH-27 acceptance and firmware rollout work; GH-4/GH-8/LOCAL-4 and field gates remain dependencies. Next: implement/test saved interval, then verify a selected bench controller/board; no hardware action in ticket capture. |
-| [LOCAL-4 - Heltec V3 gateway readiness](pilot/issues/26-gateway-production-readiness.md) | Child of LOCAL-6 for firmware/release readiness; hardware gates remain here. Plan 4/8-cell 18650 power, two 60 x 100 mm panels or external advertised 6 W/5 V USB solar, INA219 and Muzi whip; measure Wi-Fi/energy, design/print enclosure, verify gateway firmware/security/reconnect and release. Consumes LOCAL-3 gateway-specific work and GH-40 remaining acceptance; shared SNNS contract stays LOCAL-3. Next: identify exact parts and agree power measurements. [Hardware docs](../docs/hardware/README.md). |
-| [GH-2 — Phone-free GPS freshness/runtime](../records/tracking-import/github-2.md) | Ready: agree run plan and available B001/B002 hardware, then measure measurement age, two-gateway delivery and battery runtime. Preserve 15-minute stale threshold, four-hour minimum and 12-hour target. |
-| [GH-3 — Forced relay and outage/local viewing](../records/tracking-import/github-3.md) | Ready: define a test excluding direct reception; verify relay, backhaul recovery and useful offline viewing without silently changing radio profiles. |
-| [GH-39 — Bounded demo battery-history recovery](../records/tracking-import/github-39.md) | Ready: correct/check the installed verifier's unconditional untruncated-history assertion without truncating history or changing production data. R006 backup reobserves it; independent exact bounded-history/full-database recovery passes, with the installed verifier untouched. [Evidence](../docs/operations/ina219-audit.md#recovery-evidence). |
-| [GH-7 — Off-host backup recovery](../records/tracking-import/github-7.md) | Triage: choose an authorized private destination/retention plan, then verify separate live/demo recovery beyond the current host. |
-| [GH-8 — Recurring high channel utilization](../records/tracking-import/github-8.md) | Triage: capture the recurrence with the existing receive-only tools before identifying cause or changing radio settings. |
-| [GH-18 — Measured field-pilot plan](../records/tracking-import/github-18.md) | Triage, blocked on bench/relay/power evidence: agree available devices, access, route and acceptance thresholds before a field run. |
+Select one Software outcome; keep a Bench plan/run available when inputs permit.
+Linked briefs and parent assignment tables own scope, not status. [Dispatch and
+handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
+
+| Task | Lane | Next action / prerequisite |
+| --- | --- | --- |
+| [LOCAL-3 - Production firmware readiness](pilot/issues/25-production-firmware-readiness.md) | Software → Bench | Next coding outcome: [saved SNNS interval](tasks/local-3-snns-interval.md), then selected-controller/admin acceptance. Parent sequence retains freshness, release, per-board and soak gates; GH-4/GH-8/LOCAL-4 and field dependencies stay open. |
+| [GH-2 — Phone-free GPS freshness/runtime](../records/tracking-import/github-2.md) | Bench preparation → run | Next: [prepare the B001/B002 run plan](tasks/gh-2-run-plan.md), then agree hardware, sampling and missing/stale criteria before measuring. Preserve 15-minute stale, four-hour minimum/12-hour target. |
+| [LOCAL-6 - SNORR firmware releases](pilot/issues/28-snorr-firmware-releases.md) | Software | Next: [version/manifest foundation](tasks/local-6-release-foundation.md); coordinate shared firmware writes with LOCAL-3. [0.1.0](../records/firmware-releases/0.1.0.md) remains the mixed-fleet development baseline, production 1.0.0. Artifact publication and rollout follow separately. |
+| [LOCAL-4 - Heltec V3 gateway readiness](pilot/issues/26-gateway-production-readiness.md) | Bench preparation / Software | Next: [power plan and exact-parts checklist](tasks/local-4-power-plan.md). Parent assignment boundaries separate measurements, enclosure, TLS/reconnect, sensor, release and soak work; shared SNNS contract stays LOCAL-3. |
+| [GH-3 — Forced relay and outage/local viewing](../records/tracking-import/github-3.md) | Bench | Ready: define a test excluding direct reception, then verify relay, backhaul recovery and useful offline viewing with agreed devices/criteria. Preserve radio permissions/profiles. |
+| [GH-39 — Bounded demo battery-history recovery](../records/tracking-import/github-39.md) | Software / live verification | Ready: correct/check the installed verifier's untruncated-history assertion. Independent exact bounded-history/full-database recovery passes; installed verifier remains unchanged. [Evidence](../docs/operations/ina219-audit.md#recovery-evidence). |
+| [GH-7 — Off-host backup recovery](../records/tracking-import/github-7.md) | Software / decision | Triage: choose an authorized private destination/retention plan, then verify separate live/demo recovery beyond the current host. |
+| [GH-8 — Recurring high channel utilization](../records/tracking-import/github-8.md) | Bench | Triage: capture recurrence with existing receive-only tools before diagnosis or radio changes. |
+| [GH-18 — Measured field-pilot plan](../records/tracking-import/github-18.md) | Bench | Triage; needs bench/relay/power evidence, agreed devices/access/route and acceptance thresholds before a field run. |
 
 ## Verify
 

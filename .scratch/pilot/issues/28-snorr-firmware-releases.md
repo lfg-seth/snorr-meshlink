@@ -55,6 +55,25 @@ and configuration behavior, and persisted configuration migrations.
 
 ## Implementation and acceptance
 
+### Assignment boundaries
+
+These steps partition release work; current state remains in the tracker.
+LOCAL-3/LOCAL-4 supply target changes and acceptance, rather than creating
+independent product-version sequences.
+
+| Outcome | Prerequisite | Completion boundary |
+| --- | --- | --- |
+| [Version and manifest foundation](../../tasks/local-6-release-foundation.md) | Pinned source, existing tooling and readback compatibility | One product version, cross-target manifest validation and supported identity readback; no new release publication. |
+| Explicit release scope and changelog | Owner-selected next version/targets and compatibility assessment | Named target matrix, profile migrations, changes/limits and selected release gates. |
+| Immutable target build and publication | Reviewed source, working CI and selected scope | Exact artifacts, manifests/checksums, rollback and independently verified downloads. |
+| Fleet ledger migration | Existing inventory/manifests and per-board evidence | Desired versus last-verified installed identity/profile and rollout state; unknowns retained. |
+| Selected-device rollout | Published matching artifact, named board and operation scope | Per-board profile/key preservation, readback, receipts and rollback evidence. |
+| Release acceptance | Child source/bench/sustained/field evidence required for the selected stage | Gate-by-gate disposition and named supported fleet; development release versus production readiness explicit. |
+
+Shared version/build files require sequential ownership when another worker
+changes the same firmware checkout. Product baseline, built bytes and installed
+fleet remain separate claims.
+
 - [ ] Store one authoritative SNORR product version in the firmware source and
   build all included targets from the same reviewed source commit and pinned
   dependencies. Resolve current release CI execution before relying on it.
