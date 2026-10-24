@@ -9,6 +9,15 @@ This reassigns existing hardware; it does not add a V4 or preserve B001 as a
 second simultaneous device. Historical B001 measurements retain their identity.
 The [V3 failure/commissioning record](g004-gps-time.md) remains historical.
 
+## Planned power hardware
+
+Owner specifies **4 × 18650 cells** and **2 × 100 × 60 mm solar panels** for
+G004 on 2026-10-24. Record this as the intended assembly; installation and
+operation have not been verified. G004-specific cell model/capacity, pack
+wiring, panel electrical ratings/wiring and charging hardware remain unknown.
+Do not infer pack capacity, solar wattage or runtime from these quantities.
+Confirm the actual parts and power path before a battery/solar acceptance run.
+
 ## Selected firmware and profile
 
 Published fork target **`heltec-v4-gateway`** inherits ordinary **heltec-v4**,

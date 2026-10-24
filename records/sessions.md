@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-10-24 - Record G004 battery and solar plan
+
+Owner specifies **4 × 18650 cells** and **2 × 100 × 60 mm solar panels** for
+V4 G004 **`!699c2ed8`**. Update inventory, the G004 operations record and its
+existing tracker entry as planned hardware. Installation, cell capacity/pack
+wiring, panel electrical ratings, charging path and runtime remain unverified;
+no stock totals, purchases or combined ratings are inferred. No radio or server
+settings change. Publish this record on **`codex/g004-v4`** after documentation
+link/whitespace checks.
+
+Next useful step: confirm G004's actual cells, pack/panel wiring and charging
+hardware before measuring battery/solar performance; the existing GPS/time and
+portal acceptance checks remain open.
+
 ## 2026-10-24 - Replace failed G004 V3 with V4 and three-minute reporting
 
 - Owner reports V3 G004 **`!849ae664`** failed hardware and selects the V4

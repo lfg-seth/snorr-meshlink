@@ -1,5 +1,13 @@
 # Hardware inventory
 
+2026-10-24 G004 planned power hardware - Owner specifies **4 × 18650 cells**
+and **2 × 100 × 60 mm solar panels** for replacement V4 G004 **`!699c2ed8`**.
+This is the intended assembly, not confirmation of installation or measured
+runtime. G004-specific cell model/capacity and pack wiring, panel electrical
+ratings/wiring, charging hardware and physical power path remain unverified.
+No stock-total change, purchase, cost or combined battery/panel rating is
+inferred. [G004 power plan](../docs/operations/g004-v4-gateway.md#planned-power-hardware).
+
 2026-10-24 G004 V4 replacement - Owner reports former V3 G004
 **`!849ae664`** failed hardware and selects the connected Heltec V4 with its
 default GPS and INA219 on **SDA17/SCL18** as G004. Independent API/USB
