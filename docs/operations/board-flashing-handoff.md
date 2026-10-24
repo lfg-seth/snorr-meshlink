@@ -107,6 +107,12 @@ provisioning a bench device or when the owner requests the default bench Wi-Fi;
 an owner-supplied network override takes precedence. Ordinary updates preserve
 the device's existing network unless reconfiguration is part of the request.
 
+The same default is saved as concealed variables **MESHLINK_BENCH_WIFI_SSID**
+and **MESHLINK_BENCH_WIFI_PASSWORD** in the **SNORR MeshLink — Pilot**
+1Password Developer Environment. Use these named values when provisioning
+another machine's private local copy. Existing gateway-specific settings remain
+separate; saving the default does not update them automatically.
+
 The local file matches G003's final profile through reboot and its successful
 MQTT observation. Keep credentials out of Git and command output. This saved
 preference does not change any currently configured board.

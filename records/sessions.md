@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-24 - Default bench Wi-Fi saved in 1Password
+
+- At the owner's request, retry 1Password authentication successfully and select
+  the existing **SNORR MeshLink — Pilot** Developer Environment. Add concealed
+  **MESHLINK_BENCH_WIFI_SSID** and **MESHLINK_BENCH_WIFI_PASSWORD** for the
+  previously selected, corrected G003/default bench network. The update succeeds;
+  a names-only follow-up confirms both variables exist without reading secrets.
+- Link the named 1Password values from the
+  [default bench Wi-Fi handoff](../docs/operations/board-flashing-handoff.md#default-bench-wi-fi).
+  Retain the ignored local default and existing gateway-specific variables.
+  No radio or server configuration change. Documentation links/whitespace pass;
+  publish sanitized records on `codex/g003-preparation`.
+
+Next useful step: use the saved default for future authorized bench provisioning,
+including another machine's private local copy when needed.
+
 ## 2026-10-24 - Default bench Wi-Fi saved
 
 - Owner selects G003's corrected, working Wi-Fi as the default for future
