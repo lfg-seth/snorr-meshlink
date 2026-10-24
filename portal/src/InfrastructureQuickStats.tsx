@@ -1,12 +1,10 @@
-import BatteryCharge from './BatteryCharge';
-import PowerReadings from './PowerReadings';
+import BatterySummary from './BatterySummary';
 import BatteryChart from './BatteryChart';
 import type { LoadBatteryHistory } from './BatteryChart';
 import DeviceSheet from './DeviceSheet';
 import { temperatureLabel } from './temperature';
 import type { Infrastructure } from './demo';
 import { ageLabel, timeLabel } from './demo';
-import { batteryPower } from './battery';
 import { metricTime } from './telemetry-time';
 import { infrastructureLabel } from './infrastructure-map';
 import type { ReactNode } from 'react';
@@ -27,7 +25,6 @@ export default function InfrastructureQuickStats({
   relationships?: ReactNode;
   loadBatteryHistory?: LoadBatteryHistory;
 }) {
-  const power = batteryPower(device, now);
   const freshness = (metric: string) => {
     const at = metricTime(device, metric, now);
     const minutes =
@@ -50,24 +47,8 @@ export default function InfrastructureQuickStats({
       {!online && (
         <p className="small muted">Feed offline · retained readings</p>
       )}
+      <BatterySummary infrastructure={device} now={now} online={online} />
       <dl className="infra-quick-grid">
-        <div>
-          <dt>Estimated battery percentage</dt>
-          <dd><BatteryCharge device={device} now={now} online={online} /></dd>
-        </div>
-        <div>
-          <dt>Battery voltage</dt>
-          <dd>
-            {device.battery === null
-              ? 'Unknown'
-              : `${device.battery.toFixed(3)} V`}
-            <small>{freshness('battery')}</small>
-          </dd>
-        </div>
-        <div>
-          <dt>{power.label}</dt>
-          <dd>{power.amount}</dd>
-        </div>
         {device.temperature !== null && (
           <div>
             <dt>Temperature</dt>
@@ -96,7 +77,6 @@ export default function InfrastructureQuickStats({
         </div>
       </dl>
       <BatteryChart device={device} now={now} loadHistory={loadBatteryHistory} />
-      <PowerReadings device={device} now={now} />
       {relationships}
     </DeviceSheet>
   );

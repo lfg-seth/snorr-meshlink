@@ -39,6 +39,7 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 | Task | Remaining check / evidence |
 | --- | --- |
+| [LOCAL-8 — Device-card battery summary](../records/wishlist.md#device-card-battery-summary-without-duplicate-sensor-readings) | Source ready on `codex/local-8-battery-summary`: shared top summary, sensor section/duplicate current removed; consumes GH-44/GH-45 presentation overlap. 60 portal tests/typecheck/build and synthetic desktop/mobile review pass. Next: review/merge, then separately authorize manual deployment and authenticated owner-device acceptance. [Evidence and source limits](../docs/operations/device-card-battery-summary.md). |
 | [GH-9 — Expanded demo release](../records/tracking-import/github-9.md) | Preserve completed release evidence; finish native review of battery/power/humidity/neighbor examples and remaining imported acceptance. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-21 — Neighbor minimap navigation](../records/tracking-import/github-21.md) | Deployed; verify native desktop/mobile endpoint interaction and retained relationship/viewport behavior. [Release](../docs/operations/portal-lxc.md#demo-feature-examples-and-minimap-navigation--2026-10-20). |
 | [GH-23 — MeshMonitor acceptance](../records/tracking-import/github-23.md) | Native views, two-gateway behavior, storage growth and off-host recovery remain; retain read-only/isolation boundaries. [Operations](../docs/operations/meshmonitor-lxc.md). |
@@ -65,8 +66,6 @@ Owner activation is required before research, design, implementation or testing.
 | [GH-36 — Default map center](../records/tracking-import/github-36.md) | Wishlist: center on all node locations. |
 | [GH-37 — Tracking session controls](../records/tracking-import/github-37.md) | Wishlist: start/stop/restart sessions while the radio stays powered. |
 | [GH-43 — Neighbor card cleanup/two-hour expiry](../records/tracking-import/github-43.md) | Presentation wishlist remains deferred; GH-47's corrective freshness work is a separate scope. |
-| [GH-44 — Hide absent sensor values](../records/tracking-import/github-44.md) | Wishlist: omit sensor voltage/current when sensors are absent. |
-| [GH-45 — Member battery percentage](../records/tracking-import/github-45.md) | Wishlist: percentage beside GPS quality on node cards. |
 | [GH-48 — Remove Endpoint locations](../records/tracking-import/github-48.md) | Wishlist: remove the neighbor-card section. |
 | [GH-49 — Longer sign-in persistence](../records/tracking-import/github-49.md) | Wishlist: reproduce roughly hourly reauthentication when activated; cause/lifetime remain unknown. |
 | [LOCAL-1 — Infrastructure page overhaul](../records/wishlist.md#infrastructure-page-overhaul) | Wishlist: richer clickable device summary cards including member devices; readable current-neighbor overview; optional collapsed, sortable, paginated debug table with timestamps; move useful unique detail into full cards. Await owner activation. |

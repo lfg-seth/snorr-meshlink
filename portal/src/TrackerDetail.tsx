@@ -3,15 +3,17 @@ import CoordinateCopy from './CoordinateCopy';
 import DeviceSheet from './DeviceSheet';
 import TrackerBatteryIcon from './TrackerBatteryIcon';
 import GPSQuality from './GPSQuality';
+import BatterySummary from './BatterySummary';
 import type { Tracker } from './demo';
 import { activeTimeLabel, latestRecordedSession } from './recorded-session';
 import { clockTimeLabel, observationLabel, trackerStatus } from './tracker';
 import type { ReactNode } from 'react';
 import { trackerMarkerClass } from './map-markers';
 
-export default function TrackerDetail({ selected, now, label, mapLabel = selected.shortName, showTrail, onTrailChange, onClose, relationships }: {
+export default function TrackerDetail({ selected, now, online = true, label, mapLabel = selected.shortName, showTrail, onTrailChange, onClose, relationships }: {
   selected: Tracker;
   now: number;
+  online?: boolean;
   label: string;
   mapLabel?: string;
   showTrail: boolean;
@@ -34,6 +36,8 @@ export default function TrackerDetail({ selected, now, label, mapLabel = selecte
       className="tracker-detail" closeLabel="Close tracker details" onClose={onClose}
       mapNodes={[{ id: selected.id, label: mapLabel, markerClassName: trackerMarkerClass(selected, now, true),
         coordinates: selected.position ? [selected.position.longitude, selected.position.latitude] : null }]}>
+      <BatterySummary member={selected} now={now} online={online}
+        gpsQuality={<GPSQuality key={selected.id} position={selected.position} />} />
       <section aria-label="Location">
         <h3>Location</h3>
         <dl className="detail-grid tracker-location">
@@ -52,10 +56,6 @@ export default function TrackerDetail({ selected, now, label, mapLabel = selecte
           <div>
             <dt>Last Heard</dt>
             <dd>{observationLabel(contactAt, now)}</dd>
-          </div>
-          <div className="tracker-gps-quality">
-            <dt>GPS quality</dt>
-            <dd><GPSQuality key={selected.id} position={selected.position} /></dd>
           </div>
         </dl>
       </section>

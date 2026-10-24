@@ -1,10 +1,7 @@
-import BatteryCharge from './BatteryCharge';
 import BatteryChart from './BatteryChart';
 import type { LoadBatteryHistory } from './BatteryChart';
 import type { Infrastructure } from './demo';
-import { ageLabel } from './demo';
-import { batterySamples, batteryPower } from './battery';
-import { metricTime } from './telemetry-time';
+import { batterySamples } from './battery';
 
 const stamp = (at: string) =>
   new Date(at).toLocaleString([], {
@@ -17,45 +14,19 @@ const stamp = (at: string) =>
 export default function BatteryHistory({
   device,
   now,
-  online,
   loadHistory,
 }: {
   device: Infrastructure;
   now: number;
-  online: boolean;
   loadHistory?: LoadBatteryHistory;
 }) {
   const all = batterySamples(device.samples, now);
-  const cadence = device.reportCadenceMinutes?.battery ?? device.cadenceMinutes;
-  const timeout = device.missingTimeoutMinutes?.battery ?? cadence * 3;
-  const power = batteryPower(device, now);
-  const readingAt = metricTime(device, 'battery', now);
-  const stale = !readingAt || now - Date.parse(readingAt) >= timeout * 60000;
   return (
     <section className="battery-history" aria-label="Battery detail">
       <div className="panel-heading">
         <div>
-          <h3>Battery & power</h3>
+          <h3>Battery history</h3>
           <p className="small muted">Voltage history · local time</p>
-        </div>
-      </div>
-      <div className="battery-stats">
-        <div><span>Estimated battery percentage</span><BatteryCharge device={device} now={now} online={online} /></div>
-        <div>
-          <span>Last voltage</span>
-          <strong>
-            {device.battery === null ? '—' : `${device.battery.toFixed(3)} V`}
-          </strong>
-          <small>
-            {readingAt
-              ? `${ageLabel(Math.max(0, (now - Date.parse(readingAt)) / 1000))} ago`
-              : 'Awaiting first reading'}
-          </small>
-        </div>
-        <div>
-          <span>{power.label}</span>
-          <strong>{power.amount}</strong>
-          {(!online || stale) && <small>Historical reading</small>}
         </div>
       </div>
       <BatteryChart device={device} now={now} loadHistory={loadHistory} />

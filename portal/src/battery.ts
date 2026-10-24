@@ -1,3 +1,5 @@
+import type { Infrastructure } from './demo.ts';
+
 export type BatterySample = { at: string; volts: number };
 
 export function batterySamples(samples: BatterySample[], now: number) {
@@ -70,22 +72,36 @@ export function batteryTrend(
 
 export { batteryChargeEstimate } from './battery-charge.ts';
 
-// Positive battery current means charging; negative means discharging.
-// A voltage slope supplies direction only and must never be relabelled as mA.
+// Current is a sensor-path measurement, not proof of whole-battery accounting.
+// The ordinary INA219 firmware reports channel 1; legacy firmware reports the
+// environment metric too. Prefer channel 1 to avoid displaying both copies.
+// Other/multiple power channels have no battery-path mapping in this contract.
+export function batteryCurrent(readings: Infrastructure['powerReadings'] = []) {
+  const channels = readings.filter(r => /^power[1-8]CurrentMa$/.test(r.metric));
+  const candidates = channels.length ? channels : readings.filter(r => r.metric === 'sensorCurrentMa');
+  if (candidates.length !== 1 || (channels.length && candidates[0].metric !== 'power1CurrentMa')) return null;
+  return Number.isFinite(candidates[0].value) ? candidates[0] : null;
+}
+
+// Never infer mA from voltage slope or charge direction from an unmarked sign.
 export function batteryPower(device: {
-  batteryCurrentMa?: number | null;
+  powerReadings?: Infrastructure['powerReadings'];
   samples: BatterySample[];
   cadenceMinutes: number;
   reportCadenceMinutes?: Record<string, number>;
   missingTimeoutMinutes?: Record<string, number>;
 }, now: number) {
-  const current = device.batteryCurrentMa;
+  const reading = batteryCurrent(device.powerReadings);
   const timeout = device.missingTimeoutMinutes?.battery ??
     (device.reportCadenceMinutes?.battery ?? device.cadenceMinutes) * 3;
-  const measured = current != null && Number.isFinite(current);
+  const trend = batteryTrend(device.samples, now, timeout);
   return {
-    label: measured ? (current > 0 ? 'Charging' : current < 0 ? 'Discharging' : 'Steady')
-      : batteryTrend(device.samples, now, timeout).label,
-    amount: measured ? `${Math.abs(current).toFixed(1)} mA` : '— mA',
+    label: reading?.currentConvention === 'positive-charging'
+      ? `${reading.value > 0 ? 'Charging' : reading.value < 0 ? 'Discharging' : 'Steady'} (sensor path)`
+      : trend.rate !== null ? `${trend.label} (voltage estimate)` : 'Unknown',
+    amount: reading ? `${reading.value > 0 ? '+' : ''}${reading.value.toFixed(1)} mA` : 'Unknown',
+    reading,
+    trend: !reading || reading.currentConvention !== 'positive-charging',
+    trendAt: batterySamples(device.samples, now).at(-1)?.at ?? null,
   };
 }

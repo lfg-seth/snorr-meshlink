@@ -83,7 +83,7 @@ export default function MapPage({
           />
       </Suspense>
       {selectedTracker && <TrackerDetail key={selectedTracker.id} selected={selectedTracker}
-        now={now}
+        now={now} online={online}
         label={labels[selectedTracker.id] ?? selectedTracker.shortName}
         mapLabel={markerLabels[selectedTracker.id]}
         showTrail={trailId === selectedTracker.id}

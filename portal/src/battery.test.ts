@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { batterySamples, batteryTrend, batteryPower } from './battery.ts';
+import { batterySamples, batteryTrend, batteryPower, batteryCurrent } from './battery.ts';
 const now = Date.parse('2026-10-15T12:00:00Z');
 const sample = (minutes: number, volts: number) => ({
   at: new Date(now - minutes * 60000).toISOString(),
@@ -86,12 +86,40 @@ test('EVE estimate is nonlinear, rounded and restricted to configured 1S batteri
 });
 
 
-test('power uses signed current in mA and never converts a voltage slope to current', () => {
-  const device = { cadenceMinutes: 15, samples: [sample(20, 4), sample(10, 3.9), sample(0, 3.8)] };
-  assert.deepEqual(batteryPower(device, now), { label: 'Discharging', amount: '— mA' });
-  for (const value of [null, NaN, Infinity])
-    assert.equal(batteryPower({ ...device, batteryCurrentMa: value }, now).amount, '— mA');
-  assert.deepEqual(batteryPower({ ...device, batteryCurrentMa: 125.25 }, now), { label: 'Charging', amount: '125.3 mA' });
-  assert.deepEqual(batteryPower({ ...device, batteryCurrentMa: -32 }, now), { label: 'Discharging', amount: '32.0 mA' });
-  assert.deepEqual(batteryPower({ ...device, batteryCurrentMa: 0 }, now), { label: 'Steady', amount: '0.0 mA' });
+const reading = (metric: string, value: number, marked = true) => ({
+  metric, value, measuredAt: sample(0, 4).at, receivedAt: sample(0, 4).at,
+  timestampQuality: 'valid', ...(marked ? { currentConvention: 'positive-charging' as const } : {}),
+});
+
+test('current selection uses the INA219 channel or legacy source without arbitrary channel fallback', () => {
+  const primary = reading('power1CurrentMa', 0);
+  const legacy = reading('sensorCurrentMa', -32);
+  assert.equal(batteryCurrent([legacy, primary]), primary);
+  assert.equal(batteryCurrent([legacy]), legacy);
+  for (const rows of [[], [reading('power3CurrentMa', 10)],
+    [primary, reading('power2CurrentMa', 10)], [reading('power1CurrentMa', NaN), legacy],
+    [reading('power1CurrentMa', Infinity)], [primary, primary]]) assert.equal(batteryCurrent(rows), null);
+});
+
+test('power keeps measured signs/zero but requires confirmed convention for direction', () => {
+  const device = { cadenceMinutes: 15, samples: [] };
+  for (const [value, label, amount] of [[125.25, 'Charging', '+125.3 mA'],
+    [-32, 'Discharging', '-32.0 mA'], [0, 'Steady', '0.0 mA']] as const) {
+    const power = batteryPower({ ...device, powerReadings: [reading('power1CurrentMa', value)] }, now);
+    assert.equal(power.label, `${label} (sensor path)`);
+    assert.equal(power.amount, amount);
+    const unmarked = batteryPower({ ...device, powerReadings: [reading('power1CurrentMa', value, false)] }, now);
+    assert.equal(unmarked.label, 'Unknown');
+    assert.equal(unmarked.amount, amount);
+  }
+});
+
+test('voltage trend is explicitly an estimate and never supplies mA', () => {
+  for (const sign of [-1, 1]) {
+    const device = { cadenceMinutes: 15, samples: [20, 10, 0].map(m => sample(m, 4 - sign * m * .001)) };
+    const power = batteryPower(device, now);
+    assert.equal(power.label, `${sign > 0 ? 'Charging' : 'Discharging'} (voltage estimate)`);
+    assert.equal(power.amount, 'Unknown');
+    assert.equal(power.trendAt, sample(0, 4).at);
+  }
 });

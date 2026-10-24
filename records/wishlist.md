@@ -177,3 +177,27 @@ location privacy. See [content policy](content.md#public-documentation-direction
 staging and automatic-release connection/implementation remain deferred, not
 required for the current workflow. Revisit only when the owner brings them
 forward. [Accepted policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
+
+## Device-card battery summary without duplicate sensor readings
+
+Local task: **LOCAL-8** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests a frontend ticket; implementation is deferred.
+Owner reports two or more current sensor readings on device cards.
+
+Requested behavior / future acceptance:
+
+- Remove the **Sensor voltage & current** section from device cards, including cards for devices with sensors.
+- Keep one consolidated battery summary in the top part of the card showing **battery percentage, battery voltage, charging/discharging state, and current**.
+- Eliminate duplicate current readings in the card. Apply the consolidated presentation consistently to member, router/repeater and gateway device cards where these fields are available.
+- Preserve truthful unknown/stale values. When activated, establish which available measurement represents battery voltage/current and how charging/discharging is determined; unrelated sensor channels or an unverified current sign must not be presented as confirmed battery flow.
+- Future verification covers populated, missing and stale readings, charging/discharging states, and desktop/mobile card layout. This is presentation scope; telemetry collection and stored history are unchanged by the request.
+
+Related parked requests: [GH-44 absent sensor sections](#hide-sensor-power-section-when-no-sensors-are-present) and [GH-45 member battery percentage](#member-node-battery-percentage-and-gps-layout). This newer request calls for removing the sensor section entirely and consolidating the top summary; reconcile overlapping presentation criteria when activated. Historical issues remain unchanged.
+
+2026-10-24 activation: owner explicitly brings LOCAL-8 forward for implementation.
+The shared summary now removes the whole sensor section, reuses profile-based
+percentage, places member GPS quality to its right, and preserves independent
+battery/current freshness. This supersedes GH-44's conditional section retention
+and implements GH-45's overlapping layout request. Review/merge and manual
+production deployment remain separate. [Source decisions and verification](../docs/operations/device-card-battery-summary.md).
