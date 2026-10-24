@@ -67,6 +67,17 @@ class Adapter:
                       'receivedAt': at(received_at)}
             device_id = (self.infrastructure if source in self.infrastructure else self.members)[source]
             if data.portnum == portnums_pb2.PRIVATE_APP:
+                if data.payload.startswith(b'SNGH'):
+                    if source not in self.gateways or source not in self.infrastructure or len(data.payload) != 32:
+                        raise PacketRejected('invalid gateway health provenance/size')
+                    magic, version, flags, reserved, observer, boot, sequence, uptime, clock, interval = struct.unpack('<4sBBHIIIIII', data.payload)
+                    if version != 1 or flags & ~3 or flags == 2 or reserved or observer != getattr(packet, 'from') or not boot or not sequence or not 180 <= interval <= 2147468:
+                        raise PacketRejected('invalid gateway health report')
+                    return {**common, 'deviceId': device_id, 'kind': 'gateway-health',
+                            'measuredAt': at(clock) if clock >= 1577836800 else None,
+                            'data': {'bootId': boot, 'sequence': sequence, 'uptimeSeconds': uptime,
+                                     'intervalSeconds': interval, 'wifiConnected': bool(flags & 1),
+                                     'mqttConnected': bool(flags & 2)}}
                 if not data.payload.startswith(b'SNNS'):
                     return None
                 report = self.neighbor_signals(data.payload, getattr(packet, 'from'))

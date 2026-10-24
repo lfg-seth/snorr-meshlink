@@ -1,6 +1,7 @@
 import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
+import { gatewayHealthLabel } from './gateway-health';
 import BatteryHistory from './BatteryHistory';
 import BatterySummary from './BatterySummary';
 import type { LoadBatteryHistory } from './BatteryChart';
@@ -124,6 +125,11 @@ export default function InfrastructurePage({
                   {device.role} · {device.id.toUpperCase()}
                 </span>
                 <strong>{device.name}</strong>
+                {device.role === 'Backhaul' && device.gatewayHealth && (
+                  <Badge kind={gatewayHealthLabel(device.gatewayHealth, now, online).kind}>
+                    {gatewayHealthLabel(device.gatewayHealth, now, online).label}
+                  </Badge>
+                )}
                 <span className="infra-value">
                   {device.battery === null
                     ? '—'
@@ -143,7 +149,7 @@ export default function InfrastructurePage({
                     <Badge key={w.id} kind="old">
                       {w.kind === 'battery'
                         ? 'Low battery'
-                        : `Missing ${w.kind.split(':')[1]}`}
+                        : w.kind === 'backhaul' ? 'Backhaul unavailable' : `Missing ${w.kind.split(':')[1]}`}
                       {w.acknowledgedAt ? ' · acknowledged' : ''}
                     </Badge>
                   ))}
@@ -185,6 +191,14 @@ export default function InfrastructurePage({
         </p>
         <BatterySummary infrastructure={selected} now={now} online={online} />
         <dl className="detail-grid">
+          {selected.role === 'Backhaul' && (
+            <div>
+              <dt>Backhaul and radio health</dt>
+              <dd>{gatewayHealthLabel(selected.gatewayHealth, now, online).label}
+                {selected.gatewayHealth?.measuredAt && ` · reported ${timeLabel(selected.gatewayHealth.measuredAt)}`}
+              </dd>
+            </div>
+          )}
           <div>
             <dt>Placement</dt>
             <dd>{selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>

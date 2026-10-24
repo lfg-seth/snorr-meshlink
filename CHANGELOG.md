@@ -3,6 +3,24 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.1.3 - 2026-10-24
+
+Add private SNGH v1 gateway health reports, independently of SNNS neighbor
+changes. Display Wi-Fi/MQTT state and fresh radio receipt through another
+gateway, with persistent backhaul outage/recovery warnings. Expire cached
+badges and reject delayed, duplicate, retired-boot and unordered recovery.
+
+Compatibility: existing Meshtastic telemetry and SNNS v1 remain supported.
+Gateway health requires the matching SNORR gateway firmware and enabled private
+LoRa reporting. No schema migration; health history uses existing observations.
+Unknown/future source clocks cannot establish current health or clear warnings.
+Reporting follows the saved device interval, with a 180-second minimum, jitter
+and airtime admission. MQTT connection state is device-reported, not proof of
+end-to-end application delivery. Rollback restores the matching backend and
+portal from the pre-deployment backup; old firmware ignores the new feature.
+Hardware calibration, sustained reconnect/runtime and field acceptance remain
+separate from this bench rollout.
+
 ## 0.1.2 - 2026-10-24
 
 Consolidate device-card battery presentation (LOCAL-8, PR #60). Member,

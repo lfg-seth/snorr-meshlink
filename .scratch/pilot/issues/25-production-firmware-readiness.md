@@ -4,7 +4,7 @@ Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shar
 versioning, cross-target manifests/changelog and fleet rollout accounting live
 there; this child supplies its implementation and target-specific acceptance.
 
-Created 2026-10-23 at the owner's request. Status: **Saved-interval software complete; later acceptance pending**.
+Created 2026-10-23 at the owner's request; current queue state lives in the tracker.
 This is the consolidated firmware release and board-acceptance ticket for
 R001–R006, with explicitly identified G001/G002 dependencies. The creation request
 authorized assessment and ticket consolidation; it did not flash boards or
@@ -12,15 +12,26 @@ authorize placement. Passive member GPS delivery remains the first priority.
 
 ## Baseline and scope
 
-R006 runs ordinary `2.7.26.0634b77`: AHT compatibility, corrected INA219
-telemetry and SNNS, with device/power configured to 180 seconds and environment
-disabled. Three automatic cycles reach both gateways; device/power gaps are
-180 seconds and SNNS gaps 195 seconds. Portal acceptance for this update is
-pending access. R001–R003/R005 still have ordinary `2.7.26.0b65f2e`; R004 has
-the separate `2.7.26.09d8a9d` INA219 diagnostic image. Published source is now pinned
+R006 now runs ordinary `2.7.26.4c96b9b`, and G001/G002 run that source's
+dedicated gateway target. The owner-selected
+[admin/cadence bench](../../../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24)
+verifies 180/300/900-second SNNS behavior through both gateways, preservation
+and interrupted-edit recovery, with rebooting-write ACK ambiguity recorded.
+R006 is restored to device/power 180, environment disabled and its original
+empty admin allowlist; both gateways remain receive-only/local-only.
+Authenticated portal acceptance remains pending. R001/R003/R005 still have ordinary `2.7.26.0b65f2e`.
+Owner-requested [R002 update](../../../docs/operations/r002-three-minute.md) installs
+ordinary `2.7.26.4c96b9b`; owner confirms INA219, with enabled
+device/environment/power 180-second settings and full profile/keys verified
+through reboot. Its previous no-INA219 sensor selection is superseded.
+Owner-requested [R004 update](../../../docs/operations/r004-three-minute.md) replaces
+its diagnostic image with ordinary `2.7.26.4c96b9b`; device/environment/INA219
+power 180-second settings and full profile/key preservation pass through reboot.
+Historical diagnostic evidence remains retained; physical accuracy and
+battery-only behavior remain unresolved. Published source is now pinned
 at `4c96b9ba0`; the new production download pointer remains unset. The saved
 interval [software/build/review evidence](../../../docs/operations/repeater-update.md#saved-snns-interval-software-verification)
-does not change installed images or pass the later bench gates.
+is separate from the selected-board bench and remaining acceptance gates.
 
 Evidence: [rollout and release state](../../../docs/operations/repeater-update.md),
 [flashing handoff](../../../docs/operations/board-flashing-handoff.md),
@@ -82,10 +93,22 @@ those remain section 2's selected-board acceptance.
 - [ ] From a transmitting controller, change device/SNNS cadence remotely and
   measure fresh reports; restore the intended production value and verify the
   complete profile. Include a relay-path test and interrupted-command recovery.
-- [ ] Record the actual supported controller/app/CLI and physical recovery
+- [x] Record the actual supported controller/app/CLI and physical recovery
   procedure. Existing G001/G002 and portal are receive-only; this ticket does
   not silently enable gateway downlink or build portal remote administration.
   A new gateway transmit path needs a separately selected scope if required.
+
+Selected-controller evidence is B002's existing stock V4 identity and Python
+SDK 2.7.11 bench controller, with dedicated session-key requests, a successful
+15-second remote reboot and independent full-profile recovery. The controller
+record identifies this tested workflow, not arbitrary app/CLI or unattended
+readiness. R006's authorization checks pass; fleet-wide target authorization
+inventory remains incomplete. A rebooting 900-second save executes despite a session-key error
+ACK; read-after-error/boot verification remains required. Original authorization
+and profiles are restored, with explicit unauthorized rejection repeated.
+Section 2 stays incomplete: **forced-relay administration excluding direct
+reception and interrupted/lost RF-command recovery remain untested**. Existing
+V3s were not made transmitters. [Measured results and limits](../../../docs/operations/repeater-update.md#final-receipts-restoration-and-limits).
 
 ### 3. Close neighbor freshness through relay/backhaul outages
 
@@ -120,7 +143,8 @@ fix or completed verification; LOCAL-4 is an end-to-end deployment dependency.
 
 - [ ] Retain AHT detection and INA219 union/channel-1/error/multiplier fixes.
   Ordinary production images exclude INA219 debug and GPIO31 dummy-load flags.
-  Complete R004's evidence handoff before replacing its diagnostic image.
+  R004's diagnostic evidence is retained in the linked October 24 handoff;
+  its owner-requested ordinary-image update does not resolve physical accuracy.
 - [ ] Resolve release Actions publication, publish verified UF2/OTA artifacts,
   source/manifest/checksums and rollback version, then set the production pin.
   A successful local build or unpublished bundle is not a published release.
@@ -171,9 +195,11 @@ ticket does not expand member firmware or implement those features.
 
 ## Next action and completion
 
-Next: verify the chosen controller's admin setup and saved interval on an
-explicitly selected bench board using independently verified selected firmware.
-The source/build interval outcome is complete. Resolve the
+Next bench: use an identified transmitting intermediate to exclude the direct
+path and repeat admin change/readback, interrupted/lost-command handling and
+restoration. Resolve the operator-tool acknowledgment ambiguity before
+inaccessible placement. The source/build interval outcome and selected-board
+bench measurements are recorded. Continue independent software work on the
 shared freshness contract and gateway prerequisites before final release
 acceptance. Hardware actions require their identified board scope.
 

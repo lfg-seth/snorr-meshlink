@@ -178,6 +178,22 @@ staging and automatic-release connection/implementation remain deferred, not
 required for the current workflow. Revisit only when the owner brings them
 forward. [Accepted policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).
 
+## Large-map router and gateway health colors
+
+Local task: **LOCAL-7** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests ticket capture only; implementation is deferred.
+
+Requested behavior / future acceptance:
+
+- On the large/main map, routers/repeaters and gateways need a color health indicator based on last heard and battery level.
+- Use the same last-heard color rules and freshness thresholds as client/member nodes.
+- Low battery overrides the last-heard color: yellow for low battery and red for the more severe battery state.
+- Preserve access to both last heard and battery level so the reason for the indicator is understandable. Battery-reading age and contact age remain distinct; missing battery values must not imply a healthy battery.
+- When activated, define the yellow/red battery thresholds and treatment of missing or stale battery readings; the owner has not specified these values. Verify both device roles, normal last-heard colors, and both battery override states.
+
+Related parked work: [LOCAL-1 infrastructure page overhaul](#infrastructure-page-overhaul). This request concerns large-map indicators and does not activate that page overhaul, implementation or deployment.
+
 ## Device-card battery summary without duplicate sensor readings
 
 Local task: **LOCAL-8** in the [local tracker](../.scratch/TRACKER.md).
@@ -206,3 +222,18 @@ production deployment remain separate. [Source decisions and verification](../do
 `359e6ba`. Source/build, all-device live-data component checks, public demo
 native desktop/mobile cards and isolated backup recovery pass. Owner-phone
 live acceptance remains separate. [Deployment evidence](../docs/operations/device-card-battery-summary.md#meshlink-012-deployment---2026-10-24).
+
+## Router and gateway card eyebrow device model
+
+Local task: **LOCAL-9** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests ticket capture only; implementation is deferred.
+
+Requested behavior / future acceptance:
+
+- Show the device hardware model in the eyebrow at the top of router/repeater and gateway cards, following the client/member card presentation.
+- Retain the role label alongside the model: the eyebrow can still say Backhaul or Router (or the existing repeater role label). Model and operational role are separate information.
+- Use recorded device-model metadata; do not infer a hardware model from the role or device number. Preserve a truthful fallback when the model is unknown.
+- Future verification covers both roles, known/unknown models, longer labels and desktop/mobile layouts, with client cards retaining their existing presentation.
+
+Related parked work: [LOCAL-8 battery summary](#device-card-battery-summary-without-duplicate-sensor-readings). This is a separate card-header request; capturing it does not activate either implementation.

@@ -460,7 +460,7 @@ def main(argv=None):
             "environmentTelemetrySeconds": profiles["reportIntervalSeconds"],
             "environmentMeasurementEnabled": profile["environment"],
             "powerMeasurementEnabled": profile["power"],
-            "sensorProfile": "ina219-only" if number == "R006" else "environment-only",
+            "sensorProfile": ("environment-and-ina219" if profile["environment"] else "ina219-only") if profile["power"] else "environment-only",
             "noTemperatureSensor": not profile["environment"],
             "effectiveSnnsCadenceSeconds": manifest["snorrNeighborLoraIntervalSeconds"],
             "standardNeighborInfoIntervalSeconds": profiles["standardNeighborIntervalSeconds"],

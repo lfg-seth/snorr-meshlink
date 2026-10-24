@@ -19,6 +19,74 @@ from manage import BINARY, command, make_credentials, start, wait_ready
 
 
 class BackendTests(unittest.TestCase):
+    def test_gateway_wifi_loss_relay_replay_recovery_and_restart(self):
+        data = dict(bootId=123, sequence=1, uptimeSeconds=60, intervalSeconds=180,
+                    wifiConnected=False, mqttConnected=False)
+        def send(data, age=0, gateway='b2'):
+            item = packet('b1', 'gateway-health', data, age, gateway=gateway)
+            self.ingest(item)
+            return item
+        def node():
+            return next(n for n in self.state()['infrastructure'] if n['id'] == 'b1')['gatewayHealth']
+        def warnings():
+            return [w for w in self.state()['warnings'] if w['deviceId'] == 'b1' and w['kind'] == 'backhaul' and not w['recoveredAt']]
+        outage = send(data, 2)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        self.assertTrue(node()['radioAlive'])
+        self.assertEqual(node()['transportGatewayId'], 'b2')
+        self.assertEqual(len(warnings()), 1)
+        self.stop()
+        port = int(self.url.rsplit(':', 1)[1])
+        self.process = start(self.data, port, self.log)
+        wait_ready(self.url, self.process)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        self.assertEqual(len(warnings()), 1)
+        self.ingest({**outage, 'receivedAt': at()})
+        self.assertEqual(node()['measuredAt'], outage['measuredAt'])
+        self.assertEqual(len(warnings()), 1)
+        good = {**data, 'wifiConnected': True, 'mqttConnected': True}
+        for invalid in [good, {**good, 'uptimeSeconds': 10}]:
+            send(invalid, 1)
+            self.assertEqual(node()['state'], 'wifi-lost')
+        send({**good, 'sequence': 2, 'uptimeSeconds': 240}, 20)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        send({**good, 'sequence': 3, 'uptimeSeconds': 420}, None)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        send({**good, 'sequence': 4, 'uptimeSeconds': 600}, -1)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        send({**good, 'sequence': 5, 'uptimeSeconds': 780}, 1, gateway='b1')
+        self.assertEqual(node()['state'], 'online')
+        self.assertFalse(node()['radioAlive'])
+        self.assertFalse(warnings())
+        send({**data, 'bootId': 456, 'sequence': 1, 'uptimeSeconds': 60}, 0.5)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        send({**good, 'sequence': 100, 'uptimeSeconds': 9999}, 0)
+        self.assertEqual(node()['state'], 'wifi-lost')
+        self.assertEqual(len(warnings()), 1)
+
+    def test_gateway_health_requires_backhaul_and_valid_flags(self):
+        data = dict(bootId=1, sequence=1, uptimeSeconds=0, intervalSeconds=180,
+                    wifiConnected=True, mqttConnected=False)
+        for bad in [{**data, 'mqttConnected': 1}, {**data, 'intervalSeconds': 0},
+                    {**data, 'wifiConnected': False, 'mqttConnected': True}, {**data, 'extra': 1}]:
+            self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest', packet('b1', 'gateway-health', bad))
+        self.denied(400, self.worker, 'POST', '/api/meshlink/worker/ingest', packet('r1', 'gateway-health', data))
+        self.ingest(packet('b1', 'gateway-health', data, 20))
+        row = next(n for n in self.state()['infrastructure'] if n['id'] == 'b1')
+        self.assertEqual(row['gatewayHealth']['state'], 'unknown')
+
+    def test_gateway_health_uptime_rollover_and_first_clock_acquisition(self):
+        data = dict(bootId=12, sequence=3, uptimeSeconds=4294900, intervalSeconds=180,
+                    wifiConnected=False, mqttConnected=False)
+        self.ingest(packet('b1', 'gateway-health', data, 2, gateway='b2'))
+        next_boot = {**data, 'bootId': 13, 'sequence': 1, 'uptimeSeconds': 10}
+        self.ingest(packet('b1', 'gateway-health', next_boot, None, gateway='b2'))
+        self.ingest(packet('b1', 'gateway-health', {**data, 'sequence': 4, 'uptimeSeconds': 100}, 1, gateway='b2'))
+        row = lambda: next(n for n in self.state()['infrastructure'] if n['id'] == 'b1')['gatewayHealth']
+        self.assertEqual(row()['sequence'], 4)
+        self.ingest(packet('b1', 'gateway-health', {**next_boot, 'sequence': 2, 'uptimeSeconds': 30}, 0, gateway='b2'))
+        self.assertEqual(row()['bootId'], 13)
+
     def test_telemetry_calendar_time_then_receipt_fallback_across_clock_loss(self):
         known = packet('r1', 'telemetry', {'battery': 4.19, 'temperature': 20}, 300)
         known['receivedAt'] = at(299)

@@ -554,6 +554,7 @@ function state(e) {
         ...config,
         id: d.getString('key'),
         role: d.getString('kind') === 'repeater' ? 'Repeater' : 'Backhaul',
+        gatewayHealth: d.getString('kind') === 'backhaul' ? require(`${__hooks}/gateway-health.js`).status(d) : null,
         lastContactAt: d.getString('lastContactAt') || null,
         reportedAt: timesKnown[timesKnown.length - 1] || null,
         battery: value('battery'),

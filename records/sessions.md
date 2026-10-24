@@ -1,5 +1,356 @@
 # Session log
 
+## 2026-10-24 - B002 latest firmware and three-minute telemetry/SNNS
+
+- Flash existing B002 **`!699ca878`** with latest published source **`a56466d8c`**,
+  selected **heltec-v4-gateway / 2.7.26.a56466d**. Enable device telemetry and
+  over-LoRa SNNS at the saved **180-second baseline**. Preserve member role,
+  GPS 60/120-second cadence, RF/channel settings, disabled Wi-Fi/MQTT and keys.
+- Full 16 MB backup, application digest and complete intended profile pass
+  through explicit reboot. Recover the stalled initial high-speed backup with
+  bounded lower-speed reads before any flash write. Two automatic battery and
+  SNNS cycles pass through G001/G002/G003; exact battery/time and deduplicated
+  reports pass authenticated portal/read-only database checks. [Evidence](../docs/operations/b002-three-minute.md).
+- Documentation link/whitespace checks pass. Pin the published firmware source;
+  publish on `codex/b002-three-minute`. Preserve unrelated G004/hardware edits
+  and `3DModels/`; serial and MQTT closed. Record one additional boot after
+  serial close, with cause unverified; two further battery/SNNS cycles pass
+  on one boot with COM4 closed (device ~180 s, SNNS source 210 s). Fresh GPS, calibration, sustained
+  cadence/runtime and field gates remain unverified.
+
+Next useful step: prepare the existing phone-free GPS/runtime run with B002,
+then agree sampling and acceptance before field measurement.
+
+## 2026-10-24 - Infrastructure card eyebrow model ticket
+
+- Capture **LOCAL-9** in the [wishlist](wishlist.md#router-and-gateway-card-eyebrow-device-model) and Deferred tracker: add recorded hardware model to router/gateway card eyebrows like clients, retaining role text.
+- No implementation or deployment. Documentation link/whitespace checks pass; preserve unrelated hardware edits and publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: owner activates LOCAL-9 for the card-header change; LOCAL-8 remains separate.
+
+## 2026-10-24 - R004 battery and solar configuration
+
+- Owner confirms R004 has four standard EVE 18650 cells and one solar panel; update its live equipment descriptions, solar flag and `eve-26v-1s` profile. [Inventory and backup](inventory.md#2026-10-24---r004-battery-and-solar-allocation).
+- Private consistent backup and authenticated portal snapshot verification pass. Preserve all other configuration and unrelated working-tree records. Documentation checks pass; publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: refresh R004's card; total pack capacity awaits wiring confirmation. Sensor calibration and existing bench/field gates remain open.
+
+## 2026-10-24 - Live battery allocations and decommissioned nodes
+
+- Owner removes decommissioned B001/R005 from the active portal list; preserve history and take a consistent private database backup first. B001's former board remains assigned to G004.
+- Update B002 to 3000 mAh LiPo/no solar; G003 to eight standard EVE cells/one large 5 V solar panel; G004 to four EVE cells/two panels; R006 to four EVE cells/one panel. Configure the supported battery profiles; retain unknown total 18650-pack capacity pending wiring confirmation. [Allocation and verification](inventory.md#2026-10-24---active-device-battery-and-solar-allocations).
+- Authenticated live snapshot verifies four profiles and removal of both old entries; history-table counts do not decrease. Documentation link/whitespace checks pass. No radio/source deployment/demo mutation; R004 allocation remains unknown.
+- Preserve unrelated working-tree hardware records, including earlier inventory edits; publish only this session's records on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: refresh the portal cards; confirm pack wiring/capacities and R004's battery allocation when available. LOCAL-7/LOCAL-8 remain deferred.
+
+## 2026-10-24 - Device-card battery summary ticket
+
+- Capture **LOCAL-8** in the [wishlist](wishlist.md#device-card-battery-summary-without-duplicate-sensor-readings) and Deferred tracker: remove the Sensor voltage & current section and consolidate battery percentage, voltage, charging/discharging state and current at the top of device cards.
+- Link overlapping GH-44/GH-45 requests; leave measurement selection and truthful unknown/stale/charge-state handling for activation. No frontend implementation or deployment.
+- Changed-document link and whitespace checks pass. Preserve unrelated hardware records and `3DModels/`; publish on `codex/map-infrastructure-health-ticket` alongside the preceding ticket.
+
+Next useful step: owner activates LOCAL-8 for frontend implementation and measurement-source verification.
+
+## 2026-10-24 - Large-map infrastructure health ticket
+
+- Capture **LOCAL-7** in the [wishlist](wishlist.md#large-map-router-and-gateway-health-colors) and Deferred tracker: router/repeater and gateway indicators match client last-heard colors, with yellow/red low-battery overrides.
+- Battery thresholds and missing/stale battery handling remain open for activation. No implementation or deployment requested.
+- Preserve unrelated hardware records and `3DModels/`. Initial Git status cannot inspect the restricted firmware submodule; parent status with submodules ignored succeeds.
+- Documentation checks pass. Publish on `codex/map-infrastructure-health-ticket`.
+
+Next useful step: owner activates LOCAL-7 when ready to define thresholds and implement map indicators.
+
+## 2026-10-24 - Read-only last-thirty-minute fleet summary
+
+- Owner requests online devices' battery voltage, current and temperature.
+  Read-only live database/archive queries freeze **10:27:14 to 10:57:14
+  Pacific**: nine source devices heard, eight within the final five minutes.
+  B001 appears only in unsupported archive receipts; R001's latest contact is
+  about 29 minutes old. Six devices provide usable requested telemetry.
+- Summarize latest/ranges from **85 deduplicated telemetry observations**;
+  verify the frozen window independently and reconcile **377 archive receipts**.
+  Preserve separate device-battery and INA219 channel/environment values,
+  signed-current uncertainty and unknown-clock receipt fallback. Record R004's
+  **26.6 to 43.2 degrees C** rise and R003's **3.651 to 4.263 V** change without
+  diagnosing physical behavior. [Snapshot and limits](field-results.md#2026-10-24---thirty-minute-fleet-telemetry-snapshot).
+- No radio/server/configuration or task-state change. Preserve unrelated
+  `3DModels/`, G004 documentation and firmware work. Documentation link and
+  whitespace checks pass. Publish sanitized records on
+  **`codex/telemetry-summary-20261024`**.
+
+Next useful step: owner review of the snapshot; investigate the R004 temperature
+rise or R003 voltage change only if selected. Runtime/calibration, portal
+acceptance and existing task gates remain separate.
+
+## 2026-10-24 - R002 latest firmware and three-minute INA219 reporting
+
+- Owner reconnects **R002** for the same update as R004 and explicitly confirms
+  fitted **INA219**. Identify **`!b456f760` / USB `BADB1E79E9739FC4` / COM9**;
+  privately back up the full original profile/keys from ordinary
+  `2.7.26.0b65f2e`. Published `snorr/develop` and the project pin remain
+  **`4c96b9ba0`**. Reuse the exact reviewed ordinary **rak4631 /
+  2.7.26.4c96b9b** application; image hash/bounds, matching RAK USB volume and
+  complete original-profile comparison pass. No rebuild, reset or source change.
+- Complete intended owner/identity/keys/channel/local/module comparison passes
+  through explicit reboot at **17:45:48 UTC / 10:45:48 Pacific**: CLIENT,
+  device/environment/INA219 power enabled at **180 seconds**, over-LoRa SNNS
+  using the saved 180-second baseline, separate standard NeighborInfo 21,600
+  seconds. Preserve other settings and unset battery-INA address; set time
+  locally afterward. SDK serial-close double-flush races with the requested
+  reboot disconnect; a fresh independent API read passes without repeating
+  flash/configuration writes. Update R002's durable sensor exception and its
+  existing offline expectation to retain INA219 power.
+- Validating-TLS MQTT capture receives **two fresh automatic reports of every
+  device/environment/power/SNNS type through both G001 and G002** after final
+  verification, excluding earlier boot/history and duplicates. Device,
+  environment and power measurement gaps are **180 seconds**; same-boot SNNS
+  sequences 1/2 differ by **195 source-uptime seconds** including jitter.
+  Device voltage **4.093 V**, channel-1 power **4.068 V / -229.2 mA**; environment
+  packets carry INA219 voltage/current without temperature/humidity. These
+  values do not establish sensor calibration, physical path or net charging.
+- All **34 offline bench checks** and changed-document link/whitespace checks
+  pass. Serial and MQTT handles close; other radios/server/portal and unrelated
+  `3DModels/` remain unchanged. Raw profiles/logs stay ignored.
+  [Exact image, automatic cadence and remaining gates](../docs/operations/r002-three-minute.md).
+  Publish coherent records/profile on **`codex/r002-three-minute`**.
+
+Next useful step: with authenticated server/portal access, reconcile R002's
+180-second cadence and confirmed INA219 metadata and verify portal receipts/
+freshness. INA219 path/calibration, temperature-sensor operation, battery-only
+behavior, runtime and sustained/field acceptance remain unverified.
+
+## 2026-10-24 - R004 latest ordinary firmware and three-minute INA219 reporting
+
+- Owner reconnects **R004 with INA219** and requests latest firmware plus
+  three-minute telemetry/SNNS. Identify **`!77fdb9f1` / USB
+  `820C9B4F0C2D7675` / COM17**, back up the full private profile and retain
+  historical diagnostic captures. Verify published `snorr/develop` and the
+  project pin both select **`4c96b9ba0`**; reuse the exact reviewed ordinary
+  **rak4631 / 2.7.26.4c96b9b** UF2, SHA256
+  `f83039d32c8637beff30f1a8d06e8addd106ad817f611dbc440b9bac04c65206`.
+  Application-only flash and fresh independent original-profile comparison
+  pass. Initial helper reconnect times out; a new read verifies the write
+  without another flash. No rebuild, factory reset or firmware-source change.
+- Complete intended profile/identity/keys/channel comparison passes through
+  explicit reboot at **17:33:47 UTC / 10:33:47 Pacific**: CLIENT, enabled
+  device/environment/INA219 power at **180 seconds**, private over-LoRa SNNS
+  using the saved 180-second baseline, separate standard NeighborInfo 21,600
+  seconds. INA219 initializes/opens; preserve other settings and set local
+  time afterward. Update R004's durable updater profile to retain INA219 power
+  and correct sensor-profile evidence for combined environment/INA219 boards.
+- Validating-TLS MQTT capture receives **two fresh automatic reports of each
+  device/environment/power/SNNS type through both G001 and G002** after final
+  reboot, with earlier boot/history packets excluded. Device/environment/power
+  measurement gaps are **180 seconds**. Same-boot SNNS sequences 1/2 differ by
+  **195 source-uptime seconds** (180 baseline plus jitter/scheduling); receipts
+  differ by 193.540/193.549 seconds. First channel-1 power is
+  **3.660 V / -298.2 mA**; physical accuracy/charging interpretation is unverified.
+- All **34 offline bench checks** and changed-document link/whitespace checks
+  pass. Initial sandbox COM/temp-directory restrictions require host-access
+  retries. Serial and MQTT handles close. Other boards/server/portal and
+  unrelated `3DModels/` remain untouched. Raw profiles/logs stay ignored.
+  [Exact evidence, values and limits](../docs/operations/r004-three-minute.md).
+  Publish coherent changes on **`codex/r004-three-minute`**.
+
+Next useful step: with authenticated server/portal access, reconcile R004's
+180-second cadence metadata and verify portal receipts/freshness. GH-4 retains
+physical bridge-state, calibration and battery-only questions; this flash does
+not resolve them. Release publication, sustained/field and runtime gates remain.
+
+## 2026-10-24 - G004 disconnected; hardware investigation on hold
+
+- Owner disconnects G004 pending hardware investigation and requests closing
+  this chat. Stop bench work; serial handles were already closed. Move G004
+  out of Current into Next with an explicit owner hold.
+- Preserve the verified `2.7.26.4c96b9b` installation, five measured brownout
+  resets and incomplete configuration/GPS/time-sharing gates in the
+  [bench record](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+  No further hardware, firmware or server action; unrelated `3DModels/` stays
+  untouched. Publish the closure records on `codex/g004-gps-time` and archive
+  the chat after the handoff is saved.
+
+Next useful step: owner-led hardware investigation; resume provisioning and
+verification only when the owner brings G004 back. Documentation checks pass.
+
+## 2026-10-24 - G004 firmware installed; configuration stopped by brownouts
+
+- Owner authorizes G003-style G004 provisioning, with GPS enabled, RF TX on
+  and ordinary position packets; subsequently makes the old config disposable.
+  Identify COM6 as V3 / ESP32-S3 v0.2 / 8 MB, MAC `b0:81:84:9a:e6:64`, node
+  **`!849ae664`**, hardware ID `74bdf87af2ebb4a61d657eb19bf72422`.
+- The old application does not complete an API connection. Install and
+  independently verify G003's reviewed **heltec-v3-gateway / 2.7.26.4c96b9b**
+  application at `0x10000`; no source/build/full erase/factory reset. Preserve
+  boot/partitions/existing OTA/filesystem. New firmware answers with the exact
+  expected target/version/identity. A full original flash was already saved
+  privately before the owner's no-backup instruction; no further preservation.
+- Attempt the latest corrected, reboot-verified G003 Wi-Fi/pilot/MQTT profile,
+  three-minute device/INA219 telemetry and local-only collector, adding GPS
+  RX45/TX46, TX on and periodic five-minute positions/120-second GPS refresh.
+  Full-profile readback **fails**: console captures five **BROWNOUT_RST** resets,
+  first during the open transaction before commit. Last readback has G004's
+  name but region/GPS/network/telemetry unprovisioned. Firmware verifies;
+  saved profile, GPS time, outgoing reports and mesh time are not accepted.
+- INA219 boot detection at **0x40** passes; actual telemetry/calibration/path
+  remains unverified. Read-only chip identification reports flash voltage
+  fixed to 3.3 V by eFuse. Ask owner to reconnect with reliable USB power/short
+  cable and a charged battery if fitted; exact power fault remains unmeasured.
+  Close serial handles. Other boards/server/source unchanged. Preserve unrelated
+  `3DModels/`; raw logs/profiles/location evidence stay ignored.
+
+[Exact image, evidence and retry criteria](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+Private helper syntax checks and documentation link/whitespace checks pass
+(four changed Markdown files). Publish sanitized records on `codex/g004-gps-time`.
+
+Next useful step: stable G004 power/reconnect, then repeat configuration and
+require complete intended-profile equality through explicit reboot before
+GPS/telemetry/position reception and a second node's mesh-time acceptance.
+
+## 2026-10-24 - G004 GPS time support review
+
+- Owner reports another Heltec V3 with INA219 and GT-U7 as **G004**, intended
+  for mesh time supporting telemetry. Clarify GPS-module TX→GPIO45/RX→GPIO46,
+  hence MCU `position.rx_gpio=45` / `position.tx_gpio=46`. Update inventory,
+  superseding the earlier blanket no-GPS-on-V3 statement without adding stock.
+- Inspect pinned **4c96b9ba0** GPS, position, RTC and device/power telemetry
+  source, plus current official Meshtastic/Espressif documentation. Existing
+  UART configuration/GPS time support needs no source change for ordinary NMEA
+  output. Sharing time requires RF TX and ordinary primary-channel position
+  packets; precision zero suppresses them, and remote manual-source time is
+  rejected. Strict coordinate-free time transmission would need a separate
+  bounded firmware change, not selected by this request.
+- Save [source evidence and bench criteria](../docs/operations/g004-gps-time.md),
+  including powered-GPS cold boot on strapping pins and a second node adopting
+  mesh time before generating telemetry. Board identity, installed image,
+  GPS/INA219 operation and actual mesh delivery remain unverified. No hardware,
+  firmware source, radio or server mutation. Preserve unrelated `3DModels/`.
+
+Validation: documentation link/whitespace checks pass for four changed/new
+Markdown files; diff review confirms records-only scope and clean pinned
+firmware source. Publish the sanitized records on `codex/g004-gps-time`.
+
+Next useful step: select G004 for profile backup/identification and GPS clock
+verification, then prove time transfer to a node without another time source.
+
+## 2026-10-24 - Default bench Wi-Fi saved in 1Password
+
+- At the owner's request, retry 1Password authentication successfully and select
+  the existing **SNORR MeshLink — Pilot** Developer Environment. Add concealed
+  **MESHLINK_BENCH_WIFI_SSID** and **MESHLINK_BENCH_WIFI_PASSWORD** for the
+  previously selected, corrected G003/default bench network. The update succeeds;
+  a names-only follow-up confirms both variables exist without reading secrets.
+- Link the named 1Password values from the
+  [default bench Wi-Fi handoff](../docs/operations/board-flashing-handoff.md#default-bench-wi-fi).
+  Retain the ignored local default and existing gateway-specific variables.
+  No radio or server configuration change. Documentation links/whitespace pass;
+  publish sanitized records on `codex/g003-preparation`.
+
+Next useful step: use the saved default for future authorized bench provisioning,
+including another machine's private local copy when needed.
+
+## 2026-10-24 - Default bench Wi-Fi saved
+
+- Owner selects G003's corrected, working Wi-Fi as the default for future
+  bench provisioning. Save exact supplied credentials in ignored
+  `private/bench/default-wifi.json`, retaining the `ssid` / `password` format.
+  Verify equality with G003's final reboot-verified network profile and confirm
+  Git ignores the file; credentials stay out of public records and command output.
+- Record default selection and override/preservation behavior in the
+  [flashing handoff](../docs/operations/board-flashing-handoff.md#default-bench-wi-fi).
+  No device, firmware or server configuration is changed. Existing G003 portal
+  follow-ups remain unchanged. Documentation link/whitespace checks pass;
+  publish on `codex/g003-preparation` with unrelated model files preserved.
+
+Next useful step: use the saved default for future authorized bench provisioning;
+provide a specific network when a device needs an override.
+
+## 2026-10-24 - G003 first installation and three-minute INA219 telemetry
+
+- Owner asks to flash the attached V3/INA219 as G003 and enable three-minute
+  telemetry, then supplies and corrects the Wi-Fi credentials. Independently
+  identify ESP32-S3 v0.2 / 8 MB / MAC `9c:13:9e:9f:16:7c`, initially running
+  the Heltec factory demo. Configuration API timeouts are explained by that
+  non-Meshtastic image; retain a complete private original-flash recovery copy.
+- Install and independently hash-verify dedicated **heltec-v3-gateway /
+  2.7.26.4c96b9b**, official ESP32-S3 OTA v1.0.1 and matching filesystem.
+  Reuse the exact reviewed local build from published source `4c96b9ba0`;
+  no source/release change, full-chip erase or factory-reset command.
+- Assign **G003 `!9e9f167c` / SNORR Pilot Gateway G003**. CLIENT, private US
+  pilot channel, supplied corrected Wi-Fi, encrypted TLS MQTT, **device and
+  INA219 power telemetry enabled at 180 seconds**, environment off and
+  local-only neighbor collector. Initial region setup creates PKI and forces
+  TX on; the full-profile check catches it, a second LoRa write disables TX,
+  then complete intended owner/hardware/key/channel/local/module equality
+  passes through explicit reboot. New keys remain stable; other boards unchanged.
+- INA219 at **0x40** initializes. Independent validating-TLS MQTT observation
+  captures two device and two channel-1 power reports. Device/power receipt
+  gaps **180.353 / 180.176 seconds**, measurement-clock gaps **180 / 181 seconds**;
+  latest **4.073 V** device and **3.924 V / -489.3 mA** INA219. Five local API
+  telemetry packets are captured too. Serial/subscriber handles close.
+  Preserve literal sign/values; no calibration, charging-path or runtime claim.
+- Update inventory, flashing handoff, measured results and the tracker.
+  [Exact images, preservation, delivery and limits](../docs/operations/g003-gateway-preparation.md).
+  Private recovery/profile/network/raw evidence stays ignored. Documentation
+  link/whitespace validation passes; no firmware/software source is changed.
+  Publish sanitized records on short-lived `codex/g003-preparation`, preserving
+  unrelated untracked `3DModels/` and the existing source pin.
+
+Next useful step: with broker/portal access, provision a distinct G003 uplink
+account (this board currently reuses G002's existing account), register its
+gateway/source/device mappings and verify authenticated portal state. These
+server writes are not performed during this board preparation. Calibrated
+power/path, installed pack/antenna/site, sustained delivery and field gates remain.
+
+## 2026-10-24 - Selected R006 and gateway admin/cadence bench
+
+- After PR #57 merges, owner explicitly authorizes flashing R006/G001/G002,
+  using B002 for admin, preserving keys/profiles, keeping V3s receive-only,
+  restoring intended settings and storing secrets in 1Password. One worker
+  owns the [bounded bench](../.scratch/tasks/local-3-admin-bench.md). G002 is
+  re-identified after its USB reconnect; MC00 and other boards are untouched.
+- Install ordinary `rak4631` and dedicated `heltec-v3-gateway`
+  **2.7.26.4c96b9b**, reviewed/published source
+  **4c96b9ba0360f01752892a41d09ccacda82747bb**. Exact image/partition/hash,
+  application-only write and independent original owner/security/channel/local/
+  module comparisons pass through reboot. Gateway rebuild succeeds in 357.361
+  seconds; use the prior exact reviewed RAK build. No new firmware source or
+  published release asset/pointer, server deployment or map write.
+- Actual R006 source SNNS gaps **195 / 315 / 315 / 195 / 915 / 195 / 195
+  seconds** verify 180/300/900, retained cooldown on shortening, saved reboot
+  and restored cadence. All seven measured reports match across gateway
+  serial/MQTT paths. Each gateway contributes 39 own reports, with consecutive
+  gaps 75–76 seconds within two observed boots. Record source clocks, host
+  receipt gaps and boot/sequence identity separately.
+- B002's existing stock V4/Python SDK 2.7.11 controller is unauthorized before
+  temporary key enrollment, then supports encrypted read/change/readback.
+  Two-second reboot attempts return session-key errors; a 15-second remote
+  reboot successfully discards an uncommitted edit. A saved 900-second write
+  returns an error ACK but independently survives a distinct reboot. Preserve
+  failures and use result/boot readback; the precise transport cause and generic
+  operator-tool compatibility remain unproven. No firmware fix is claimed.
+- At 15:48:14 UTC, original R006 telemetry/security are restored through reboot.
+  Separate final all-board comparisons pass; R006 device/power 180, environment
+  off and empty admin allowlist, V3 TX disabled/local-only and individual network
+  profiles, B002 stock firmware/profile unchanged. B002 is rejected again after
+  restoration. All serial/subscriber handles close and temporary build mapping
+  is removed. Nine concealed original/final profile/observer entries are verified
+  in **SNORR MeshLink — Pilot**; raw evidence remains ignored/private.
+- Validation: strict actual-receipt aggregation, 34 existing updater tests and
+  ten release tests pass in the project environment; changed-record links and
+  whitespace pass. Source extreme/rollover/
+  airtime-gate tests and read-only review remain the prior software evidence;
+  no physical rollover, calibrated power, battery soak, field/forced-relay,
+  outage-age bound, independent RF silence or authenticated portal acceptance
+  is inferred. [Exact images, measurements, failed/restored attempts and limits](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24),
+  [TEST-006](field-results.md#test-006--saved-snns-interval-and-selected-controller-admin-bench).
+- Publish sanitized root records on short-lived branch
+  `bench/local-3-admin-cadence`; preserve unrelated untracked `3DModels/`.
+
+Next required bench: a transmitting intermediate and proof excluding direct
+reception for remote changes, interrupted/lost commands and restoration; resolve
+operator-tool ACK/result handling before inaccessible placement. Continue the
+independent software freshness/release assignments while bench/access gates wait.
 ## 2026-10-24 - Installed recovery verifiers corrected; GH-39 complete
 
 - Owner activates installed verifier maintenance and live/demo recovery. Fix

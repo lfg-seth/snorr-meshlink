@@ -142,7 +142,7 @@ class ConfigurationChecks(unittest.TestCase):
     def test_tracked_sensor_exceptions(self):
         for number, profile in self.profiles["nodes"].items():
             self.assertEqual(profile["environment"], number != "R006")
-            self.assertEqual(profile["power"], number == "R006")
+            self.assertEqual(profile["power"], number in ("R002", "R004", "R006"))
         self.assertEqual(len({p["nodeId"] for p in self.profiles["nodes"].values()}), 6)
         self.assertEqual(len({p["usbSerial"] for p in self.profiles["nodes"].values()}), 6)
 

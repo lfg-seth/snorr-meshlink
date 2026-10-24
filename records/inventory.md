@@ -1,5 +1,151 @@
 # Hardware inventory
 
+## 2026-10-24 - B002 latest firmware and three-minute reporting
+
+Existing original OLED V4 **B002 `!699ca878`**, USB
+**`90:70:69:9C:A8:78`**, COM4, now runs selected
+**heltec-v4-gateway / 2.7.26.a56466d** from published source **`a56466d8c`**.
+Application digest and complete intended member profile/identity/keys pass
+through explicit reboot. Device telemetry is enabled at **180 seconds**;
+over-LoRa SNNS follows the same saved baseline with jitter/admission. Preserve
+CLIENT, private RF/channel settings, 10 dBm configured TX power/FEM, disabled
+Wi-Fi/MQTT and GPS acquisition/reporting at **60/120 seconds**. External
+environment/power reporting remains disabled. Existing 3000 mAh LiPo/no-solar
+allocation and stock totals are unchanged. This supersedes B002's historical
+stock-firmware state below. [Image, backup, profile and delivery evidence](../docs/operations/b002-three-minute.md).
+
+## 2026-10-24 - R004 battery and solar allocation
+
+Owner confirms **R004 has four standard EVE 18650 cells and one solar panel**.
+Live metadata now uses `eve-26v-1s`, the confirmed cell/panel counts and solar
+equipment present. This supersedes R004's unknown allocation below. Total pack
+capacity remains unset pending wiring confirmation; panel electrical ratings,
+sensor calibration and runtime remain unverified. No stock-total or purchase
+change inferred.
+
+Private consistent pre-update backup:
+`/var/lib/meshlink/private-inventory-updates/20261024T185832Z/before.db`.
+Authenticated portal snapshot verifies the profile, four-cell description and
+one-panel description. Preserve all other R004 configuration. No radio,
+firmware, deployment or demo change.
+
+## 2026-10-24 - Active-device battery and solar allocations
+
+Owner decommissions **B001** and **R005** and requests removal. Their active
+portal device records are removed; historical observations, positions,
+assignments and raw MQTT archive remain stored. B001's board was reassigned
+to G004 as recorded below; decommissioning the old B001 label does not remove
+the replacement G004. R005's physical disposition is unspecified; no stock
+count, disposal, purchase or valuation is inferred.
+
+Owner confirms these allocations, now reflected in live portal metadata:
+
+| Device | Battery | Solar |
+| --- | --- | --- |
+| B002 | 3000 mAh LiPo; `lipo-1s` | None |
+| G003 | 8 standard EVE 18650 cells; `eve-26v-1s` | 1 large 5 V panel |
+| G004 | 4 standard EVE 18650 cells; `eve-26v-1s` | 2 panels |
+| R006 | 4 standard EVE 18650 cells; `eve-26v-1s` | 1 panel |
+
+Interpret the owner's 18650 shorthand using the existing standard EVE cell
+inventory/profile. The known EVE 26V reference is 2550 mAh per cell; total
+pack capacity remains unset pending confirmation of wiring. Panel ratings
+beyond G003's stated 5 V, output, charging path, sensor accuracy and measured
+runtime remain unverified. Solar equipment flags record fitted hardware,
+not a measured solar input. This supersedes earlier unknown/planned allocations
+for these devices. R004's battery allocation remains unknown.
+
+Before mutation, take a consistent root-private database backup at
+`/var/lib/meshlink/private-inventory-updates/20261024T185016Z/before.db`.
+Independent authenticated portal snapshot confirms updated profiles and
+absence of B001/R005; history-table counts do not decrease. No firmware,
+radio settings, source deployment or demo-state change.
+
+2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing
+R002 **`!b456f760`**, USB **`BADB1E79E9739FC4`**, COM9, also has an **INA219**.
+This supersedes its earlier no-INA219 bench sensor selection, without adding
+stock or inferring a purchase. Verified ordinary **rak4631 / 2.7.26.4c96b9b**
+replaces `2.7.26.0b65f2e`; complete original-profile equality passes after flashing.
+Full intended profile/keys/channel/radio settings persist through explicit
+reboot: CLIENT, enabled device/environment/**INA219 power** at **180 seconds**,
+over-LoRa SNNS using the saved 180-second baseline, separate standard
+NeighborInfo at 21,600 seconds. Existing temperature telemetry stays enabled;
+actual fresh environment packets contain INA219 voltage/current, with no
+temperature/humidity fields. Fresh channel-1 power **4.068 V / -229.2 mA**
+reaches both gateways; physical path/calibration remain unverified.
+Battery-INA address remains unset. No site, battery/antenna allocation,
+stock quantity or purchase change inferred.
+[Image, sensor delivery and limits](../docs/operations/r002-three-minute.md).
+
+2026-10-24 R004 ordinary firmware / INA219 telemetry - Reconnected existing
+**`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, COM17, replaces diagnostic
+`2.7.26.09d8a9d` with verified ordinary **rak4631 / 2.7.26.4c96b9b** at the
+owner's request. Complete intended profile/keys/channel/radio settings persist
+through explicit reboot: CLIENT, enabled device/environment/**INA219 power**
+telemetry at **180 seconds**, over-LoRa SNNS with saved 180-second baseline,
+separate standard NeighborInfo at 21,600 seconds. INA219 initializes/opens.
+Historical temperature sensor remains enabled; no sensor removal is inferred.
+Accuracy, physical bridge state, battery-only behavior and runtime remain
+unverified. No stock quantity, purchase, site or equipment allocation change.
+[Exact image, delivery and limits](../docs/operations/r004-three-minute.md).
+
+2026-10-24 G004 disconnected / owner hold - Owner disconnects G004
+**`!849ae664`** pending hardware investigation and closes the chat. Retain the
+verified firmware installation and failed configuration evidence below. The
+board is not commissioned as a working gateway/time source. No additional
+hardware change, stock count or purchase is inferred; resume bench work only
+when the owner brings it forward.
+
+2026-10-24 G004 application installation / power hold - Independently identify
+the owner's V3/INA219/GT-U7 assembly on COM6 as ESP32-S3 v0.2 / 8 MB, MAC
+`b0:81:84:9a:e6:64`, node **`!849ae664`**, hardware ID
+`74bdf87af2ebb4a61d657eb19bf72422`. Application-only installation and independent
+verification of **heltec-v3-gateway / 2.7.26.4c96b9b** pass; boot/partition/old
+OTA/filesystem retained. INA219 is detected at **0x40**. Owner requests G003's
+profile plus GPS RX45/TX46 and RF TX, but five logged **brownout resets**
+interrupt configuration. Full-profile verification fails: only G004's name
+persists; region/GPS/network/telemetry remain unprovisioned in last readback.
+Do not treat this as a working gateway or mesh time source. Await stable power
+and another saved-profile/reboot check, then GPS/telemetry/time-transfer tests.
+GPS operation, supply fault, battery, antenna/site and sensor path remain
+unverified. No new stock or purchase inferred. [Evidence and next check](../docs/operations/g004-gps-time.md#commissioning-attempt---2026-10-24).
+
+2026-10-24 G004 owner-reported assembly - Owner assigns another Heltec V3
+with **INA219 and GT-U7 GPS** to **G004**, for mesh time supporting telemetry;
+location is not needed for its application role. Clarified wiring is **GT-U7
+TX → GPIO45, GT-U7 RX → GPIO46**, corresponding to MCU GPS RX=45/TX=46.
+This supersedes the earlier blanket statement that no V3 has GPS. Hardware
+identity, installed firmware, GPS operation/baud, power wiring, INA219 address
+and measurement path, battery, antenna and site remain unverified. Retain the
+last confirmed nine-V3 total; this report does not establish a purchase or an
+additional stock count. [Source review and bench follow-up](../docs/operations/g004-gps-time.md).
+
+2026-10-24 G003 commissioning - Owner assigns the attached Heltec V3 with
+INA219 **G003**, independently identified as ESP32-S3 revision v0.2 / 8 MB,
+MAC `9c:13:9e:9f:16:7c`, Meshtastic **`!9e9f167c`**, hardware device ID
+`4393827189e95c03021dd7b37007a6a0`. The original Heltec factory demo is fully
+backed up before first installation of dedicated **heltec-v3-gateway /
+2.7.26.4c96b9b**. All installed images verify; complete intended profile/new
+PKI identity persists through explicit reboot. CLIENT, receive-only private
+pilot/Wi-Fi/MQTT, enabled **180-second device and INA219 power telemetry**,
+environment off and local-only neighbor collector. INA219 is detected at
+0x40 on the external I2C bus. Pack/capacity, physical measurement path,
+shunt/polarity/calibration, antenna and site remain unverified. This assigns
+an existing connected board; no purchase or change to stock totals is inferred.
+[Installation, delivery evidence and limits](../docs/operations/g003-gateway-preparation.md).
+
+2026-10-24 saved-interval bench - Existing R006 `!da581e5f` receives ordinary
+`rak4631 / 2.7.26.4c96b9b`; G001 `!9ea13cc0` and G002 `!849ad7a0` receive
+dedicated `heltec-v3-gateway / 2.7.26.4c96b9b`, all from reviewed source
+`4c96b9ba0`. Application-only writes and independent complete original
+identity/key/channel/local/module comparison pass through reboot. Both V3s
+remain CLIENT/TX disabled/local-only with individual Wi-Fi/MQTT profiles;
+G001 device telemetry stays disabled, G002 stays enabled at 300 seconds.
+B002 `!699ca878` is the existing original V4 controller on unchanged stock
+`2.7.26.54e0d8d`. R006 retains INA219-only and intended 180-second device/power
+settings. No purchase, quantity, antenna, sensor or pack allocation change.
+[Images, preservation and bench evidence](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24).
+
 2026-10-23 planned gateway outdoor configuration - Owner retains Heltec V3
 and selects INA219 sensing and a Muzi whip antenna. Per-gateway battery option
 is **four or eight 18650 cells**; solar option is **two 60 x 100 mm panels** or
@@ -118,7 +264,7 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 | HW-009 | 10 | Client | Battery; source 1000mAh, earlier owner report 1100mAh | 4 | 6 | Owner previously reported six small V3 LiPo packs; on 2026-10-21 confirms G001/G002 each have an installed 1000mAh pack. Retain total without adding stock; remaining capacity labels, connectors and condition unverified |
 | HW-010 | 11 | Client | Battery; 3000mAh | 2 | 2 | Owner confirms 2 × 3000mAh batteries for V4 units; LiPo per owner; exact pack label, connector and condition unverified. Owner suspects larger batteries are needed; capacity choice awaits runtime testing |
 | HW-011 | 12 | Client | Whip antenna; labelled 915MHz | 16 | 11 | Owner identifies these as Muzi whip antennas; exact model, condition, and connectors unverified. 5 fewer on hand than listed; disposition unknown |
-| HW-012 | 13 | Client | Heltec V3 | 4 | 9 | Owner confirms no GPS on these units. Proposed use: silent internet/backhaul nodes, possibly repeaters depending on installation; capability/configuration unverified. Count is 5 above source quantity; provenance, exact radio variant, and condition unknown |
+| HW-012 | 13 | Client | Heltec V3 | 4 | 9 | Earlier no-GPS report superseded 2026-10-24 for G004: owner reports fitted GT-U7 GPS plus INA219, intended for mesh time. Other units' GPS status and G004 operation remain unverified. Proposed use: internet/backhaul nodes, possibly repeaters depending on installation. Count is 5 above source quantity; provenance, exact radio variant, and condition unknown |
 | HW-013 | 14 | Client | Heltec V4 | 6 | 2 | Owner confirms both have GPS modules. On 2026-10-12 owner plans to order 2 more and recover 2 member-held units, all with GPS and 3000mAh batteries. Planned additions are not available stock; purchase, recovery, exact variants, and condition remain unverified |
 | HW-014 | 15 | Client | SMA roof mount / antenna base | 2 | Unknown | Verify connector and cable |
 | HW-015 | 16 | Both | Case filament; first source entry | 2 | Unknown | Separate source product link; amount remaining unknown |
@@ -163,7 +309,14 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 
 The updated pass accounts for 21 radio boards/devices on hand: 8 RAK (1 with a broken carrier board), 9 Heltec V3, 2 Heltec V4, and 2 LILYGO T-Deck. Excluding the damaged RAK leaves 20 candidates for inspection, not 20 bench-verified working devices. Another 2 RAK units are deployed and unavailable for the bench pilot pending replacement and recovery. Member-held Heltec V4 quantities remain unknown.
 
-Four on-hand devices have owner-confirmed GPS modules: 2 Heltec V4 and 2 T-Deck. All 9 V3 units have no GPS; RAK GPS status remains unknown. No device has bench-verified passive tracking recorded. Identify exact radio/core builds and GPS models, then confirm operation and HW-002 cells before a pilot parts decision. The source-listed quantities are historical references and are preserved even where current counts differ.
+The first pass recorded four on-hand devices with owner-confirmed GPS modules:
+2 Heltec V4 and 2 T-Deck. On 2026-10-24 the owner also reports GT-U7 GPS on V3
+G004, superseding the original all-V3s-without-GPS statement. RAK GPS status
+remains unknown. These inventory reports alone do not establish working GPS
+or passive tracking; later device-specific bench records own those results.
+Identify exact radio/core builds and GPS models, then confirm operation and
+HW-002 cells before a pilot parts decision. Source-listed quantities remain
+historical references even where current counts differ.
 
 Owner-directed planning baseline: use only confirmed on-hand stock. Exclude the 2 deployed RAK units, possible member-held V4s, and the damaged RAK until its carrier board is replaced and operation verified. The newly found RAK closes the numerical difference against the source-listed 10; the prior possible third repeater/destroyed-unit explanation is no longer needed to reconcile that count. Historical differences do not block this first-pass inventory closure.
 

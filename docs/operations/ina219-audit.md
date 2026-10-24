@@ -1,5 +1,13 @@
 # INA219 current audit — 2026-10-16
 
+2026-10-24 R004 update: owner requests latest ordinary firmware and three-minute
+telemetry/SNNS on the reconnected INA219 assembly. Ordinary **rak4631 /
+2.7.26.4c96b9b** replaces its diagnostic image; device/environment/power
+telemetry enabled at **180 seconds** and complete intended-profile preservation
+pass through reboot. [Image, measurements and remaining gates](r004-three-minute.md).
+Historical diagnostic evidence remains preserved. Bridge-state confirmation,
+physical accuracy and battery-only behavior remain unresolved; GH-4 stays open.
+
 ## R006 production preparation — 2026-10-23
 
 Owner assigns the fresh assembly **R006** and requests production preparation

@@ -1,5 +1,173 @@
 # Field testing and tangible results
 
+## 2026-10-24 - B002 three-minute telemetry and SNNS bench
+
+Owner-selected original V4 **B002 `!699ca878`** receives selected
+**heltec-v4-gateway / 2.7.26.a56466d**, preserving its complete member
+profile/keys through application-only update and explicit reboot. Enabled
+device telemetry and over-LoRa SNNS use the saved **180-second baseline**;
+GPS remains enabled at **60-second acquisition / 120-second reporting**.
+
+Two automatic device packets and two SNNS reports reach each of **G001,
+G002 and G003** after reboot. Device receipt gaps are **180.19-180.20 seconds**;
+source wall-clock measurement gap is 181 seconds. Same-boot SNNS sequences
+1/2 advance source uptime **195 seconds**, with **195.20-195.22-second** receipt
+gaps including jitter/scheduling. Independent authenticated portal/read-only
+database checks match both battery observations and both SNNS reports, retaining
+accepted/duplicate gateway receipts. Latest battery is **4.316 V**, measured
+19:32:00Z, received 19:32:01.682Z; calibration is not independently verified.
+
+One additional boot is observed after the serial observer closes; cause is
+unverified. With COM4 left closed, two more battery/SNNS cycles reach all three
+gateways on the same boot: device receipt gaps approximately 180.31 seconds;
+SNNS source gap 210 seconds and receipt gaps approximately 213.30 seconds.
+No further boot-ID change is observed. No fresh GPS position is observed in this short capture. This is a bench
+firmware/profile and delivery check; sustained freshness, runtime, forced-relay,
+outage and field acceptance remain open. Serial closed; no other radio written.
+[Exact image, backup, preserved settings and private evidence references](../docs/operations/b002-three-minute.md).
+
+## 2026-10-24 - Thirty-minute fleet telemetry snapshot
+
+Owner requests online-device battery voltage, current and temperature for the
+last 30 minutes. Read-only production SQLite queries cover **17:27:14.655529
+through 17:57:14.655529 UTC**, or **10:27:14 through 10:57:14 Pacific**.
+This is observed bench telemetry, not a field, runtime or calibration test.
+
+Nine source devices have archived activity in this window; eight were heard in
+its final five minutes. R001 was last heard about 29 minutes before the end.
+B001 is present in unencrypted envelope source headers despite its stale portal
+contact timestamp: six unsupported receipts, last at 17:54:55.166 UTC, with no
+normalized requested metrics. Inventory identifies that source as B001. No
+packet decryption or private configuration access is needed for this summary.
+
+Values below are **latest (minimum to maximum)** within the window. Battery is
+device-reported voltage; current is the separately reported INA219 PowerMetrics
+channel 1. A dash means no usable in-window sample, not a zero reading.
+
+| Device | Last heard, Pacific | Battery, V | Channel-1 current, mA | Temperature, degrees C |
+| --- | --- | --- | --- | --- |
+| B001 | 10:54:55 | - | - | - |
+| G001 | 10:57:05 | - | - | - |
+| G002 | 10:57:06 | 3.800 (3.800 to 3.846) | - | - |
+| G003 | 10:56:53 | 3.891 (3.883 to 3.896) | +166.1 (0.0 to +179.4) | - |
+| R001 | 10:28:16 | - | - | - |
+| R002 | 10:57:04 | 4.029 (3.965 to 4.107) | -86.7 (-229.2 to -86.7) | - |
+| R003 | 10:53:56 | 4.263 (3.651 to 4.263) | - | 21.5 (21.0 to 21.5) |
+| R004 | 10:55:43 | 3.623 (3.601 to 3.664) | -101.9 (-298.8 to -73.6) | 43.2 (26.6 to 43.2) |
+| R006 | 10:56:33 | 4.022 (4.020 to 4.048) | -110.0 (-128.0 to +12.9) | - |
+
+R004 temperature rises from 26.5505 to 43.2371 degrees C in nine observations;
+the last four are approximately 30.7, 35.9, 40.1 and 43.2 degrees C. R003's two
+battery observations change from 3.651 to 4.263 V. These readings warrant
+physical comparison if investigated; this request does not diagnose either
+change or establish charging behavior. G003's latest channel-1 sensor voltage
+is **5.344 V**, separate from its **3.891 V** device battery report, so its
+current must not be described as measured battery discharge.
+
+Latest channel-1 sensor voltages are R002 **4.000 V**, R004 **3.628 V** and
+R006 **3.996 V**. Separate environment-source INA219 reports give R002
+**4.004 V / -86.1 mA** at 17:55:08.024 UTC and R004
+**3.632 V / -101.5 mA** at 17:55:01.902 UTC. Current signs remain literal;
+physical polarity/path/calibration are not established by these packets.
+
+Evidence: production `/var/lib/meshlink/pb_data/data.db`, opened with SQLite
+`mode=ro`; snapshot transaction over devices, observations and packet receipts,
+then an independent query of the same frozen window and archive headers.
+**85 unique normalized telemetry observations** across six devices; battery
+sample counts G002/G003/R002/R003/R004/R006 are **6/10/6/2/9/8**. Channel-1
+current counts G003/R002/R004/R006 are **10/3/8/8**; temperature counts
+R003/R004 are **2/9**. The archive contains **377 receipts: 350 normalized and
+27 unsupported**, with no rejected/error outcomes. Normalized packet receipt
+outcomes are **178 accepted / 172 duplicate**; gateway copies are not counted
+again in telemetry ranges. Unsupported source-header inspection adds B001 to
+the activity summary without printing packet bodies, locations or secrets.
+
+Metric selection uses measurement time when known, otherwise original worker
+receipt time; many RAK reports have unknown source clocks. Such receipt-based
+times are approximate and do not prove when a buffered sample was measured.
+Activity does not prove continuous uptime or present connectivity. R001's
+previous **3.990 V at 10:22:45 Pacific** lies outside the requested window and
+is excluded. B002 and R005 have no archived source activity in this window;
+G004 remains on its recorded owner hold. No radio, service, database content,
+configuration or task acceptance state is changed.
+
+## 2026-10-24 - R002 latest firmware and confirmed INA219 profile
+
+Owner reconnects **R002 `!b456f760` / USB `BADB1E79E9739FC4`** and explicitly
+confirms fitted INA219. Same reviewed ordinary **rak4631 / 2.7.26.4c96b9b**
+application as R004 passes image hash/bounds, application-only flash and full
+original-profile equality. Complete intended owner/keys/channel/local/module
+comparison passes through explicit reboot: CLIENT, enabled device/environment/
+INA219 power at **180 seconds**, private over-LoRa SNNS with saved 180-second
+baseline and separate standard NeighborInfo at 21,600 seconds.
+
+Fresh automatic encrypted device/environment/power/SNNS reports reach **both
+G001 and G002** over validating TLS after the final profile check. First device
+voltage is **4.093 V**; INA219 channel-1 power is **4.068 V / -229.2 mA**.
+Environment packets carry INA219 voltage/current without temperature/humidity;
+temperature-sensor operation remains unverified. New SNNS boot sequence 1 has
+source uptime 66 seconds. Values are reported readings, not calibrated
+physical-current/charging measurements.
+Two distinct automatic packets of each type reach each gateway. Device,
+environment and power measurement gaps are **180 seconds**; same-boot SNNS
+sequences 1/2 have **195-second** source-uptime spacing, including jitter.
+[Image, automatic cadence and private evidence](../docs/operations/r002-three-minute.md).
+
+Authenticated portal ingestion/cadence metadata, INA219 physical path/accuracy,
+battery-only behavior, sustained operation, runtime and field coverage remain
+separate gates. No other radio/server/portal or site change occurs.
+
+## 2026-10-24 - R004 ordinary firmware and INA219 three-minute profile
+
+Owner-requested R004 **`!77fdb9f1`**, USB **`820C9B4F0C2D7675`**, receives
+ordinary **rak4631 / 2.7.26.4c96b9b** from the reviewed local application image;
+its original diagnostic captures remain retained. Exact image hash and full
+original-profile equality pass after flashing. Complete intended
+owner/identity/keys/channel/local/module equality passes through an explicit
+reboot: CLIENT, enabled device/environment/INA219 power at **180 seconds**,
+over-LoRa SNNS with saved 180-second baseline, and separate standard
+NeighborInfo at 21,600 seconds. INA219 initializes/opens.
+
+Fresh automatic encrypted MQTT reports reach **both G001 and G002** over a
+validating-TLS subscription after the final reboot. Device **3.654 V**,
+environment **27.317 degrees C / 27.094% RH**, channel-1 INA219 power
+**3.660 V / -298.2 mA**, and the new boot's SNNS sequence 1/source uptime
+113 seconds pass independent wire-adapter validation. These are reported
+values, not calibrated physical-current/charging measurements.
+Two distinct automatic reports per type reach each gateway. Device/environment/
+power measurement gaps are **180 seconds**; SNNS sequences 1/2 share one boot
+and differ by **195 source-uptime seconds**, including the baseline and jitter.
+[Exact image, cadence and private evidence references](../docs/operations/r004-three-minute.md).
+
+Authenticated portal ingestion/cadence metadata, physical accuracy/bridge state,
+battery-only behavior, runtime, sustained operation and field coverage remain
+unverified. No other board/server/portal mutation or site installation occurs.
+
+## 2026-10-24 - G003 first installation and INA219 gateway telemetry
+
+Owner-requested **G003 `!9e9f167c`** receives dedicated
+**heltec-v3-gateway / 2.7.26.4c96b9b** from the exact reviewed local build.
+Original factory-demo flash is fully backed up; gateway factory, official
+recovery and matching filesystem images pass independent byte verification.
+Complete intended owner/new PKI/channel/local/module profile matches through
+explicit reboot, including corrected supplied Wi-Fi, CLIENT, LoRa TX disabled,
+local-only collector, and enabled **180-second device/power telemetry**.
+INA219 is detected at **0x40** and initialized; environment stays off.
+
+Independent validating-TLS MQTT observation receives fresh non-retained
+encrypted source/transport-G003 device voltage **4.069 V** at 16:14:26 UTC and
+INA219 channel-1 **3.920 V / -489.4 mA** at 16:14:51 UTC. Values/sign are retained
+without calibration or charging-path interpretation. A 275-second observation
+captures two reports of each type: MQTT receipt gaps **180.353 / 180.176 seconds**
+for device/power, respective measurement-clock gaps **180 / 181 seconds**.
+Second power is **3.924 V / -489.3 mA**; second device voltage is **4.073 V**.
+Five own-source local API telemetry packets are also captured. Serial and MQTT
+handles close. [Exact images, private evidence and acceptance limits](../docs/operations/g003-gateway-preparation.md).
+
+No production gateway/source mapping or portal record is changed. Separate
+broker credentials, authenticated portal acceptance, sensor calibration/path,
+pack/runtime, sustained delivery and field coverage remain follow-ups.
+No other board is changed.
 ## 2026-10-24 - Current polarity release and fresh telemetry
 
 Owner authorizes [PR #59](https://github.com/lfg-seth/snorr-meshlink/pull/59)
@@ -347,6 +515,7 @@ Source: [Define the dispatch portal MVP](../.scratch/pilot/issues/06-dispatch-po
 | TEST-002 | 2026-10-14 | Bench | Each V4 fixture received by both V3s | Same release; private channel, US LONG_FAST, slot 35, configured 10dBm, hop limit 3 | Ignored `private/bench/radio-smoke-20261014T180221Z.json` | All four reception checks pass; no GPS or MQTT claim |
 | TEST-003 | 2026-10-14 | Bench / software | Hotspot association, broker subscriber, MQTT fixture delivery | Same stock firmware and private channel | Ignored `private/bench/connection-status.json`, `mqtt-saved/`, `mqtt-radio-smoke-20261014T183218Z.json` | Initial 0/4 before password correction; subsequent actual encrypted gateway MQTT delivery 4/4 PASS |
 | TEST-004 | 2026-10-14 | Bench | Automatic GPS positions from both V4s through both V3s | Same stock build/channel; replacement hotspot | Ignored `private/bench/gps-mqtt-20261015T002434Z.json`, `gps-herrera/`, `herrera-saved/` | 4/4 GPS member/gateway paths PASS; fix ages about 21–35 seconds |
+| TEST-006 | 2026-10-24 | Bench | Saved SNNS intervals, B002 PKI admin and gateway local behavior | R006/G001/G002 `2.7.26.4c96b9b`; B002 unchanged stock `2.7.26.54e0d8d` | [Images, measurements, restoration and limits](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24); ignored `private/bench/local-3-admin-20261024/` | Cadence, preservation and interrupted-edit recovery pass; rebooting-write ACK ambiguity and forced-relay acceptance remain explicit |
 
 ### TEST-001 — Stock Heltec provisioning
 
@@ -411,6 +580,41 @@ Independent gateway reboot follow-up — Both saved profiles, including exact pr
 - New live backup `meshlink-20261015T024051Z.tar.gz` passes checksum, SQLite integrity and isolated API recovery: four accounts, four devices, zero members/assignments/messages/infrastructure observations/incidents/events, three positions and six packet receipts. Expanded backups include private worker configuration, queue and service definitions. Local API/proxy authentication boundaries, per-client throttling and credential-free public HTTPS/certificate/protected-route checks pass. The public browser entry renders the new sign-in-only page; authenticated live map/history browser review is still outstanding.
 - Software checks: 36 backend tests pass on the LXC's Python 3.12 runtime with the isolated pinned MQTT dependencies, including encrypted-wire decoding, API retries, durable queue restart, subscription/outage state, transactional cutover rollback and stale timestamp behavior. Eight frontend tests, TypeScript and production build pass on pinned Node 22.23.1; existing MapLibre bundle-size warning remains. Shell/service/Python syntax and Git whitespace checks pass.
 - Limits: no sustained field reliability, runtime, RF coverage, broker/Wi-Fi outage hardware test, phone-free cold start, full browser/device matrix or off-host backup demonstrated. Radio messaging, remote naming, member battery and infrastructure telemetry remain unintegrated. This completes receive-only bench GPS integration, not operational deployment readiness.
+
+### TEST-006 — Saved SNNS interval and selected-controller admin bench
+
+- Owner authorizes application-only flashing of R006 and G001/G002, with B002
+  as the existing transmitting controller; preserve individual keys/profiles,
+  keep both V3s receive-only and restore intended settings. One worker owns
+  serial/admin access. No member GPS test, placement or server mutation.
+- Reviewed firmware source `4c96b9ba0`; exact image/partition/hash checks and
+  complete saved owner/security/channel/local/module comparisons pass through
+  reboot. Full private gateway recovery images and concealed original/final
+  profiles in 1Password Pilot are retained. B002 firmware/profile is unchanged.
+- Seven actual R006 SNNS source gaps are **195 / 315 / 315 / 195 / 915 / 195 /
+  195 seconds**, covering 180/300/900, lengthening, outstanding cooldown after
+  shortening, saved reboot and return to 180. Matching serial/MQTT copies pass
+  through both gateways. Each gateway supplies 39 local reports; consecutive
+  source gaps within each observed boot are 75–76 seconds despite their
+  different saved device-telemetry settings.
+- Unauthorized PKI read is explicitly rejected; temporary B002 authorization
+  permits encrypted read/change/readback. A 15-second remote reboot discards an
+  uncommitted 300-second edit and recovers saved 180. Short rebooting commands
+  can return `ADMIN_BAD_SESSION_KEY`; a 900-second save nevertheless executes
+  and survives a distinct boot. Require independent result/boot checks rather
+  than blindly repeating the write. The underlying transport cause and general
+  app/CLI compatibility are unproven.
+- Final all-board original-profile comparisons pass. R006 returns to
+  device/power 180, environment off and its original empty admin allowlist;
+  B002 is rejected again afterward. V3 TX remains disabled/local-only. All
+  serial/subscriber sessions close. Exact clocks, paired receipts, capture
+  fingerprints and failed/restored attempts are in the linked operation record.
+- Result: selected cadence/profile/recovery checks pass with the admin ACK
+  caveat. No forced relay excluding direct reception, authenticated portal
+  acceptance, outage-age bound, calibrated current, battery-only duration,
+  delivery percentage, independent RF silence or field coverage established.
+  Next: forced-relay admin/interrupted-command test with a transmitting
+  intermediate and robust operator-tool result handling.
 
 ## Copy for each test
 
