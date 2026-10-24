@@ -225,3 +225,62 @@ Requested behavior / future acceptance:
 - Future verification covers both roles, known/unknown models, longer labels and desktop/mobile layouts, with client cards retaining their existing presentation.
 
 Related parked work: [LOCAL-8 battery summary](#device-card-battery-summary-without-duplicate-sensor-readings). This is a separate card-header request; capturing it does not activate either implementation.
+
+## RAK dual-panel solar housing
+
+Local task: **LOCAL-10** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests notes/ticket capture; design and testing are deferred.
+
+- Owner expects one solar panel will likely be insufficient even for the RAK repeaters. Treat this as a planning concern, pending measured daily energy and no-sun runtime.
+- Design a 3D-printable housing/mount for **two solar panels** on the RAK repeater setup. Identify the actual panel dimensions, electrical ratings, mounting arrangement and existing enclosure before CAD.
+- Future acceptance: printable source and export files, secure panel attachment, cable routing/strain relief and weather protection, serviceable battery access, and a fit check with the actual hardware. Verify the selected two-panel electrical arrangement and measured charging/recovery before claiming solar autonomy.
+
+Related: [LOCAL-11 gateway solar](#v3v4-gateway-dual-panel-charging), [LOCAL-12 emergency pack](#deployable-emergency-backup-battery-pack). These are proposed changes, not installed equipment; inventory allocations remain as recorded.
+
+## V3/V4 gateway dual-panel charging
+
+Local task: **LOCAL-11** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests notes/ticket capture; circuit selection, wiring and testing are deferred.
+
+Owner expects the small panels will be insufficient for V3/V4 gateways, and even one large panel will be insufficient. The proposed direction is **two large panels per gateway**. This is a new sizing hypothesis to evaluate against the older two-small-panel/external-USB alternatives in [LOCAL-4](../.scratch/pilot/issues/26-gateway-production-readiness.md#a-measure-power-and-select-the-supply), not a measured result or an approved wiring diagram.
+
+Proposed approach and future acceptance:
+
+- One panel feeds the onboard charger; the second feeds a **TP4056 or similar 1S charger**. Evaluate the owner's direct-to-battery versus inline-with-board idea using the actual board, battery, charger and shunt schematic.
+- Preserve accurate combined charge/battery-current telemetry. Draw both charger branches, board load and INA219 placement; verify that the intended battery measurement includes both charging paths and discharge rather than bypassing the shunt. Distinguish net battery current from gross combined charger output.
+- Owner estimates **1–2 A maximum**, below the owner's cited **3.5 A INA219 rating**. Record both as unverified assumptions: establish where the 1–2 A applies and verify the actual INA219 module/shunt, calibration, wiring and connector continuous/peak limits before selecting a circuit.
+- Establish whether two chargers can share the selected pack and operate with the running gateway; check termination/load sharing, reverse-current/backfeed behavior, voltage/current/temperature limits and the actual solar-input range. Do not infer compatibility from each charger being intended for 1S cells.
+- Future acceptance: exact-parts schematic, measured battery-side and input-side energy/peaks, both panels alone and together, charging while operating, weak/no sun and recovery, and a reference-meter check of combined-path telemetry. Set autonomy/recovery targets before the run; provide enclosure/mount requirements for the larger panels.
+
+Related: [LOCAL-4 power-plan brief](../.scratch/tasks/local-4-power-plan.md), [GH-4 INA219 diagnosis](tracking-import/github-4.md), [LOCAL-12 emergency pack](#deployable-emergency-backup-battery-pack). This capture does not settle existing sensor-accuracy or gateway-readiness gates.
+
+## Deployable emergency backup battery pack
+
+Local task: **LOCAL-12** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests notes/ticket capture; intended for extended periods without usable sun.
+
+Requested concept and future acceptance:
+
+- A separate case hangs from the repeater/gateway and connects with a simple plug so anyone can deploy it in an emergency. Evaluate **USB-C or a 3.5 mm jack** as connector candidates; neither is selected. Include secure attachment, strain relief, weather protection, clear labels and a short deployment procedure.
+- Provide **4-cell and 8-cell 18650** variants with a **5 V boost output**. Pack topology, cell model/capacity, protection, fusing, temperature limits and usable energy remain to establish; cell count alone does not specify wiring or permitted current.
+- Proposed output feeds the node's **onboard USB/5 V charging rail**, and its additional TP4056 input if fitted. Define a compatible input and distribution path for each hardware variant; check available output current, voltage drop, simultaneous node operation/internal-battery charging, source sharing/backfeed, low-battery cutoff and startup/brownout behavior.
+- The external pack also has its own charging circuit, initially proposed as a **TP4056**, with a higher-current alternative evaluated under [LOCAL-13](#faster-emergency-pack-recharging-from-usb-c-pd). Keep external-pack charging distinct from the optional second charger inside the node.
+- Future acceptance: agreed no-sun coverage duration, measured usable Wh/runtime and recharge time for both variants, mechanical/connector fit, unplug/reconnect and low-load/empty-pack behavior, and deployment by a person following only the supplied instructions. Verify pass-through operation if included in the final design.
+
+Related: [LOCAL-10 RAK housing](#rak-dual-panel-solar-housing), [LOCAL-11 gateway charging](#v3v4-gateway-dual-panel-charging), and existing [LOCAL-4 power characterization](../.scratch/tasks/local-4-power-plan.md). Capture only; no pack assembly, purchases or live hardware changes.
+
+## Faster emergency-pack recharging from USB-C PD
+
+Local task: **LOCAL-13** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner wants a future comparison of the proposed TP4056 pack charger with a better power-delivery/charging solution capable of more current, particularly for an eight-cell pack.
+
+- Target convenient recharging from the **USB-C PD car chargers** the owner expects members to have. Exact available chargers, negotiated profiles, cable ratings and vehicle power availability remain unknown.
+- Compare a TP4056 baseline with an appropriate higher-current charger/power-path solution for the selected pack topology. Specify PD negotiation and any conversion needed; a PD source's advertised power is not a battery charge-current setting.
+- The owner expects eight 18650 cells can accept substantially more charge current. Verify the actual cell specification, pack wiring, matching, protection, connectors, thermal limits and charging temperature range before setting an aggregate current target.
+- Future acceptance: supported input profiles and fallback, selected charge-current limit, charging/termination and thermal behavior, measured four/eight-cell recharge times, and operation with the pack supplying a node if supported. Compare complexity and cost using inventoried parts first; no component or purchase is selected by this note.
+
+Dependency: [LOCAL-12 external pack](#deployable-emergency-backup-battery-pack) defines topology and output requirements; charger comparison can be scoped when activated. Research, design and bench work remain deferred.
