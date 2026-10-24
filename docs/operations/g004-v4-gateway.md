@@ -194,3 +194,23 @@ The MQTT archive checker validates the latest **200 records**, observes four
 new deliveries during its check, and all four live API/worker/Nginx/Tunnel
 services are active. Native/mobile rendering, GPS fix/time sharing, a confirmed
 map location, sensor calibration, cold boot and field/runtime remain separate.
+
+## Random Las Vegas placeholder - 2026-10-24
+
+Owner explicitly requests a random Vegas location. At **18:28:44 UTC /
+11:28:44 Pacific**, apply the existing Las Vegas placeholder convention to
+G004 alone. Save `locationSource=random-las-vegas-placeholder`, label
+**Random Las Vegas map placement · not a measured location**, and append the
+placeholder wording to the gateway's displayed name. This replaces its
+initially unplaced portal map state without claiming a GPS fix or physical
+installation.
+
+Exact coordinates and the original/intended/saved configuration are retained
+privately at
+`/root/g004-registration-20261024/vegas-location-20261024T182844Z`.
+Independent authenticated public HTTPS portal state returns the exact saved
+point and placeholder labels. All device record identities, every unrelated
+configuration and all other G004 settings pass before/after comparison.
+No radio/GPS/MQTT setting, historical track, actual site or warning policy
+changes. GPS/time, real site permission/location and field acceptance remain
+separate from this requested map placeholder.

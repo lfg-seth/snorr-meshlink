@@ -1,5 +1,17 @@
 # Candidate sites and backhaul
 
+2026-10-24 G004 random Las Vegas placeholder - Owner explicitly requests a
+random Vegas location for G004. Save a point using the existing Las Vegas
+placeholder bounds/convention and verify the exact saved coordinates through
+authenticated public portal state. The gateway name/label identify **Random
+Las Vegas map placement · not a measured location**. All other G004 settings
+and every unrelated device configuration/identity are preserved. Exact point
+and reversible before/after configuration remain root-private under
+`/root/g004-registration-20261024/vegas-location-20261024T182844Z`.
+This supersedes the earlier unplaced map state only; GPS fix, physical site,
+installation, permission and coverage remain unverified.
+[Placement evidence](../docs/operations/g004-v4-gateway.md#random-las-vegas-placeholder---2026-10-24).
+
 2026-10-24 G004 bench backhaul registration - Replacement V4 **`!699c2ed8`**
 is registered as **G004** in the live portal and MQTT worker's source/gateway
 mappings. Existing bench Wi-Fi and encrypted TLS MQTT uplink remain in use.

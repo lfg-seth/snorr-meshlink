@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-10-24 - Place G004 at a labeled random Las Vegas point
+
+Owner requests a random Vegas location for G004. Reuse the existing Las Vegas
+placeholder convention, save its before/intended/after configuration privately,
+and update only G004's coordinates and placeholder name/metadata at
+**18:28:44 UTC / 11:28:44 Pacific**. Authenticated public HTTPS portal state
+verifies the exact point and **not a measured location** label. All other
+G004 settings and every unrelated device configuration/identity are preserved;
+radio/MQTT/GPS and historical measurements are unchanged.
+[Private evidence reference and placement](../docs/operations/g004-v4-gateway.md#random-las-vegas-placeholder---2026-10-24).
+
+Next useful step: sky-view GPS/time verification and, when selected, a confirmed
+physical site/location. This map placeholder establishes neither. Publish
+checked records on **`codex/g004-v4`**.
+
 ## 2026-10-24 - Register replacement G004 in live portal and MQTT
 
 - Owner asks to check and complete G004's portal/MQTT registration. Existing
