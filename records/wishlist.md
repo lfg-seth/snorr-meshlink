@@ -164,3 +164,16 @@ node type gets a hardware/setup page with actual photos. Begin from the new
 by LOCAL-4. Public content must be explicitly selected rather than exposing all
 repository records. Layout/build integration, picture collection and publication
 wait for activation; no website or publication change is claimed.
+
+Public blog/wiki clarification (LOCAL-5): most project material should be public
+and written for humans, with owner copyediting before site publication. Exclude
+agent internals and provisionally issue/task pages; preserve secrets/member/raw
+location privacy. See [content policy](content.md#public-documentation-direction---2026-10-23).
+
+## Future staging or automatic deployments
+
+2026-10-23: owner selects **manual production deployments**, reviewed source on
+`main`, and no staging site now. The policy decision from GH-13 is settled;
+staging and automatic-release connection/implementation remain deferred, not
+required for the current workflow. Revisit only when the owner brings them
+forward. [Accepted policy](../docs/operations/meshlink-releases.md#deployment-policy---accepted-2026-10-23).

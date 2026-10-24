@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-10-23 - Settle repository name, manual deployments and public editorial policy
+
+- Owner keeps `snorr-meshlink`, selects manual production deployments from
+  reviewed main source and no staging site now. Update release operations and
+  project direction; no remote rename is pending. Resolve GH-13's policy choice
+  locally and park its unselected automation/staging implementation in Deferred.
+- Owner wants most project material public and human-readable, expecting to
+  copyedit most/all prose. Record the editorial policy in records/content.md and
+  LOCAL-5: useful drafts, owner copyedit/review, approved publication through
+  manual deployments. Inventory/operations content is eligible, not categorically
+  hidden. Exclude agent internals and provisionally task/issue pages from the
+  site; retain existing secrets/member/raw-location boundaries.
+- Validation: local links and whitespace checks. Documentation only; no site,
+  deployment, GitHub issue/Project or hardware changes. LOCAL-5 remains deferred.
+
+Next useful step: continue the selected firmware/application work; activate
+LOCAL-5 separately when ready to build the public documentation section.
+
 ## 2026-10-23 - Accept permanent local tracking, migrate firmware branch and version MeshLink
 
 - Owner selects `snorr/develop` and commits to local tracking. Publish firmware

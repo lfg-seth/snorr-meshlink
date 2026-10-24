@@ -23,6 +23,14 @@ Support SNORR Search and Rescue operations on Mount Charleston, Nevada.
 
 ## Confirmed direction
 
+- Housekeeping policy (2026-10-23): retain `lfg-seth/snorr-meshlink`; reviewed
+  source on main, manual production deployments, no staging site now. Most
+  project material should become human-readable public documentation with owner
+  copyediting. Internal agent material is excluded from site rendering; issue
+  pages are provisionally excluded. Existing secrets/member/raw-location privacy
+  remains. [Deployment](docs/operations/meshlink-releases.md),
+  [public content policy](records/content.md#public-documentation-direction---2026-10-23).
+
 - Firmware versioning (2026-10-23): owner establishes **SNORR 0.1.0** as the
   current development baseline, without a beta suffix; production starts at
   **1.0.0**. The [release record](records/firmware-releases/0.1.0.md) pins current

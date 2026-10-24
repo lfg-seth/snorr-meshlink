@@ -6,6 +6,17 @@ Firmware has its own version. Start at **0.1.0**, use patches for fixes and mino
 increments for development milestones, then **1.0.0** for accepted production.
 Versions use numeric major.minor.patch without beta suffixes.
 
+## Deployment policy - accepted 2026-10-23
+
+Keep the repository name **snorr-meshlink**. Use `main` for reviewed application
+source; merges, tags and CI publish source/build evidence only. Production
+updates are **manual, explicitly selected deployments** of a checked commit or
+release through the existing LXC procedure. A manual deployment can be carried
+out by the agent when the owner requests it; it is not triggered by a push.
+No staging site is needed now. Staging and automatic deployments are deferred
+until the owner brings them forward. Preserve same-commit validation,
+backup/recovery, serialized migrations, rollback and post-deployment checks.
+
 For a new release:
 
 1. Update the root release JSON, `portal/package.json` and both root-version
@@ -34,6 +45,5 @@ not acquire a new public backend endpoint. Record server deployment evidence in
 the session/operations log rather than equating a source tag with deployment.
 
 Local tracking is permanent on `main`; `.scratch/TRACKER.md` owns task status.
-GitHub hosts source, CI and useful PRs. The GitHub repository rename to `meshlink`
-has not yet occurred as of this implementation; remote/link migration follows
-the actual rename rather than assuming a new destination exists.
+GitHub hosts source, CI and useful PRs. The owner confirms `lfg-seth/snorr-meshlink`
+is the intended repository name; no rename or remote migration is pending.

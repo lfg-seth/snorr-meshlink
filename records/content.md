@@ -2,6 +2,33 @@
 
 Updated: 2026-10-12. No content has been published or submitted from this project record.
 
+## Public documentation direction - 2026-10-23
+
+Owner confirms this is a very public project: make most project material
+available in a human-readable form. Candidate content includes hardware/setup
+pages, designs and print files, build logs, measurements and failures, decisions,
+release notes, inventory and appropriately summarized costs. Do not exclude
+material merely because it began as an operational record.
+
+The site is a reader-facing publication, not a mirror of the agent workspace.
+Exclude internal agent instructions/prompts, task bookkeeping and raw session
+logs from automatic site rendering. Issue/task pages are provisionally excluded;
+the owner has not made that boundary final. Existing public GitHub history is
+not made private by excluding it from site navigation.
+
+Prepare useful drafts with concrete facts, photos, setup steps and measured
+limits. The owner expects to copyedit most or all material to remove generic
+AI-sounding prose. Use draft -> owner copyedit/review -> published content;
+approved Markdown changes appear with the next manual site deployment, not
+immediately when an agent edits a file. Preserve a single maintained content
+source and link original evidence where appropriate.
+
+Credentials, identifiable member rosters and raw location tracks retain their
+existing privacy boundaries; review photos and private site details before
+publication. Broad project openness does not change access to authenticated
+live tracking. [LOCAL-5](../.scratch/pilot/issues/27-public-markdown-blog-wiki.md)
+owns implementation and remains deferred.
+
 ## Content queue
 
 | ID | Topic | Stage | Supporting evidence | Assets needed | Sharing permission | Publication link / date |

@@ -27,7 +27,6 @@ Ready follow-ups and items needing scope/prerequisites; select with the owner be
 | [GH-39 — Bounded demo battery-history recovery](../records/tracking-import/github-39.md) | Ready: correct/check the installed verifier's unconditional untruncated-history assertion without truncating history or changing production data. R006 backup reobserves it; independent exact bounded-history/full-database recovery passes, with the installed verifier untouched. [Evidence](../docs/operations/ina219-audit.md#recovery-evidence). |
 | [GH-7 — Off-host backup recovery](../records/tracking-import/github-7.md) | Triage: choose an authorized private destination/retention plan, then verify separate live/demo recovery beyond the current host. |
 | [GH-8 — Recurring high channel utilization](../records/tracking-import/github-8.md) | Triage: capture the recurrence with the existing receive-only tools before identifying cause or changing radio settings. |
-| [GH-13 — Deployment branch/staging policy](../records/tracking-import/github-13.md) | Triage: agree policy before release automation; this tracking branch does not choose production deployment policy. |
 | [GH-18 — Measured field-pilot plan](../records/tracking-import/github-18.md) | Triage, blocked on bench/relay/power evidence: agree available devices, access, route and acceptance thresholds before a field run. |
 
 ## Verify
@@ -50,6 +49,7 @@ Owner activation is required before research, design, implementation or testing.
 
 | Task | Hold / future outcome |
 | --- | --- |
+| [GH-13 - Future deployment automation/staging](../records/wishlist.md#future-staging-or-automatic-deployments) | Policy resolved 2026-10-23: main, manual production updates, no staging now. Remaining automation/connection/staging work deferred; revisit only on owner activation. |
 | [GH-11 — Repeater operations/site survey](../records/tracking-import/github-11.md) | Owner-held survey; define direct-link placement procedure when resumed. |
 | [GH-12 — Heltec MQTT over WebSockets](../records/tracking-import/github-12.md) | Revisit only if the deployed transport needs an alternative. |
 | [GH-14 — Messaging/remote administration](../records/tracking-import/github-14.md) | Later communications scope after passive tracking. |
@@ -69,6 +69,6 @@ Owner activation is required before research, design, implementation or testing.
 | [LOCAL-1 — Infrastructure page overhaul](../records/wishlist.md#infrastructure-page-overhaul) | Wishlist: richer clickable device summary cards including member devices; readable current-neighbor overview; optional collapsed, sortable, paginated debug table with timestamps; move useful unique detail into full cards. Await owner activation. |
 | [LOCAL-2 — Member node/battery reports without GPS](../records/wishlist.md#member-node-and-battery-reports-without-a-gps-fix) | Owner reports missing member battery data. Target node/status and battery broadcasts every five minutes (300 seconds), including without a fix or phone, with truthful contact/signal freshness. Await activation; verify actual member settings and end-to-end delivery before choosing a fix. |
 
-| [LOCAL-5 - Public Markdown blog/wiki](pilot/issues/27-public-markdown-blog-wiki.md) | Side-tangent capture: approved Markdown updates feed public blog/docs, with illustrated setup pages per node type. Hardware source section now exists; implementation/publication remain deferred. [Wishlist](../records/wishlist.md#public-markdown-blog-and-hardware-wiki). |
+| [LOCAL-5 - Public Markdown blog/wiki](pilot/issues/27-public-markdown-blog-wiki.md) | Broad public project docs, human-readable and owner-copyedited, with illustrated node setup pages. Agent internals excluded; issue pages provisionally excluded. Approved content ships through manual deployment. Hardware source section now exists; implementation/publication remain deferred. [Wishlist](../records/wishlist.md#public-markdown-blog-and-hardware-wiki). |
 
 Completed work belongs in [the session log](../records/sessions.md), with decisions/measurements in existing records. [Import index](../records/tracking-import/index.md) preserves all 36 open issues and their historical labels/discussion; it is not another queue.
