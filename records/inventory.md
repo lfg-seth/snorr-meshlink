@@ -1,5 +1,28 @@
 # Hardware inventory
 
+2026-10-24 G004 V4 replacement - Owner reports former V3 G004
+**`!849ae664`** failed hardware and selects the connected Heltec V4 with its
+default GPS and INA219 on **SDA17/SCL18** as G004. Independent API/USB
+identification matches former **B001 `!699c2ed8`**, hardware device ID
+**`d4d91213c6f862de7a81383bc8843e59`**, USB **`90:70:69:9C:2E:D8`**, COM5,
+original **heltec-v4 / 2.7.26.54e0d8d**; chip confirms 16 MB flash.
+Reassignment preserves the V4's own identity/keys, rather than copying those
+of the failed V3. B001 is no longer a separate available member tracker;
+B002 retains its own identity/allocation. Ownership totals remain nine V3s
+(including this owner-reported failed V3) and two V4s; no purchase, additional
+board, GPS or INA219 stock total is inferred. Verified application-only
+**heltec-v4-gateway / 2.7.26.a56466d** and full intended profile persist through
+reboot, preserving original keys/radio power/FEM and default GPS RX39/TX38/
+enable34. GPS responds as **L76K**; INA219 initializes/opens. Two fresh
+automatic device/power/SNNS reports reach all four gateways: device/power
+measurement gaps **180 seconds**, SNNS uptime gap **195 seconds** including
+jitter. Power channel 1 reports **4.192–4.196 V / -0.1–0.0 mA**. Owner confirms
+indoors without sky view; no fresh fix/position packet is observed. Exact sensor
+measurement path/calibration, battery/capacity, GPS clock/mesh-time adoption,
+hard-power boot and field/runtime operation remain unverified. Portal identity
+migration from B001/retired V3 G004 remains separate.
+[Replacement firmware/profile and acceptance](../docs/operations/g004-v4-gateway.md).
+
 2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing
 R002 **`!b456f760`**, USB **`BADB1E79E9739FC4`**, COM9, also has an **INA219**.
 This supersedes its earlier no-INA219 bench sensor selection, without adding

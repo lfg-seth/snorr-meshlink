@@ -1,5 +1,55 @@
 # Session log
 
+## 2026-10-24 - Replace failed G004 V3 with V4 and three-minute reporting
+
+- Owner reports V3 G004 **`!849ae664`** failed hardware and selects the V4
+  with default GPS and INA219 on **SDA17/SCL18** as replacement G004.
+  Independently identify existing **B001 `!699c2ed8`**, USB
+  **`90:70:69:9C:2E:D8`**, COM5, hardware ID
+  **`d4d91213c6f862de7a81383bc8843e59`**. Preserve individual profile/keys and
+  all 16 MB original flash privately. This reassigns existing hardware; B001
+  is no longer a separate member tracker. Ownership totals remain unchanged.
+- Publish minimal **heltec-v4-gateway** target on `snorr/develop`, source
+  **`a56466d8c127929c22a959b659296d8ddfb17921`**; it inherits ordinary OLED V4
+  and enables the existing collector with 180-second fallback. Full target
+  build and all four sanitizer-backed SNNS harness configurations pass.
+  Application-only **2.7.26.a56466d**, exact manifest/hash/partition bounds
+  and independent esptool verification pass, followed by complete original
+  profile equality. Recovery/filesystem/settings are retained; no factory reset.
+- Full intended profile/owner/keys/channel equality passes through explicit
+  reboot at **18:03:26 UTC / 11:03:26 Pacific**: G004/CLIENT, default bench
+  Wi-Fi and encrypted TLS MQTT uplink, TX on with original 10 dBm/FEM, GPS
+  RX39/TX38/enable34, refresh 120 seconds and position 300 seconds. Device and
+  INA219 power telemetry enabled at **180 seconds**, environment off,
+  over-LoRa SNNS using saved 180-second baseline; standard NeighborInfo 21,600
+  seconds. L76K responds and INA219 initializes/opens. No captured brownout.
+- Validating-TLS MQTT receives **two fresh automatic device/power/SNNS
+  reports through G001/G002/G003/G004**, including G004's own uplink.
+  Device/power measurement gaps **180 seconds**; same-boot SNNS sequences
+  1/2 have **195-second source uptime gap**, including jitter/scheduler delay.
+  Device reports **4.372–4.373 V**, INA219 channel 1 **4.192–4.196 V /
+  -0.1–0.0 mA**; calibration/physical meaning remains unverified. Owner confirms
+  indoors without sky view; no GPS fix/position packet or mesh-time adoption
+  is claimed. Serial/MQTT handles close after the second complete cycle.
+- Another chat changes the shared branch while working independently. Copy
+  G004's six record files into the attached **g004-v4** worktree, preserving
+  the committed fleet summary. Automatic approval rejects shared-copy cleanup
+  because concurrent edits could be lost; leave those files intact. Publish
+  G004 records and the firmware pin on **`codex/g004-v4`** from the isolated
+  worktree. Other radios, server/portal and `3DModels/` remain unchanged by
+  this run. [Exact image, cadence and remaining gates](../docs/operations/g004-v4-gateway.md).
+- Final changed-document checks pass for **all eight Markdown files**, including
+  local links and Git whitespace; the staged firmware pin passes whitespace
+  validation. Exact target build, four SNNS harness configurations, full
+  profile/reboot comparison and two-cycle MQTT observation are the verification
+  performed; physical/field acceptance is not inferred.
+
+Next useful step: give the GPS sky view and verify fresh satellite fix/time
+and time-bearing position packets, then test time adoption on a selected
+receiver without competing clock sources. Private portal identity/source/
+cadence migration, separate uplink account, sensor calibration/path, hard-power
+boot, battery-only runtime and sustained/field acceptance remain separate.
+
 ## 2026-10-24 - Read-only last-thirty-minute fleet summary
 
 - Owner requests online devices' battery voltage, current and temperature.

@@ -21,7 +21,9 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   target**. These are requirements, not accepted field results.
 - Initial scale is roughly 20 members. The planned first trial uses six
   GPS-equipped Heltec V4 member trackers, two selected RAK relays and two Heltec
-  V3 backhauls. Only B001/B002 are the established member bench pair; planned
+  V3 backhauls. B001/B002 were the established member bench pair; on 2026-10-24
+  the owner reassigns B001 to [replacement gateway G004](docs/operations/g004-v4-gateway.md),
+  leaving B002 in the member role. Planned
   purchases/recoveries and 3000 mAh allocations require confirmation in
   [inventory](records/inventory.md). T-Decks are outside the first trial.
 - Meshtastic is selected for pilot evaluation; firmware/protocol suitability

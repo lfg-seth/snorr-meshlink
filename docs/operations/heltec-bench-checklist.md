@@ -1,5 +1,10 @@
 # Heltec V3/V4 bench readiness
 
+2026-10-24 allocation update: owner reassigns former **B001 `!699c2ed8`**
+to [replacement G004](g004-v4-gateway.md), with default GPS and INA219 on
+SDA17/SCL18, after the earlier V3 G004 fails hardware. B002 retains its member
+role. The four-board/B001 references below describe historical bench evidence.
+
 Reviewed 2026-10-14. **Four stock boards are provisioned; automatic GPS delivery through both MQTT gateways passes a short bench observation.** No mandatory GPS firmware patch has been established. Full live portal tracking and custom repeater survey testing have separate unfinished implementation prerequisites.
 
 Earlier provisioning stage (superseded by the networking/GPS follow-ups): all four stock image installs, full profiles and roles now pass independent reboot/readback. Original V4s B001/B002 transmit on the shared private US bench channel, with GPS configured for 60-second acquisition/120-second reporting; V3s G001/G002 remain receive-only. Each V4 encrypted bench text fixture reaches both V3s (four reception checks pass). No fresh GPS or hardware MQTT delivery measured; Wi-Fi/MQTT remain off pending private provisioning. [Actual evidence](../../records/field-results.md#test-001--stock-heltec-provisioning).

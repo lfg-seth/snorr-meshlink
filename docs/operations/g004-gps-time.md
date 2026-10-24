@@ -1,5 +1,11 @@
 # G004 GPS time support
 
+**Replacement selected 2026-10-24:** owner reports this V3 failed hardware and
+reassigns **G004** to existing Heltec V4 **`!699c2ed8`** (previously B001), with
+default GPS and INA219 on SDA17/SCL18. Follow the
+[V4 replacement record](g004-v4-gateway.md) for current work. The V3 evidence
+and GPIO45/46 configuration below apply only to retired **`!849ae664`**.
+
 ## Commissioning attempt - 2026-10-24
 
 **Owner hold:** on 2026-10-24 the owner disconnects G004 pending hardware

@@ -1,5 +1,20 @@
 # Board flashing and configuration handoff
 
+2026-10-24 **G004 replacement**: owner retires failed V3 **`!849ae664`** and
+reassigns existing OLED Heltec V4 **`!699c2ed8`**, formerly **B001**, with default
+GPS and INA219 on **SDA17/SCL18**. Selected target **`heltec-v4-gateway`**,
+published source **`a56466d8c`**, runs verified **`2.7.26.a56466d`** and enables
+existing SNNS with 180-second fallback. Full profile/keys pass explicit reboot;
+two fresh device/power/SNNS cycles reach all four gateways. Device/power gaps
+are 180 seconds; SNNS is 195 seconds including jitter. L76K/INA219 respond;
+GPS fix and mesh time remain pending sky view and controlled receiver testing.
+Use [current image/profile/acceptance evidence](g004-v4-gateway.md); retain this
+V4's keys, configured RF power/FEM and default GPS RX39/TX38/enable34. Do not
+use the retired V3 target or its GPS45/46 overrides. Saved device/power
+telemetry and over-LoRa SNNS baseline are **180 seconds**, GPS position 300
+seconds, RF TX enabled. This assignment supersedes B001's former member role;
+B002 and other gateways retain their individual profiles.
+
 2026-10-24 **R002 `!b456f760`** now runs ordinary **rak4631 /
 2.7.26.4c96b9b**, with complete original-profile preservation and intended
 profile verification through explicit reboot. Owner confirms fitted INA219;
@@ -150,7 +165,7 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 | Board/function | Source and last verified hardware state | Configuration reference |
 | --- | --- | --- |
 | RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R002/R004 flashed/verified**; R001 remains stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R002 update](r002-release-update.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
-| Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
+| Original Heltec V4 B002; former B001 now G004 | B002 retains stock 2.7.26.54e0d8d. Owner reassigns B001 `!699c2ed8` to G004 on 2026-10-24; use its dedicated V4 gateway record. Identify original V4 versus V4-R8/display variants. | [G004 replacement](g004-v4-gateway.md), [historical Heltec bench evidence](heltec-bench-checklist.md), [live GPS behavior](live-mqtt.md). |
 | R006 selected interval bench | Ordinary `rak4631` 2.7.26.4c96b9b; intended device/power 180 seconds, INA219-only, saved-interval radio SNNS. | [Exact images, admin/cadence and limits](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24). |
 | Heltec V3 gateways G001/G002 | Both verified dedicated `heltec-v3-gateway` 2.7.26.4c96b9b, CLIENT/receive-only with enabled NeighborInfo/local-only collector reports; no portal downlink provisioned. | [G001 image/profile/evidence](g001-neighbor-gateway.md); [G002 build/evidence](g002-neighbor-gateway.md); [Live MQTT configuration and limits](live-mqtt.md); [gateway Wi-Fi helper](../../scripts/bench/set-gateway-wifi.py). |
 
