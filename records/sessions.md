@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-24 - Compact LoRa and AT&T cellular hardware follow-up
+
+- Owner asks for COTS LoRa/cellular boards, especially LILYGO/RAK, instead of a
+  separate GL.iNet router. Extend the [existing comparison](../docs/research/cellular-gateway-backhaul.md#combined-lora-and-cellular-cots-hardware---follow-up-2026-10-24)
+  with RAK4631/19007 + USD 30 RAK5860 and LILYGO T-SIM + SX1262 shield.
+- Verify primary hardware docs/prices and inspect local/upstream Meshtastic MQTT
+  transport. Combined hardware exists; direct LTE-M MQTT still needs a scoped
+  firmware or embedded proxy proof. LoRaWAN gateways do not substitute for this
+  Meshtastic path. AT&T LTE-M at the site, device/SIM approval and actual power
+  remain unverified. No purchases, firmware edits, activation or hardware tests.
+- Documentation link/whitespace checks pass; publish research-only follow-up on
+  `codex/cellular-backhaul-notes`, preserving concurrent bench/application work.
+
+Next useful step: identify a spare inventoried RAK19007/4631 with free IO/UART,
+then scope the smallest AT&T LTE-M firmware/bridge proof before buying modules.
+
 ## 2026-10-24 - Kyle Canyon AT&T solar gateway research
 
 - Owner requests cheapest/easiest cellular gateway, confirms AT&T and solar-only

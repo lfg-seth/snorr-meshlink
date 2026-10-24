@@ -5,6 +5,12 @@ service activation, site installation, hardware allocation or configuration chan
 
 ## Recommendation and existing evidence
 
+Follow-up: the owner asks for compact COTS LoRa + cellular hardware and considers
+the separate GL.iNet router excessive. The integrated hardware candidates below
+now lead the shortlist for development; the router path remains the verified
+architecture to reuse if firmware development is undesirable. No purchase or
+firmware implementation is selected by this research.
+
 Use an existing Heltec gateway over **2.4 GHz Wi-Fi to a cellular router**, then
 the existing MQTT/MeshLink path. This reuses the working gateway architecture
 without developing modem support in SNORR Firmware. An owned AT&T phone hotspot
@@ -25,7 +31,83 @@ delivered automatic encrypted GPS reports over all four paths, approximately
 21–35 seconds old. Those short bench observations do not verify Kyle Canyon
 coverage, solar runtime or recovery following outages.
 
-## Hardware comparison
+## Combined LoRa and cellular COTS hardware - follow-up 2026-10-24
+
+COTS boards exist. No ready-to-deploy Meshtastic-to-AT&T cellular product was
+verified in this review. Buying the radios and buying a supported firmware
+transport are separate questions.
+
+| Candidate | Advertised board cost, before tax/shipping | Hardware and remaining software work |
+| --- | --- | --- |
+| RAK4631 + RAK19007 + RAK5860 BG77 | $30 for RAK5860 if a suitable spare core/base is reused; otherwise base adds $9.99 and RAK4631 starts at $17.99 | SX1262 LoRa plus LTE-M/NB-IoT; direct cellular MQTT needs development. |
+| LILYGO T-SIM board + 915 MHz T-Sim Shield | Shield $29.36; catalog example T-SIM7670G S3 $36.02, arithmetic $65.38 before exact variant/availability | ESP32-S3 plus LTE modem plus SX1262; LoRa examples exist, but Meshtastic cellular transport is not verified. |
+| RAK WisGate with LTE | Not priced for this shortlist | LoRaWAN product family, not a substitute for the existing Meshtastic gateway. |
+
+Price sources: [RAK5860](https://store.rakwireless.com/products/rak5860-lte-nb-iot-extension-board),
+[RAK19007](https://store.rakwireless.com/products/rak19007-wisblock-base-board-2nd-gen),
+[RAK4631](https://store.rakwireless.com/products/rak4631-lpwan-node),
+[LILYGO shield](https://lilygo.cc/products/t-sim-shield), and
+[LILYGO current catalog](https://lilygo.cc/collections/t-sim-series).
+The LILYGO store renders sold-out/variant-dependent states; these are quotations,
+not confirmation an appropriate complete US915/cellular combination is in stock.
+Do not use an accessory-only "from" price as the price of a full cellular board.
+
+**RAK is the first candidate to investigate using owned hardware.** Inventory
+HW-001 lists RAK19007 assemblies, but a spare usable core/base and free IO slot
+must be identified without taking a required deployed/bench node out of service.
+RAK5860 is a UART BG77 LTE-M/NB2 extension with 2.6-4.2 V battery supply; RAK
+requires a connected battery because USB alone is unreliable. The RAK19007
+supports 5 V USB and solar inputs plus a 3.7 V battery. Its existing charger is
+not automatically adequate for a larger pack or panel. RAK19003 mini has only
+sensor slots, not the IO slot this module needs. Sources:
+[modem datasheet](https://docs.rakwireless.com/product-categories/wisblock/rak5860/datasheet/),
+[base](https://store.rakwireless.com/products/rak19007-wisblock-base-board-2nd-gen),
+[mini-base layout](https://docs.rakwireless.com/product-categories/wisblock/rak19003/overview/).
+
+RAK's [quick start](https://docs.rakwireless.com/product-categories/wisblock/rak5860/quickstart/)
+provides RAK4631 modem/UART and TCP/MQTT examples. These are Arduino examples,
+not a Meshtastic LTE firmware release. Check UART conflicts with fitted GPS or
+other modules. RAK13101 uses 2G GSM/GPRS and is not the AT&T LTE option;
+RAK2011 is an Arduino BG96 shield, rather than the direct WisBlock extension.
+
+**LILYGO is a compact alternative.** A T-SIM cellular board alone does not supply
+LoRa. Its [T-Sim Shield](https://wiki.lilygo.cc/products/t-sim-series/t-sim-shield/)
+adds SX1262 and INA3221; vendor examples cover raw LoRa/LoRaWAN, not a complete
+Meshtastic cellular uplink. The [SIM7000G board](https://lilygo.cc/products/t-sim7000g)
+documents USB-C, an 18650 holder and solar input. SIM7080G Standard is another
+LTE-M candidate, distinct from the older PMU board: the
+[manufacturer's detailed revision guide](https://wiki.lilygo.cc/zh/products/t-sim-series/t-sim-shield/)
+shows different jumpers/pins, and the old SIM7080G PMU combination needs battery
+holder modifications. Do not assume all T-SIM revisions stack unchanged.
+The quoted SIM7670G S3 price is a Cat-1 example, not an LTE-M recommendation.
+
+**Firmware is the main gap.** The local SNORR checkout's `src/mqtt/MQTT.h`
+selects WiFiClient or EthernetClient, and `MQTT.cpp` checks those interfaces;
+a source search found no SIM7000/SIM7080/BG77/TinyGSM transport. Current
+[upstream MQTT header](https://github.com/meshtastic/firmware/blob/develop/src/mqtt/MQTT.h)
+shows the same direct-client choices. This supports the bounded finding that
+neither candidate is enabled by a SIM/configuration change in the inspected
+firmware; it does not prove no third-party implementation exists. A port needs
+board pin/power support, modem connection and secure MQTT, retries and recovery.
+A separate small controller using the documented
+[MQTT client-proxy interface](https://meshtastic.org/docs/configuration/module/mqtt/)
+is an alternative to changing the radio firmware, but that embedded bridge also
+needs implementation and end-to-end validation.
+
+AT&T [supports LTE-M](https://www.business.att.com/products/lpwa.html), making it
+a sensible low-data-rate category to investigate. Normal smartphone LTE reception
+does not verify LTE-M service at the candidate point or SIM entitlement. Verify
+actual module/device acceptance and a suitable LTE-M plan; the previously quoted
+consumer/hotspot SIM must not be assumed to cover it. Retaining continuous LoRa
+reception means advertised modem/MCU deep-sleep current cannot be used as the
+gateway average. All earlier router power examples are illustrative and do not
+predict these candidates' runtime.
+
+Next evidence: identify an available inventoried RAK19007/4631 and any slot/UART
+conflicts; select an AT&T LTE-M test option and scope a firmware/bridge proof of
+concept before purchase. No development, activation, flashing or bench test ran.
+
+## Separate-router hardware comparison
 
 | Approach | Added equipment price | Suitability / unresolved gate |
 | --- | --- | --- |

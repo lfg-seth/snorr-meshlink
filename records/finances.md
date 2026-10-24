@@ -56,3 +56,10 @@ verification. Direct AT&T lists USD 35/month for 15 GB, or USD 240 upfront for
 unverified. Panel, battery, charger, enclosure, converters and complete build
 cost are unknown. These are research quotations only: no approved purchase,
 service activation, spending ceiling, transaction or donated value.
+
+2026-10-24 combined-board follow-up: [same research](../docs/research/cellular-gateway-backhaul.md#combined-lora-and-cellular-cots-hardware---follow-up-2026-10-24)
+quotes RAK5860 at USD 30; RAK19007 USD 9.99 if an existing suitable base cannot
+be reused, and RAK4631 starting at USD 17.99. LILYGO T-Sim Shield is USD 29.36;
+T-SIM7670G S3 catalog price is USD 36.02 (USD 65.38 arithmetic combined), subject
+to exact variant/availability. No complete solar assembly or firmware effort
+is priced; no purchase, payment or service activation recorded.
