@@ -1,5 +1,30 @@
 # Session log
 
+## 2026-10-23 - Consolidate production firmware readiness before mountain redeployment
+
+- Owner requests a ticket covering configurable SNNS timing and other firmware
+  needs before placing RAK nodes back on the mountain. Create
+  [LOCAL-3](../.scratch/pilot/issues/25-production-firmware-readiness.md), separating
+  required changes, configuration acceptance, gateway prerequisites and physical
+  deployment gates. Current source confirms compiled SNNS timing, standard
+  remote-admin support, and gateway MQTT credential logging/insecure TLS.
+- Consume local GH-51/GH-52 timing work, remaining GH-26/GH-27 acceptance and
+  firmware release/rollout ownership into LOCAL-3. Preserve immutable imports,
+  completed evidence and GitHub state. Keep R006 map/portal handoff current;
+  retain INA219, utilization, reconnect and field/runtime tasks as dependencies.
+- Specify the proposed device-telemetry interval coupling, minimum/fallback,
+  preserved jitter/airtime behavior, remote key authorization checks and ordinary
+  production images without diagnostic/dummy-load flags. Absolute timestamps
+  remain an open choice; existing portal freshness behavior is not replaced.
+- Validation: inspect pinned source and current operational records; check local
+  ticket links, consolidation membership and Git whitespace. Documentation only:
+  no firmware build, hardware action, remote command or deployment. Production
+  readiness and physical power/current accuracy remain unverified.
+
+Next useful step: implement/test LOCAL-3's configurable SNNS interval, then
+verify remote administration on a selected bench controller/board; resolve the
+shared freshness and gateway prerequisites before final release acceptance.
+
 ## 2026-10-23 - Prepare three-minute repeater rollout and reusable updater
 
 - Owner requests all available repeater statistics every **180 seconds**, a
