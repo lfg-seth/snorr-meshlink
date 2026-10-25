@@ -1,5 +1,33 @@
 # Session log
 
+## 2026-10-25 - RAK script main integration and branch audit
+
+- Owner selects merging the RAK role/location/B002 admin script to main and
+  asks why so many branches remain. Isolate only the two script commits from
+  the original branch's stacked bench records and a subsequent local B003
+  commit. Preserve current main's MeshLink 0.1.5 deployment record while
+  resolving tracker/session conflicts; no board or service mutation.
+- Prepare the integration on `codex/repeater-role-main`, based on current
+  `origin/main` `653d71b`. All 51 offline bench tests and changed-doc checks
+  pass. The firmware pin matches the original checkout; tests reuse that
+  exact pinned verifier. Laptop instructions now fetch and run from main.
+- Fresh branch audit before the temporary integration branch: 49 local and
+  51 GitHub branches. Of the GitHub branches, 30 are ancestors of main:
+  main itself, the preserved archive and 28 merged task/history branches.
+  The other 21 have commits absent by ancestry, often shared across stacked
+  branches or equivalent to rewritten/squashed changes; they are not 21
+  independent features. Ten worktrees existed, including a detached record
+  checkout; attached branches must not be deleted casually. The one open PR
+  is held draft #50 (neighbor signal freshness), which remains undeployed.
+- Branch count reflects completed short-lived branches retained after merging,
+  stacked unpublished-to-main bench records and persistent worktrees. No broad
+  branch cleanup or bulk merge is performed. Preserve unrelated dirty edits.
+
+Next useful step after source merge: update the Linux laptop's main checkout,
+run the script against one selected RAK and retain saved role/location/admin
+and live-delivery evidence. A separate branch cleanup should first distinguish
+merged leftovers, intentional archive/draft work and commits needing review.
+
 ## 2026-10-25 - RAK fixed location and B002 admin script extension
 
 - Owner extends the Linux script request to prompt for decimal coordinates,

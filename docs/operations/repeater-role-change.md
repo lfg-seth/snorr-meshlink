@@ -17,12 +17,13 @@ role for this task.
 
 ## Linux laptop over USB
 
-Fetch and switch to the published branch with a clean working tree (preserve any
+Fetch and switch to main with a clean working tree (preserve any
 local changes first). Run from the repository root:
 
 ```sh
 git fetch origin
-git switch --track origin/codex/repeater-role-cli
+git switch main
+git pull --ff-only
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -r scripts/bench/repeater-requirements.txt
@@ -35,8 +36,8 @@ python scripts/bench/set-repeater-role.py R001
 python scripts/bench/set-repeater-role.py R001 --apply
 ```
 
-If the branch already exists locally, use `git switch codex/repeater-role-cli`
-and `git pull --ff-only`. If serial permission is denied on Debian/Ubuntu, add
+If main does not exist locally, use `git switch --track origin/main`.
+If serial permission is denied on Debian/Ubuntu, add
 your login to `dialout` with `sudo usermod -aG dialout "$USER"`, then log out
 and back in. Run the script as your normal user.
 
