@@ -44,6 +44,7 @@ test('production opens the isolated demo by default and live sign-in survives re
   globalThis.document = dom.window.document;
   globalThis.HTMLElement = dom.window.HTMLElement;
   globalThis.HTMLButtonElement = dom.window.HTMLButtonElement;
+  globalThis.FormData = dom.window.FormData;
   globalThis.ResizeObserver = class { observe() {} disconnect() {} };
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
@@ -81,6 +82,16 @@ test('production opens the isolated demo by default and live sign-in survives re
     if (url.endsWith('/auth-with-password'))
       return { ok: true, json: async () => ({ token: demo ? 'demo-token' : 'test-token', record: demo ? demoAccount : account }) };
     assert.equal(options.headers.Authorization, demo ? 'demo-token' : 'test-token');
+    if (url.endsWith('/api/meshlink/accounts')) {
+      const body = JSON.parse(options.body);
+      assert.equal(body.createMember, true);
+      assert.equal(body.role, 'member');
+      assert.equal(body.memberId, undefined, 'the user never supplies an internal key');
+      if (body.username === 'taken') return { ok: false, status: 400,
+        json: async () => ({ message: 'Username is already in use.' }) };
+      emptyState.members.push({ id: 'generated-member', name: body.name, initials: 'NP' });
+      return { ok: true, json: async () => ({ memberId: 'generated-member' }) };
+    }
     if (!demo && stateGate) await stateGate;
     if (!demo && stateFailure) return { ok: false, status: stateFailure,
       json: async () => ({ message: 'Test backend failure' }) };
@@ -161,6 +172,25 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.doesNotMatch(document.querySelector('.workspace').textContent, /Demo Avery/);
     assert.equal(window.sessionStorage.getItem('meshlink-session-token'), 'test-token');
     assert.equal(window.localStorage.length, 0, 'sign-in is scoped to this tab');
+    await navigate('#users');
+    const addForm = document.querySelector('.add-member-fields').closest('form');
+    addForm.elements.name.value = 'New Person';
+    addForm.elements.username.value = 'taken';
+    addForm.elements.password.value = 'fictional-test-password';
+    await act(async () => addForm.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true })));
+    assert.match(document.querySelector('[role="alert"]').textContent, /already in use/);
+    assert.equal(addForm.elements.name.value, 'New Person', 'failure preserves the draft');
+    addForm.elements.username.value = 'new-person';
+    await act(async () => addForm.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true })));
+    assert.match(document.querySelector('[role="status"]').textContent, /New Person added/);
+    assert.equal(addForm.elements.password.value, '', 'success clears the password');
+    const memberSelect = [...document.querySelectorAll('select')].find(select =>
+      [...select.options].some(option => option.value === 'generated-member'));
+    assert.equal(memberSelect.value, 'generated-member', 'new member is selected for assignment');
+    account.role = 'member';
+    await act(async () => root.render(createElement(App, { key: 'member-view' })));
+    assert.equal(document.querySelector('.add-member-fields'), null, 'ordinary members cannot create accounts');
+    account.role = 'admin';
     const beforeReload = requests.length;
     await act(async () => root.render(createElement(App, { key: 'authenticated-reload' })));
     assert.ok(document.querySelector('.app-shell'), 'refresh keeps the signed-in workspace');
@@ -222,6 +252,7 @@ test('production opens the isolated demo by default and live sign-in survives re
     delete globalThis.document;
     delete globalThis.HTMLElement;
     delete globalThis.HTMLButtonElement;
+    delete globalThis.FormData;
     delete globalThis.ResizeObserver;
     delete globalThis.IS_REACT_ACT_ENVIRONMENT;
   }

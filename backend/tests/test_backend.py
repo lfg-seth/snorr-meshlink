@@ -414,6 +414,34 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(next(m for m in self.state()['members'] if m['id'] == 'm3')['shortName'], '')
         self.assertEqual(self.state()['trackers'][0]['deviceType'], 'Heltec V4')
 
+    def test_add_member_generates_identity_and_rolls_back_failed_login(self):
+        body = {'username': 'new-person', 'name': 'New Person', 'role': 'member',
+                'createMember': True, 'shortName': 'NP',
+                'password': self.credentials['member']['password']}
+        before = self.records('members')
+        for client in [self.member, self.worker, Client(self.url)]:
+            with self.assertRaises(ApiError):
+                client.request('POST', '/api/meshlink/accounts', body)
+        self.denied(400, self.admin, 'POST', '/api/meshlink/accounts', {**body, 'memberId': 'm1'})
+        self.denied(400, self.admin, 'POST', '/api/meshlink/accounts', {**body, 'shortName': 'TOOLONG'})
+        self.assertEqual(self.records('members'), before)
+        result = self.admin.request('POST', '/api/meshlink/accounts', body)
+        member_id = result['memberId']
+        member = next(m for m in self.state()['members'] if m['id'] == member_id)
+        self.assertEqual((member['name'], member['initials'], member['shortName']), ('New Person', 'NP', 'NP'))
+        after = self.records('members')
+        with self.assertRaises(ApiError):
+            self.admin.request('POST', '/api/meshlink/accounts', body)
+        self.assertEqual(self.records('members'), after, 'duplicate username must not leave an orphan member')
+        client = Client(self.url)
+        client.login(body['username'], body['password'])
+        self.assertEqual(client.request('GET', '/api/meshlink/state')['account']['memberId'], member_id)
+        self.admin.request('POST', '/api/meshlink/assign', {'deviceId': 'd1', 'memberId': member_id})
+        self.assertTrue(any(a['memberId'] == member_id and a['deviceId'] == 'd1' and not a['endedAt']
+                            for a in self.state()['assignments']))
+        other = self.admin.request('POST', '/api/meshlink/accounts', {**body, 'username': 'another-person'})
+        self.assertNotEqual(other['memberId'], member_id, 'people with the same display name have distinct identities')
+
     def test_member_voltage_config_and_gps_clocks_are_independent(self):
         fix = packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6, 'battery': 42})
         self.ingest(fix)

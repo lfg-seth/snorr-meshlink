@@ -1,5 +1,33 @@
 # Session log
 
+## 2026-10-25 - Add members without managing internal keys
+
+- Owner requests fixing manual member-key provisioning. Add admin-only **Users →
+  Add member** with full name, username, initial password and optional map
+  shortname. Generate a stable internal identity and create the member/login in
+  one transaction; failed account creation rolls back the new member. Select
+  the newly created person for tracker assignment and clear the password on
+  success. Preserve existing member associations and dated assignment history.
+- Extend the existing admin account route with explicit `createMember: true`;
+  existing-member provisioning remains compatible. The owner CLI now creates
+  member identities automatically by default, with `--member-key` retained for
+  deliberately linking an existing record. No schema migration or radio change.
+- All 63 portal checks, TypeScript and production build pass. Browser DOM
+  coverage verifies the actual application request, failure/draft preservation,
+  cleared password, selected new member and ordinary-member visibility. Backend
+  suite: 90 checks, 80 pass, seven platform skips, three localhost connection
+  resets; all three affected checks pass in individual reruns. The new actual
+  PocketBase test passes generated-identity creation, role restrictions, login,
+  tracker assignment, duplicate-name identity separation and rollback after a
+  duplicate username. Sandbox database/server restrictions required an
+  unsandboxed run; no production database was accessed.
+- Publish source on `codex/add-member-form`; preserve unrelated hardware edits.
+  Source changes retain the current release version until a release is selected.
+
+Next useful step: review/merge the source PR, then select a versioned manual
+release/deployment and verify the flow on the authenticated owner phone. This
+session does not deploy the live portal or create operational member accounts.
+
 ## 2026-10-24 - INA219 current history merged and deployed
 
 - Owner explicitly requests PR #64 merge/deployment. Merge as **`8b92f2e`**;

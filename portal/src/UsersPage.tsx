@@ -4,6 +4,8 @@ import { positionAgeSeconds, positionStatus } from './position';
 import { minuteAgeLabel, statusText, trackerMapLabel, trackerStatus } from './tracker';
 import TrackerDetail from './TrackerDetail';
 import MapShortName from './MapShortName';
+import AddMember from './AddMember';
+import type { NewMember } from './AddMember';
 import {
   timeLabel,
 } from './demo';
@@ -20,6 +22,7 @@ export default function UsersPage({
   nameJobs,
   admin,
   onShortNameSave,
+  onCreateMember,
   onAssign,
   onRelease,
   onJob,
@@ -37,6 +40,7 @@ export default function UsersPage({
   nameJobs: NameJob[];
   admin: boolean;
   onShortNameSave?: (shortName: string) => Promise<boolean>;
+  onCreateMember?: (member: NewMember) => Promise<string>;
   onAssign: (deviceId: string, memberId: string) => void;
   onRelease: (deviceId: string) => void;
   onJob: (deviceId: string, status: NameJob['status']) => void;
@@ -69,6 +73,7 @@ export default function UsersPage({
   );
   return (
     <div className="stack">
+      {admin && onCreateMember && <AddMember onCreate={onCreateMember} onCreated={setMemberId} />}
       {onShortNameSave && <MapShortName key={selfMemberId}
         shortName={members.find((member) => member.id === selfMemberId)?.shortName ?? ''}
         onSave={onShortNameSave} />}

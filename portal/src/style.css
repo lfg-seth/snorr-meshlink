@@ -1686,3 +1686,15 @@ footer button {
   .map-tools .segmented { flex-basis: 100%; }
   .signal-legend { font-size: .65rem; gap: 5px 8px; }
 }
+.add-member-fields {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+}
+.add-member-fields label { flex: 1 1 180px; min-width: 0; }
+.add-member-fields input { width: 100%; box-sizing: border-box; font-size: max(16px, 1rem); }
