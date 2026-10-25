@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-10-25 - RAK fixed location and B002 admin script extension
+
+- Owner extends the Linux script request to prompt for decimal coordinates,
+  save a static Meshtastic location and add B002's public key as admin.
+  [Updated procedure](../docs/operations/repeater-role-change.md) documents
+  key provenance, invocation, preservation and acceptance limits.
+- Pin only B002 `!699ca878`'s public key, matching its original/full reboot
+  readbacks and the prior admin bench final readback. Preserve existing admins,
+  avoid duplicates and stop before writes if no slot remains. No private key
+  or coordinates published. Prompt/range-check decimal latitude/longitude,
+  enable fixed position and save integer coordinates in the node database.
+  Retain existing altitude or unspecified zero, GPS settings and report cadence.
+- Back up before changes, save in a settings transaction and independently
+  compare full intended config plus fixed coordinates through reboot. Default
+  remains read-only; CLIENT selection still includes location/admin updates.
+  No board connected/configured, firmware flashed or live service changed.
+- Validation: 51 offline bench tests pass with SDK 2.7.11, including coordinate
+  validation, allowlist capacity/duplicates, key preservation, transaction
+  ordering and failed coordinate readback. Documentation/whitespace checks and
+  CLI help pass. Existing unrelated working-tree edits remain untouched.
+  Publish the extension on `codex/repeater-role-cli`.
+
+Next useful step: pull that branch on the laptop, enter the selected RAK's
+decimal coordinates, inspect the read-only backup and run `--apply`; confirm
+saved position/admin and fresh reports, then test authorized B002 remote reads.
+
 ## 2026-10-25 - Linux RAK role correction tool
 
 - Owner asks how to change the RAK relays from CLIENT to ROUTER, including
