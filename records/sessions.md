@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-10-25 - Persistent radio USB access and R005 completion
+
+- Owner requests persistent USB access for repeated node commissioning. Install
+  a named-user udev ACL rule for RAK4631, ESP32-S3 native USB and CP210x radio
+  interfaces using desktop administrator authentication. Rule is durable under
+  `/etc/udev/rules.d/`; no group/sudo-policy change. Installed ACL grants R005
+  access and leaves unrelated GNSS USB unchanged; access survives node reboot.
+- Recover R005 readback without blindly repeating the settings transaction.
+  Firmware role defaults altered intervals/rebroadcast/owner flag; restore the
+  saved intended profile and set Reverence while preserving R005. Independent
+  admin power read avoids the PhoneAPI role-derived sleep substitution. Full
+  local/module/channel/identity/point checks pass through explicit reboot.
+- Save installer and usage docs. Shell syntax and changed-document checks pass;
+  host reboot is untested. Existing firmware submodule changes preserved.
+  [Exact evidence and script limitations](../docs/operations/r005-reverence.md).
+
+Next useful step: correct role-script preservation/readback handling before the
+next node, and verify fresh R005 gateway delivery; latest recorded receipt
+predates commissioning. Portal name/location/equipment already verified.
+
 ## 2026-10-25 - R005 equipment and radio write attempt
 
 - Owner grants initial serial access and confirms four 18650 cells, three solar

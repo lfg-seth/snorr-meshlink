@@ -21,28 +21,52 @@ authenticated portal state. Full pre-change backup
 `9a5db8584be9c3d54ef38a431465d1a402ec25e4f3c699a64225d98a29e868c7`.
 Backup archive hash verified before mutation. Coordinates remain private.
 
-## Radio access and remaining acceptance
+## Radio completion and persistent USB access
 
 Host USB enumeration matches recorded R005 serial **E93C5FF0F97DD76B** at
-`/dev/ttyACM1`. Initial read-only attempt stops with Linux `PermissionError`,
-before reading/writing; evidence at
-`private/bench/R005-role-20261025T191749590482Z/failure.log`.
+`/dev/ttyACM1`. Initial read-only attempt stops with Linux `PermissionError`.
+After the owner's one-time ACL grant, read-only backup succeeds at
+`private/bench/R005-role-20261025T192131573379Z/`, showing CLIENT. Apply evidence
+is at `private/bench/R005-role-20261025T192145657389Z/`. The transaction saves
+ROUTER, fixed position and B002 enrollment, but its reboot removes that initial
+ACL and verification times out. The write is not blindly repeated.
 
-After the owner grants serial access, read-only backup succeeds at
-`private/bench/R005-role-20261025T192131573379Z/`; saved role is CLIENT.
-Apply starts with its own complete backup/intended profile at
-`private/bench/R005-role-20261025T192145657389Z/`. The transaction is sent and
-the device re-enumerates with its original USB identity, but reboot removes
-the one-time ACL grant. Script verification times out; saved settings remain
-unverified. Do not blindly repeat the write. Owner asked to install an R005-only
-runtime udev ACL rule for reboot readbacks. Radio long-name change still pending.
+Owner then authorizes persistent access for repeated node work. Install
+`/etc/udev/rules.d/99-snorr-usb-serial.rules` using
+[`grant-usb-serial-access.sh`](../../scripts/bench/grant-usb-serial-access.sh)
+with desktop administrator authentication. Access is restricted to the project
+radio USB interfaces, not every USB serial device. Installed rule and ACLs
+verify R005 access while the unrelated u-blox receiver gets no named-user ACL.
+R005 access survives its subsequent explicit reboot; no host reboot performed.
+The rule is durable on disk and reloads through udev at boot.
 
-Next: restore reboot-safe serial access, independently read role/location/admin
-against the saved intended profile, then set Reverence while preserving short
-name R005 and all other owner/security fields. Verify the complete profile and
-coordinates through reboot and fresh gateway/portal delivery separately.
-Physical placement is owner-reported; installation completion, RF coverage,
-forced relaying and runtime are unmeasured. No firmware update performed.
+Readback finds firmware role defaults reset rebroadcast mode, reporting
+intervals, sleep default and the owner messaging flag. Restore only the changed
+settings against the saved intended profile once ROUTER is already active;
+set long name **Reverence** while preserving short name **R005** and the
+original owner flags. Original security identity/private channel, LOCAL_ONLY,
+180-second device/environment/power intervals, telemetry enablement and
+21600-second standard neighbor interval are preserved. No firmware flash.
+
+The USB PhoneAPI dump substitutes a role-dependent `power.ls_secs` (86400 for
+ROUTER), so compare the actual saved power config through an independent admin
+get-config response instead. Metadata now advertises ROUTER as expected.
+Full intended local/module/channel bytes, owner identity except requested name
+and role announcement, exact coordinates and firmware metadata pass before
+and after explicit reboot. Evidence: `final-admin-verified-3.json` and
+`final-reboot-admin-verified-3.json` in the apply directory. The reboot interrupts
+the first verification process with SIGHUP; a separate read-only connection
+completes the post-reboot check. Serial handles are closed.
+
+Before commissioning another node with the prepared role script, correct its
+handling of role-reset defaults, role metadata, PhoneAPI sleep substitution and
+SDK raw-position protobuf evidence. The original script correctly fails its
+strict comparison, but does not yet preserve all role-reset settings itself.
+
+Fresh RF/MQTT/portal delivery remains unverified: the database's latest R005
+accepted G001 receipt is **2026-10-25T18:45:40.547Z**, before these settings
+writes. Physical placement is owner-reported; installation completion, coverage,
+forced relaying and runtime are unmeasured.
 
 ## Owner-confirmed equipment
 
@@ -57,16 +81,3 @@ all other devices and R005 short name are preserved.
 Private equipment audit: `/root/r005-equipment-20261025T192210Z/`.
 Pre-change backup `meshlink-20261025T192210Z.tar.gz`, SHA256
 `99ec421f26b1ec33208940e69f19af8c38bb19aeee8478f5e1efcd32282390d1`.
-
-Host USB enumeration matches recorded R005 serial **E93C5FF0F97DD76B** at
-`/dev/ttyACM1`. The read-only script attempt stops at serial open with Linux
-`PermissionError`, before reading or writing configuration. Evidence:
-`private/bench/R005-role-20261025T191749590482Z/failure.log`.
-No radio configuration or firmware change has occurred in this attempt.
-
-Next: owner grants this account serial access; run the prepared script's
-read-only backup, then `--apply` with the supplied coordinates. Independently
-save Reverence as the long name, preserving R005 and all other owner/security
-fields, and compare the full profile and coordinates through reboot. Verify
-fresh gateway/portal delivery separately. Physical placement is owner-reported;
-installation completion, RF coverage, forced relaying and runtime are unmeasured.

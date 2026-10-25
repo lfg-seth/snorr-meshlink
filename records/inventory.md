@@ -6,8 +6,8 @@ Owner confirms **Reverence / R005 has four 18650 cells, three solar panels
 and a fiberglass antenna**. Live portal configuration now records these
 details and solar equipment present; chemistry, cell/pack capacity and wiring,
 panel ratings and antenna gain/model remain unknown. No purchases, stock-total
-changes or measured runtime inferred. Radio settings transaction has been
-sent; reboot readback awaits restored serial access.
+changes or measured runtime inferred. Radio role/location/admin and Reverence name now pass full saved-profile
+comparison through explicit reboot; persistent USB access is installed.
 [Evidence](../docs/operations/r005-reverence.md#owner-confirmed-equipment).
 
 ## 2026-10-25 - R005 Reverence placement request

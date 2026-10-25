@@ -41,6 +41,24 @@ If serial permission is denied on Debian/Ubuntu, add
 your login to `dialout` with `sudo usermod -aG dialout "$USER"`, then log out
 and back in. Run the script as your normal user.
 
+On the owner's Linux workstation (`setheth`, UID 1000), persistent access for
+the project radio USB interfaces can instead be installed once:
+
+```sh
+sudo bash scripts/bench/grant-usb-serial-access.sh
+```
+
+This installs `/etc/udev/rules.d/99-snorr-usb-serial.rules` and immediately
+reapplies permissions to connected serial devices. Named-user read/write ACLs
+cover RAK4631 `239a:8029`, ESP32-S3 native USB `303a:1001` and CP210x
+`10c4:ea60` serial interfaces. It covers future nodes with those interfaces
+across reconnects, node reboots and host reboots; other USB IDs require a
+separate rule. IDs identify interfaces, not a trusted radio identity: retain
+the configuration script's USB serial/node checks. No world-writable ports,
+group changes or sudo-policy grants. Remove that rule and reload udev to stop
+future grants; existing ACLs last until unplugging. Installation requires
+administrator authentication; ordinary bench operations run as the owner.
+
 Repeat individually for R002 through R006 as needed. The script locates the
 recorded USB serial automatically and independently checks node ID, RAK4631
 hardware, existing keys/private channel and enabled LoRa TX before a write.
