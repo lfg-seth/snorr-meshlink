@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-10-25 - B003 client reassignment from the G004 V4
+
+Owner-selected existing OLED V4 `!699c2ed8` becomes client **B003**, replacing
+its active G004 gateway role while preserving old historical rows. Application-
+only checked `2.7.26.6fea6aa` flash/digest and complete intended profile through
+explicit reboot pass: CLIENT, Wi-Fi/MQTT disabled, private pilot radio and own
+PKI retained, GPS 60/120 seconds on original pins, device/SNNS baseline 180
+seconds, external environment/power telemetry off. Authenticated public portal
+lists B003 as an unassigned Heltec V4 tracker, with G004 absent from active
+backhauls. [Fresh delivery, recovery and limits](../docs/operations/b003-v4-client.md).
+No fresh GPS fix, runtime, field coverage or new physical allocation inferred.
+
 ## 2026-10-25 - G005/G006 live portal registration acceptance
 
 Owner-authorized registration adds both new V3s to the production source/gateway/

@@ -1,5 +1,13 @@
 # Board flashing and configuration handoff
 
+2026-10-25 **former G004 V4 `!699c2ed8` is reassigned as client B003** at
+owner request. Reinstall checked **heltec-v4-gateway / 2.7.26.6fea6aa** with
+CLIENT role, private pilot radio, Wi-Fi/MQTT disabled and old credentials cleared,
+GPS 60/120 seconds, device/SNNS baseline 180 seconds and external power/environment
+reporting disabled. Preserve individual PKI and GPS pins; active G004 gateway
+mapping is replaced with unassigned B003 while old history remains under G004.
+[Recovery, profile, portal transition and acceptance](b003-v4-client.md).
+
 2026-10-25 **G005 `!9ea039cc` / G006 `!b03d6790`** are provisioned as
 Heltec V3 gateways on **heltec-v3-gateway / 2.7.26.6fea6aa**, with their own
 security identities retained. CLIENT/private pilot channel, 10 dBm, enabled
