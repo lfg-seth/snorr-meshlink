@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-10-25 - Router long-name prompt and reconciliation text
+
+- Extend `set-repeater-role.py` to prompt for the Meshtastic long name before
+  coordinates, validate the firmware's 39-byte UTF-8 limit and preserve the
+  existing short name and owner flags. Include name-only changes in the save
+  decision and the intended identity comparison.
+- Write private per-run `reconciliation.txt` under `private/bench/`, including
+  device identity, before/requested names, fixed point, role, firmware and
+  separate save/reboot results. Preview, unchanged, failed/interrupted and
+  verified runs remain distinct; text summaries exclude keys. Portal DB is
+  unchanged. Document the location and existing R005 commissioning limits.
+- All 61 offline bench tests and changed-document/whitespace checks pass.
+  No serial connection, board mutation or live portal change. Preserve the
+  unrelated firmware submodule change. Publish on `codex/router-name-log`.
+
+Next useful step: resolve the recorded role-default/readback/SDK-position gates
+before commissioning another RAK; then verify name preservation and reconcile
+only verified results from the private text log into the portal database.
+
 ## 2026-10-25 - Persistent radio USB access and R005 completion
 
 - Owner requests persistent USB access for repeated node commissioning. Install

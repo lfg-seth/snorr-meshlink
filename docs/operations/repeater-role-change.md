@@ -1,8 +1,10 @@
-# Set a RAK repeater's role, fixed location and B002 admin
+# Set a RAK repeater's long name, role, fixed location and B002 admin
 
 Prepared 2026-10-25 at the owner's request. R001–R006's last recorded saved
 role is CLIENT. The owner also requests a prompted static location and B002
-admin enrollment. This procedure changes configuration; no firmware reflash or
+admin enrollment. Updated to prompt for a Meshtastic long name while preserving
+the existing short name, and write a private text log for later portal database
+reconciliation. This procedure changes configuration; no firmware reflash or
 factory reset is needed. No board was changed while preparing this tool.
 
 CLIENT already rebroadcasts eligible traffic. ROUTER gives infrastructure
@@ -29,10 +31,10 @@ python3 -m venv .venv
 python -m pip install -r scripts/bench/repeater-requirements.txt
 
 # Connect R001 via USB; close other apps/serial tools using it.
-# First enter decimal coordinates and back up without saving anything:
+# First enter the long name and decimal coordinates; back up without saving:
 python scripts/bench/set-repeater-role.py R001
 
-# Enter coordinates again; save ROUTER, fixed location and B002 admin:
+# Enter name/coordinates again; save long name, ROUTER, location and B002 admin:
 python scripts/bench/set-repeater-role.py R001 --apply
 ```
 
@@ -63,7 +65,11 @@ Repeat individually for R002 through R006 as needed. The script locates the
 recorded USB serial automatically and independently checks node ID, RAK4631
 hardware, existing keys/private channel and enabled LoRa TX before a write.
 An optional `--port /dev/ttyACM0` must still match that USB identity.
-Every run prompts for **latitude, then longitude in decimal degrees**, using a
+Every run first prompts for the **Meshtastic long name**. The existing short
+name and owner flags are preserved. Enter a nonblank name of at most 39 UTF-8
+bytes (the firmware's string capacity); longer names and control characters
+are rejected rather than silently truncated. Surrounding whitespace is removed.
+Then it prompts for **latitude, then longitude in decimal degrees**, using a
 dot as the decimal separator. Use negative longitude for west and negative
 latitude for south. Latitude must be -90 through 90, longitude -180 through
 180; invalid input is prompted again. Coordinates are rounded to Meshtastic's
@@ -82,7 +88,7 @@ prompted fixed location and B002 admin:
 python scripts/bench/set-repeater-role.py R001 --role CLIENT --apply
 ```
 
-The script uses a settings transaction for the role, fixed-position setting,
+The script uses a settings transaction for the long name, role, fixed-position setting,
 coordinates and B002 admin enrollment, then commits/reboots. The only changed
 config fields are `device.role`, `position.fixed_position` and the admin
 allowlist; the fixed coordinate values live in the node database separately.
@@ -105,12 +111,31 @@ readback before commissioning more RAKs.
 Private backups, intended configuration, logs and readbacks are saved under
 ignored `private/bench/R001-role-<timestamp>/` with restrictive Linux permissions.
 The comparison requires exact config/module/channel bytes, keys and owner
-identity to match the intended profile; only the user role announcement may
+identity to match the intended profile, including the requested long name and
+unchanged short name; only the user role announcement may
 change. Firmware metadata and saved fixed coordinates must match too, both
-after save and after an explicit reboot. When role, fixed location and B002
+after save and after an explicit reboot. When long name, role, fixed location and B002
 admin already match, the script backs up and makes no write. Never commit
 these private files. Selecting CLIENT is not a full rollback: fixed position
 and admin enrollment remain intentional parts of this script's operation.
+
+Each run also writes **`reconciliation.txt`** in that same private directory,
+and prints its path before connecting. It records UTC start/finish times, device
+number, node ID, USB serial, old/new long name, preserved short name, requested
+role and exact fixed coordinates, firmware version and separate save/reboot
+verification results. It contains no channel or identity keys. Read-only runs,
+already-matched runs, failures and verified saves have distinct outcomes; an
+interrupted process may leave an `IN PROGRESS` log. Only completed checks are
+marked passed, even if readback JSON exists from a failed comparison. Keep this
+local file for later reconciliation; the script does not update the portal DB.
+The log contains private location data, so keep it under ignored `private/`.
+
+**Known commissioning gate:** the [R005 run](r005-reverence.md) exposed role
+defaults changing otherwise preserved settings, role metadata/USB sleep
+readback differences and SDK raw-position evidence serialization. Those fixes
+remain a separate follow-up; this name/log change does not resolve them. A
+failed run must not be treated as a verified configuration or reconciled into
+the portal as one. Keep the selected board accessible for independent readback.
 
 If anything fails after a write, some or all settings may already have saved. There is no
 automatic retry or rollback. Inspect private evidence and read the role locally

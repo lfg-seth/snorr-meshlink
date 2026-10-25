@@ -41,9 +41,11 @@ python -m unittest discover -s scripts/tests -v
 Existing operation tools remain separate entry points:
 
 - [RAK role change](../docs/operations/repeater-role-change.md) uses
-  `bench/set-repeater-role.py` to back up, select ROUTER or CLIENT, prompt for
-  a decimal fixed location and enroll B002 as admin over USB, then verify the
-  complete intended profile and coordinates through reboot; no firmware flash.
+  `bench/set-repeater-role.py` to back up, prompt for a long name (preserving the
+  short name), select ROUTER or CLIENT, prompt for a decimal fixed location and
+  enroll B002 as admin over USB. It checks the intended profile/coordinates
+  through reboot and saves private `reconciliation.txt` results; see the
+  procedure's known commissioning gate before another board run. No firmware flash.
 - [Board updater](../docs/operations/repeater-update.md) privately compares the
   complete intended profile through reboot and verifies image provenance.
 - [Release download helper](../docs/operations/board-flashing-handoff.md)

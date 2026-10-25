@@ -1,7 +1,9 @@
 """Offline safety checks; these do not establish hardware acceptance."""
 import importlib.util
 import base64
+import copy
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import Mock, patch, call
 from meshtastic.protobuf import localonly_pb2
@@ -26,8 +28,9 @@ class RoleChangeTests(unittest.TestCase):
         self.position = {"latitudeI": 360000000, "longitudeI": -1150000000, "altitude": 2000}
         self.interface.getMyNodeInfo.return_value = {"position": self.position}
         self.profile = {"usbSerial": "recorded"}
+        self.user = {"longName": "Old site", "shortName": "R001", "isLicensed": True, "isUnmessagable": True}
         self.patches = [
-            patch.object(roles.updater, "snapshot", side_effect=lambda *args: {"localWire": roles.updater.wire(self.config)}),
+            patch.object(roles.updater, "snapshot", side_effect=lambda *args: {"localWire": roles.updater.wire(self.config), "user": copy.deepcopy(self.user)}),
             patch.object(roles.updater, "validate_node"),
             patch.object(roles.updater, "private_json"),
             patch.object(roles.time, "sleep")]
@@ -36,13 +39,14 @@ class RoleChangeTests(unittest.TestCase):
             self.addCleanup(p.stop)
 
     def change(self, apply=True, role="ROUTER"):
-        return roles.change_role(self.interface, "/dev/test", self.profile, role, apply, Path("private"), self.coordinates)
+        return roles.change_role(self.interface, "/dev/test", self.profile, role, apply, Path("private"), self.coordinates, "New site")
 
     def test_preview_never_writes(self):
         self.assertFalse(self.change(False)[2])
         self.node.writeConfig.assert_not_called()
         self.node.beginSettingsTransaction.assert_not_called()
         self.node.setFixedPosition.assert_not_called()
+        self.node.setOwner.assert_not_called()
 
     def test_wrong_identity_stops_before_backup_or_write(self):
         self.validate.side_effect = roles.updater.UpdateError("identity mismatch")
@@ -68,7 +72,10 @@ class RoleChangeTests(unittest.TestCase):
         self.assertTrue(self.config.position.fixed_position)
         self.assertEqual(self.node.method_calls, [call.beginSettingsTransaction(),
             call.writeConfig("device"), call.writeConfig("position"), call.writeConfig("security"),
+            call.setOwner(long_name="New site", is_licensed=True, is_unmessagable=True),
             call.setFixedPosition(*self.coordinates, 2000), call.commitSettingsTransaction()])
+        intended = self.backup.call_args.args[1]
+        self.assertEqual(intended["user"], {**self.user, "longName": "New site"})
 
     def test_ambiguous_write_never_retried(self):
         self.node.writeConfig.side_effect = TimeoutError()
@@ -81,8 +88,24 @@ class RoleChangeTests(unittest.TestCase):
         self.config.position.fixed_position = True
         self.config.security.admin_key.append(self.key)
         self.position.update(zip(("latitudeI", "longitudeI"), self.coordinates))
+        self.user["longName"] = "New site"
         self.assertFalse(self.change()[2])
         self.node.writeConfig.assert_not_called()
+        self.node.setOwner.assert_not_called()
+
+    def test_name_only_change_is_saved_without_changing_short_name_or_flags(self):
+        self.device.role = 2
+        self.config.position.fixed_position = True
+        self.config.security.admin_key.append(self.key)
+        self.position.update(zip(("latitudeI", "longitudeI"), self.coordinates))
+        self.assertTrue(self.change()[2])
+        self.node.setOwner.assert_called_once_with(
+            long_name="New site", is_licensed=True, is_unmessagable=True)
+
+    def test_matching_name_not_rewritten_when_other_settings_change(self):
+        self.user["longName"] = "New site"
+        self.assertTrue(self.change()[2])
+        self.node.setOwner.assert_not_called()
 
     def test_client_rollback(self):
         self.device.role = 2
@@ -160,6 +183,95 @@ class CoordinateTests(unittest.TestCase):
     def test_zero_protobuf_defaults_and_missing_position(self):
         self.assertTrue(roles.position_matches({"longitudeI": 100}, (0, 100)))
         self.assertFalse(roles.position_matches({}, (0, 0)))
+
+
+class NameAndLogTests(unittest.TestCase):
+    def test_name_prompt_validates_utf8_size_and_reprompts(self):
+        with patch("builtins.input", side_effect=[" ", "x" * 40, "é" * 20, "bad\x00name", "  Reverence  "]), patch("builtins.print"):
+            self.assertEqual(roles.prompt_name(), "Reverence")
+
+    def test_name_fits_exact_firmware_boundary(self):
+        with patch("builtins.input", return_value="é" * 19 + "x"):
+            self.assertEqual(len(roles.prompt_name().encode("utf-8")), 39)
+
+    def test_failed_backup_still_produces_readable_failure_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            evidence = Path(tmp)
+            (evidence / "before.json").write_text('{"partial":')
+            roles.write_reconciliation(evidence, {"Result": "FAILED"})
+            content = (evidence / "reconciliation.txt").read_text()
+        self.assertIn("Result: FAILED", content)
+        self.assertIn("Before snapshot: unreadable/incomplete", content)
+
+    def run_main(self, root, *, apply=False, changed=False, failure=None, verification=None):
+        interface = Mock()
+        def change(*args):
+            evidence = args[5]
+            roles.updater.private_json(evidence / "before.json", {
+                "user": {"longName": "Old site", "shortName": "R001", "publicKey": "SECRET"},
+                "localConfig": {"security": {"privateKey": "SECRET"}},
+                "metadata": {"firmwareVersion": "fixture"},
+            })
+            if failure:
+                raise failure
+            return "CLIENT", {}, changed
+        with patch.object(roles.updater, "ROOT", root), \
+                patch.object(roles, "prompt_name", return_value="New site"), \
+                patch.object(roles, "prompt_location", return_value=(361234567, -1157654321)), \
+                patch.object(roles.updater, "select_port", return_value=Mock(device="/dev/test")), \
+                patch.object(roles.updater, "connect", return_value=interface), \
+                patch.object(roles.updater, "wait_application", return_value=(interface, "/dev/test")), \
+                patch.object(roles, "change_role", side_effect=change), \
+                patch.object(roles, "verify", side_effect=verification), patch.object(roles.time, "sleep"), \
+                patch("builtins.print"):
+            result = roles.main(["R001"] + (["--apply"] if apply else []))
+        log_path, = root.glob("private/bench/*/reconciliation.txt")
+        content = log_path.read_text()
+        self.assertIn("Requested long name: New site", content)
+        self.assertIn("Preserved short name: R001", content)
+        self.assertIn("Requested fixed latitude: 36.1234567", content)
+        self.assertIn("Requested fixed longitude: -115.7654321", content)
+        self.assertNotIn("SECRET", content)
+        self.assertEqual(log_path.stat().st_mode & 0o777, 0o600)
+        return result, content
+
+    def test_preview_log_does_not_claim_settings_saved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result, content = self.run_main(Path(tmp))
+        self.assertEqual(result, 0)
+        self.assertIn("READ ONLY — proposed settings were not saved", content)
+        self.assertIn("Post-reboot verification: not completed", content)
+
+    def test_verified_log_records_success_only_after_both_checks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result, content = self.run_main(Path(tmp), apply=True, changed=True)
+        self.assertEqual(result, 0)
+        self.assertIn("Result: VERIFIED THROUGH REBOOT", content)
+        self.assertIn("Post-save verification: passed", content)
+        self.assertIn("Post-reboot verification: passed", content)
+
+    def test_failed_write_log_marks_saved_state_unverified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result, content = self.run_main(Path(tmp), apply=True, failure=TimeoutError("SECRET"))
+        self.assertEqual(result, 1)
+        self.assertIn("Result: FAILED — saved state unverified", content)
+        self.assertIn("Failure type: TimeoutError", content)
+
+    def test_failed_reboot_check_keeps_partial_verification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result, content = self.run_main(Path(tmp), apply=True, changed=True,
+                verification=[None, roles.updater.UpdateError("mismatch")])
+        self.assertEqual(result, 1)
+        self.assertIn("Result: FAILED — saved state unverified", content)
+        self.assertIn("Post-save verification: passed", content)
+        self.assertIn("Post-reboot verification: not completed", content)
+
+    def test_already_matched_log_does_not_claim_reboot_verification(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result, content = self.run_main(Path(tmp), apply=True)
+        self.assertEqual(result, 0)
+        self.assertIn("ALREADY MATCHED", content)
+        self.assertIn("Post-reboot verification: not completed", content)
 
 
 if __name__ == "__main__":
