@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-10-25 - Former G004 V4 reassigned to client B003
+
+Owner requests overwriting the connected V4 as a new client. Existing OLED V4
+**`!699c2ed8`**, USB **`90:70:69:9C:2E:D8`**, COM5, hardware
+**`d4d91213c6f862de7a81383bc8843e59`**, becomes **B003** from active **G004**
+(former B001). Preserve its own PKI identity, GPS/default pins and private pilot
+radio; disable Wi-Fi/MQTT and external power/environment reporting for the client
+profile. Known existing INA219 wiring is not a new fitted-sensor or stock claim.
+Original V4 client roles are now B002/B003; no extra V4 or purchase is inferred.
+Prior G004 battery/solar plans are not automatically a confirmed B003 allocation.
+The failed old V3 G004 remains separately retired. Historical records are retained,
+with active portal mapping reassigned to unassigned B003. [Image, recovery, settings and verification](../docs/operations/b003-v4-client.md).
+
 ## 2026-10-25 - Existing Heltec V3s assigned G005/G006
 
 Two existing connected Heltec V3 / ESP32-S3 boards with 8 MB flash are assigned

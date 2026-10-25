@@ -24,6 +24,10 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   V3 backhauls. Only B001/B002 are the established member bench pair; planned
   purchases/recoveries and 3000 mAh allocations require confirmation in
   [inventory](records/inventory.md). T-Decks are outside the first trial.
+- Active original OLED V4 clients are **B002 and B003**. On 2026-10-25 the
+  owner reassigns former gateway G004/B001 hardware to unassigned B003, retaining
+  its own identity and GPS while disabling gateway Wi-Fi/MQTT. Historical G004
+  records remain separate. [Current client evidence](docs/operations/b003-v4-client.md).
 - Meshtastic is selected for pilot evaluation; firmware/protocol suitability
   remains subject to measured hardware and field evidence. LoRaWAN, Meshtastic
   and MeshCore are distinct systems. The [decision map](.scratch/pilot/map.md)

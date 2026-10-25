@@ -1,5 +1,38 @@
 # Session log
 
+## 2026-10-25 - Former G004 V4 overwritten as client B003
+
+- Owner requests overwriting the connected V4 as a new client. Identify the
+  existing G004/former B001 OLED V4 `!699c2ed8`, COM5, and assign new logical
+  client B003. Preserve hardware/PKI identity and private pilot radio.
+- Fresh full-profile backup and V4 mutable-partition recovery set supplement
+  the existing board-specific full recovery base. Correct an initial V3-offset
+  backup-helper mismatch before any write. Reinstall the exact verified
+  `heltec-v4-gateway / 2.7.26.6fea6aa` application at 0x10000; separate digest
+  verification passes. No rebuild, erase/factory reset or key rotation.
+- Complete intended profile passes through explicit reboot: CLIENT/B003,
+  Wi-Fi/MQTT off with old credentials cleared, GPS default pins preserved at
+  60-second acquisition/120-second reporting, 180-second device/SNNS baseline,
+  external environment/power telemetry off. Serial is closed.
+- Temporarily quiet the board while reassigning the portal's active G004 record
+  to unassigned B003/member and moving only its worker mapping to member.
+  Checksum-verified live/demo backup precedes writes. Other device records and
+  all historical G004 rows are retained, including 1085 observations, 3691
+  receipts, 357 neighbor reports and eight events at verification. No member
+  person/account or assignment is created. All live/demo services stay active
+  after the brief backup/worker restart.
+- Fresh B003 SNNS passes G001/G002 and authenticated public portal/read-only SQL.
+  No RF battery or GPS observation is accepted; console records >25% channel-util
+  skips and local-only 3.799 V metrics. Later source clock remains unknown despite
+  serial time supplied once; clock persistence/cause unverified. Serial/MQTT closed.
+  [Exact recovery, profile, portal and live acceptance evidence](../docs/operations/b003-v4-client.md).
+  Preserve unrelated edits; no new hardware or confirmed client battery/solar
+  allocation inferred. Markdown inline-link/whitespace checks pass.
+
+Next useful step: fresh RF battery/GPS and source-clock acceptance, then agreed outdoor
+GPS/time/phone-free runtime run and native owner-phone check. Sustained cadence,
+physical power accuracy and field coverage remain separate.
+
 ## 2026-10-25 - G005/G006 added to live portal
 
 - Owner explicitly requests portal registration for the newly provisioned V3s.
