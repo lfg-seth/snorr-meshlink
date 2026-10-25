@@ -11,6 +11,12 @@
   `origin/main` `653d71b`. All 51 offline bench tests and changed-doc checks
   pass. The firmware pin matches the original checkout; tests reuse that
   exact pinned verifier. Laptop instructions now fetch and run from main.
+- GitHub Project record checks pass for `7a2ea48`; owner-authorized
+  [PR #67](https://github.com/lfg-seth/snorr-meshlink/pull/67) merges as
+  `9a6d0e0d2f1793b683278804f415433f6c31de98`. Publish this confirmation to
+  main, fast-forward the existing clean main checkout and retire only this
+  session's temporary integration branch/worktree. Preserve all pre-existing
+  task branches, worktrees and unrelated edits.
 - Fresh branch audit before the temporary integration branch: 49 local and
   51 GitHub branches. Of the GitHub branches, 30 are ancestors of main:
   main itself, the preserved archive and 28 merged task/history branches.
@@ -23,7 +29,7 @@
   stacked unpublished-to-main bench records and persistent worktrees. No broad
   branch cleanup or bulk merge is performed. Preserve unrelated dirty edits.
 
-Next useful step after source merge: update the Linux laptop's main checkout,
+Next useful step: update the Linux laptop's main checkout,
 run the script against one selected RAK and retain saved role/location/admin
 and live-delivery evidence. A separate branch cleanup should first distinguish
 merged leftovers, intentional archive/draft work and commits needing review.
