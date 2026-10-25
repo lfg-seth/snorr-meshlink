@@ -5,6 +5,7 @@ import Badge from './Badge';
 import MapPage from './MapPage';
 import { MapPreferences } from './MapPreferences';
 import UsersPage from './UsersPage';
+import type { NewMember } from './AddMember';
 import MessagesPage from './MessagesPage';
 import InfrastructurePage from './InfrastructurePage';
 import BackendLogin from './BackendLogin';
@@ -232,6 +233,15 @@ function Portal() {
   function assign(deviceId: string, memberId: string) {
     void saveBackend('/api/meshlink/assign', { deviceId, memberId });
   }
+  async function createMember(member: NewMember): Promise<string> {
+    if (!session) throw new Error('Sign in as an admin to add members.');
+    const result = await request<{ memberId: string }>('/api/meshlink/accounts', session.token,
+      { ...member, role: 'member', createMember: true }, undefined, session.demo);
+    // Creation has succeeded even if the following snapshot read loses connectivity.
+    try { await refreshBackend(); }
+    catch { setBackendError('Member created. Reconnecting to refresh the member list.'); }
+    return result.memberId;
+  }
   function release(deviceId: string) {
     void saveBackend('/api/meshlink/release', { deviceId });
   }
@@ -450,6 +460,7 @@ function Portal() {
               selfMemberId={selfMemberId}
               connected={true}
               admin={admin}
+              onCreateMember={admin ? createMember : undefined}
               onAssign={assign}
               onRelease={release}
               onJob={(deviceId, status) => {

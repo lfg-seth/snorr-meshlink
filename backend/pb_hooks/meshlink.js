@@ -326,16 +326,27 @@ function account(e) {
     throw new BadRequestError(
       'Choose admin or member. Worker credentials are provisioned locally.',
     );
-  const memberId = typeof b.memberId === 'string' ? b.memberId : '';
+  let memberId = typeof b.memberId === 'string' ? b.memberId : '';
+  const createMember = b.createMember === true;
+  if (createMember && memberId)
+    throw new BadRequestError('Choose a new member or an existing member.');
   if (memberId && !c.first(e.app, 'members', 'key = {:id}', { id: memberId }))
     throw new BadRequestError('Member does not exist.');
-  if (b.role === 'member' && !memberId)
+  if (b.role === 'member' && !memberId && !createMember)
     throw new BadRequestError('Member account requires a member association.');
   const shortName = b.shortName === undefined ? null : c.shortName(b.shortName);
-  if (shortName !== null && !memberId)
+  if (shortName !== null && !memberId && !createMember)
     throw new BadRequestError('A map shortname requires a member association.');
   let record;
   e.app.runInTransaction((app) => {
+    if (createMember) {
+      memberId = 'member-' + $security.randomString(20);
+      c.create(app, 'members', {
+        key: memberId, name,
+        initials: name.split(/\s+/).map(part => part[0]).join('').slice(0, 3).toUpperCase(),
+        ...(shortName !== null ? { shortName } : {}),
+      });
+    }
     record = c.create(app, 'accounts', {
       username, name, role: b.role, memberId, password, passwordConfirm: password,
     });
@@ -346,7 +357,7 @@ function account(e) {
     }
   });
   c.event(e.app, '', 'Account created by portal admin.', e.auth.id);
-  return e.json(201, { id: record.id, username, role: b.role });
+  return e.json(201, { id: record.id, username, role: b.role, memberId });
 }
 function profile(e) {
   c.human(e);
