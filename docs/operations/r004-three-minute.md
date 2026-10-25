@@ -47,8 +47,10 @@ This supersedes the CLIENT role in the October 24 measurements below. Fresh
 RF/MQTT/portal delivery and cadence are not remeasured in this repair; portal
 name/location/cadence metadata remain unreconciled here. Physical calibration,
 runtime and field/forced-relay acceptance remain open. The general setup
-script's role-default/readback fixes remain a separate follow-up before more
-nodes are commissioned.
+script's role-default/readback fixes were still pending at this recovery;
+the subsequent [preservation correction](repeater-role-change.md#preservation-correction-and-verification-limits---2026-10-25)
+is now implemented and offline-tested, with complete automatic hardware
+acceptance still unverified.
 
 ## Image and preservation
 

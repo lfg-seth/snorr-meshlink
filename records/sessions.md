@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-10-25 - Correct router setup profile preservation
+
+- Owner requests fixing the setup script after R004's role-default reset.
+  First reproduce the exact 180-to-43,200-second failure with a deterministic
+  offline lifecycle regression. Add a single planned restoration after the
+  requested role takes effect, restricted to firmware's known reset fields;
+  unexpected identity/key/channel/config changes stop before restoration writes.
+- Preserve original reporting cadence/enablement, neighbor/rebroadcast/GPS/
+  display/power settings and owner flags. Read actual saved power via admin,
+  compare the expected role announcement and serialize SDK position evidence
+  without raw protobuf objects. Keep name/short-name and reconciliation logging.
+- All 72 offline bench tests pass, including lifecycle resets, unexpected-change
+  rejection and ambiguous-write no-retry cases. Replay R004's actual failed
+  readback offline: exact intended local/module bytes and the same four repair
+  sections match its successful independent hardware recovery. Documentation
+  link/whitespace checks pass; no connected radio, firmware or portal mutation.
+- Publish on `codex/router-profile-preservation`; preserve the unrelated dirty
+  firmware submodule. [Correction and acceptance limits](../docs/operations/repeater-role-change.md#preservation-correction-and-verification-limits---2026-10-25).
+
+Next useful step: accept the complete corrected automatic flow on one selected
+accessible RAK, including full reboot comparison and fresh gateway/portal
+delivery. R004's completed manual repair remains valid; no rerun is required.
+
 ## 2026-10-25 - Restore R004 three-minute telemetry after ROUTER change
 
 - Inspect the owner's R004 run: Southwest Ridge / R004, ROUTER and fixed point

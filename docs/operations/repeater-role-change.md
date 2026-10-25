@@ -1,11 +1,15 @@
 # Set a RAK repeater's long name, role, fixed location and B002 admin
 
-Prepared 2026-10-25 at the owner's request. R001–R006's last recorded saved
-role is CLIENT. The owner also requests a prompted static location and B002
+Prepared 2026-10-25 at the owner's request, initially for CLIENT repeaters.
+R004/R005 now retain ROUTER after their separately recorded recoveries.
+The owner also requests a prompted static location and B002
 admin enrollment. Updated to prompt for a Meshtastic long name while preserving
 the existing short name, and write a private text log for later portal database
 reconciliation. This procedure changes configuration; no firmware reflash or
 factory reset is needed. No board was changed while preparing this tool.
+The October 25 preservation correction below is offline-tested; its complete
+automatic flow still needs a selected-board acceptance run. R004/R005's
+separate manual recoveries are recorded in their operations evidence.
 
 CLIENT already rebroadcasts eligible traffic. ROUTER gives infrastructure
 rebroadcast priority; placement still determines whether it helps coverage.
@@ -19,12 +23,13 @@ role for this task.
 
 ## Linux laptop over USB
 
-Fetch and switch to main with a clean working tree (preserve any
-local changes first). Run from the repository root:
+Use a checkout containing the preservation correction. Until it is integrated
+into main, fetch and switch to **`codex/router-profile-preservation`** with a
+clean working tree (preserve local changes first). Run from the repository root:
 
 ```sh
 git fetch origin
-git switch main
+git switch codex/router-profile-preservation
 git pull --ff-only
 python3 -m venv .venv
 . .venv/bin/activate
@@ -38,7 +43,8 @@ python scripts/bench/set-repeater-role.py R001
 python scripts/bench/set-repeater-role.py R001 --apply
 ```
 
-If main does not exist locally, use `git switch --track origin/main`.
+If the branch does not exist locally, use
+`git switch --track origin/codex/router-profile-preservation`.
 If serial permission is denied on Debian/Ubuntu, add
 your login to `dialout` with `sudo usermod -aG dialout "$USER"`, then log out
 and back in. Run the script as your normal user.
@@ -88,10 +94,24 @@ prompted fixed location and B002 admin:
 python scripts/bench/set-repeater-role.py R001 --role CLIENT --apply
 ```
 
-The script uses a settings transaction for the long name, role, fixed-position setting,
-coordinates and B002 admin enrollment, then commits/reboots. The only changed
-config fields are `device.role`, `position.fixed_position` and the admin
-allowlist; the fixed coordinate values live in the node database separately.
+The script backs up the complete actual saved profile, then uses a settings
+transaction for the long name, role, fixed-position setting, coordinates and
+B002 admin enrollment, and commits/reboots. If the role changes, firmware can
+reset reporting, rebroadcast, sleep/display/GPS intervals and the owner
+messaging flag. The script reconnects, validates identity/role/point, and makes
+one planned restoration of those known reset fields to the original intended
+profile while keeping the new role active. This may require another settings
+reboot before full verification and the final explicit reboot check.
+
+The result retains the original telemetry cadence, including **180 seconds**
+on the current three-minute profiles; it does not impose 180 seconds on a
+device that started with another cadence. Enablement and fitted-sensor choices
+stay as backed up. Intentional config changes remain `device.role`,
+`position.fixed_position` and the admin allowlist; fixed coordinates live in
+the node database separately. A changed key/channel/name, wrong role/point,
+firmware difference or configuration change outside the known reset fields
+stops restoration before another write. Failed/ambiguous writes are never
+retried automatically.
 Existing admins are preserved, B002 is not duplicated, and a full three-key
 allowlist without B002 stops before any device write.
 
@@ -113,7 +133,8 @@ ignored `private/bench/R001-role-<timestamp>/` with restrictive Linux permission
 The comparison requires exact config/module/channel bytes, keys and owner
 identity to match the intended profile, including the requested long name and
 unchanged short name; only the user role announcement may
-change. Firmware metadata and saved fixed coordinates must match too, both
+change. Only the requested role announcement may differ in firmware metadata;
+all other metadata and saved fixed coordinates must match too, both
 after save and after an explicit reboot. When long name, role, fixed location and B002
 admin already match, the script backs up and makes no write. Never commit
 these private files. Selecting CLIENT is not a full rollback: fixed position
@@ -129,13 +150,37 @@ interrupted process may leave an `IN PROGRESS` log. Only completed checks are
 marked passed, even if readback JSON exists from a failed comparison. Keep this
 local file for later reconciliation; the script does not update the portal DB.
 The log contains private location data, so keep it under ignored `private/`.
+`role-defaults.json` records the state before planned restoration and
+`restoration-plan.json` lists its configuration sections. The text log records
+whether restoration was needed/saved/verified, separately from final results.
 
-**Known commissioning gate:** the [R005 run](r005-reverence.md) exposed role
-defaults changing otherwise preserved settings, role metadata/USB sleep
-readback differences and SDK raw-position evidence serialization. Those fixes
-remain a separate follow-up; this name/log change does not resolve them. A
-failed run must not be treated as a verified configuration or reconciled into
-the portal as one. Keep the selected board accessible for independent readback.
+## Preservation correction and verification limits - 2026-10-25
+
+The [R005 run](r005-reverence.md) and [R004 recovery](r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25)
+demonstrated role-default resets. The correction restores their known fields
+after the new role takes effect, compares the requested role in metadata, and
+uses an independent admin power response for actual saved sleep settings
+instead of the role default substituted by USB PhoneAPI. SDK raw-position
+protobufs are excluded from JSON evidence while exact integer coordinates
+are retained. Absent/false optional owner messaging flags are compared with
+their same effective false value; true/false changes remain verified.
+
+All **72 offline bench tests** pass. A lifecycle regression reproduces
+180-to-43,200-second resets across fresh USB sessions, then verifies restoration
+and explicit-reboot comparison. Other cases check owner flags, additional reset
+intervals, power reads, raw-position JSON, unexpected-change rejection and no
+retry after an ambiguous restoration write. Offline replay of R004's actual
+failed readback produces the exact intended local/module bytes and the same
+device/power/telemetry/neighbor restoration sections as its measured recovery.
+
+No radio was changed while implementing the correction. End-to-end automatic
+hardware acceptance and fresh RF/gateway/portal cadence remain unverified.
+A failed run must not be treated as a verified configuration or reconciled
+into the portal as one. Keep the selected board accessible for independent
+readback. Historical failed runs still require inspection against their saved
+intended profile; rerunning creates a new baseline from the current state.
+
+## Failures and follow-up
 
 If anything fails after a write, some or all settings may already have saved. There is no
 automatic retry or rollback. Inspect private evidence and read the role locally

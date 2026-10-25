@@ -45,7 +45,8 @@ Existing operation tools remain separate entry points:
   short name), select ROUTER or CLIENT, prompt for a decimal fixed location and
   enroll B002 as admin over USB. It checks the intended profile/coordinates
   through reboot and saves private `reconciliation.txt` results; see the
-  procedure's known commissioning gate before another board run. No firmware flash.
+  procedure's preservation correction and hardware verification limits before
+  another board run. No firmware flash.
 - [Board updater](../docs/operations/repeater-update.md) privately compares the
   complete intended profile through reboot and verifies image provenance.
 - [Release download helper](../docs/operations/board-flashing-handoff.md)

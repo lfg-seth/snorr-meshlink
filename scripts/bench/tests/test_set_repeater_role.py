@@ -1,17 +1,181 @@
 """Offline safety checks; these do not establish hardware acceptance."""
 import importlib.util
+import io
 import base64
 import copy
+import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import Mock, patch, call
-from meshtastic.protobuf import localonly_pb2
+from meshtastic.protobuf import admin_pb2, localonly_pb2, mesh_pb2
+from google.protobuf.json_format import MessageToDict
 
 SPEC = importlib.util.spec_from_file_location(
     "set_repeater_role", Path(__file__).resolve().parents[1] / "set-repeater-role.py")
 roles = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(roles)
+
+
+class RouterLifecycleTests(unittest.TestCase):
+    """Model firmware resets on a role transition, across fresh USB sessions."""
+
+    def run_lifecycle(self, *, same_name=False, fault=None, fail_restoration=False, apply=True):
+        local = localonly_pb2.LocalConfig()
+        local.device.rebroadcast_mode = 3  # LOCAL_ONLY
+        local.power.ls_secs = 300
+        local.position.gps_update_interval = 60
+        local.position.position_broadcast_secs = 120
+        local.display.screen_on_secs = 42
+        module = localonly_pb2.LocalModuleConfig()
+        for field in ('device_update_interval', 'environment_update_interval', 'power_update_interval'):
+            setattr(module.telemetry, field, 180)
+        module.telemetry.device_telemetry_enabled = True
+        module.telemetry.environment_measurement_enabled = True
+        module.telemetry.power_measurement_enabled = True
+        module.neighbor_info.update_interval = 21600
+        module.neighbor_info.enabled = True
+        module.neighbor_info.transmit_over_lora = True
+        module.paxcounter.paxcounter_update_interval = 7200
+        module.telemetry.air_quality_interval = 300
+        module.telemetry.health_update_interval = 600
+        user = {'id': '!a65601b3', 'longName': 'Old site', 'shortName': 'R001', 'isUnmessagable': False}
+        if same_name:
+            user['longName'] = 'New site'
+        position = {'latitudeI': 1, 'longitudeI': 2}
+        calls = []
+        commits = []
+
+        class Interface:
+            def __init__(self):
+                self.localNode = Mock(localConfig=copy.deepcopy(local), moduleConfig=copy.deepcopy(module))
+                self.localNode.localConfig.power.ls_secs = 86400 if local.device.role == 2 else 300
+                def write(section):
+                    calls.append(section)
+                    if fail_restoration and commits:
+                        raise TimeoutError('ambiguous restore write')
+                    if section in local.DESCRIPTOR.fields_by_name:
+                        value = getattr(self.localNode.localConfig, section)
+                        role_changed = section == 'device' and value.role != local.device.role
+                        getattr(local, section).CopyFrom(value)
+                        if role_changed and local.device.role == 2:
+                            local.device.rebroadcast_mode = 5  # CORE_PORTNUMS_ONLY
+                            local.power.ls_secs = 86400
+                            local.position.gps_update_interval = 30
+                            local.position.position_broadcast_secs = 900
+                            local.display.screen_on_secs = 10
+                            module.telemetry.device_update_interval = 43200
+                            module.telemetry.environment_update_interval = 0
+                            module.telemetry.power_update_interval = 0
+                            module.neighbor_info.update_interval = 0
+                            module.paxcounter.paxcounter_update_interval = 0
+                            module.telemetry.air_quality_interval = 0
+                            module.telemetry.health_update_interval = 0
+                            user['isUnmessagable'] = True
+                    else:
+                        getattr(module, section).CopyFrom(getattr(self.localNode.moduleConfig, section))
+                self.localNode.writeConfig.side_effect = write
+                def owner(**kwargs):
+                    user['longName'] = kwargs['long_name']
+                    if kwargs.get('is_unmessagable') is not None:
+                        user['isUnmessagable'] = kwargs['is_unmessagable']
+                self.localNode.setOwner.side_effect = owner
+                self.localNode.setFixedPosition.side_effect = lambda lat, lon, alt: position.update(latitudeI=lat, longitudeI=lon)
+                def commit():
+                    commits.append(True)
+                    if len(commits) == 1:
+                        if fault == 'key':
+                            local.security.private_key = b'changed-key'
+                        elif fault == 'setting':
+                            local.lora.tx_power = 27
+                        elif fault == 'name':
+                            user['shortName'] = 'BAD'
+                        elif fault == 'role':
+                            local.device.role = 0
+                        elif fault == 'point':
+                            position['latitudeI'] += 1
+                self.localNode.commitSettingsTransaction.side_effect = commit
+            def getMyNodeInfo(self):
+                return {'user': copy.deepcopy(user), 'position': copy.deepcopy(position)}
+            def close(self):
+                pass
+
+        def snapshot(interface, port, serial):
+            role = 'ROUTER' if local.device.role == 2 else 'CLIENT'
+            return {'localWire': roles.updater.wire(interface.localNode.localConfig),
+                    'moduleWire': roles.updater.wire(interface.localNode.moduleConfig),
+                    'channelsWire': ['unchanged'], 'hardwareId': 'fixture',
+                    'localConfig': MessageToDict(interface.localNode.localConfig),
+                    'moduleConfig': MessageToDict(interface.localNode.moduleConfig),
+                    'metadata': {'firmwareVersion': 'fixture', 'role': role},
+                    'user': {**copy.deepcopy(user), 'role': role}}
+
+        with tempfile.TemporaryDirectory() as tmp, \
+                patch.object(roles.updater, 'ROOT', Path(tmp)), \
+                patch.object(roles, 'prompt_name', return_value='New site'), \
+                patch.object(roles, 'prompt_location', return_value=(100, 200)), \
+                patch.object(roles.updater, 'select_port', return_value=Mock(device='fixture')), \
+                patch.object(roles.updater, 'connect', side_effect=lambda *_: Interface()), \
+                patch.object(roles.updater, 'wait_application', side_effect=lambda *_: (Interface(), 'fixture')), \
+                patch.object(roles.updater, 'snapshot', side_effect=snapshot), \
+                patch.object(roles.updater, 'validate_node'), \
+                patch.object(roles, 'read_saved_power', side_effect=lambda iface: copy.deepcopy(local.power), create=True), \
+                patch.object(roles.time, 'sleep'), patch('sys.stdout', new_callable=io.StringIO), \
+                patch('sys.stderr', new_callable=io.StringIO):
+            result = roles.main(['R001'] + (['--apply'] if apply else []))
+            log_path, = Path(tmp).glob('private/bench/*/reconciliation.txt')
+            summary = log_path.read_text()
+            if result:
+                summary += (log_path.parent / 'failure.log').read_text()
+        return result, summary, local, module, user, calls, commits
+
+    def test_router_change_preserves_three_minute_profile_through_reboot(self):
+        result, summary, local, module, user, calls, commits = self.run_lifecycle()
+        self.assertEqual(module.telemetry.device_update_interval, 180, summary)
+        self.assertEqual(module.telemetry.environment_update_interval, 180, summary)
+        self.assertEqual(module.telemetry.power_update_interval, 180, summary)
+        self.assertEqual(module.neighbor_info.update_interval, 21600)
+        self.assertEqual(local.power.ls_secs, 300)
+        self.assertEqual(local.device.rebroadcast_mode, 3)
+        self.assertEqual(local.position.gps_update_interval, 60)
+        self.assertEqual(local.position.position_broadcast_secs, 120)
+        self.assertEqual(local.display.screen_on_secs, 42)
+        self.assertEqual(module.paxcounter.paxcounter_update_interval, 7200)
+        self.assertEqual(module.telemetry.air_quality_interval, 300)
+        self.assertEqual(module.telemetry.health_update_interval, 600)
+        self.assertEqual((user['longName'], user['shortName']), ('New site', 'R001'))
+        self.assertFalse(user['isUnmessagable'])
+        self.assertEqual(result, 0, summary)
+        self.assertIn('VERIFIED THROUGH REBOOT', summary)
+        self.assertEqual(len(commits), 2)
+
+    def test_matching_name_still_restores_original_owner_flag(self):
+        result, summary, local, module, user, calls, commits = self.run_lifecycle(same_name=True)
+        self.assertEqual(result, 0, summary)
+        self.assertFalse(user['isUnmessagable'])
+
+    def test_unexpected_changes_stop_before_restoration_writes(self):
+        for fault in ('key', 'setting', 'name', 'role', 'point'):
+            with self.subTest(fault=fault):
+                result, summary, local, module, user, calls, commits = self.run_lifecycle(fault=fault)
+                self.assertEqual(result, 1, summary)
+                self.assertEqual(calls, ['device', 'position', 'security'])
+                self.assertEqual(len(commits), 1)
+                self.assertIn('Result: FAILED', summary)
+                self.assertIn('Post-save verification: not completed', summary)
+
+    def test_ambiguous_restoration_write_is_not_retried(self):
+        result, summary, local, module, user, calls, commits = self.run_lifecycle(fail_restoration=True)
+        self.assertEqual(result, 1, summary)
+        self.assertEqual(calls, ['device', 'position', 'security', 'device'])
+        self.assertEqual(len(commits), 1)
+
+    def test_preview_never_changes_radio_or_restores(self):
+        result, summary, local, module, user, calls, commits = self.run_lifecycle(apply=False)
+        self.assertEqual(result, 0, summary)
+        self.assertEqual(local.device.role, 0)
+        self.assertEqual(calls, [])
+        self.assertEqual(commits, [])
 
 
 class RoleChangeTests(unittest.TestCase):
@@ -30,11 +194,12 @@ class RoleChangeTests(unittest.TestCase):
         self.profile = {"usbSerial": "recorded"}
         self.user = {"longName": "Old site", "shortName": "R001", "isLicensed": True, "isUnmessagable": True}
         self.patches = [
-            patch.object(roles.updater, "snapshot", side_effect=lambda *args: {"localWire": roles.updater.wire(self.config), "user": copy.deepcopy(self.user)}),
+            patch.object(roles.updater, "snapshot", side_effect=lambda *args: {"localWire": roles.updater.wire(self.config), "user": copy.deepcopy(self.user), "metadata": {}}),
             patch.object(roles.updater, "validate_node"),
             patch.object(roles.updater, "private_json"),
-            patch.object(roles.time, "sleep")]
-        self.snapshot, self.validate, self.backup, _ = [p.start() for p in self.patches]
+            patch.object(roles.time, "sleep"),
+            patch.object(roles, "read_saved_power", side_effect=lambda *_: copy.deepcopy(self.config.power))]
+        self.snapshot, self.validate, self.backup, _, self.power = [p.start() for p in self.patches]
         for p in self.patches:
             self.addCleanup(p.stop)
 
@@ -60,6 +225,13 @@ class RoleChangeTests(unittest.TestCase):
         with self.assertRaises(OSError):
             self.change()
         self.node.writeConfig.assert_not_called()
+
+    def test_saved_power_timeout_prevents_backup_and_write(self):
+        self.power.side_effect = roles.updater.UpdateError('power read timed out')
+        with self.assertRaises(roles.updater.UpdateError):
+            self.change()
+        self.backup.assert_not_called()
+        self.node.beginSettingsTransaction.assert_not_called()
 
     def test_profile_and_existing_admins_preserved(self):
         def write(section):
@@ -128,6 +300,61 @@ class RoleChangeTests(unittest.TestCase):
         self.device.role = 2
         self.assertTrue(self.change()[2])
         self.node.setFixedPosition.assert_called_once()
+
+
+class SavedReadTests(unittest.TestCase):
+    def test_power_read_uses_admin_response_and_ignores_ack(self):
+        interface = Mock()
+        response = admin_pb2.AdminMessage()
+        response.get_config_response.power.ls_secs = 300
+        def send(request, *, wantResponse, onResponse):
+            self.assertEqual(request.get_config_request, admin_pb2.AdminMessage.POWER_CONFIG)
+            self.assertTrue(wantResponse)
+            onResponse({'decoded': {'routing': {}}})
+            onResponse({'decoded': {'admin': {'raw': response}}})
+        interface.localNode._sendAdmin.side_effect = send
+        self.assertEqual(roles.read_saved_power(interface).ls_secs, 300)
+        interface.localNode._sendAdmin.assert_called_once()
+        interface.localNode.writeConfig.assert_not_called()
+
+    def test_power_read_timeout_has_no_retry(self):
+        interface = Mock()
+        event = Mock()
+        event.wait.return_value = False
+        with patch.object(roles.threading, 'Event', return_value=event):
+            with self.assertRaisesRegex(roles.updater.UpdateError, 'timed out'):
+                roles.read_saved_power(interface)
+        interface.localNode._sendAdmin.assert_called_once()
+        event.wait.assert_called_once_with(15)
+
+    def test_capture_removes_raw_position_and_reads_saved_sleep_value(self):
+        config = localonly_pb2.LocalConfig()
+        config.power.ls_secs = 86400
+        interface = Mock(localNode=Mock(localConfig=config))
+        interface.getMyNodeInfo.return_value = {'position': {
+            'latitudeI': 100, 'longitudeI': 200,
+            'raw': mesh_pb2.Position(latitude_i=100, longitude_i=200)}}
+        saved = copy.deepcopy(config.power)
+        saved.ls_secs = 300
+        with patch.object(roles, 'read_saved_power', return_value=saved), \
+                patch.object(roles.updater, 'snapshot', side_effect=lambda *_: {'user': {}, 'localWire': roles.updater.wire(config)}):
+            state = roles.capture(interface, 'fixture', {'usbSerial': 'fixture'})
+        json.dumps(state)
+        self.assertEqual(state['savedPosition'], {'latitudeI': 100, 'longitudeI': 200})
+        self.assertEqual(config.power.ls_secs, 300)
+        self.assertNotEqual(state['phoneApiPowerWire'], roles.updater.wire(config.power))
+
+    def test_expected_role_metadata_and_default_client_are_accepted(self):
+        roles.assert_metadata({'metadata': {'role': 'ROUTER', 'firmwareVersion': 'same'}},
+                              {'metadata': {'role': 'ROUTER', 'firmwareVersion': 'same'}})
+        roles.assert_metadata({'metadata': {'role': 'CLIENT'}}, {'metadata': {}})
+
+    def test_changed_firmware_or_wrong_role_is_rejected(self):
+        for actual in ({'role': 'CLIENT', 'firmwareVersion': 'same'},
+                       {'role': 'ROUTER', 'firmwareVersion': 'changed'}):
+            with self.subTest(actual=actual), self.assertRaises(roles.updater.UpdateError):
+                roles.assert_metadata({'metadata': {'role': 'ROUTER', 'firmwareVersion': 'same'}},
+                                      {'metadata': actual})
 
 
 class ReadbackTests(unittest.TestCase):
@@ -222,6 +449,7 @@ class NameAndLogTests(unittest.TestCase):
                 patch.object(roles.updater, "connect", return_value=interface), \
                 patch.object(roles.updater, "wait_application", return_value=(interface, "/dev/test")), \
                 patch.object(roles, "change_role", side_effect=change), \
+                patch.object(roles, "restore_role_defaults", return_value=True), \
                 patch.object(roles, "verify", side_effect=verification), patch.object(roles.time, "sleep"), \
                 patch("builtins.print"):
             result = roles.main(["R001"] + (["--apply"] if apply else []))

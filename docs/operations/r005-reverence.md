@@ -62,6 +62,9 @@ Before commissioning another node with the prepared role script, correct its
 handling of role-reset defaults, role metadata, PhoneAPI sleep substitution and
 SDK raw-position protobuf evidence. The original script correctly fails its
 strict comparison, but does not yet preserve all role-reset settings itself.
+The subsequent [script correction](repeater-role-change.md#preservation-correction-and-verification-limits---2026-10-25)
+implements those fixes with offline lifecycle and captured-R004 replay checks;
+complete automatic hardware acceptance remains unverified.
 
 Fresh RF/MQTT/portal delivery remains unverified: the database's latest R005
 accepted G001 receipt is **2026-10-25T18:45:40.547Z**, before these settings

@@ -7,7 +7,8 @@ authorized restoration passes complete intended-profile comparison through
 explicit reboot with device/environment/INA219 power enabled at **180 seconds**,
 LOCAL_ONLY and standard NeighborInfo **21,600 seconds**. Keys, channels and
 other settings are preserved. Fresh gateway/portal delivery is unmeasured in
-this recovery; generic setup-script role-preservation fixes remain pending.
+this recovery. Generic setup-script role-preservation fixes are now implemented
+and offline-tested; their complete automatic hardware acceptance remains open.
 [Recovery and private log reference](r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25).
 This supersedes the earlier R004 CLIENT profile below.
 

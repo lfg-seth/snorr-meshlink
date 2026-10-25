@@ -12,6 +12,7 @@ import logging
 import os
 from pathlib import Path
 import sys
+import threading
 import time
 import traceback
 
@@ -87,9 +88,40 @@ def prompt_location():
 
 
 def capture(interface, port, profile):
+    # PhoneAPI substitutes role defaults for power.ls_secs; read the saved value.
+    phone_power = updater.wire(interface.localNode.localConfig.power)
+    interface.localNode.localConfig.power.CopyFrom(read_saved_power(interface))
     state = updater.snapshot(interface, port, profile["usbSerial"])
+    state["phoneApiPowerWire"] = phone_power
+    state["user"].setdefault("isUnmessagable", False)
     state["savedPosition"] = copy.deepcopy(interface.getMyNodeInfo().get("position", {}))
+    state["savedPosition"].pop("raw", None)
     return state
+
+
+def read_saved_power(interface):
+    from meshtastic.protobuf import admin_pb2, config_pb2
+
+    event = threading.Event()
+    power = config_pb2.Config.PowerConfig()
+
+    def received(packet):
+        raw = packet.get("decoded", {}).get("admin", {}).get("raw")
+        if raw is not None and raw.HasField("get_config_response") and raw.get_config_response.HasField("power"):
+            power.CopyFrom(raw.get_config_response.power)
+            event.set()
+
+    request = admin_pb2.AdminMessage(get_config_request=admin_pb2.AdminMessage.POWER_CONFIG)
+    interface.localNode._sendAdmin(request, wantResponse=True, onResponse=received)
+    if not event.wait(15):
+        raise updater.UpdateError("Saved power config read timed out; no automatic retry or write.")
+    return power
+
+
+def assert_metadata(intended, actual):
+    wanted, saved = copy.deepcopy(intended["metadata"]), copy.deepcopy(actual["metadata"])
+    if wanted.pop("role", "CLIENT") != saved.pop("role", "CLIENT") or wanted != saved:
+        raise updater.UpdateError("Firmware metadata or announced role changed unexpectedly; inspect private evidence.")
 
 
 def position_matches(position, coordinates):
@@ -123,6 +155,7 @@ def change_role(interface, port, profile, role, apply, evidence, coordinates, lo
         admins.append(key)
     intended = capture(interface, port, profile)
     intended["user"]["longName"] = long_name
+    intended["metadata"]["role"] = role
     intended["fixedCoordinates"] = list(coordinates)
     updater.private_json(evidence / "intended.json", intended)
     changed = (original_wire != updater.wire(config)
@@ -151,6 +184,75 @@ def change_role(interface, port, profile, role, apply, evidence, coordinates, lo
     return previous, intended, True
 
 
+def restore_role_defaults(profile, intended, evidence):
+    """One planned restoration after the new role has taken effect; never retry."""
+    from meshtastic.protobuf import localonly_pb2
+
+    interface, port = updater.wait_application(profile)
+    try:
+        actual = capture(interface, port, profile)
+        updater.private_json(evidence / "role-defaults.json", actual)
+        updater.validate_node(interface, actual, profile)
+        assert_metadata(intended, actual)
+        if not position_matches(actual["savedPosition"], intended["fixedCoordinates"]):
+            raise updater.UpdateError("Fixed point changed after role save; restoration stopped.")
+        wanted_local = localonly_pb2.LocalConfig.FromString(base64.b64decode(intended["localWire"]))
+        wanted_module = localonly_pb2.LocalModuleConfig.FromString(base64.b64decode(intended["moduleWire"]))
+        local = copy.deepcopy(interface.localNode.localConfig)
+        module = copy.deepcopy(interface.localNode.moduleConfig)
+        if local.device.role != wanted_local.device.role:
+            raise updater.UpdateError("Saved role does not match the request; restoration stopped.")
+        # Only fields changed by NodeDB::installRoleDefaults and its interval helpers.
+        local_fields = {
+            "device": ("rebroadcast_mode",),
+            "position": ("gps_update_interval", "position_broadcast_secs"),
+            "power": ("ls_secs", "min_wake_secs", "sds_secs", "wait_bluetooth_secs", "is_power_saving"),
+            "display": ("screen_on_secs",),
+        }
+        module_fields = {
+            "telemetry": ("device_update_interval", "environment_update_interval", "power_update_interval",
+                          "air_quality_interval", "health_update_interval"),
+            "neighbor_info": ("update_interval",),
+            "paxcounter": ("paxcounter_update_interval",),
+        }
+        sections = []
+        for current, wanted, fields in ((local, wanted_local, local_fields), (module, wanted_module, module_fields)):
+            for section, names in fields.items():
+                values, target = getattr(current, section), getattr(wanted, section)
+                original = updater.wire(values)
+                for field in names:
+                    if getattr(values, field) != getattr(target, field):
+                        setattr(values, field, getattr(target, field))
+                if original != updater.wire(values):
+                    sections.append(section)
+        proposed = copy.deepcopy(actual)
+        proposed["localWire"], proposed["moduleWire"] = updater.wire(local), updater.wire(module)
+        proposed["user"]["isUnmessagable"] = intended["user"]["isUnmessagable"]
+        # Any changed key/channel/identity or setting outside the known reset fields stops writes.
+        updater.assert_preserved(intended, proposed)
+        owner_changed = actual["user"]["isUnmessagable"] != intended["user"]["isUnmessagable"]
+        updater.private_json(evidence / "restoration-plan.json", {"sections": sections, "ownerFlag": owner_changed})
+        if not sections and not owner_changed:
+            return False
+        node = interface.localNode
+        node.localConfig.CopyFrom(local)
+        node.moduleConfig.CopyFrom(module)
+        node.beginSettingsTransaction()
+        for section in sections:
+            node.writeConfig(section)
+            time.sleep(0.2)
+        if owner_changed:
+            node.setOwner(long_name=intended["user"]["longName"],
+                          is_licensed=intended["user"].get("isLicensed", False),
+                          is_unmessagable=intended["user"]["isUnmessagable"])
+            time.sleep(0.2)
+        node.commitSettingsTransaction()
+        time.sleep(1)
+        return True
+    finally:
+        interface.close()
+
+
 def verify(profile, intended, evidence, name):
     interface, port = updater.wait_application(profile)
     try:
@@ -158,8 +260,7 @@ def verify(profile, intended, evidence, name):
         updater.private_json(evidence / name, actual)
         updater.validate_node(interface, actual, profile)
         updater.assert_preserved(intended, actual)
-        if intended["metadata"] != actual["metadata"]:
-            raise updater.UpdateError("Firmware metadata changed; inspect private evidence.")
+        assert_metadata(intended, actual)
         if not position_matches(actual["savedPosition"], intended["fixedCoordinates"]):
             raise updater.UpdateError("Saved fixed coordinates do not match; inspect private evidence.")
     finally:
@@ -197,6 +298,7 @@ def main(argv=None):
             "Result": "IN PROGRESS — saved state unverified",
             "Post-save verification": "not completed",
             "Post-reboot verification": "not completed",
+            "Role-default restoration": "not attempted",
         }
         write_reconciliation(evidence, report)
         print(f"Private reconciliation log: {evidence / 'reconciliation.txt'}", flush=True)
@@ -216,6 +318,15 @@ def main(argv=None):
                 interface.close()
             if changed:
                 time.sleep(15)
+                restored = False
+                if previous != args.role:
+                    restored = restore_role_defaults(profile, intended, evidence)
+                    report["Role-default restoration"] = "saved; awaiting verification" if restored else "checked; no reset fields differed"
+                    write_reconciliation(evidence, report)
+                    if restored:
+                        time.sleep(15)
+                else:
+                    report["Role-default restoration"] = "not needed; role unchanged"
                 verify(profile, intended, evidence, "verified.json")
                 report["Post-save verification"] = "passed"
                 write_reconciliation(evidence, report)
@@ -229,6 +340,8 @@ def main(argv=None):
                 time.sleep(12)
                 verify(profile, intended, evidence, "reboot-verified.json")
                 report["Post-reboot verification"] = "passed"
+                if restored:
+                    report["Role-default restoration"] = "verified through reboot"
         if changed:
             report["Result"] = "VERIFIED THROUGH REBOOT"
             print(f"{number}: {previous} -> {args.role}; long name, fixed location and B002 admin saved; short name preserved; full profile verified through reboot.")
