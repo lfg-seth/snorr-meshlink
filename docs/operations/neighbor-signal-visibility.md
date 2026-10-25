@@ -6,6 +6,13 @@ GH-47 application correction, 2026-10-21. [Design comparison and selected scope]
 
 ## Behavior
 
+Owner accepts the deployed two-hour neighbor-link cutoff on 2026-10-25 and
+explicitly requests closure; [GH-47](https://github.com/lfg-seth/snorr-meshlink/issues/47)
+is closed as completed. This accepts the current-link presentation below.
+The upstream-delay bound remains unverified; node-pin removal and duplicate/delay
+handling for device Last Heard are separate outcomes. GH-43's layout scope and
+GH-51/GH-52 source/queue follow-ups remain unchanged.
+
 Current signals use SNNS relative hearing evidence and retain their age anchor across repeated reports. Standard cached NeighborInfo tables remain historical records and cannot create or refresh current links. Two hours of estimated hearing age is the visibility cutoff, including while the portal is offline. Signal direction, weakest-current-SNR colors, node cards, the selected relationship/minimap and Infrastructure table use the same eligible observations. Missing and expired observations do not establish a failed radio link.
 
 Reported relative age plus elapsed time since the retained worker receipt is an estimate. It excludes unknown delivery delay before that receipt. The application does not synthesize an absolute hearing timestamp. A strict two-hour limit since actual hearing across radio/MQTT outages remains unverified; installed queues lack a proven residence limit. The selected design does not require synchronized UTC clocks.

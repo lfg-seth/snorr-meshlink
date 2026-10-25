@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-10-25 - Two-hour neighbor-link cutoff accepted
+
+- Owner confirms the deployed neighbor-link cutoff looks good and explicitly
+  authorizes closing the matching open issue. Close
+  [GH-47](https://github.com/lfg-seth/snorr-meshlink/issues/47) as completed,
+  appending the later implementation, deployment evidence and acceptance scope
+  to its historical body. GitHub confirms closed/completed.
+- Record acceptance in [the existing evidence](../docs/operations/neighbor-signal-visibility.md#behavior).
+  No matching active tracker row remains to remove. Preserve the historical
+  imports, unrelated issues and existing working-tree hardware edits.
+- This is owner acceptance of the deployed estimated-age cutoff, not a new
+  sustained outage measurement or strict upstream-delay guarantee. Node pins,
+  Last Heard duplicate/delay semantics and separate layout/firmware work remain
+  outside this closure. No application or hardware change.
+
+Next useful step: select node-pin expiry or Last Heard hardening if desired;
+the accepted neighbor-link cutoff requires no further presentation sign-off.
+
 ## 2026-10-25 - Infrastructure names and planned map locations
 
 - Apply all thirteen owner-provided infrastructure names and coordinates to
