@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-10-25 - R005 equipment and radio write attempt
+
+- Owner grants initial serial access and confirms four 18650 cells, three solar
+  panels and fiberglass antenna. Save and verify exact equipment notes in live
+  database/authenticated portal, preserving other devices and R005 short name.
+  Capacity, wiring, electrical ratings and gain remain unknown.
+- Read-only R005 backup succeeds, showing CLIENT; prepared script sends the
+  ROUTER/fixed-point/B002-admin transaction. Reboot removes the one-time ACL,
+  so full readback times out. Saved radio state is unverified; long-name change
+  remains pending. Do not repeat the write without independent readback.
+- Request an R005-only runtime udev ACL rule. Preserve unrelated firmware
+  submodule edits. Documentation checks pass.
+  [Private audits and next checks](../docs/operations/r005-reverence.md).
+
+Next useful step: restore reboot-safe USB access, verify saved role/location/admin,
+set Reverence preserving R005, then full reboot readback and fresh delivery.
+
 ## 2026-10-25 - R005 Reverence placement
 
 - Owner requests R005 fixed placement, ROUTER, B002 admin and Reverence long

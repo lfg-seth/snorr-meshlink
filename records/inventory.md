@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-10-25 - R005 equipment confirmed
+
+Owner confirms **Reverence / R005 has four 18650 cells, three solar panels
+and a fiberglass antenna**. Live portal configuration now records these
+details and solar equipment present; chemistry, cell/pack capacity and wiring,
+panel ratings and antenna gain/model remain unknown. No purchases, stock-total
+changes or measured runtime inferred. Radio settings transaction has been
+sent; reboot readback awaits restored serial access.
+[Evidence](../docs/operations/r005-reverence.md#owner-confirmed-equipment).
+
 ## 2026-10-25 - R005 Reverence placement request
 
 Existing RAK4631 **R005 `!f95b5501`**, USB **E93C5FF0F97DD76B**, is identified

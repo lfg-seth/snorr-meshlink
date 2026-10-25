@@ -4,7 +4,9 @@
 
 Owner-supplied placement/name saved in live database and authenticated portal
 state, preserving short name R005 and other devices' configuration. Radio
-identity matches USB enumeration, but serial access prevents configuration;
+identity matches USB enumeration. Subsequent owner access grant permits backup
+and settings transaction; reboot removes the ACL and blocks saved readback.
+Owner-confirmed equipment notes pass authenticated portal checks;
 no fresh RF receipt, measured coverage, relay or runtime result is claimed.
 [Audit and remaining checks](../docs/operations/r005-reverence.md).
 
