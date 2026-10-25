@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Change only one inventoried RAK's role over USB; preserve its full profile."""
+"""Set one inventoried RAK's role, prompted fixed location and B002 admin access."""
 
 import argparse
+import base64
+import copy
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import importlib.util
 import json
 import logging
@@ -17,22 +20,84 @@ SPEC = importlib.util.spec_from_file_location(
 updater = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(updater)
 
+# Public key only, from B002 !699ca878's matching 2026-10-24 reboot readbacks.
+B002_PUBLIC_KEY = "l5VRR8C6wnkeSNP1KiYKPYEBv/Of10/4rU+VHmlq2ks="
 
-def change_role(interface, port, profile, role, apply, evidence):
-    """Validate and back up before the sole configuration write."""
-    before = updater.snapshot(interface, port, profile["usbSerial"])
+
+def coordinate(value, limit):
+    try:
+        decimal = Decimal(value.strip())
+        if not decimal.is_finite() or abs(decimal) > limit:
+            raise ValueError()
+        return int((decimal * 10_000_000).to_integral_value(rounding=ROUND_HALF_UP))
+    except (InvalidOperation, ValueError):
+        raise updater.UpdateError(f"Enter decimal degrees between -{limit} and {limit}.") from None
+
+
+def prompt_location():
+    values = []
+    for label, limit in (("Latitude", 90), ("Longitude", 180)):
+        while True:
+            try:
+                values.append(coordinate(input(f"{label} (decimal degrees): "), limit))
+                break
+            except updater.UpdateError as error:
+                print(str(error))
+    return tuple(values)
+
+
+def capture(interface, port, profile):
+    state = updater.snapshot(interface, port, profile["usbSerial"])
+    state["savedPosition"] = copy.deepcopy(interface.getMyNodeInfo().get("position", {}))
+    return state
+
+
+def position_matches(position, coordinates):
+    # SDK NodeInfo dictionaries expose protobuf latitudeI/longitudeI.
+    try:
+        return bool(position) and all(int(position.get(field, 0)) == expected for field, expected in
+                   zip(("latitudeI", "longitudeI"), coordinates))
+    except (KeyError, ValueError, TypeError):
+        return False
+
+
+def change_role(interface, port, profile, role, apply, evidence, coordinates):
+    """Validate and back up before saving the selected settings in a transaction."""
+    before = capture(interface, port, profile)
     updater.validate_node(interface, before, profile)
     updater.private_json(evidence / "before.json", before)
-    device = interface.localNode.localConfig.device
+    config = interface.localNode.localConfig
+    key = base64.b64decode(B002_PUBLIC_KEY, validate=True)
+    if len(key) != 32 or not any(key):
+        raise updater.UpdateError("Invalid recorded B002 public key.")
+    admins = config.security.admin_key
+    if key not in admins and len(admins) >= 3:
+        raise updater.UpdateError("All three admin key slots are occupied; existing keys were preserved. Resolve the allowlist before retrying.")
+    original_wire = updater.wire(config)
+    device = config.device
     roles = device.DESCRIPTOR.fields_by_name["role"].enum_type
     previous = roles.values_by_number[device.role].name
     device.role = roles.values_by_name[role].number
-    intended = updater.snapshot(interface, port, profile["usbSerial"])
+    config.position.fixed_position = True
+    if key not in admins:
+        admins.append(key)
+    intended = capture(interface, port, profile)
+    intended["fixedCoordinates"] = list(coordinates)
     updater.private_json(evidence / "intended.json", intended)
-    if not apply or previous == role:
+    changed = original_wire != updater.wire(config) or not position_matches(before["savedPosition"], coordinates)
+    if not apply or not changed:
         return previous, intended, False
     # No retry: a lost response can follow an executed/rebooting write.
-    interface.localNode.writeConfig("device")
+    node = interface.localNode
+    node.beginSettingsTransaction()
+    for section in ("device", "position", "security"):
+        node.writeConfig(section)
+        time.sleep(0.2)
+    # Integer coordinates avoid binary floating point truncation in the SDK.
+    # Keep the existing altitude (or 0/unspecified); no elevation is invented.
+    node.setFixedPosition(coordinates[0], coordinates[1], before["savedPosition"].get("altitude", 0))
+    time.sleep(0.2)
+    node.commitSettingsTransaction()
     time.sleep(2)
     return previous, intended, True
 
@@ -40,12 +105,14 @@ def change_role(interface, port, profile, role, apply, evidence):
 def verify(profile, intended, evidence, name):
     interface, port = updater.wait_application(profile)
     try:
-        actual = updater.snapshot(interface, port, profile["usbSerial"])
+        actual = capture(interface, port, profile)
         updater.private_json(evidence / name, actual)
         updater.validate_node(interface, actual, profile)
         updater.assert_preserved(intended, actual)
         if intended["metadata"] != actual["metadata"]:
             raise updater.UpdateError("Firmware metadata changed; inspect private evidence.")
+        if not position_matches(actual["savedPosition"], intended["fixedCoordinates"]):
+            raise updater.UpdateError("Saved fixed coordinates do not match; inspect private evidence.")
     finally:
         interface.close()
 
@@ -55,12 +122,14 @@ def main(argv=None):
     parser.add_argument("number", help="R001 through R006 (one connected RAK)")
     parser.add_argument("--role", choices=("ROUTER", "CLIENT"), default="ROUTER")
     parser.add_argument("--port", help="Optional port; recorded USB serial must still match")
-    parser.add_argument("--apply", action="store_true", help="Save role; default only reads/backups")
+    parser.add_argument("--apply", action="store_true", help="Save role, fixed location and B002 admin; default only reads/backups")
     args = parser.parse_args(argv)
     evidence = None
     old_umask = os.umask(0o077)
     try:
         number = updater.normalize_number(args.number)
+        coordinates = prompt_location()
+        print(f"Plan: {number} -> {args.role}; set fixed location; authorize B002 !699ca878 (preserving existing admins).")
         profile = json.loads(updater.PROFILE_PATH.read_text())["nodes"][number]
         try:
             from serial.tools.list_ports import comports
@@ -76,7 +145,7 @@ def main(argv=None):
             interface = updater.connect(port.device)
             try:
                 previous, intended, changed = change_role(
-                    interface, port.device, profile, args.role, args.apply, evidence)
+                    interface, port.device, profile, args.role, args.apply, evidence, coordinates)
             finally:
                 interface.close()
             if changed:
@@ -92,17 +161,17 @@ def main(argv=None):
                 time.sleep(12)
                 verify(profile, intended, evidence, "reboot-verified.json")
         if changed:
-            print(f"{number}: {previous} -> {args.role}; full profile verified through reboot.")
+            print(f"{number}: {previous} -> {args.role}; fixed location and B002 admin saved; full profile verified through reboot.")
         elif args.apply:
-            print(f"{number}: already {args.role}; backed up, no write needed.")
+            print(f"{number}: role, fixed location and B002 admin already match; backed up, no write needed.")
         else:
-            print(f"READ ONLY: {number} is {previous}; proposed {args.role}. Repeat with --apply to save.")
+            print(f"READ ONLY: {number} is {previous}; proposed {args.role}, fixed location and B002 admin. Repeat with --apply to save.")
         return 0
     except Exception as error:
         if evidence:
             with (evidence / "failure.log").open("w", encoding="utf-8") as log:
                 traceback.print_exc(file=log)
-        print("Role operation failed. No automatic retry or rollback. Inspect private evidence; read saved role over USB before retrying.", file=sys.stderr)
+        print("Configuration operation failed. No automatic retry or rollback. Inspect private evidence; read saved role, position and admins over USB before retrying.", file=sys.stderr)
         if isinstance(error, updater.UpdateError):
             print(str(error), file=sys.stderr)
         if evidence:
