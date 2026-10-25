@@ -1,5 +1,85 @@
 # Session log
 
+## 2026-10-25 - RAK script main integration and branch audit
+
+- Owner selects merging the RAK role/location/B002 admin script to main and
+  asks why so many branches remain. Isolate only the two script commits from
+  the original branch's stacked bench records and a subsequent local B003
+  commit. Preserve current main's MeshLink 0.1.5 deployment record while
+  resolving tracker/session conflicts; no board or service mutation.
+- Prepare the integration on `codex/repeater-role-main`, based on current
+  `origin/main` `653d71b`. All 51 offline bench tests and changed-doc checks
+  pass. The firmware pin matches the original checkout; tests reuse that
+  exact pinned verifier. Laptop instructions now fetch and run from main.
+- Fresh branch audit before the temporary integration branch: 49 local and
+  51 GitHub branches. Of the GitHub branches, 30 are ancestors of main:
+  main itself, the preserved archive and 28 merged task/history branches.
+  The other 21 have commits absent by ancestry, often shared across stacked
+  branches or equivalent to rewritten/squashed changes; they are not 21
+  independent features. Ten worktrees existed, including a detached record
+  checkout; attached branches must not be deleted casually. The one open PR
+  is held draft #50 (neighbor signal freshness), which remains undeployed.
+- Branch count reflects completed short-lived branches retained after merging,
+  stacked unpublished-to-main bench records and persistent worktrees. No broad
+  branch cleanup or bulk merge is performed. Preserve unrelated dirty edits.
+
+Next useful step after source merge: update the Linux laptop's main checkout,
+run the script against one selected RAK and retain saved role/location/admin
+and live-delivery evidence. A separate branch cleanup should first distinguish
+merged leftovers, intentional archive/draft work and commits needing review.
+
+## 2026-10-25 - RAK fixed location and B002 admin script extension
+
+- Owner extends the Linux script request to prompt for decimal coordinates,
+  save a static Meshtastic location and add B002's public key as admin.
+  [Updated procedure](../docs/operations/repeater-role-change.md) documents
+  key provenance, invocation, preservation and acceptance limits.
+- Pin only B002 `!699ca878`'s public key, matching its original/full reboot
+  readbacks and the prior admin bench final readback. Preserve existing admins,
+  avoid duplicates and stop before writes if no slot remains. No private key
+  or coordinates published. Prompt/range-check decimal latitude/longitude,
+  enable fixed position and save integer coordinates in the node database.
+  Retain existing altitude or unspecified zero, GPS settings and report cadence.
+- Back up before changes, save in a settings transaction and independently
+  compare full intended config plus fixed coordinates through reboot. Default
+  remains read-only; CLIENT selection still includes location/admin updates.
+  No board connected/configured, firmware flashed or live service changed.
+- Validation: 51 offline bench tests pass with SDK 2.7.11, including coordinate
+  validation, allowlist capacity/duplicates, key preservation, transaction
+  ordering and failed coordinate readback. Documentation/whitespace checks and
+  CLI help pass. Existing unrelated working-tree edits remain untouched.
+  Publish the extension on `codex/repeater-role-cli`.
+
+Next useful step: pull that branch on the laptop, enter the selected RAK's
+decimal coordinates, inspect the read-only backup and run `--apply`; confirm
+saved position/admin and fresh reports, then test authorized B002 remote reads.
+
+## 2026-10-25 - Linux RAK role correction tool
+
+- Owner asks how to change the RAK relays from CLIENT to ROUTER, including
+  remote/CLI options, and requests a Linux script published to GitHub.
+  Add [procedure](../docs/operations/repeater-role-change.md) and
+  `scripts/bench/set-repeater-role.py` on `codex/repeater-role-cli`.
+- Default is read-only backup; `--apply` changes only the selected role, with
+  CLIENT rollback available. Reuse inventoried USB/node/hardware validation,
+  private full snapshots and complete intended-profile comparison; independently
+  reconnect after save and explicit reboot. Never retry ambiguous writes.
+  Existing updater's CLIENT policy is documented and preserved.
+- Explain PKI-authorized remote CLI commands and the current admin bench's
+  authorization/ACK limits. No fleet key enrollment, board write, firmware
+  flash, MQTT downlink change or deployment performed. Preserve unrelated
+  pre-existing working-tree edits.
+- Validation: 43 offline bench tests pass with pinned Meshtastic SDK 2.7.11;
+  help/CLI parsing and documentation/whitespace checks pass. Initial default
+  Python run lacked the SDK and hit sandbox temp-directory permissions;
+  rerun uses the existing project venv and ignored workspace temp directory.
+  Linux/hardware execution, saved role and live RF/portal acceptance remain
+  unverified.
+
+Next useful step: fetch the branch on the Linux laptop, connect one selected
+RAK, inspect the read-only backup and run `--apply`; retain evidence and check
+fresh reporting before repeating on the remaining selected relays.
+
 ## 2026-10-25 - MeshLink 0.1.5 member creation deployed
 
 - Owner selects deployment of merged PR #66. Publish **0.1.5**, clean source
