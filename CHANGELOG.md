@@ -3,6 +3,22 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.1.5 - 2026-10-25
+
+Add admin-only **Users → Add member** to create a member and login together,
+generate their stable internal key automatically, and select them for tracker
+assignment. The owner account CLI also creates member identities automatically;
+explicit existing-member linking remains supported. Account creation failures
+roll back the new member, and existing assignments/history remain unchanged.
+
+Compatibility: existing Meshtastic telemetry, SNNS v1 and gateway-health v1.
+No firmware, schema migration, data rewrite or private configuration change.
+Password reset/deactivation remain owner-run commands; no public signup is
+added. Rollback restores matching backend, portal and root release metadata
+from the verified pre-deployment backup. Accounts created after deployment must
+be preserved during a source rollback. Owner selects manual deployment of the
+merged PR #66; authenticated owner-phone acceptance remains separate.
+
 ## 0.1.4 - 2026-10-24
 
 Add INA219 sensor-path current history and a separate average of unique readings
