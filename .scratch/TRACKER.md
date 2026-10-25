@@ -57,6 +57,7 @@ Owner activation is required before research, design, implementation or testing.
 
 | Task | Hold / future outcome |
 | --- | --- |
+| [LOCAL-10 — Apache ECharts telemetry graphs](../records/wishlist.md#apache-echarts-telemetry-graphs) | Replace hand-built battery history with reusable ECharts panels, aiming for Grafana-like readability and interaction while preserving missing-data/freshness behavior. Ticket captured; await owner activation. |
 | [GH-13 - Future deployment automation/staging](../records/wishlist.md#future-staging-or-automatic-deployments) | Policy resolved 2026-10-23: main, manual production updates, no staging now. Remaining automation/connection/staging work deferred; revisit only on owner activation. |
 | [GH-11 — Repeater operations/site survey](../records/tracking-import/github-11.md) | Owner-held survey; define direct-link placement procedure when resumed. |
 | [GH-12 — Heltec MQTT over WebSockets](../records/tracking-import/github-12.md) | Revisit only if the deployed transport needs an alternative. |

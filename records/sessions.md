@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-10-24 - Apache ECharts graph ticket
+
+- Capture **LOCAL-10** in the [wishlist](wishlist.md#apache-echarts-telemetry-graphs)
+  and Deferred tracker at the owner's request: adopt ECharts for better portal
+  graphs with a Grafana-like presentation, starting with battery history.
+- Record future interaction, data-integrity and desktop/mobile acceptance;
+  implementation and deployment remain deferred. Preserve unrelated edits.
+- Documentation link and whitespace checks pass; publish the ticket records on
+  `codex/echarts-ticket`.
+
+Next useful step: owner activates LOCAL-10 for the first ECharts battery panel.
+
 ## 2026-10-24 - INA219 current history merged and deployed
 
 - Owner explicitly requests PR #64 merge/deployment. Merge as **`8b92f2e`**;

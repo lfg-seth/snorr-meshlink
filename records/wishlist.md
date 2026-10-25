@@ -237,3 +237,31 @@ Requested behavior / future acceptance:
 - Future verification covers both roles, known/unknown models, longer labels and desktop/mobile layouts, with client cards retaining their existing presentation.
 
 Related parked work: [LOCAL-8 battery summary](#device-card-battery-summary-without-duplicate-sensor-readings). This is a separate card-header request; capturing it does not activate either implementation.
+
+## Apache ECharts telemetry graphs
+
+Local task: **LOCAL-10** in the [local tracker](../.scratch/TRACKER.md).
+
+Added 2026-10-24. Owner requests a ticket to use Apache ECharts for better
+portal graphs, with Grafana as the visual and interaction reference.
+Implementation is deferred until owner activation.
+
+Requested outcome / future acceptance:
+
+- Replace the hand-built battery-history SVG with Apache ECharts, establishing
+  a reusable telemetry chart component for later graph migrations.
+- Aim for readable Grafana-like panels: clear time/value axes and units, subtle
+  gridlines, consistent colors, crosshair tooltips with exact timestamps and
+  readings, zoom/reset controls and useful time-range selection.
+- Support legends and current/min/max summaries where useful. Multiple axes
+  may be used for different units when readable; do not assume unlike readings
+  belong on one scale.
+- Preserve existing history loading, refresh, sample timestamps, missing-report
+  gaps, isolated readings, error/empty states and truncated-history notices.
+  Missing data must not appear as zero or a continuous measured trend.
+- Verify desktop/mobile interaction, resizing, long histories and live/demo
+  separation before release. Keep existing backend and freshness semantics.
+
+References: [Apache ECharts](https://github.com/apache/echarts) and
+[multiple-axis example](https://echarts.apache.org/examples/en/editor.html?c=multiple-y-axis).
+Exact panel styling and later telemetry-series scope remain for implementation.
