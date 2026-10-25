@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-10-25 - G005/G006 added to live portal
+
+- Owner explicitly requests portal registration for the newly provisioned V3s.
+  Add G005 `!9ea039cc` and G006 `!b03d6790` as bench Backhaul records with
+  installed `2.7.26.6fea6aa`, verified hardware identities and three-minute
+  device/battery metadata. Leave location, battery capacity, antenna and
+  unconfirmed equipment unconfigured; retain disabled bench sensor monitoring.
+- Checksum-verified installed full live/demo backup precedes writes. Preserve
+  all 14 existing device records/configurations and exact historical row counts
+  while ingestion is paused; total devices becomes 16. Atomically add only
+  source/gateway/identity mappings and restart the worker. All four live/demo
+  API/worker services are active; database integrity/feed online pass.
+- Authenticated public HTTPS verifies both names, Backhaul roles, model/node
+  IDs, firmware/cadence and fresh health/SNNS through G001/G002. Both correctly
+  report Wi-Fi/direct MQTT disconnected with radio alive. No first battery
+  observation or map location at the checkpoint. No software release, radio,
+  credential or demo data change. Markdown link/whitespace checks pass.
+  [Backup, audit, exact registration and limits](../docs/operations/g005-g006-provisioning.md#live-portal-registration---2026-10-25).
+
+Next useful step: when the owner-selected network is available, verify each
+board's Wi-Fi/direct MQTT uplink and first battery observation; native phone,
+sustained cadence/runtime and field acceptance remain separate.
+
 ## 2026-10-25 - G005/G006 Heltec V3 gateway provisioning
 
 - Owner requests two connected V3s as G005/G006 with alternate Wi-Fi and

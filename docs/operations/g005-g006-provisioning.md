@@ -94,15 +94,50 @@ The documented `scripts/check-project.py docs` scope passes local inline links
 and whitespace checks. No firmware or repository tool source changes.
 
 
+## Live portal registration - 2026-10-25
+
+Owner separately requests adding G005/G006 to the live portal. Create exactly
+two **backhaul** device records with names **SNORR Gateway G005/G006**, verified
+node/hardware identities, HELTEC V3 model, installed firmware/target, bench
+status, and **3-minute device/battery metadata**. Leave position/site,
+battery chemistry/capacity, antenna and unconfirmed equipment unconfigured.
+Bench battery/sensor monitoring remains disabled; no field-ready claim.
+
+Add both radio IDs to the live worker's **infrastructure source**, **gateway**
+and **identity** mappings. Existing gateway/member mappings, credentials and
+unrelated worker settings are unchanged. Pause/restart the worker around the
+update; all four live/demo API/worker services are active afterward. No software
+release, schema migration, firmware change or demo data change.
+
+Before mutation, the installed complete live/demo backup is checksum-verified:
+**`meshlink-20261025T180545Z.tar.gz`**, SHA256 **`78f44edc968de8a9c21a4a8f1a73f80db4ce74bb8186bdf7a40bfabde4dceedb`**. Private audit at
+`/root/g005-g006-registration-20261025/apply-20261025T180545Z/` preserves original
+MQTT configuration, consistent pre-write database, intended/new records and
+exact historical table-count comparison while ingestion is paused. All **14**
+pre-existing device records retain identity/configuration; total becomes **16**.
+Historical rows are unchanged by registration. The worker config write preserves
+ownership/mode and checks that no concurrent edit occurred.
+
+Authenticated **public HTTPS** state verification at **18:08:14 UTC / 11:08:14
+Pacific** passes both names, Backhaul roles, model/node IDs, firmware and cadence.
+Fresh health/SNNS receipts for each new gateway arrive through **G001 and G002**,
+with accepted/duplicate outcomes preserved. Both new gateways show
+**Wi-Fi disconnected**, direct MQTT disconnected and **radioAlive=true**;
+this truthfully reflects the unavailable configured network. No battery
+observation is present at this verification checkpoint. Positions are absent,
+so no invented map marker is supplied. Database integrity and online feed pass.
+Native owner-phone rendering, first battery data, direct Wi-Fi/MQTT and sustained
+cadence remain separate checks. Markdown link/whitespace checks pass.
+
 ## Remaining acceptance
 
-Wi-Fi association, direct MQTT connection and authenticated production portal
-registration/ingestion are unverified. The requested unavailable network is not
+Wi-Fi association and direct MQTT connection remain unverified. Production
+registration and fresh authenticated health/SNNS ingestion pass above. The requested unavailable network is not
 a failed connection test. Local observation mappings do not register production
-gateways. No server mapping, portal record, device assignment, site installation,
-stock purchase or firmware source change is implied. Once the network is
-available, verify each gateway's association, MQTT uplink and intended production
-mapping/receipts. Runtime, power, sustained outage and field coverage remain
+gateways. The separately authorized registration above adds the production
+records/mappings without a device assignment, site installation, stock purchase
+or firmware source change. Once the network is available, verify each gateway's
+association and direct MQTT uplink/receipts. Runtime, power, sustained outage and field coverage remain
 separate gates.
 
 Private profiles, credentials, full flash backups, serial logs and observation

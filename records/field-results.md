@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-10-25 - G005/G006 live portal registration acceptance
+
+Owner-authorized registration adds both new V3s to the production source/gateway/
+identity mappings and Backhaul records with 3-minute metadata. Authenticated
+public HTTPS verifies both identities and fresh health/SNNS receipts via
+G001/G002: Wi-Fi/direct MQTT disconnected, radio alive. Existing device records
+and historical rows are preserved; complete pre-update backup, database integrity
+and active live/demo services pass. Location and first battery data remain
+unavailable at the checkpoint. This is ingestion/registration evidence, not
+Wi-Fi association, native phone, runtime or field acceptance.
+[Exact verification and recovery evidence](../docs/operations/g005-g006-provisioning.md#live-portal-registration---2026-10-25).
+
 ## 2026-10-25 - G005/G006 provisioning bench
 
 Existing V3s **G005 `!9ea039cc` / G006 `!b03d6790`** receive selected
