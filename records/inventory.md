@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-10-25 - Existing Heltec V3s assigned G005/G006
+
+Two existing connected Heltec V3 / ESP32-S3 boards with 8 MB flash are assigned
+**G005 `!9ea039cc`** (COM6, previously SNORR Unconfigured / MC00) and
+**G006 `!b03d6790`** (COM21, previously SNORR BASE01 / SB01). G005 is distinct
+from the dedicated sniffer `!9ea0432c`; retain that sniffer's separate identity.
+Owner-requested gateway firmware and alternate Wi-Fi provisioning use
+**heltec-v3-gateway / 2.7.26.6fea6aa** and a 180-second reporting baseline,
+preserving each board's PKI identity. No new purchase or ownership-total change;
+no external sensor, battery/antenna allocation or field site inferred. The supplied
+network is unavailable, with association/direct-uplink tests explicitly deferred
+by the owner. [Image, recovery, readback and limits](../docs/operations/g005-g006-provisioning.md).
+
 ## 2026-10-25 - R005 ordinary firmware and three-minute reporting
 
 Existing **R005 `!f95b5501`**, USB **`E93C5FF0F97DD76B`**, COM19, moves from

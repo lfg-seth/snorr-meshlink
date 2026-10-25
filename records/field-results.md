@@ -1,5 +1,18 @@
 # Field testing and tangible results
 
+## 2026-10-25 - G005/G006 provisioning bench
+
+Existing V3s **G005 `!9ea039cc` / G006 `!b03d6790`** receive selected
+**heltec-v3-gateway / 2.7.26.6fea6aa**, private pilot gateway profile and
+owner-supplied alternate Wi-Fi. Individual configuration/8 MB recovery backups,
+partition/active-app checks, application digest and complete intended-profile
+verification are documented in [the evidence](../docs/operations/g005-g006-provisioning.md).
+Names/radio/channel/MQTT provisioning are intentional; retain each board's own
+PKI identity. Three-minute reporting is a saved baseline subject to admission
+and jitter. The unavailable Wi-Fi network is explicitly accepted by the owner;
+association/direct MQTT and production registration/ingestion remain unverified.
+No field measurement, installation, new purchase or runtime claim is inferred.
+
 ## 2026-10-25 - R005 three-minute telemetry bench
 
 Owner-requested application-only update installs checked ordinary

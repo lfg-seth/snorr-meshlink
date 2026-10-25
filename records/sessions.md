@@ -1,5 +1,37 @@
 # Session log
 
+## 2026-10-25 - G005/G006 Heltec V3 gateway provisioning
+
+- Owner requests two connected V3s as G005/G006 with alternate Wi-Fi and
+  explicitly accepts that the SSID is unavailable for connection testing.
+  Identify G005 `!9ea039cc` on COM6 (old MC00/unconfigured) and G006 `!b03d6790`
+  on COM21 (old BASE01/SB01). G005 is distinct from dedicated sniffer `!9ea0432c`.
+- Back up complete individual profiles/security/channel settings and all 8 MB
+  flash per board. Select verified `heltec-v3-gateway / 2.7.26.6fea6aa`,
+  published/project-pinned source `6fea6aa68`, without rebuilding or changing
+  the public release. Match partitions/active app and flash application only;
+  retain each board's own PKI identity.
+- Apply names G005/G006, existing private pilot channel/MQTT uplink profile,
+  CLIENT/US/10 dBm/hop 3/slot 35, enabled TX, disabled MQTT downlinks, and
+  180-second device/SNNS/health baseline. Store supplied Wi-Fi privately; the
+  saved default bench network remains unchanged. External sensor enables and
+  GPS settings are preserved. NodeInfo retains the source-enforced 3600-second
+  minimum, distinct from telemetry.
+- Both application writes/separate digest checks and complete intended profiles
+  through explicit reboot pass, including exact stored owner-supplied Wi-Fi.
+  Firmware enforces the one-hour NodeInfo minimum; full equality passes after
+  accounting for that documented clamp. No factory reset or key rotation.
+  Fresh health and SNNS from both new gateways reach G001/G002; health flags
+  correctly report unavailable Wi-Fi/direct MQTT. Serial/MQTT handles close.
+  Markdown link/whitespace checks pass.
+  [Full verification, image/recovery hashes and acceptance limits](../docs/operations/g005-g006-provisioning.md).
+  No server mapping/portal registration or field installation. Preserve unrelated
+  hardware edits; credentials and raw profiles/logs stay ignored.
+
+Next useful step: when the selected network is available, verify Wi-Fi/direct
+MQTT and intended production gateway registration/ingestion. Sustained cadence,
+power/runtime, outage and field acceptance remain separate.
+
 ## 2026-10-25 - R005 three-minute telemetry update
 
 - Owner requests the same update for connected R005. Identify RAK4631

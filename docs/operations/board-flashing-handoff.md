@@ -1,5 +1,12 @@
 # Board flashing and configuration handoff
 
+2026-10-25 **G005 `!9ea039cc` / G006 `!b03d6790`** are provisioned as
+Heltec V3 gateways on **heltec-v3-gateway / 2.7.26.6fea6aa**, with their own
+security identities retained. CLIENT/private pilot channel, 10 dBm, enabled
+radio TX, 180-second device/SNNS/health baseline and disabled MQTT downlinks.
+Owner-supplied alternate Wi-Fi is saved privately; network unavailable for
+association/direct-uplink testing. [Exact image, backups, readback and remaining gates](g005-g006-provisioning.md).
+
 2026-10-25 **R005 `!f95b5501`** now runs verified ordinary **rak4631 /
 2.7.26.4c96b9b**, matching the reviewed R002/R004/R006 image. Complete intended
 profile, identity/keys/private channel persist through explicit reboot: CLIENT,
