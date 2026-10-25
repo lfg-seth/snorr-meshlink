@@ -1,5 +1,28 @@
 # Candidate sites and backhaul
 
+## 2026-10-25 - Valley overlook test candidates
+
+Owner asks for easy-access sites around Las Vegas for test nodes. This is a
+candidate shortlist; no site is selected, installed, permission-cleared or
+RF-tested. Public visitor access does not establish unattended equipment permission.
+
+| Sector | Candidate / access | Evidence and remaining question |
+| --- | --- | --- |
+| East | Hollywood Regional Park, 1650 S Hollywood Blvd; drive-up park/walking paths | [County](https://parkslocator.clarkcountynv.gov/Search/ParkDetail?parkId=43) confirms Frenchman foothills and skyline view. Inspect exact antenna horizon. |
+| Northwest | Lone Mountain; developed park access, uphill hike for summit | [County](https://parkslocator.clarkcountynv.gov/Search/ParkDetail?parkId=28), [health district](https://app.gethealthyclarkcounty.org/neon2nature/traildetails.php?trail_id=122). Summit is not drive-up. |
+| West/northwest | Buckskin Cliff Shadows, 3355 Cliff Shadows Pkwy; developed trailhead and foothill trails | [BLM planning evidence](https://eplanning.blm.gov/public_projects/2031812/200611006/20120188/251020168/DOI-BLM-NV-S020-2024-0007-EA__RRC%20-%20La%20Madre%20Foothills%20RAMP%20and%20EA.pdf). Exact city-facing test point/walk remain to survey. |
+| Southwest | Exploration Peak Park, 9600 S Buffalo Dr; short uphill trail | [Health district](https://app.gethealthyclarkcounty.org/neon2nature/traildetails.php?trail_id=99) lists natural surface, moderate difficulty and panoramic view. |
+| South | Anthem Hills Park / Anthem East Trailhead, 2256 N Reunion Dr; park plus uphill trails | [City](https://www.cityofhenderson.com/Home/Components/FacilityDirectory/FacilityDirectory/196/). Select a north-facing position above local obstructions; citywide coverage is unmeasured. |
+| Southeast | McCullough Hills Trailhead, 295 Mission Dr; trail access | [City](https://www.cityofhenderson.com/Home/Components/FacilityDirectory/FacilityDirectory/253/752). Survey skyline clearance; trailhead parking alone may be screened. |
+| North | Gass Peak area; conditional backcountry alternative | [FWS](https://www.fws.gov/refuge/desert) advises high-clearance 4WD and current-condition checks. No specific easy drive-up overlook verified; exclude summit from easy-access shortlist. |
+
+Do not assume Red Rock Overlook/High Point Overlook or Desert View Overlook
+provide clear valley links: [BLM](https://www.blm.gov/nevada/red-rock-canyon-nca/recreation)
+describes intervening mountains east of Red Rock; [GO Mt Charleston](https://www.gomtcharleston.com/desert-view-overlook/)
+describes a northbound desert-facing walk. Test exact horizons before allocation.
+Next: owner selects candidate sites and attended versus unattended test scope;
+verify access/placement permission and record measured results separately.
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

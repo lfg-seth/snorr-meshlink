@@ -31,7 +31,7 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 | [GH-3 — Forced relay and outage/local viewing](../records/tracking-import/github-3.md) | Bench | Ready: define a test excluding direct reception, then verify relay, backhaul recovery and useful offline viewing with agreed devices/criteria. Preserve radio permissions/profiles. |
 | [GH-7 — Off-host backup recovery](../records/tracking-import/github-7.md) | Software / decision | Triage: choose an authorized private destination/retention plan, then verify separate live/demo recovery beyond the current host. |
 | [GH-8 — Recurring high channel utilization](../records/tracking-import/github-8.md) | Bench | Triage: capture recurrence with existing receive-only tools before diagnosis or radio changes. |
-| [GH-18 — Measured field-pilot plan](../records/tracking-import/github-18.md) | Bench | Triage; needs bench/relay/power evidence, agreed devices/access/route and acceptance thresholds before a field run. |
+| [GH-18 — Measured field-pilot plan](../records/tracking-import/github-18.md) | Bench | Triage; [valley overlook candidates](../records/sites.md#2026-10-25---valley-overlook-test-candidates) researched at owner request. Next: select sites and attended/unattended scope; needs bench/relay/power evidence, agreed devices/access/route and acceptance thresholds before a field run. |
 
 ## Verify
 

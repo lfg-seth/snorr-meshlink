@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-10-25 - Valley overlook test-site shortlist
+
+- Owner requests easy-access viewpoints around Las Vegas for test nodes.
+  Record sector candidates and primary-source access evidence in
+  [sites](sites.md#2026-10-25---valley-overlook-test-candidates).
+- Distinguish drive-up foothill parks from uphill viewpoints and the rough-road
+  northern alternative. No coverage, placement permission, installation or
+  field measurements established; no radio configuration changes.
+- Preserve existing unrelated hardware edits. Documentation link/whitespace
+  validation is recorded in the chat handoff.
+
+Next useful step: select sites and attended/unattended scope, verify access and
+equipment permission, then agree a measured field run.
+
 ## 2026-10-25 - Member creation PR merged
 
 - Owner requests merging [PR #66](https://github.com/lfg-seth/snorr-meshlink/pull/66).
