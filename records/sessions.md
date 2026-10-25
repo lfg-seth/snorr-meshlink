@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-10-25 - Restore R004 three-minute telemetry after ROUTER change
+
+- Inspect the owner's R004 run: Southwest Ridge / R004, ROUTER and fixed point
+  saved, but strict comparison failed because role defaults reset reporting
+  and rebroadcast settings. Preserve that original failure evidence.
+- On the owner's repair request, independently identify R004 and back up its
+  current state. Restore only observed role-default changes from the intended
+  profile, including enabled device/environment/INA219 power at 180 seconds.
+  Retain ROUTER, names, exact fixed point, firmware, keys/channels and admins.
+- Complete intended-profile comparison passes after save and after explicit
+  reboot; independently read saved power via admin response. All serial handles
+  closed. Add private `repair-reconciliation.txt` beside the original run log.
+  [Recovery evidence](../docs/operations/r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25).
+- Changed-document/whitespace checks pass. No firmware/code/portal change or
+  fresh RF cadence measurement; preserve unrelated firmware submodule edits.
+  Publish records on `codex/r004-router-telemetry`.
+
+Next useful step: verify fresh R004 gateway/portal delivery and reconcile the
+verified private recovery log; fix generic role-default/readback handling before
+commissioning another node. Calibration and forced-relay/runtime gates remain.
+
 ## 2026-10-25 - Router long-name prompt and reconciliation text
 
 - Extend `set-repeater-role.py` to prompt for the Meshtastic long name before

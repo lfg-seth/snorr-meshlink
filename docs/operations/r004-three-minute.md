@@ -6,6 +6,50 @@ image. The earlier [INA219 captures](ina219-audit.md#r004-reinvestigation--2026-
 remain retained; physical bridge confirmation, calibrated accuracy and
 battery-only behavior remain unresolved. This update does not close GH-4.
 
+## ROUTER and three-minute profile restoration - 2026-10-25
+
+Owner runs the prompted setup with long name **Southwest Ridge**, preserving
+short name **R004**, selecting **ROUTER**, a private fixed point and B002 admin.
+The write saves those selections but fails its full comparison: role defaults
+replace LOCAL_ONLY with CORE_PORTNUMS_ONLY, device telemetry with 43,200 seconds
+and environment/power/standard-neighbor intervals with unset defaults. The
+initial failed result is retained; a saved readback file alone is not a pass.
+
+Owner explicitly requests restoring three-minute telemetry. Independently
+identify **`!77fdb9f1` / RAK4631 / USB `820C9B4F0C2D7675`**, now
+`/dev/ttyACM1`, and take another full private backup. Keep ROUTER active while
+restoring only the observed role-default changes: original rebroadcast mode,
+saved sleep setting, telemetry intervals and standard-neighbor interval.
+Firmware stays **2.7.26.4c96b9b**; no reflash, identity reset or other board write.
+
+Full intended-profile comparison passes after the settings reboot and again
+after an explicit reboot, final capture **2026-10-25T20:54:41.406611+00:00**:
+
+- **Device, environment and INA219 power telemetry: enabled, 180 seconds each.**
+- **Southwest Ridge / R004, ROUTER**, exact owner-entered fixed coordinates
+  and fixed-position enablement persist.
+- Original **LOCAL_ONLY**, **21,600-second** standard NeighborInfo, enabled
+  over-LoRa neighbor collection and saved **180-second SNNS baseline** persist.
+- Complete intended local/module/channel bytes, keys, owner flags, existing
+  admins plus B002 match. Firmware metadata differs from the original intended
+  snapshot only by its expected ROUTER announcement.
+
+Read actual saved power config through an independent admin response, avoiding
+the role-derived sleep value substituted in the USB PhoneAPI dump. Serial
+connections are closed. Private original and recovery evidence is under
+`private/bench/R004-role-20261025T204546095434Z/`; original `reconciliation.txt`
+stays failed, and **`repair-reconciliation.txt`** records the successful recovery
+for later portal reconciliation. Final readbacks:
+`repair-verify-20261025T205355491542Z.json` and
+`repair-verify-20261025T205440067617Z.json`.
+
+This supersedes the CLIENT role in the October 24 measurements below. Fresh
+RF/MQTT/portal delivery and cadence are not remeasured in this repair; portal
+name/location/cadence metadata remain unreconciled here. Physical calibration,
+runtime and field/forced-relay acceptance remain open. The general setup
+script's role-default/readback fixes remain a separate follow-up before more
+nodes are commissioned.
+
 ## Image and preservation
 
 - Independently identify **RAK4631 `!77fdb9f1`**, USB serial

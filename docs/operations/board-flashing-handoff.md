@@ -1,5 +1,16 @@
 # Board flashing and configuration handoff
 
+2026-10-25 **R004 `!77fdb9f1`** now retains **Southwest Ridge / R004,
+ROUTER**, owner-entered fixed point and B002 admin on unchanged
+**2.7.26.4c96b9b**. Owner-run role change reset reporting defaults; subsequent
+authorized restoration passes complete intended-profile comparison through
+explicit reboot with device/environment/INA219 power enabled at **180 seconds**,
+LOCAL_ONLY and standard NeighborInfo **21,600 seconds**. Keys, channels and
+other settings are preserved. Fresh gateway/portal delivery is unmeasured in
+this recovery; generic setup-script role-preservation fixes remain pending.
+[Recovery and private log reference](r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25).
+This supersedes the earlier R004 CLIENT profile below.
+
 2026-10-24 **G001/G002/G003/G004** now run checked **2.7.26.6fea6aa**
 from published **6fea6aa68**: V3 target for G001–G003, OLED V4 target for
 replacement G004 **`!699c2ed8`**. CLIENT, **LoRa TX enabled**, over-LoRa SNNS,

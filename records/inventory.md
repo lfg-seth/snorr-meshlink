@@ -1,5 +1,17 @@
 # Hardware inventory
 
+## 2026-10-25 - R004 Southwest Ridge three-minute ROUTER profile
+
+Existing RAK4631 **`!77fdb9f1` / USB `820C9B4F0C2D7675`** now retains
+**Southwest Ridge / R004, ROUTER**, private fixed point and B002 admin on
+unchanged **2.7.26.4c96b9b**. Restore role-reset device/environment/INA219 power
+reporting to **180 seconds**, original rebroadcast/neighbor/sleep settings;
+complete intended-profile comparison passes through explicit reboot. Keys,
+channels and other settings match. No stock, equipment allocation, purchase
+or portal metadata change. Fresh delivery, calibration/runtime and physical
+installation remain unverified here.
+[Recovery evidence](../docs/operations/r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25).
+
 ## 2026-10-25 - R005 equipment confirmed
 
 Owner confirms **Reverence / R005 has four 18650 cells, three solar panels

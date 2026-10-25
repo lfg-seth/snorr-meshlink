@@ -1,5 +1,19 @@
 # Field testing and tangible results
 
+## 2026-10-25 - R004 ROUTER telemetry recovery
+
+Owner-run ROUTER/name/location/admin setup saves **Southwest Ridge / R004**
+but fails full preservation as firmware role defaults reset reporting. The
+owner's requested recovery restores enabled device/environment/INA219 power
+telemetry to **180 seconds** and the original rebroadcast/neighbor/sleep
+settings while retaining ROUTER, exact private point, owner identity and admins.
+Complete intended local/module/channel/key comparison passes after save and
+again after explicit reboot; serial closed. Firmware remains **2.7.26.4c96b9b**.
+This is saved-configuration acceptance only: no new RF/gateway/portal cadence,
+calibration, runtime, placement or forced-relay measurement. Original failed
+log and supplemental successful recovery log are retained privately.
+[Exact evidence](../docs/operations/r004-three-minute.md#router-and-three-minute-profile-restoration---2026-10-25).
+
 ## 2026-10-25 - R005 Reverence metadata verification
 
 Owner-supplied placement/name saved in live database and authenticated portal
