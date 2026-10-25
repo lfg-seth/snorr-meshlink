@@ -1,5 +1,45 @@
 # Candidate sites and backhaul
 
+## Infrastructure names and map locations - 2026-10-25
+
+Owner supplies names and exact coordinates for **R001–R009 and G001–G004**.
+All thirteen now match the request in authenticated live portal state. Update
+nine existing infrastructure configurations; preserve their record IDs, radio
+identities, equipment, cadence, monitoring, downlink and other configuration.
+Stable R/G identifiers remain separate from descriptive portal names. No radio
+names/settings or application release change.
+
+Create **R005/R007/R008/R009** as planned site entries with no assigned hardware
+or radio identity, no readings and all missing-report monitoring disabled.
+Owner explicitly confirms returning R005 as a planned entry after its prior
+decommissioning; this does not reactivate or reassign its old physical radio.
+Historical R005 observations and its existing archive/ingestion mapping remain
+unchanged. Hardware identity/history and mapping reconciliation must precede
+commissioning any replacement under that ID. R007–R009 hardware is unknown;
+these are site placeholders, not additional inventoried or installed radios.
+
+Exact names, coordinates, requested input, before/after configurations and
+consistent database snapshot remain private under
+`/root/meshlink-maintenance/site-names-20261025/20261025T154550Z/`.
+Local input/helper: ignored `private/location-update-20261025/`.
+Pre-change verified backup: `meshlink-20261025T154414Z.tar.gz`, SHA-256
+`740bca295a5ed8be03282c3ccef619246735ea6c04b4f28fea1d11919912fe0f`.
+
+Post-change backup: `meshlink-20261025T154610Z.tar.gz`, SHA-256
+`9fc2185798f0cc04d6a904af6d1d51bc0452c4a4b972b2bfe48ce0a6ec619577`.
+Exact backed-up names/coordinates/configurations and all fourteen device IDs
+pass; operational/history table counts do not decrease. Public HTTPS and
+protected routes, authentication throttling and isolated database/API recovery
+pass. The installed verifier assumes radio mappings for all infrastructure;
+a private wrapper permits only these four verified planned placeholders,
+without modifying the installed verifier or MQTT mappings. Evidence log:
+`/root/meshlink-maintenance/site-names-20261025/verification.log`.
+Native owner-phone presentation remains a separate visual check.
+
+This supersedes prior requested map positions, including R006's pending map
+write below. Cadence reconciliation remains separate. Site permission,
+installation, hardware assignment, coverage and runtime are unverified.
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

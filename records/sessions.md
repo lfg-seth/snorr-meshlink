@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-10-25 - Infrastructure names and planned map locations
+
+- Apply all thirteen owner-provided infrastructure names and coordinates to
+  authenticated live portal state. [Evidence and private references](sites.md#infrastructure-names-and-map-locations---2026-10-25).
+- Preserve nine existing infrastructure identities and other configuration.
+  Add R005/R007/R008/R009 as planned entries with unknown hardware, no radio
+  identities/readings and missing-report monitoring disabled. Owner explicitly
+  confirms returning decommissioned R005 as planned; its historical evidence
+  and existing mapping remain preserved, requiring reconciliation before a
+  replacement is commissioned. Hardware counts and radio settings do not change.
+- Pre/post private backups, exact backed-up metadata, nondecreasing operational
+  history, database integrity, authenticated names/coordinates, public HTTPS
+  access boundaries and isolated API/database recovery pass. The task-local
+  verifier permits only the four confirmed planned entries outside radio
+  mappings; installed source/configuration and application version stay intact.
+- Publish sanitized records on `codex/infrastructure-sites`; keep names,
+  coordinates and before/after snapshots private. Preserve unrelated hardware
+  record edits in the original checkout.
+
+Next useful step: owner-phone map/card check. Hardware assignment/commissioning
+of planned entries, R006 cadence reconciliation and site/field acceptance remain
+separate; this update does not establish installation or site permission.
+
 ## 2026-10-25 - B002 runtime evidence recorded
 
 - Verify existing B002 production telemetry with read-only SQLite over SSH;
