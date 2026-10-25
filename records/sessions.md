@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-10-25 - Member creation PR merged
+
+- Owner requests merging [PR #66](https://github.com/lfg-seth/snorr-meshlink/pull/66).
+  Portal CI, Backend CI and Project record checks all pass for source
+  `311601c19f3ec40144a583c5563f74cbb86176e0`. GitHub confirms merge commit
+  `9bad77cc6fad967ca5b11bc925f80c6a28cd7050` on `main`.
+- Fast-forward this checkout to the merged `origin/main`, preserving unrelated
+  hardware edits and the separate worktree that owns local `main`. Update the
+  member-creation handoff to reflect completed source merge.
+  No release version/tag, production deployment or live account creation.
+
+Next useful step: select the versioned manual deployment, then verify **Users →
+Add member** and tracker assignment on the authenticated owner phone.
+
 ## 2026-10-25 - Add members without managing internal keys
 
 - Owner requests fixing manual member-key provisioning. Add admin-only **Users →
