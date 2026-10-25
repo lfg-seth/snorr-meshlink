@@ -1,5 +1,32 @@
 # Session log
 
+## 2026-10-25 - R001 three-minute telemetry update
+
+- Owner requests flashing connected R001 and three-minute telemetry. Identify
+  RAK4631 `!a65601b3`, USB `AA474A4710B85C2C`, COM8, previously `2.7.26.0b65f2e`.
+  Install checksum-verified ordinary `rak4631 / 2.7.26.4c96b9b`, matching the
+  reviewed R002/R004/R006 image. Later published `6fea6aa68` adds Wi-Fi gateway
+  health/V4 changes; retain the existing project source pin and public release.
+- Fresh private complete backup, independent post-flash equality and complete
+  intended-profile comparison through explicit reboot pass. Preserve identity,
+  keys, private channel, radio settings and CLIENT role. Device and existing
+  temperature/humidity reporting are enabled at 180 seconds; power stays disabled.
+  Over-LoRa SNNS uses the saved 180-second baseline with jitter/admission;
+  standard NeighborInfo remains 21,600 seconds. Serial is closed.
+- Two automatic device packets and two same-boot SNNS reports reach each of
+  G001/G002. SNNS source gap is 195 seconds; device measurements are 240 seconds
+  apart despite independently reverified saved 180 seconds. Cause remains unknown.
+  No fresh environment packet is received; sensor presence/wiring is unconfirmed.
+  Markdown link/whitespace checks pass; serial/MQTT close.
+  [Image, live delivery, checks and limits](../docs/operations/r001-three-minute.md).
+  No other board or server metadata changes. Preserve unrelated hardware edits.
+
+Next useful step: confirm R001 sensor presence/wiring and a fresh environment
+report, verify sustained device cadence, then authenticated portal acceptance.
+Sustained operation,
+sensor calibration, runtime and field acceptance remain separate.
+
+
 ## 2026-10-25 - R003 three-minute telemetry update
 
 - Owner requests flashing connected R003 and three-minute telemetry. Identify

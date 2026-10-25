@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-10-25 - R001 three-minute telemetry bench
+
+Owner-requested application-only ordinary RAK update installs checked
+**2.7.26.4c96b9b** on **R001 `!a65601b3`**. Complete intended profile, keys,
+private channel and identity pass through explicit reboot: CLIENT, device and
+existing environment telemetry enabled at **180 seconds**, power disabled,
+over-LoRa SNNS with the saved 180-second baseline and standard NeighborInfo
+21,600 seconds. Sensor operation is assessed in the linked capture evidence.
+
+Validating-TLS MQTT observes fresh reports after final reboot verification.
+Received types, cadence and measured values are in [the bench evidence](../docs/operations/r001-three-minute.md).
+Authenticated portal/cadence metadata, sustained operation, physical calibration,
+runtime, forced relay and field coverage remain unverified. No installation,
+stock quantity change or additional sensor is inferred.
+
+
 ## 2026-10-25 - R003 three-minute telemetry bench
 
 Owner-requested application-only ordinary RAK update installs checked
