@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-10-25 - B002 runtime evidence recorded
+
+- Verify existing B002 production telemetry with read-only SQLite over SSH;
+  record [the endurance observation](../docs/operations/b002-runtime-20261025.md)
+  and link it from field results and the current tracker. Latest received
+  source uptime is **19:51:11**, with 339 same-boot SNNS reports and battery
+  voltage **4.204 to 3.601 V** across 346 stored observations.
+- Preserve the owner report of over 20 hours on one charge and no BLE/Wi-Fi
+  connections. Earlier records span over 20 hours across boots; continuous
+  uptime over 20 hours is not yet verified. Connection-related savings remain
+  a hypothesis; GPS/runtime acceptance and shutdown endurance remain open.
+- Documentation whitespace/local-link checks pass. Preserve unrelated hardware
+  edits; publish only these records on `codex/b002-runtime-note`. No board,
+  profile, firmware or service change.
+
+Next useful step: retain a later same-boot uptime checkpoint and battery-only
+end time with GPS freshness and any interruptions recorded separately.
+
 ## 2026-10-24 - Apache ECharts graph ticket
 
 - Capture **LOCAL-10** in the [wishlist](wishlist.md#apache-echarts-telemetry-graphs)

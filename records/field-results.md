@@ -1,5 +1,19 @@
 # Field testing and tangible results
 
+## 2026-10-25 - B002 battery endurance observation
+
+Owner reports over 20 hours on one charge without BLE/Wi-Fi connections.
+Read-only production verification at 15:45:01Z confirms latest-boot SNNS
+uptime **71,471 seconds (19 h 51 m 11 s)**, 339 stored reports on that boot
+and 346 battery observations from **4.204 to 3.601 V**. Earlier activity spans
+more than 20 hours across boots; that is not continuous uptime. Single-charge
+and BLE conditions remain owner-observed; the connection-state explanation
+is a hypothesis. [Measurements, timestamps and limits](../docs/operations/b002-runtime-20261025.md).
+
+This exceeds the 4/12-hour duration thresholds numerically, but does not close
+phone-free GPS/runtime acceptance, establish remaining capacity or measure
+runtime until shutdown. No hardware, profiles or services changed.
+
 ## 2026-10-24 - Four-gateway Wi-Fi-loss fallback bench
 
 G001/G002/G003 Heltec V3 and replacement G004 Heltec V4 run checked
