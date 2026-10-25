@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-25 - R005 Reverence placement
+
+- Owner requests R005 fixed placement, ROUTER, B002 admin and Reverence long
+  name while keeping its short name. Host USB enumeration matches recorded
+  R005; the script's read-only attempt fails at serial open with permission
+  denied before any radio read/write. Owner serial-access grant requested.
+- Complete the independent live database/portal update: Reverence and supplied
+  private coordinates, preserved R005 short name and other metadata/devices.
+  Full backup hash, consistent database copy and authenticated portal state
+  retained privately. [Evidence](../docs/operations/r005-reverence.md).
+- Existing unrelated firmware submodule changes preserved; no firmware flash,
+  radio mutation or measured field acceptance claimed.
+
+Next useful step: grant serial access, run backup/apply and long-name change,
+verify complete profile/location/admin through reboot, then fresh delivery.
+
 ## 2026-10-25 - RAK script main integration and branch audit
 
 - Owner selects merging the RAK role/location/B002 admin script to main and

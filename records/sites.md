@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+2026-10-25 — Owner reports placing **R005** at a newly supplied private point,
+named **Reverence**. Live database and authenticated portal metadata now match
+the supplied point/name; short name R005 and all other devices' configuration
+are preserved. Exact coordinates and audit remain private on the portal host.
+Radio configuration is pending Linux serial access; physical installation and
+coverage have not been independently measured.
+[Verification and next step](../docs/operations/r005-reverence.md).
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

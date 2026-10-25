@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## 2026-10-25 - R005 Reverence metadata verification
+
+Owner-supplied placement/name saved in live database and authenticated portal
+state, preserving short name R005 and other devices' configuration. Radio
+identity matches USB enumeration, but serial access prevents configuration;
+no fresh RF receipt, measured coverage, relay or runtime result is claimed.
+[Audit and remaining checks](../docs/operations/r005-reverence.md).
+
 ## 2026-10-24 - Four-gateway Wi-Fi-loss fallback bench
 
 G001/G002/G003 Heltec V3 and replacement G004 Heltec V4 run checked

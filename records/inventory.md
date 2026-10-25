@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-10-25 - R005 Reverence placement request
+
+Existing RAK4631 **R005 `!f95b5501`**, USB **E93C5FF0F97DD76B**, is identified
+on the host at `/dev/ttyACM1`. Portal/database display name is now **Reverence**
+with owner-supplied private location and preserved short name R005. Serial
+permissions currently block the requested radio role/location/admin/name
+configuration; no new flashed image or saved radio profile is claimed.
+Stock/equipment quantities unchanged. [Evidence](../docs/operations/r005-reverence.md).
+
 ## 2026-10-24 - B002 latest firmware and three-minute reporting
 
 Existing original OLED V4 **B002 `!699ca878`**, USB
