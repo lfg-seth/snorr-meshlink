@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-10-25 - MeshLink 0.1.5 member creation deployed
+
+- Owner selects deployment of merged PR #66. Publish **0.1.5**, clean source
+  `b3eba74139bb519068631aeaf88358179415d262` and immutable `meshlink-v0.1.5`.
+  Exact-source Linux checks pass: 90 backend, 63 portal, TypeScript/live build.
+- Deploy matching backend/portal/root metadata with verified pre/final backups,
+  unchanged protected-state hashes, retained rollback and ten byte-matched
+  public assets. No schema migration, radio or private-configuration change.
+- Initial post-recovery inventory mismatch is traced to concurrent B003
+  registration. Preserve its new record, take a current-inventory backup and
+  pass final live/demo isolated recovery. The member/login/assignment flow,
+  login, duplicate rollback and role restriction pass on an isolated copy of
+  the final backup; operational accounts/assignments remain unchanged.
+- Authenticated live feed, public boundaries/throttling and fresh MQTT pass;
+  all six services are active. [Release, backup hashes and limitations](../docs/operations/member-management.md#meshlink-015-deployment---2026-10-25).
+  Preserve unrelated hardware edits in the original checkout.
+
+Next useful step: owner-phone **Users → Add member** acceptance and assignment
+of the intended person's node. Source publication, tag and deployment are now
+complete; no real user account was created as a test.
+
 ## 2026-10-25 - Member creation PR merged
 
 - Owner requests merging [PR #66](https://github.com/lfg-seth/snorr-meshlink/pull/66).
