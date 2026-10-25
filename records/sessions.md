@@ -1,5 +1,27 @@
 # Session log
 
+## 2026-10-25 - R003 three-minute telemetry update
+
+- Owner requests flashing connected R003 and three-minute telemetry. Identify
+  RAK4631 `!05237743`, USB `397EBE4F36E1F126`, COM14, previously `2.7.26.0b65f2e`.
+  Install checksum-verified ordinary `rak4631 / 2.7.26.4c96b9b`, matching the
+  reviewed R002/R004/R006 image. Later published `6fea6aa68` adds Wi-Fi gateway
+  health/V4 changes; retain the existing project source pin and public release.
+- Fresh private complete backup, independent post-flash equality and complete
+  intended-profile comparison through explicit reboot pass. Preserve identity,
+  keys, private channel, radio settings and CLIENT role. Device and existing
+  temperature/humidity reporting are enabled at 180 seconds; power stays disabled.
+  Over-LoRa SNNS uses the saved 180-second baseline with jitter/admission;
+  standard NeighborInfo remains 21,600 seconds. Serial is closed.
+- Two automatic reports each of device/environment/SNNS reach both G001/G002:
+  device/environment source gaps 180 seconds, SNNS source gap 195 seconds.
+  Documented Markdown link/whitespace checks pass; serial/MQTT closed.
+  [Image, live delivery, checks and limits](../docs/operations/r003-three-minute.md).
+  No other board or server metadata changes. Preserve unrelated hardware edits.
+
+Next useful step: authenticated portal cadence/receipt acceptance; sustained
+operation, sensor calibration, runtime and field acceptance remain separate.
+
 ## 2026-10-25 - Valley overlook test-site shortlist
 
 - Owner requests easy-access viewpoints around Las Vegas for test nodes.

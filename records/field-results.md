@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-10-25 - R003 three-minute telemetry bench
+
+Owner-requested application-only ordinary RAK update installs checked
+**2.7.26.4c96b9b** on **R003 `!05237743`**. Complete intended profile, keys,
+private channel and identity pass through explicit reboot: CLIENT, device and
+existing environment telemetry enabled at **180 seconds**, power disabled,
+over-LoRa SNNS with the saved 180-second baseline and standard NeighborInfo
+21,600 seconds. AHT sensor initialization/open succeeds.
+
+Fresh automatic device, temperature/humidity and SNNS packets reach **G001 and
+G002** after final reboot verification through validating-TLS MQTT. Exact cadence
+and measured values are in [the bench evidence](../docs/operations/r003-three-minute.md).
+Authenticated portal/cadence metadata, sustained operation, physical calibration,
+runtime, forced relay and field coverage remain unverified. No installation,
+stock quantity change or additional sensor is inferred.
+
 ## 2026-10-24 - Four-gateway Wi-Fi-loss fallback bench
 
 G001/G002/G003 Heltec V3 and replacement G004 Heltec V4 run checked

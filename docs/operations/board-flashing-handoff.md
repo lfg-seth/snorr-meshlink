@@ -1,5 +1,13 @@
 # Board flashing and configuration handoff
 
+2026-10-25 **R003 `!05237743`** now runs verified ordinary **rak4631 /
+2.7.26.4c96b9b**, matching the reviewed R002/R004/R006 image. Complete intended
+profile, identity/keys/private channel persist through explicit reboot: CLIENT,
+enabled device/environment telemetry **180 seconds**, power telemetry disabled,
+and over-LoRa SNNS with the saved **180-second baseline**. Standard NeighborInfo
+remains 21,600 seconds. This supersedes older R003 firmware/cadence entries.
+[Image, preservation, delivery and limits](r003-three-minute.md).
+
 2026-10-24 **G001/G002/G003/G004** now run checked **2.7.26.6fea6aa**
 from published **6fea6aa68**: V3 target for G001–G003, OLED V4 target for
 replacement G004 **`!699c2ed8`**. CLIENT, **LoRa TX enabled**, over-LoRa SNNS,

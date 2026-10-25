@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-10-25 - R003 ordinary firmware and three-minute reporting
+
+Existing **R003 `!05237743`**, USB **`397EBE4F36E1F126`**, COM14, moves from
+`2.7.26.0b65f2e` to verified ordinary **rak4631 / 2.7.26.4c96b9b**. Complete
+intended profile/keys/private channel persist through explicit reboot: CLIENT,
+device and existing environment telemetry enabled at **180 seconds**,
+power telemetry disabled, over-LoRa SNNS using the saved 180-second baseline.
+No sensor, stock quantity, site, battery/antenna allocation or purchase change.
+[Image, profile, delivery and limits](../docs/operations/r003-three-minute.md).
+
 ## 2026-10-24 - B002 latest firmware and three-minute reporting
 
 Existing original OLED V4 **B002 `!699ca878`**, USB
