@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-10-25 - Linux RAK role correction tool
+
+- Owner asks how to change the RAK relays from CLIENT to ROUTER, including
+  remote/CLI options, and requests a Linux script published to GitHub.
+  Add [procedure](../docs/operations/repeater-role-change.md) and
+  `scripts/bench/set-repeater-role.py` on `codex/repeater-role-cli`.
+- Default is read-only backup; `--apply` changes only the selected role, with
+  CLIENT rollback available. Reuse inventoried USB/node/hardware validation,
+  private full snapshots and complete intended-profile comparison; independently
+  reconnect after save and explicit reboot. Never retry ambiguous writes.
+  Existing updater's CLIENT policy is documented and preserved.
+- Explain PKI-authorized remote CLI commands and the current admin bench's
+  authorization/ACK limits. No fleet key enrollment, board write, firmware
+  flash, MQTT downlink change or deployment performed. Preserve unrelated
+  pre-existing working-tree edits.
+- Validation: 43 offline bench tests pass with pinned Meshtastic SDK 2.7.11;
+  help/CLI parsing and documentation/whitespace checks pass. Initial default
+  Python run lacked the SDK and hit sandbox temp-directory permissions;
+  rerun uses the existing project venv and ignored workspace temp directory.
+  Linux/hardware execution, saved role and live RF/portal acceptance remain
+  unverified.
+
+Next useful step: fetch the branch on the Linux laptop, connect one selected
+RAK, inspect the read-only backup and run `--apply`; retain evidence and check
+fresh reporting before repeating on the remaining selected relays.
+
 ## 2026-10-25 - G005/G006 added to live portal
 
 - Owner explicitly requests portal registration for the newly provisioned V3s.
