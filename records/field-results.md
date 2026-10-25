@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-10-25 - R005 three-minute telemetry bench
+
+Owner-requested application-only update installs checked ordinary
+**rak4631 / 2.7.26.4c96b9b** on existing **R005 `!f95b5501`**. Complete
+intended profile, identity/keys and private channel pass through explicit reboot:
+CLIENT, device and existing environment telemetry enabled at **180 seconds**,
+power disabled, over-LoRa SNNS with saved 180-second baseline, standard
+NeighborInfo 21,600 seconds. The ordinary target retains removal of the historical
+GPIO31 HIGH override; physical circuit state/current remain unverified.
+
+[Fresh gateway reception, cadence, measured values and limits](../docs/operations/r005-three-minute.md).
+This updates the radio; R005's prior removal from active portal inventory remains
+in effect. No server record recreation, field installation, stock quantity change
+or sensor addition. Calibration, runtime and sustained/forced-relay/field gates
+remain separate.
+
 ## 2026-10-25 - R001 three-minute telemetry bench
 
 Owner-requested application-only ordinary RAK update installs checked

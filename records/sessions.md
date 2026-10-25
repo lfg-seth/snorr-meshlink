@@ -1,5 +1,32 @@
 # Session log
 
+## 2026-10-25 - R005 three-minute telemetry update
+
+- Owner requests the same update for connected R005. Identify RAK4631
+  `!f95b5501`, USB `E93C5FF0F97DD76B`, COM19, previously `2.7.26.0b65f2e`.
+  Install checksum-verified ordinary `rak4631 / 2.7.26.4c96b9b`, matching the
+  reviewed R003/R001 update. Preserve the existing project source pin/release.
+- Fresh complete private backup, independent post-flash equality and complete
+  intended-profile comparison through explicit reboot pass. Preserve identity,
+  keys, private channel, radio settings and CLIENT role. Device and existing
+  environment telemetry enabled at 180 seconds; power stays disabled. Over-LoRa
+  SNNS uses the saved 180-second baseline, standard NeighborInfo 21,600 seconds.
+- Two device and two SNNS packets reach each of G001/G002; source gaps are
+  240/195 seconds despite saved 180-second telemetry. A fresh environment packet
+  reaches both; later local AHT readings accompany an explicit >25% channel-util
+  RF skip. Device-gap cause remains unknown; sustained cadence is unaccepted.
+  A serial cleanup error after reboot is resolved by independent readback,
+  without reflashing. Markdown link/whitespace checks pass; serial/MQTT closed.
+  [Delivery, validation and limits](../docs/operations/r005-three-minute.md).
+  No other board/server metadata change. R005 remains removed from active portal
+  inventory; this updates its radio without recreating that record. Historical
+  GPIO31 HIGH override remains absent; physical circuit/load unverified.
+  Preserve unrelated hardware edits.
+
+Next useful step: sustained cadence/channel-utilization check; any future portal
+recommissioning/field assignment needs owner selection. Calibration/runtime and
+sustained/forced-relay/field acceptance remain separate.
+
 ## 2026-10-25 - R001 three-minute telemetry update
 
 - Owner requests flashing connected R001 and three-minute telemetry. Identify
