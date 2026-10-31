@@ -59,6 +59,11 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 ## Deferred
 
+SD logging requirements interview: [LOCAL-10](pilot/issues/29-gateway-sd-logging.md).
+Gateway V4s plus two V3s; comprehensive offline logs and rotation, optional storage
+health. Next: settle capture/full-card policy and selected boards, then verify
+per-board pinouts. Implementation deferred.
+
 Owner activation is required before research, design, implementation or testing. Details live in the linked import or [wishlist](../records/wishlist.md); migration and mentioning an idea keep it parked.
 
 | Task | Hold / future outcome |

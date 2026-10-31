@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-10-31 - Gateway SD logging ticket
+
+- Captured [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md): gateway
+  V4s and two V3s, comprehensive offline logs/rotation and optional storage health.
+- Owner confirms FAT32 cards and 3v3/CS/MOSI/CLK/MISO/GND adapters. Counts, board
+  assignments and card tests unknown. No wiring, flashing or implementation.
+- Read-only variant review finds radio/peripheral pin conflicts and distinct
+  V4/R8 targets; require verified wiring for each selected physical board.
+- Next: requirements interview, then selected-board pinout verification.
+  Preserve unrelated working-tree changes. Documentation-only validation.
+
 ## 2026-10-25 - RAK fixed location and B002 admin script extension
 
 - Owner extends the Linux script request to prompt for decimal coordinates,
