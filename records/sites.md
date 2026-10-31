@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-10-31 - Primary fire-department gateways
+
+Owner plans one of two newly purchased screenless/external-Wi-Fi Heltec V4s as
+primary gateway at each fire department. Exact site/device mapping, installation
+permission, Wi-Fi provisioning, placement, power and coverage remain unverified.
+This records intended use, not completed installation or site authorization.
+Two V3s are intended for recording; recorder locations remain unspecified.
+Evidence: owner conversation 2026-10-31;
+[LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md).
+
 ## 2026-10-25 - Valley overlook test candidates
 
 Owner asks for easy-access sites around Las Vegas for test nodes. This is a

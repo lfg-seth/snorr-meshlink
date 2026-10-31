@@ -60,9 +60,10 @@ Keep implementation, release, native presentation, live delivery and field accep
 ## Deferred
 
 SD logging requirements interview: [LOCAL-10](pilot/issues/29-gateway-sd-logging.md).
-Gateway V4s plus two V3s; comprehensive offline logs and rotation, optional storage
-health. Next: settle capture/full-card policy and selected boards, then verify
-per-board pinouts. Implementation deferred.
+Two new screenless/external-Wi-Fi V4 primary gateways (one per fire department)
+plus two repurposed V3 recorders. Capture scope, overwrite-oldest rotation and
+offline export accepted; health broadcasts optional. Next: settle V3 RF role,
+retention/loss targets and identify boards for pinouts. Implementation deferred.
 
 Owner activation is required before research, design, implementation or testing. Details live in the linked import or [wishlist](../records/wishlist.md); migration and mentioning an idea keep it parked.
 

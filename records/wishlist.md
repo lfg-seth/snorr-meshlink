@@ -8,6 +8,12 @@ data during outages and rotation. Storage health broadcasts optional. FAT32 card
 and six-pin SPI adapters owned; quantities/tests unknown. Requirements interview
 selected; implementation deferred. Tracker owns status.
 
+Owner clarification: two newly purchased screenless V4s with external Wi-Fi
+connections become primary gateways, one at each fire department; two existing
+V3s become recorders. Owner accepts comprehensive capture, oldest-file overwrite,
+continued operation through card failures and offline reconstruction/export first.
+Exact boards, V3 RF role, retention/loss targets and pinouts remain open.
+
 These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
 With permanent local tracking accepted on 2026-10-23, current status is maintained in the [local tracker](../.scratch/TRACKER.md) under the [local workflow](../docs/operations/local-tracking.md). Capture each new requested idea here and add one deferred tracker line linked to its section. This file preserves the owner's requested ideas and deferral decisions. Existing GitHub links below are historical references; issues and the Project board remain historical references, while `main` uses local tracking.

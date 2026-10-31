@@ -1,5 +1,13 @@
 # Project finances
 
+## 2026-10-31 - Owner-reported gateway purchase
+
+Owner confirms purchase of two screenless Heltec V4s with external Wi-Fi antenna
+connections for primary fire-department gateways. Amount paid, currency, purchase
+date, payer, taxes/shipping and receipt remain unknown; no balance or expenditure
+total calculated. Evidence: owner conversation 2026-10-31 and
+[LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md).
+
 Updated: 2026-10-12. USD unless a row states otherwise. A historical purchase list has been supplied, but payment dates, receipts, actual amounts paid, and funding are unconfirmed. Empty cash records are **unknown**, not evidence of zero spending.
 
 ## Purchase-list baseline

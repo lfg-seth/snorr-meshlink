@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-10-31 - SD logging scope clarified
+
+- Owner confirms two purchased screenless/external-Wi-Fi V4 primary gateways,
+  one per fire department, and two existing V3s to repurpose as recorders.
+  Updated inventory and purchase/site records without inventing costs or IDs.
+- Accepted comprehensive capture of observed RX and radio/server attempts,
+  oldest-closed-file overwrite, continued operation on card failure and offline
+  reconstruction/export first. Optional storage health stays separate.
+- [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md) retains unresolved
+  V3 radio role, retention/power-loss tolerance and per-board pinout requirements.
+  Next: finish these interview branches before implementation. No hardware changed.
+
 ## 2026-10-31 - Gateway SD logging ticket
 
 - Captured [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md): gateway

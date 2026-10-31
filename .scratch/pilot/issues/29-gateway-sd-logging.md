@@ -2,15 +2,19 @@
 
 Requested 2026-10-31. Current status belongs to the local tracker. Ticket capture
 and requirements interview only; implementation, wiring and flashing await a
-selected assignment. Targets: gateway Heltec V4 devices (count/identities to
-confirm) and two Heltec V3 devices. Do not infer current gateway assignments
-from historical G004 records.
+selected assignment. Owner confirms two newly purchased screenless Heltec V4s
+with external Wi-Fi antenna connections, intended as primary gateways, one per
+fire department. Two existing V3s will be repurposed as recording devices;
+other future uses remain unspecified. Exact identities/revisions remain to
+verify; screenless does not establish the V4-R8 target. Do not infer assignments
+from historical G004 records or silently reconfigure existing gateways.
 
 ## Owner requirements
 
 - Log "everything" needed to reconstruct operation later from physically
   retrieved cards, including outbound data even when the destination cannot
-  be reached. Clarify whether "gateway" here means MQTT/server or another radio.
+  be reached. Owner accepts capturing both radio and MQTT/server attempts with
+  explicit success/failure/unknown states.
 - Operate locally through backhaul outages and handle log rotation.
 - Optional later enhancement: broadcast storage capacity as infrastructure
   health. Do not make this a required first-release feature.
@@ -20,7 +24,13 @@ from historical G004 records.
 - Deliver verified V3/V4 wiring pinouts, matched to exact board variants and
   existing GPS/INA219/display/radio wiring before installation.
 
-## Proposed capture contract - awaiting interview answers
+## Accepted capture contract - 2026-10-31
+
+Owner accepts first-round recommendations: capture the categories below,
+overwrite oldest closed segments when full while recording discarded history,
+continue essential device operation through card failures, and deliver an
+offline searchable reconstruction/export first. Historical MeshLink import and
+automatic backfill are separate follow-ups, not initial acceptance requirements.
 
 Capture received raw radio payloads and metadata, decoded records when possible,
 duplicates, locally generated telemetry, outbound radio and MQTT payloads,
@@ -39,14 +49,13 @@ data stays private and out of Git.
 
 ## Decisions still open
 
-1. Reconstruction scope and destination meaning; raw/decoded/debug boundaries.
-2. Physical board identities/revisions and existing attached peripherals.
-3. When capacity is exhausted: overwrite oldest closed segments, or stop logging
-   and preserve history? Required retention duration and maximum acceptable loss.
-4. Manual offline reconstruction/export only, or later automated backfill?
-5. Card/write failure behavior and acceptable performance/power overhead.
-6. File format, segment limits, flush policy, corruption detection and recovery,
-   retrieval workflow and privacy/access requirements, after scope is settled.
+1. Physical board identities/revisions, attached peripherals and verified pinouts.
+2. V3 recorder radio role: passive receive-only versus ordinary participating
+   mesh node. Repurposing as a recorder does not by itself select RF behavior.
+3. Required retention between card retrievals and tolerable abrupt-power-loss
+   tail; these determine capacity, rotation and flush policy.
+4. File format, segment limits, corruption recovery and card retrieval procedure;
+   acceptable performance/power overhead to specify before implementation.
 
 ## Acceptance to develop
 
