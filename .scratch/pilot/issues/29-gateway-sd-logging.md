@@ -47,20 +47,51 @@ non-secret configuration sufficient to interpret retained data. Keep private
 keys, passwords and channel secrets out of logs by default; raw member/location
 data stays private and out of Git.
 
+## Recorder role, retention and time - accepted 2026-10-31
+
+- V3 recorders are passive receive-only: no RF forwarding, acknowledgements,
+  discovery, telemetry or other automatic transmissions. Capture all observed
+  packets within the configured receiver/channel capability; this is not a claim
+  to monitor every frequency simultaneously. Optional future storage-health
+  broadcasts must not silently override this passive requirement.
+- Target 30 days of retained logs on each assigned card, subject to measured
+  traffic/record size and capacity. Rotate oldest closed files when full. Report
+  actual retained span and gaps; do not promise 30 days on every card untested.
+- Owner is not especially concerned about abrupt power loss. Use approximately
+  five seconds as a provisional flush target, not a hard maximum-loss guarantee.
+  Measure the lost tail and recovery behavior; prioritize reliable recording
+  and normal device operation over elaborate zero-loss power hardware.
+- Use valid GPS-derived time for log event timestamps when available. Store
+  source, validity and synchronization state; distinguish directly attached GPS
+  time from radio-derived or other clock sources. GPS hardware/time availability
+  on the selected boards is not yet confirmed.
+- Preserve a packet's original GPS measurement timestamp separately from the
+  recorder's reception/event timestamp. An old position's timestamp must never
+  become the current log clock merely because that packet arrived now.
+- Start recording immediately at boot even without valid UTC. Always retain
+  monotonic uptime, per-boot sequence and a unique boot/session identifier.
+  Mark unknown wall time explicitly; record time-acquisition/correction events
+  with UTC/uptime anchors. Offline inferred pre-sync timestamps must be labelled
+  reconstructed, not silently rewritten as observed GPS times.
+- Emit an explicit boot record for every startup, including device/boot identity,
+  firmware/schema version, reset reason when available and initial clock/storage
+  state. Preserve the boot marker when SD becomes writable; missing-card/data
+  gaps must remain visible rather than implying continuous recording.
+
 ## Decisions still open
 
 1. Physical board identities/revisions, attached peripherals and verified pinouts.
-2. V3 recorder radio role: passive receive-only versus ordinary participating
-   mesh node. Repurposing as a recorder does not by itself select RF behavior.
-3. Required retention between card retrievals and tolerable abrupt-power-loss
-   tail; these determine capacity, rotation and flush policy.
-4. File format, segment limits, corruption recovery and card retrieval procedure;
-   acceptable performance/power overhead to specify before implementation.
+2. Available GPS/time sources and card assignments; validate retention capacity.
+3. Engineering details for the implementation brief: file format, segment limits,
+   corruption recovery, retrieval procedure and performance/power measurements.
 
 ## Acceptance to develop
 
 - Verify pin assignments and 3.3 V electrical/power suitability for both variants.
 - Full card write/read verification plus sustained on-device logging under load.
+- Verify V3s emit no RF traffic, including after boot and on received messages.
+- Verify boot records, GPS time acquisition/loss/correction, unknown-clock startup,
+  and offline reconstruction across multiple boots without merging their uptimes.
 - Correlate known RX/TX/telemetry events and unavailable-backhaul outbound records
   with reconstructed output; preserve duplicates and truthful delivery states.
 - Validate reboot/unknown clock, card missing/full/removed, write errors, rotation

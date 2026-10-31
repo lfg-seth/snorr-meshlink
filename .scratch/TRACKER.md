@@ -62,8 +62,10 @@ Keep implementation, release, native presentation, live delivery and field accep
 SD logging requirements interview: [LOCAL-10](pilot/issues/29-gateway-sd-logging.md).
 Two new screenless/external-Wi-Fi V4 primary gateways (one per fire department)
 plus two repurposed V3 recorders. Capture scope, overwrite-oldest rotation and
-offline export accepted; health broadcasts optional. Next: settle V3 RF role,
-retention/loss targets and identify boards for pinouts. Implementation deferred.
+offline export accepted; V3s passive receive-only. Target 30-day retention;
+GPS-derived event time with truthful fallback and explicit boot records required.
+Health broadcasts optional and cannot override V3 silence. Next: identify boards,
+GPS/time sources and cards for verified pinouts/implementation brief. Implementation deferred.
 
 Owner activation is required before research, design, implementation or testing. Details live in the linked import or [wishlist](../records/wishlist.md); migration and mentioning an idea keep it parked.
 

@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-10-31 - SD recorder role and time requirements
+
+- Owner selects passive receive-only V3s, accepts 30-day retention target and
+  treats abrupt-power-loss tail as low concern. Five-second flushing remains
+  provisional, not a measured guarantee.
+- Owner requires GPS-derived log timestamps when available and explicit boot
+  records. [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md) distinguishes
+  measurement/reception time, boot IDs/uptime, unknown UTC and later clock anchors.
+- Optional health broadcasts cannot override V3 passive operation. Next: identify
+  exact boards, time sources and cards for wiring/implementation brief. No board
+  configured or firmware changed; documentation whitespace validation only.
+
 ## 2026-10-31 - SD logging scope clarified
 
 - Owner confirms two purchased screenless/external-Wi-Fi V4 primary gateways,

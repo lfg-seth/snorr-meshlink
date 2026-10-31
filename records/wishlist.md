@@ -12,7 +12,11 @@ Owner clarification: two newly purchased screenless V4s with external Wi-Fi
 connections become primary gateways, one at each fire department; two existing
 V3s become recorders. Owner accepts comprehensive capture, oldest-file overwrite,
 continued operation through card failures and offline reconstruction/export first.
-Exact boards, V3 RF role, retention/loss targets and pinouts remain open.
+Follow-up: V3s are passive receive-only; target 30-day retention. Owner is not
+especially concerned about power loss; five-second flushing remains a provisional
+target rather than a guarantee. GPS-derived log timestamps and explicit boot
+records required, with truthful unknown-time handling. Exact boards, available
+GPS/time sources, card assignments and verified pinouts remain prerequisites.
 
 These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 
