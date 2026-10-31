@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-10-31 - SD logging hardware and gateway allocation
+
+Owner reports purchase of two Heltec V4s without screens and with external Wi-Fi
+antenna connections, intended as primary gateways, one per fire department.
+Exact SKU/revision, device IDs, receipt/delivery and installed state are unverified;
+do not infer V4-R8 from this description. Two existing V3s are intended for
+repurposing as recording devices; IDs and future other uses remain unspecified.
+Owner has 4/32/64 GB cards formatted FAT32 and adapters exposing
+3v3/CS/MOSI/CLK/MISO/GND. Card/adapter quantities, models and test results unknown.
+Evidence: owner conversation 2026-10-31; [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md).
+No existing device assignment/configuration changed or new costs inferred.
+
+
 ## 2026-10-25 - Former G004 V4 reassigned to client B003
 
 Owner requests overwriting the connected V4 as a new client. Existing OLED V4
