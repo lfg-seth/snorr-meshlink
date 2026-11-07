@@ -16,7 +16,7 @@ python scripts/check-project.py --list
 | Scope | What it runs / establishes |
 | --- | --- |
 | `docs` (default) | Git whitespace plus local inline Markdown file/heading links in changed and untracked Markdown. Default comparison is HEAD (staged and unstaged); `--base origin/main` includes committed branch changes. External URLs are skipped. |
-| `bench` | Existing offline updater tests: identity selection, image/profile preservation and update sequencing with hardware mocked. |
+| `bench` | Offline updater/RAK triage tests: identity selection, image/profile preservation, packet evidence, recovery and batch sequencing with hardware mocked. |
 | `firmware-release` | Existing packaging/provenance/checksum tests in the pinned firmware submodule. Requires that checkout; no artifact downloads/publication. |
 | `portal` | Existing `npm run check`: portal tests, typecheck and build. Requires installed Node/npm/dependencies and writes local build output. |
 | `backend` | Existing `backend/manage.py check`: backend suite using isolated local services/databases. Requires installed project dependencies/PocketBase; may bind local test ports. |
@@ -40,6 +40,10 @@ python -m unittest discover -s scripts/tests -v
 
 Existing operation tools remain separate entry points:
 
+- [RAK quick function check](../docs/operations/rak-quick-check.md) uses
+  `bench/check-rak.py` for guided Windows USB/radio/sensor/power triage, private
+  original/final config records and restoration. Requires a USB reference RAK;
+  no flashing or Bluetooth. Hardware timing/acceptance remains unverified.
 - [RAK role change](../docs/operations/repeater-role-change.md) uses
   `bench/set-repeater-role.py` to back up, select ROUTER or CLIENT, prompt for
   a decimal fixed location and enroll B002 as admin over USB, then verify the

@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-07 - RAK quick-check script
+
+- Completed owner-requested requirements interview and [guided Windows triage tool](../docs/operations/rak-quick-check.md): private original/final config exports, temporary isolated radio profile, observed bidirectional probes, fitted-sensor telemetry, USB-meter/charging/battery steps and batch reports. No Bluetooth or flashing.
+- Configuration writes require a saved backup and stable identity. Restoration compares the complete profile after reboot; interrupted runs retain manual recovery inputs. Failed boards are recorded and the batch continues. Unresponsive units can be recorded without a config export.
+- Owner reports all RAKs pulled out and possible reverse-polarity smoke, PCB flex/pin damage and extended antenna-free operation. [Inventory](inventory.md) preserves these as unassigned reports, not confirmed diagnoses or revised totals.
+- Validation: 70 offline bench tests pass (19 new triage tests), CLI help/list-ports and documentation/whitespace checks pass; no hardware timing, RF, charging, calibration or restoration acceptance claimed. Only COM1 enumerates; no serial handles opened.
+- Publication: `codex/rak-quick-check`; coherent source/records commit and push at handoff. Existing unrelated edits preserved.
+- Next: connect the new reference RAK already running compatible Meshtastic and one apparently healthy RAK, both with included 915 MHz antennas; verify the complete fixture and actual per-board timing before the suspect batch. Burn-in, wiping/reflashing and new enclosures remain later work.
+
 ## 2026-10-31 - SD recorder role and time requirements
 
 - Owner selects passive receive-only V3s, accepts 30-day retention target and

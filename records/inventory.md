@@ -1,5 +1,22 @@
 # Hardware inventory
 
+## 2026-11-07 - RAK recovery and damage reports
+
+Owner reports all RAKs pulled out for board/module triage. Exact returned count,
+physical IDs, prior site associations and reconciliation to earlier stock remain
+unverified. One brand-new RAK is available as the proposed USB test reference;
+its carrier/core identity, installed firmware and relation to recorded totals
+are unverified. Included RAK antennas, Muzi antennas, Heltec V3s, a partially
+discharged battery and USB inline voltage/current meter are available. No new
+purchase, cost, confirmed board fault or stock-total change is inferred.
+
+Owner suspects one board received reverse-polarity power and smoked, another
+suffered PCB flex/pin damage, and some ran for extended periods without antennas.
+Affected physical IDs and diagnoses are unknown; events may overlap. Fitted
+INA219 and temperature sensors will be recorded per unit during the
+[quick-check workflow](../docs/operations/rak-quick-check.md). No device has yet
+been tested, flashed, reconfigured or assigned a new enclosure in this session.
+
 ## 2026-10-31 - SD logging hardware and gateway allocation
 
 Owner reports purchase of two Heltec V4s without screens and with external Wi-Fi
