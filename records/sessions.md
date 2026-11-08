@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-07 - Reference RAK prepared and live compatibility corrected
+
+- Owner selects connected reference and confirms included antenna. RAK4631 **!8737c2c9**, USB **70DF102F58D2A034**, COM27, retains reported **2.7.15.567b8ea**; no flashing. [Setup and evidence](../docs/operations/rak-quick-check.md#reference-prepared---2026-11-07).
+- Private original snapshot precedes writes. Initial unset region/absent keys/unexpanded defaults change during first setup; strict comparison rejects this and initial restore cannot reproduce a pre-initialization state. Preserved all evidence, captured the initialized baseline, and verified the final private US/LONG_FAST/10 dBm reference profile through explicit reboot without changing its generated keys. Serial closed; reference remains prepared.
+- Fixed diagnostic LONG_FAST requests to include firmware-derived BW/SF/CR values. Added pre-write initialization gates and inconclusive reporting so ordinary triage does not unexpectedly initialize identity/defaults. Strict full key/channel comparisons remain. Regression tests reproduce both missing preset fields and missing initialization guard before the fix.
+- Fresh requested device telemetry passes; local stats did not respond. Bidirectional RF, test-board restoration, sensors/charging and actual five-minute timing still require the second board. Existing unrelated edits preserved.
+- Validation: 74 offline bench tests, CLI help/listing and documentation/whitespace checks pass. Branch `codex/rak-quick-check`; compatibility fix and sanitized setup records published at handoff.
+- Next: leave COM27 reference connected and attach an apparently healthy test RAK with included antenna for complete fixture acceptance, then run the suspect batch.
+
 ## 2026-11-07 - RAK quick-check script
 
 - Completed owner-requested requirements interview and [guided Windows triage tool](../docs/operations/rak-quick-check.md): private original/final config exports, temporary isolated radio profile, observed bidirectional probes, fitted-sensor telemetry, USB-meter/charging/battery steps and batch reports. No Bluetooth or flashing.

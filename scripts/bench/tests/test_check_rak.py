@@ -61,6 +61,45 @@ class PreservationTests(unittest.TestCase):
         restored = check.load_messages(before)
         self.assertEqual([check.updater.wire(x) for x in restored[:2]], [before["localWire"], before["moduleWire"]])
 
+    def test_long_fast_profile_explicitly_matches_firmware_derived_modem_values(self):
+        local, _, _ = check.diagnostic_state(fixture(), "US", "B123456", b"T" * 32)
+        self.assertEqual((local.lora.bandwidth, local.lora.spread_factor, local.lora.coding_rate), (250, 11, 5))
+
+    def test_uninitialized_key_material_is_backed_up_but_not_changed_by_triage(self):
+        before = fixture()
+        local, _, _ = check.load_messages(before)
+        local.security.ClearField("private_key")
+        local.security.ClearField("public_key")
+        before["localWire"] = check.updater.wire(local)
+        radio = check.Radio(SimpleNamespace(device="COM9", serial_number="USB-1"), None)
+        radio.snapshot = Mock(return_value=before)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "original.json"
+            with self.assertRaises(check.updater.UpdateError):
+                radio.backup(path)
+            self.assertTrue(path.exists())
+            self.assertFalse(radio.dirty)
+
+    def test_region_and_unexpanded_defaults_require_separate_baseline_preparation(self):
+        for scenario in ("region", "mqtt", "preset"):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as temporary:
+                before = fixture()
+                local, module, _ = check.load_messages(before)
+                if scenario == "region":
+                    local.lora.region = 0
+                elif scenario == "mqtt":
+                    module.mqtt.root = "msh"
+                else:
+                    local.lora.use_preset = True
+                before.update(localWire=check.updater.wire(local), moduleWire=check.updater.wire(module))
+                radio = check.Radio(SimpleNamespace(device="COM9", serial_number="USB-1"), None)
+                radio.snapshot = Mock(return_value=before)
+                path = Path(temporary) / "original.json"
+                with self.assertRaises(check.updater.UpdateError):
+                    radio.backup(path)
+                self.assertTrue(path.exists())
+                self.assertFalse(radio.dirty)
+
     def test_full_comparison_detects_key_channel_firmware_and_hardware_changes(self):
         before = fixture()
         for key, value in (("localWire", "changed"), ("moduleWire", "changed"),
@@ -239,6 +278,22 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(json.loads(reports[0].read_text())["verdict"], "FAIL")
             self.assertEqual(result["checks"]["run"]["status"], "FAIL")
             log.close()
+
+    def test_uninitialized_board_gets_inconclusive_report_without_writes(self):
+        ui = Mock()
+        ui.ask.return_value = "new-board"
+        ui.yes.side_effect = [True, False, False]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (root / "sdk.log").open("w", encoding="utf-8") as log, patch.object(check, "Radio") as cls:
+                radio = cls.return_value
+                radio.dirty = False
+                radio.backup.side_effect = check.PreparationRequired("Initialization required; backup retained.")
+                result = check.run_board(ui, Mock(), check.Inbox(), SimpleNamespace(device="COM9", serial_number="USB"),
+                                         root, None, log)
+                self.assertEqual(result["verdict"], "INCONCLUSIVE")
+                radio.apply.assert_not_called()
+                radio.restore.assert_not_called()
 
     def test_complete_run_records_battery_response_and_restores_even_after_rf_failure(self):
         for rf_works in (True, False):

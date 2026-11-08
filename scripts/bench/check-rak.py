@@ -23,6 +23,10 @@ updater = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(updater)
 
 
+class PreparationRequired(updater.UpdateError):
+    """A captured board needs initialization before reversible diagnostics."""
+
+
 def stamp():
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
 
@@ -92,6 +96,11 @@ def diagnostic_state(before, region, channel_name, key, environment=False, power
     local.lora.region = config_pb2.Config.LoRaConfig.RegionCode.Value(region)
     local.lora.use_preset = True
     local.lora.modem_preset = config_pb2.Config.LoRaConfig.LONG_FAST
+    # Firmware expands preset defaults on reboot; request the exact LONG_FAST
+    # values so full readback comparison does not reject that normalization.
+    local.lora.bandwidth = 250
+    local.lora.spread_factor = 11
+    local.lora.coding_rate = 5
     local.lora.channel_num = 20
     local.lora.tx_enabled = True
     local.lora.tx_power = 10
@@ -171,9 +180,16 @@ class Radio:
             raise updater.UpdateError("USB serial unavailable; backup saved, no changes allowed.")
         if self.before["metadata"].get("hwModel") != "RAK4631":
             raise updater.UpdateError("This tool only changes RAK4631 devices; backup saved.")
-        _, _, channels = load_messages(self.before)
+        local, module, channels = load_messages(self.before)
         if len(channels) != 8 or [c.index for c in channels] != list(range(8)):
             raise updater.UpdateError("Incomplete channel export; backup saved, no changes allowed.")
+        if (len(local.security.private_key) != 32 or not any(local.security.private_key)
+                or len(local.security.public_key) != 32 or not any(local.security.public_key)):
+            raise PreparationRequired("Security identity is uninitialized; backup saved. Prepare the board separately before reversible triage.")
+        if local.lora.region != 1 or module.mqtt.root == "msh":
+            raise PreparationRequired("US region/default initialization is incomplete; backup saved. Prepare the board separately before reversible triage.")
+        if local.lora.use_preset and not all((local.lora.bandwidth, local.lora.spread_factor, local.lora.coding_rate)):
+            raise PreparationRequired("Preset defaults are not initialized; backup saved. Reboot and capture a stable baseline before triage.")
 
     def reconnect(self):
         from serial.tools.list_ports import comports
@@ -512,7 +528,10 @@ def run_board(ui, peer, inbox, port, root, bench, log):
         add(report, "ina219_accuracy", "NOT_TESTED", "Raw firmware polarity retained; USB input current is not battery-branch calibration.")
         report["ledButtonNotes"] = ui.ask("Other LED/button observations (blank = not checked):")
     except (Exception, KeyboardInterrupt, SystemExit) as error:
-        add(report, "run", "FAIL", f"Run interrupted or operation failed ({type(error).__name__}); inspect private sdk.log.")
+        if isinstance(error, PreparationRequired):
+            add(report, "preparation", "INCONCLUSIVE", str(error))
+        else:
+            add(report, "run", "FAIL", f"Run interrupted or operation failed ({type(error).__name__}); inspect private sdk.log.")
         import traceback
         traceback.print_exc(file=log)
     finally:

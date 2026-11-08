@@ -22,6 +22,9 @@ configured or flashed during implementation; only COM1 enumerated on the desktop
    firmware and responding to its USB API. A factory/test/LoRaWAN image is not
    a compatible reference. This tool does not install firmware. Both radios
    must identify as RAK4631 and have distinct node IDs, hardware IDs and USB ports.
+   Reversible triage requires an initialized US-region baseline, existing nonzero
+   32-byte PKI keys, and expanded modem/default settings. An uninitialized board
+   is backed up and reported inconclusive without writes; prepare it separately.
 3. Use included **915 MHz RAK antennas**. Attach one to the reference and use the
    same second antenna on each suspect board. Keep both upright at marked
    positions several metres apart, with consistent cables/orientation. Start
@@ -135,3 +138,41 @@ passed/no units, 1 failure, 2 inconclusive results without failures.
 Next acceptance: run one apparently healthy board through the complete fixture,
 inspect the private original/restored comparison and actual wall-clock time,
 then begin the suspect-board batch. Burn-in remains future work.
+
+## Reference prepared - 2026-11-07
+
+Owner identifies the sole connected RAK as the reference and confirms its
+included antenna is attached. USB **70DF102F58D2A034**, node **!8737c2c9**, on
+**COM27**, identifies as RAK4631 and reports **2.7.15.567b8ea**. Carrier model
+is not established by the USB/API identity. Firmware was retained; no flash.
+
+Reference now has CLIENT/no-relay, US, LONG_FAST (250 kHz / SF11 / CR5), slot 20,
+configured 10 dBm, a random private bench channel, disabled secondary channels,
+hourly device telemetry and disabled environment/power telemetry. Complete
+intended-config comparison and a second explicit reboot/readback pass. Fresh
+requested device telemetry passes; local-stats response was not obtained.
+Serial is closed; leave the reference connected while attaching the next board.
+
+The initial unconfigured snapshot had no PKI key material, unset region and
+unexpanded preset values. First region setup/reboot generated the board's keys
+and expanded defaults; strict raw comparison correctly rejected that as a
+restoration of the original snapshot. Subsequent checks use the initialized
+baseline and preserve its new keys. The script now explicitly supplies all
+LONG_FAST values and stops before writes on uninitialized triage units, keeping
+key/channel comparisons strict. A factory snapshot is evidence of the starting
+state, not a promise that generated identity/defaults can be undone by this tool.
+
+Private factory/initialization records:
+`private/bench/reference-setup-20261107T214624394618Z/`.
+Verified preparation, initialized recovery baseline and local telemetry:
+`verified-setup-20261108T011046061350Z/` beneath that directory.
+`private/bench/rak-reference.json` records the current reference identity and
+private snapshot/recovery pointers. The batch command is now:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/bench/check-rak.py --peer COM27
+```
+
+The batch temporarily selects its own channel and restores the prepared
+reference profile at completion. No second board, bidirectional RF test,
+sensor/charging test or per-board five-minute measurement has yet been run.
