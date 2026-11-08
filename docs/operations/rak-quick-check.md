@@ -217,3 +217,38 @@ Private evidence: `private/bench/rak-check-20261108T011619258740Z/`, board
 `board-20261108T011708487298Z/` (`report.json`, `scoped-report.json`,
 `scoped-report.md`, `original.json`, `restored.json`). Fresh test-label/antenna
 instructions are retained in `private/bench/rak-test-context.json`.
+
+## rak02 reboot and USB failure - 2026-11-07
+
+Next bench-only label **rak02** identifies USB **820C9B4F0C2D7675**, node
+**!77fdb9f1**, initially on **COM17**, RAK4631 with retained reported firmware
+**2.7.26.4c96b9b**. Owner identifies this as the suspected reverse-polarity
+damaged unit, with INA219, AHT21 and an attached battery estimated at about
+3.2 V. Carrier model, INA219 path/shunt, USB meter readings and charging
+indicator were not reported at this checkpoint. Antenna connected per owner.
+
+Initial USB/API connection and full original backup pass. After temporary test
+settings and the reboot/reconnect attempt, the board no longer enumerates as a
+USB serial port. The bounded reconnect fails; the restoration reconnect also
+fails. The original board configuration is backed up, but **restoration remains
+UNVERIFIED**. Reference profile restoration/reboot verification passes and all
+serial handles are closed. No firmware is flashed and no historical profile is
+selected by the test label.
+
+Result: **FAIL on reboot/USB availability**, with no isolated hardware diagnosis.
+Radio TX/RX, INA219 readings, AHT21 readings, battery-only operation and charging
+were **NOT TESTED** because the run stopped before their execution. No absent
+sensor response or radio result is inferred. Failed-run duration **147.7 s**;
+this does not establish complete-function or five-minute passing acceptance.
+
+Private evidence: `private/bench/rak-check-20261108T013351230604Z/`, board
+`board-20261108T013437782527Z/`: `original.json`, unchanged raw `report.json`,
+`scoped-report.json` and `scoped-report.md`; root `sdk.log` and reference records.
+Read-only preflight is separately retained in
+`private/bench/rak02-preflight-20261108T013315891113Z/`.
+
+Owner has been asked to unplug/reconnect only the suspect unit's USB for an
+original-settings recovery attempt, leaving the reference connected. If heat or
+a burning smell is observed, leave it disconnected instead. This is a recovery
+gate, not another function-test run. Do not mark the unit restored until a fresh
+USB readback verifies it. Further board diagnosis/retesting remains owner-selected.

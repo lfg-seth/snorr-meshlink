@@ -1,5 +1,29 @@
 # Field testing and tangible results
 
+## 2026-11-07 - Bench-only rak02 reboot/USB failure
+
+Desktop quick-check with test-only **rak02**, **!77fdb9f1**, USB
+**820C9B4F0C2D7675**, COM17 initially; RAK4631 / reported **2.7.26.4c96b9b**
+retained. Owner reports suspected reverse-polarity damage, INA219/AHT21,
+antennas attached and battery about 3.2 V (estimate, no meter evidence).
+Carrier/wiring/shunt/charging indicator unreported. Reference remains
+**!8737c2c9** / COM27 / reported **2.7.15.567b8ea**.
+
+Pre-agreed full-config/reboot verification gates later function checks. Initial
+USB/API snapshot passes; after temporary profile/reboot attempt, USB no longer
+enumerates and bounded reconnect fails. Original-profile recovery reconnect
+also fails: **DUT RESTORATION UNVERIFIED**, original config saved privately.
+Reference complete profile restores and verifies after reboot; serial closed.
+
+**FAIL on USB/reboot availability; component cause unisolated.** Radio TX/RX,
+INA219, AHT21, battery-only and charging checks **NOT TESTED**. Failed run
+**147.7 s**; no complete-function/five-minute passing acceptance. No reflash,
+component swap, repeat probes or historical-profile assignment.
+
+[Evidence and outstanding manual USB recovery](../docs/operations/rak-quick-check.md#rak02-reboot-and-usb-failure---2026-11-07).
+Next action is original-settings recovery if owner can reconnect USB; otherwise
+retain the backed-up unit as unresolved before later owner-selected work.
+
 ## 2026-11-07 - Bench-only rak01 USB/radio triage
 
 Desktop bench, owner-selected **rak01** (test-only label), owner-confirmed

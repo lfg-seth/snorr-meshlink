@@ -1,5 +1,22 @@
 # Hardware inventory
 
+## 2026-11-07 - Testing-context rak02 suspected reverse-polarity unit
+
+Next board is labelled **rak02** only within this bench context: USB
+**820C9B4F0C2D7675**, node **!77fdb9f1**, initially COM17, identifies as
+RAK4631 and retains reported **2.7.26.4c96b9b**. Owner reports INA219 and AHT21
+fitted, attached battery approximately 3.2 V and suspected reverse-polarity
+damage. The battery value is an owner estimate, not a script/meter measurement.
+Carrier model, current wiring/shunt, USB V/A and charging indicator unknown.
+Antenna attachment confirmed; no purchase, count or historical assignment change.
+
+Initial USB/config backup succeeds, then USB disappears after temporary-profile
+write/reboot attempt. Original board restoration is **unverified**; source backup
+retained, manual USB reconnection requested for recovery. Reference profile is
+restored/verified, serial closed. Radio/sensor/charging function was not tested;
+no damaged component diagnosis or reflash is inferred.
+[Result/recovery gate](../docs/operations/rak-quick-check.md#rak02-reboot-and-usb-failure---2026-11-07).
+
 ## 2026-11-07 - Testing-context rak01 carrier and modules
 
 Owner starts fresh bench-only labels and calls the attached board **rak01**.

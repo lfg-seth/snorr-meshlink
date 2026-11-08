@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-07 - Bench-only rak02 loses USB after test reboot
+
+- Next test-only label **rak02**: **!77fdb9f1**, USB **820C9B4F0C2D7675**, initially COM17, RAK4631 / reported **2.7.26.4c96b9b** retained. Owner reports suspected reverse-polarity damage, INA219/AHT21, battery about 3.2 V and attached antenna. Carrier/wiring/meter/indicator details unknown. No historical profile selection or rename.
+- Initial USB/API backup passes; after temporary profile/reboot attempt, USB disappears and bounded reconnect fails. Restoration reconnect also fails: **original board settings restoration UNVERIFIED**. [Raw/scoped evidence and recovery gate](../docs/operations/rak-quick-check.md#rak02-reboot-and-usb-failure---2026-11-07). Reference full profile restores/reboot-verifies; all serial handles closed. No flash.
+- Failed run 147.7 seconds; radio, INA219, AHT21, battery-only operation and charging checks were not reached. FAIL is USB/reboot availability, not a component damage diagnosis. Original complete API snapshot retained privately for recovery.
+- Next: owner reconnects suspect USB for original-settings recovery only, or leaves it disconnected if heat/burning smell observed. No further diagnosis/retest without owner selection; move to next unit after recovery handoff.
+- Validation: documentation links/whitespace checked; no code changes or repeat bench suite needed. Publish sanitized records on `codex/rak-quick-check`; unrelated edits preserved.
+
 ## 2026-11-07 - Bench-only rak01 USB/radio check
 
 - Owner starts fresh test-only labels, independent of all saved/historical profile names. **rak01** is owner-confirmed RAK19003/no modules, USB-only; antenna attachment is confirmed and thereafter assumed for this test session. **!a65601b3**, USB **AA474A4710B85C2C**, COM8 retains **2.7.26.4c96b9b**. No persistent rename, flashing or historical profile application.
