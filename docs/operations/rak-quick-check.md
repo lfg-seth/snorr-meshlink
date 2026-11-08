@@ -60,7 +60,7 @@ configured or flashed during implementation; only COM1 enumerated on the desktop
    .\.venv\Scripts\python.exe scripts/bench/check-rak.py --peer COM5 --port COM9
    ```
 
-   For a board with no battery connected, add `--usb-only`. Battery, charging
+   If battery checks are excluded or the connection is unconfirmed, add `--usb-only`. Battery, charging
    and meter steps are skipped and recorded NOT_TESTED; no USB disconnect is
    requested. USB/config, radio, any fitted modules and restoration still run.
 
@@ -86,15 +86,16 @@ are preserved. Final full comparison still runs after an explicit reboot.
 | --- | --- |
 | USB/config | Complete API-visible local/module configs, every channel, serialized protobufs, identity, firmware metadata and self node information. No raw flash/bootloader/filesystem backup. Missing identity/channel data prevents writes. |
 | Firmware/reboot | Available critical-error signatures retained privately. Recognized signatures fail the run; absent logs cannot prove absence of faults. Original config is compared after an explicit reboot at restoration. |
-| Temperature/humidity | Request current environment telemetry locally for a physically fitted sensor. Missing/unsupported response is inconclusive. Returned finite data demonstrates availability, not calibration or exact sensor model. |
+| Temperature/humidity | Request current environment telemetry for a physically fitted sensor; if needed, listen up to 65 seconds for current-connection USB telemetry. Source is recorded separately; query echoes and other nodes are rejected. Missing data is inconclusive. Finite data demonstrates availability, not calibration or exact model. |
 | INA219 | Request power telemetry locally, then compare current with USB connected and during battery-only operation. A matched change of at least 1 mA is a response check, not a tolerance specification. Raw firmware polarity and mA units are preserved. |
-| LoRa TX and RX | Three unique PRIVATE_APP probes each direction; require the opposite USB radio to receive exact source/destination/packet ID/payload with zero-hop metadata. ACK/enqueue success is insufficient. Counts and supplied RSSI/SNR are recorded. Partial/missing reception fails this fixture check; it does not isolate the faulty component. |
+| LoRa TX and RX | Three unique ASCII TEXT_MESSAGE_APP broadcasts each direction; require the opposite USB radio to receive exact source/destination/packet ID/payload with zero-hop metadata. ACK/enqueue success is insufficient. Counts and supplied RSSI/SNR are recorded. Partial/missing reception fails this fixture check; it does not isolate the faulty component. |
 | Charging | Operator records USB V/A and indicator state. Indicator on means charging activity observed, not charger-current accuracy or full-charge termination acceptance. |
 | Battery power | Close the test board's serial connection, unplug only its USB, then request fresh device/power telemetry through the reference. Missing response is inconclusive because RF/firmware/power causes are not isolated. Reconnect USB for restoration. |
 
 The private test channel separates application traffic from the production mesh;
-it does not eliminate RF interference. PRIVATE_APP is also used by SNNS, but the
-bench channel has an independent key and probes use a distinct `RAKCHECK1:` magic.
+it does not eliminate RF interference. Probes use standard text with a distinct
+`RAKCHECK1:` prefix. Broadcast avoids an unverified peer-key discovery dependency;
+the shared bench PSK still encrypts the traffic. Probe version is recorded.
 The new reference is a comparison peer, not a calibrated known-good RF standard.
 Close-range packet success does not clear a PA potentially damaged by antenna-free
 operation. RF power/sensitivity, range, intermittent flex faults, all GPIO/slots,
@@ -286,3 +287,45 @@ recovery. The script's restoration path now handles observed role defaults,
 with a regression reproducing the exact failure and guards against changing
 keys, channels, other owner fields or hardware identity. Next: move to the next
 owner-selected test unit; physical fault diagnosis remains separate.
+
+## rak03 quick check and probe-method correction - 2026-11-07
+
+Bench-only **rak03**, USB **397EBE4F36E1F126**, node **!05237743**, COM14,
+RAK4631 / reported **2.7.26.4c96b9b** retained. Owner reports AHT21 and no
+INA219. Carrier and battery connection were unconfirmed, so power checks were
+explicitly excluded; `--usb-only` describes test scope, not observed battery
+absence. Antennas assumed attached per owner. No historical profile selected.
+
+Before this run, exact installed-source inspection of `Router::send` at
+**4c96b9ba0** establishes that direct data messages require a discovered peer
+public key, even when the client did not explicitly request PKI. Original
+PRIVATE_APP direct probes had no verified discovery prerequisite. **rak01's
+original 0/3 is retained, but its hardware TX/overall scoped interpretation is
+corrected to INCONCLUSIVE**; raw CLI report is unchanged and no retest occurred.
+Version 2 uses zero-hop, no-ACK ASCII TEXT_MESSAGE_APP broadcasts on the private
+bench channel. Opposite-interface nonce/packet/source/destination matching stays.
+
+| rak03 check | Measured result |
+| --- | --- |
+| USB/config and intended profile | Pass; original API snapshot saved. |
+| TX seen at reference | **3/3**; RSSI -27 dBm, SNR 6 dB each. |
+| RX from reference | **2/3**; successful packets -28 dBm / 6 dB; second attempt timed out. |
+| Requested device/AHT21 telemetry | No matching replies; inconclusive, not sensor damage evidence. |
+| INA219 | Not fitted, owner-reported. |
+| Battery/charging/meter | Not tested; power setup unconfirmed. |
+| Board/reference restoration | Both full profiles verify through explicit reboot; serial closed. |
+| Duration | **117.0 s** for the measured run. |
+
+Result: **FAIL on the strict 3/3 RX fixture criterion**, cause unisolated. No
+extra attempts, swaps or retests followed. Reference remains prepared; no flash.
+Private evidence: `private/bench/rak-check-20261108T020118910868Z/`, board
+`board-20261108T020205571316Z/`; raw/scoped reports and original/restored snapshots.
+Preflight: `private/bench/rak03-preflight-20261108T015752930639Z/`.
+
+After the run, added a bounded 65-second USB-telemetry fallback for future
+missing local replies, matching firmware's normal phone-stream cadence. It
+accepts only nonempty telemetry from the DUT/current interface, rejects requests
+and other nodes, and records request-reply versus streamed provenance. This
+fallback has offline coverage but was **not run on rak03**; its AHT21 remains
+unconfirmed. Next: next selected unit, validate streamed collection and keep
+battery/charging acceptance separate until the fixture/peer setup is supplied.

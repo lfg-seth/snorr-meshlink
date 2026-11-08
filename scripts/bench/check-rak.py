@@ -359,11 +359,38 @@ def telemetry(inbox, sender, destination, variant, timeout=4):
     return MessageToDict(data)
 
 
+def streamed_telemetry(inbox, interface, source, wanted, timeout=65):
+    """Collect current-connection USB telemetry; reject query echoes and other nodes."""
+    from google.protobuf.json_format import MessageToDict
+    from meshtastic.protobuf import portnums_pb2, telemetry_pb2
+
+    deadline = time.monotonic() + timeout
+    samples = {}
+    with inbox.condition:
+        while True:
+            for _, received_on, raw in inbox.rows:
+                if (received_on is not interface or getattr(raw, "from") != source
+                        or raw.decoded.portnum != portnums_pb2.TELEMETRY_APP or raw.decoded.want_response):
+                    continue
+                data = telemetry_pb2.Telemetry()
+                try:
+                    data.ParseFromString(raw.decoded.payload)
+                except Exception:
+                    continue
+                variant = data.WhichOneof("variant")
+                if variant in wanted and getattr(data, variant).ListFields():
+                    samples[variant] = MessageToDict(data)
+            remaining = deadline - time.monotonic()
+            if set(wanted).issubset(samples) or remaining <= 0:
+                return samples
+            inbox.condition.wait(min(remaining, 1))
+
+
 def probe_matches(raw, sent, source, destination, payload):
     from meshtastic.protobuf import portnums_pb2
 
     return (getattr(raw, "from") == source and raw.to == destination and raw.id == sent.id
-            and raw.decoded.portnum == portnums_pb2.PRIVATE_APP and raw.decoded.payload == payload
+            and raw.decoded.portnum == portnums_pb2.TEXT_MESSAGE_APP and raw.decoded.payload == payload
             and raw.hop_start == 0 and raw.hop_limit == 0)
 
 
@@ -372,12 +399,13 @@ def probe(inbox, sender, receiver, attempts=3):
 
     results = []
     for attempt in range(attempts):
-        payload = b"RAKCHECK1:" + secrets.token_bytes(12)
+        payload = b"RAKCHECK1:" + secrets.token_hex(12).encode("ascii")
         start = time.monotonic()
-        sent = sender.sendData(payload, destinationId=receiver.localNode.nodeNum,
-                               portNum=portnums_pb2.PRIVATE_APP, wantAck=False, hopLimit=0)
+        # Broadcast uses the bench PSK without requiring peer PKI discovery.
+        sent = sender.sendData(payload, destinationId=0xFFFFFFFF,
+                               portNum=portnums_pb2.TEXT_MESSAGE_APP, wantAck=False, hopLimit=0)
         raw = inbox.wait(receiver, start, lambda packet: probe_matches(
-            packet, sent, sender.localNode.nodeNum, receiver.localNode.nodeNum, payload), 4)
+            packet, sent, sender.localNode.nodeNum, 0xFFFFFFFF, payload), 4)
         results.append({"attempt": attempt + 1, "packetId": sent.id, "received": raw is not None,
                         "rssi": raw.rx_rssi if raw else None, "snr": raw.rx_snr if raw else None})
         time.sleep(0.3)
@@ -418,13 +446,13 @@ def add(report, name, status, detail):
 
 def sensor_check(report, name, sample, variant, required_fields):
     if sample is None:
-        add(report, name, "INCONCLUSIVE", "No requested response: firmware support, detection, wiring or hardware unresolved.")
+        add(report, name, "INCONCLUSIVE", "No matching reply or current-connection USB telemetry; firmware, detection, wiring or hardware unresolved.")
     else:
         metrics = sample.get(variant, {})
         present = any(isinstance(metrics.get(field), (int, float)) and math.isfinite(metrics[field])
                       for field in required_fields)
         add(report, name, "PASS" if present else "INCONCLUSIVE",
-            "Requested sensor data returned; accuracy unverified." if present else "Response lacks expected measurements.")
+            "Sensor data returned; source recorded in telemetrySources; accuracy unverified." if present else "Response lacks expected measurements.")
 
 
 def current_response(report):
@@ -506,7 +534,8 @@ def run_board(ui, peer, inbox, port, root, bench, log, usb_only=False):
     directory.mkdir(mode=0o700)
     report = {"schemaVersion": 1, "startedAt": datetime.now(timezone.utc).isoformat(),
               "label": ui.ask("Test label (e.g. rak01; separate from saved radio name):") or "unlabelled",
-              "port": port.device, "usbSerial": port.serial_number, "checks": {}, "samples": {}}
+              "port": port.device, "usbSerial": port.serial_number, "checks": {}, "samples": {},
+              "radioProbe": {"version": 2, "delivery": "zero-hop broadcast", "port": "TEXT_MESSAGE_APP"}}
     report["inspectionNotes"] = ui.ask("Inspection notes (smoke/flex/pins/corrosion; blank = none recorded):")
     if not ui.yes("Inspection complete, safe to power, correct battery polarity, and included test antenna attached?"):
         add(report, "inspection", "FAIL", "Operator did not approve powering this board; no serial connection or changes.")
@@ -539,8 +568,17 @@ def run_board(ui, peer, inbox, port, root, bench, log, usb_only=False):
             if variant == "environment_metrics" and not environment or variant == "power_metrics" and not power:
                 continue
             report["samples"][variant] = telemetry(inbox, radio.interface, destination, variant)
+        required = ["device_metrics"] + (["environment_metrics"] if environment else []) + (["power_metrics"] if power else [])
+        missing = [variant for variant in required if report["samples"].get(variant) is None]
+        report["telemetrySources"] = {variant: "matched_request_reply" for variant in required
+                                      if report["samples"].get(variant) is not None}
+        if missing:
+            ui.say("Waiting up to 65 seconds for fresh USB telemetry; missing query replies alone do not indicate sensor damage.")
+            for variant, sample in streamed_telemetry(inbox, radio.interface, destination, missing).items():
+                report["samples"][variant] = sample
+                report["telemetrySources"][variant] = "current_connection_usb_stream"
         add(report, "device_telemetry", "PASS" if report["samples"]["device_metrics"] else "INCONCLUSIVE",
-            "Requested device metrics response recorded." if report["samples"]["device_metrics"] else "No matching device response.")
+            "Device metrics received; source recorded in telemetrySources." if report["samples"]["device_metrics"] else "No matching device response or streamed metrics.")
         if environment:
             sensor_check(report, "temperature_humidity", report["samples"].get("environment_metrics"),
                          "environmentMetrics", ("temperature", "relativeHumidity"))
@@ -561,8 +599,8 @@ def run_board(ui, peer, inbox, port, root, bench, log, usb_only=False):
         if usb_only:
             report["powerMode"] = "usb_only"
             report["usbMeter"] = {"volts": None, "amps": None}
-            add(report, "battery_operation", "NOT_TESTED", "USB-only run; no battery connected or USB-disconnect test performed.")
-            add(report, "charging_activity", "NOT_TESTED", "USB-only run; no battery charging test performed.")
+            add(report, "battery_operation", "NOT_TESTED", "USB-only test scope; battery-only operation and USB disconnect were not tested.")
+            add(report, "charging_activity", "NOT_TESTED", "USB-only test scope; charging was not tested.")
             add(report, "ina219_accuracy", "NOT_TESTED", "No reference current measurement; calibration remains unverified.")
         else:
             report["powerMode"] = "usb_and_battery"

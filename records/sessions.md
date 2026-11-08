@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-07 - Bench-only rak03 check and radio-method correction
+
+- **rak03 !05237743**, USB **397EBE4F36E1F126**, COM14, retains reported RAK4631 / **2.7.26.4c96b9b**. Owner reports AHT21/no INA219; carrier and battery connection unconfirmed. Explicitly run USB/radio/AHT scope, power excluded; antenna assumed attached. No historical profile application or persistent rename.
+- Installed-source Router inspection shows direct data messages depend on peer-key discovery, unverified in the original probes. Replace them with zero-hop/no-ACK ASCII TEXT_MESSAGE_APP broadcasts on isolated bench PSK, retaining exact opposite-interface matching. **rak01 hardware interpretation corrected to INCONCLUSIVE**, original 0/3/raw report retained, no retest.
+- [rak03 measured results](../docs/operations/rak-quick-check.md#rak03-quick-check-and-probe-method-correction---2026-11-07): TX **3/3** at -27 dBm/6 dB; RX **2/3**, successful packets -28 dBm/6 dB. FAIL on strict RX criterion, fixture/component cause unisolated; no extra attempts. AHT21/device query replies inconclusive; no INA219, power untested.
+- Complete board/reference configs restored/verified through reboot; serial closed, firmware retained. Measured run **117.0 s**. Added provenance-aware bounded USB telemetry listening after this run for future missing replies; not run on rak03 and its AHT21 remains unconfirmed.
+- Validation: 80 offline bench tests plus docs/whitespace pass. Broadcast regression fails before method fix and passes after. Stream guards reject queries, empty data, wrong node/interface/port. Publish on `codex/rak-quick-check`; unrelated edits preserved.
+- Next: next owner-selected unit; validate streamed sensor collection, keep battery/charging acceptance separate until setup is known. No repeated antenna question or rak03 retest.
+
 ## 2026-11-07 - rak02 original configuration recovered
 
 - Owner fully removes battery/USB, then reconnects USB only; **rak02 !77fdb9f1 / COM17** returns. No further function tests. [Recovery and evidence](../docs/operations/rak-quick-check.md#original-configuration-recovered---2026-11-07).

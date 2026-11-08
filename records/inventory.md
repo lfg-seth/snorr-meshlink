@@ -1,5 +1,24 @@
 # Hardware inventory
 
+## 2026-11-07 - Testing-context rak03 AHT21 unit
+
+Bench-only **rak03** identifies USB **397EBE4F36E1F126**, node **!05237743**,
+COM14, RAK4631 / reported **2.7.26.4c96b9b** retained. Owner reports AHT21
+and no INA219; carrier and battery connection remain unknown. Power checks
+excluded rather than inferring battery absence; antenna assumed per owner.
+No purchase, stock-count, historical assignment or persistent name change.
+
+Version-2 broadcast fixture: TX 3/3, RX 2/3; strict RX check fails, cause
+unisolated. AHT21/device matching replies absent, hence function unconfirmed;
+no sensor damage diagnosis. Board/reference originals restored and reboot-
+verified, serial closed, no flash or retest. Duration 117.0 s.
+[Result/method limits](../docs/operations/rak-quick-check.md#rak03-quick-check-and-probe-method-correction---2026-11-07).
+
+Method correction for earlier rak01: retain 0/3 direct-message observation, but
+classify hardware TX/overall scoped result INCONCLUSIVE because peer-key
+discovery was not verified. Raw report retained; no physical retest or change
+to hardware inventory condition inferred.
+
 ## 2026-11-07 - Testing-context rak02 recovery verified
 
 **rak02 !77fdb9f1 / USB 820C9B4F0C2D7675 / COM17** returns after owner removes

@@ -1,5 +1,32 @@
 # Field testing and tangible results
 
+## 2026-11-07 - Bench-only rak03 broadcast radio check
+
+Desktop, bench-only **rak03 !05237743**, USB **397EBE4F36E1F126**, COM14,
+RAK4631 / reported **2.7.26.4c96b9b** retained. Owner reports AHT21/no INA219;
+carrier/battery unconfirmed, so power checks excluded. Reference **!8737c2c9**
+on COM27 retains **2.7.15.567b8ea**. Antennas assumed attached; separation not
+measured. No historical profile selection, rename, flash or additional attempts.
+
+Version-2 method: zero-hop/no-ACK ASCII text broadcasts on isolated random
+bench PSK, matched at opposite USB interface by source/destination/ID/nonce.
+This removes peer-PKI discovery dependence from the old direct probes. TX
+**3/3**, -27 dBm / 6 dB each; RX **2/3**, successful -28 dBm / 6 dB, second
+attempt times out. **FAIL strict 3/3 RX criterion; cause unisolated.** Device/
+AHT21 query data inconclusive; INA219 not fitted; battery/charging untested.
+Complete board/reference profiles restored/reboot-verified; serial closed.
+Measured **117.0 s**; no calibrated RF, range, sensor or power acceptance.
+[Raw/scoped evidence](../docs/operations/rak-quick-check.md#rak03-quick-check-and-probe-method-correction---2026-11-07).
+
+Earlier rak01 correction: original 0/3 direct-message receptions remain, but
+peer-key discovery was unverified and firmware can reject such messages before
+RF transmission. Hardware TX/scoped verdict is now **INCONCLUSIVE**, not a
+damaged-radio finding; raw report unchanged, no retest performed.
+
+Future checks now also wait up to 65 s for current-connection USB telemetry
+when local queries do not reply; offline-only validation at this checkpoint.
+rak03 was not retested. Next: next selected unit and streamed-sensor acceptance.
+
 ## 2026-11-07 - Bench-only rak02 recovery follow-up
 
 Owner removes both power sources and reconnects **rak02 !77fdb9f1** USB only.

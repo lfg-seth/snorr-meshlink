@@ -265,11 +265,62 @@ class PreservationTests(unittest.TestCase):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_streamed_sensor_data_is_accepted_without_request_id(self):
+        inbox, interface = check.Inbox(), object()
+        data = telemetry_pb2.Telemetry()
+        data.environment_metrics.temperature = 21.25
+        data.environment_metrics.relative_humidity = 42
+        raw = mesh_pb2.MeshPacket(id=123)
+        setattr(raw, "from", 7)
+        raw.decoded.portnum = portnums_pb2.TELEMETRY_APP
+        raw.decoded.payload = data.SerializeToString()
+        inbox.receive({"raw": raw}, interface)
+        samples = check.streamed_telemetry(inbox, interface, 7, ["environment_metrics"], timeout=0)
+        self.assertEqual(samples["environment_metrics"]["environmentMetrics"]["temperature"], 21.25)
+
+    def test_streaming_rejects_query_echo_wrong_port_interface_source_and_empty_data(self):
+        interface = object()
+        for invalid in ("echo", "port", "interface", "source", "empty"):
+            with self.subTest(invalid=invalid):
+                inbox = check.Inbox()
+                data = telemetry_pb2.Telemetry()
+                data.environment_metrics.SetInParent()
+                if invalid != "empty":
+                    data.environment_metrics.temperature = 21.25
+                raw = mesh_pb2.MeshPacket(id=123)
+                setattr(raw, "from", 8 if invalid == "source" else 7)
+                raw.decoded.portnum = portnums_pb2.TEXT_MESSAGE_APP if invalid == "port" else portnums_pb2.TELEMETRY_APP
+                raw.decoded.want_response = invalid == "echo"
+                raw.decoded.payload = data.SerializeToString()
+                inbox.receive({"raw": raw}, object() if invalid == "interface" else interface)
+                self.assertEqual(check.streamed_telemetry(inbox, interface, 7, ["environment_metrics"], timeout=0), {})
+
+    def test_radio_probe_uses_ascii_broadcast_without_peer_key_dependency(self):
+        inbox, sender, receiver = Mock(), Mock(), Mock()
+        sender.localNode.nodeNum = 1
+        receiver.localNode.nodeNum = 2
+        def send(payload, **options):
+            self.assertEqual(options["destinationId"], 0xFFFFFFFF)
+            self.assertEqual(options["portNum"], portnums_pb2.TEXT_MESSAGE_APP)
+            self.assertFalse(options["wantAck"])
+            self.assertEqual(options["hopLimit"], 0)
+            self.assertTrue(payload.decode("ascii").startswith("RAKCHECK1:"))
+            raw = mesh_pb2.MeshPacket(id=123, to=0xFFFFFFFF)
+            setattr(raw, "from", 1)
+            raw.decoded.portnum = portnums_pb2.TEXT_MESSAGE_APP
+            raw.decoded.payload = payload
+            inbox.wait.side_effect = lambda iface, start, predicate, timeout: raw if predicate(raw) else None
+            return mesh_pb2.MeshPacket(id=123)
+        sender.sendData.side_effect = send
+        with patch.object(check.time, "sleep"):
+            result = check.probe(inbox, sender, receiver, attempts=1)
+        self.assertTrue(result[0]["received"])
+
     def test_radio_requires_exact_direct_receive_not_ack_or_relay(self):
         sent = mesh_pb2.MeshPacket(id=123)
         raw = mesh_pb2.MeshPacket(id=123, to=2)
         setattr(raw, "from", 1)
-        raw.decoded.portnum = portnums_pb2.PRIVATE_APP
+        raw.decoded.portnum = portnums_pb2.TEXT_MESSAGE_APP
         raw.decoded.payload = b"RAKCHECK1:nonce"
         self.assertTrue(check.probe_matches(raw, sent, 1, 2, raw.decoded.payload))
         mutations = [("id", 999), ("from", 3), ("to", 4), ("hop_start", 1), ("hop_limit", 1)]
