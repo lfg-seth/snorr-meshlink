@@ -295,6 +295,32 @@ class EvidenceTests(unittest.TestCase):
                 radio.apply.assert_not_called()
                 radio.restore.assert_not_called()
 
+    def test_usb_only_never_requests_battery_measurements_or_usb_disconnect(self):
+        ui = Mock()
+        ui.ask.side_effect = ["rak01", "RAK19003; no modules", ""]
+        ui.yes.side_effect = [True, False, False]
+        peer = Mock()
+        peer.before = {"hardwareId": "peer", "user": {"id": "!00000002"}}
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with (root / "sdk.log").open("w", encoding="utf-8") as log, patch.object(check, "Radio") as cls, \
+                    patch.object(check, "telemetry", return_value={"deviceMetrics": {"voltage": 0}}) as telemetry, \
+                    patch.object(check, "probe", return_value=[{"received": True}] * 3):
+                radio = cls.return_value
+                radio.before = fixture()
+                radio.dirty = True
+                radio.interface.localNode.nodeNum = 1
+                radio.snapshot.return_value = fixture()
+                result = check.run_board(ui, peer, check.Inbox(), SimpleNamespace(device="COM9", serial_number="USB-1"),
+                                         root, ("US", "B123456", b"T" * 32), log, usb_only=True)
+                self.assertEqual(result["verdict"], "PASS")
+                self.assertEqual(result["checks"]["battery_operation"]["status"], "NOT_TESTED")
+                self.assertEqual(result["checks"]["charging_activity"]["status"], "NOT_TESTED")
+                self.assertEqual([call.args[3] for call in telemetry.call_args_list], ["device_metrics", "local_stats"])
+                ui.number.assert_not_called()
+                self.assertFalse(any("Unplug" in call.args[0] for call in ui.ask.call_args_list))
+                radio.restore.assert_called_once()
+
     def test_complete_run_records_battery_response_and_restores_even_after_rf_failure(self):
         for rf_works in (True, False):
             with self.subTest(rf_works=rf_works), tempfile.TemporaryDirectory() as temporary:

@@ -1,5 +1,32 @@
 # Field testing and tangible results
 
+## 2026-11-07 - Bench-only rak01 USB/radio triage
+
+Desktop bench, owner-selected **rak01** (test-only label), owner-confirmed
+RAK19003/no modules/USB only. **!a65601b3**, USB **AA474A4710B85C2C**,
+COM8, reported **2.7.26.4c96b9b**; reference **!8737c2c9** / COM27
+retains **2.7.15.567b8ea**. Included antenna attached per owner; separation and
+orientation not measured. No historical profile selection, renaming or flashing.
+
+Agreed criteria: three directly observed packets each direction, complete
+config restoration and target under five minutes; no battery or fitted-module
+acceptance for this unit. USB/backup/temporary profile pass. **RX 3/3**,
+RSSI **-13 dBm**, SNR **6.25/5.75/6.25 dB**; **TX 0/3** matching receptions
+at reference. Requested local device metrics have no matching response.
+**FAIL on transmit check; damage versus fixture cause not isolated.** No
+component swaps, extra attempts or diagnosis after failure.
+
+Original board config and reference profile both pass complete readback through
+reboot; serial closed. Battery, charging, meter readings and calibration not
+tested; INA219/temperature modules not fitted. **317.6 seconds** includes
+operator wait and stopping the original battery workflow at its power prompt;
+five-minute acceptance not met. Raw EOFError is retained; scoped report records
+the intentional USB-only stop without attributing it to board hardware.
+
+[Procedure, scoped/raw evidence and next step](../docs/operations/rak-quick-check.md#rak01-usb-only-check---2026-11-07).
+Next: move to next owner-selected test unit. USB-only support has offline
+coverage and awaits a complete live run; physical RF diagnosis remains separate.
+
 ## 2026-10-25 - B003 client reassignment from the G004 V4
 
 Owner-selected existing OLED V4 `!699c2ed8` becomes client **B003**, replacing

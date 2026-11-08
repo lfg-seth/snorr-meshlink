@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-07 - Bench-only rak01 USB/radio check
+
+- Owner starts fresh test-only labels, independent of all saved/historical profile names. **rak01** is owner-confirmed RAK19003/no modules, USB-only; antenna attachment is confirmed and thereafter assumed for this test session. **!a65601b3**, USB **AA474A4710B85C2C**, COM8 retains **2.7.26.4c96b9b**. No persistent rename, flashing or historical profile application.
+- [Measured check](../docs/operations/rak-quick-check.md#rak01-usb-only-check---2026-11-07): USB/backup/profile pass; rak01 RX **3/3**, TX observed at reference **0/3**; requested device metrics inconclusive. Test verdict FAIL on TX; physical board versus fixture cause unisolated. Follow owner fail-and-move-on policy, with no additional probing or fault isolation.
+- Board original full config and reference prepared profile both restored/verified through reboot; serial closed. Battery/charging/meter not tested, modules not fitted. Raw run 317.6 seconds includes operator wait and power-prompt cancellation; under-five-minute acceptance not met.
+- Power phase ended when owner specified no battery; raw CLI EOFError retained. Separate scoped report preserves measured evidence and marks skipped checks. Added tested `--usb-only` path to avoid this prompt/disconnect on subsequent units; new live flow awaits next selected unit.
+- Validation: 75 offline bench tests plus docs/whitespace/help pass. Publish scoped results and USB-only support on `codex/rak-quick-check`; unrelated edits preserved.
+- Next: owner connects next test unit and identifies carrier/modules/power. Antennas assumed attached; no repeat antenna question. Next run validates the USB-only path if applicable; no rak01 retest unless separately requested.
+
 ## 2026-11-07 - Reference RAK prepared and live compatibility corrected
 
 - Owner selects connected reference and confirms included antenna. RAK4631 **!8737c2c9**, USB **70DF102F58D2A034**, COM27, retains reported **2.7.15.567b8ea**; no flashing. [Setup and evidence](../docs/operations/rak-quick-check.md#reference-prepared---2026-11-07).

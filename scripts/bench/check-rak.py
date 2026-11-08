@@ -448,12 +448,12 @@ def record_missing(ui, root):
     return report
 
 
-def run_board(ui, peer, inbox, port, root, bench, log):
+def run_board(ui, peer, inbox, port, root, bench, log, usb_only=False):
     start = time.monotonic()
     directory = root / ("board-" + stamp())
     directory.mkdir(mode=0o700)
     report = {"schemaVersion": 1, "startedAt": datetime.now(timezone.utc).isoformat(),
-              "label": ui.ask("Board label (R001 etc., or temporary label):") or "unlabelled",
+              "label": ui.ask("Test label (e.g. rak01; separate from saved radio name):") or "unlabelled",
               "port": port.device, "usbSerial": port.serial_number, "checks": {}, "samples": {}}
     report["inspectionNotes"] = ui.ask("Inspection notes (smoke/flex/pins/corrosion; blank = none recorded):")
     if not ui.yes("Inspection complete, safe to power, correct battery polarity, and included test antenna attached?"):
@@ -506,26 +506,34 @@ def run_board(ui, peer, inbox, port, root, bench, log):
             count = sum(row["received"] for row in attempts)
             add(report, name, "PASS" if count == len(attempts) else "FAIL",
                 f"{count}/{len(attempts)} direct packets observed on the opposite USB radio; RF output/sensitivity unverified.")
-        ui.say("Power step: attach a healthy partially discharged battery in its normal circuit; leave USB connected.")
-        report["usbMeter"] = {"volts": ui.number("USB meter voltage (V)"),
-                              "amps": ui.number("USB meter current (A)")}
-        charging = ui.ask("Charging LED/indicator: on, off, or unknown?").lower()
-        report["chargingIndicator"] = charging
-        report["samples"]["charging_device"] = telemetry(inbox, radio.interface, destination, "device_metrics")
-        if power:
-            report["samples"]["charging_power"] = telemetry(inbox, radio.interface, destination, "power_metrics")
-        radio.close()
-        ui.ask("Unplug ONLY the test board's USB; keep battery and reference radio connected. Press Enter.")
-        report["samples"]["battery_device"] = telemetry(inbox, peer.interface, destination, "device_metrics", 6)
-        if power:
-            report["samples"]["battery_power"] = telemetry(inbox, peer.interface, destination, "power_metrics", 6)
-            current_response(report)
-        battery_alive = report["samples"]["battery_device"] is not None
-        add(report, "battery_operation", "PASS" if battery_alive else "INCONCLUSIVE",
-            "Fresh telemetry response received over RF with USB unplugged." if battery_alive else "No battery-only response; power and RF causes unresolved.")
-        add(report, "charging_activity", "PASS" if charging == "on" else "INCONCLUSIVE",
-            "Operator observed charging indicator; termination/current accuracy unverified." if charging == "on" else "Charging activity not positively observed.")
-        add(report, "ina219_accuracy", "NOT_TESTED", "Raw firmware polarity retained; USB input current is not battery-branch calibration.")
+        if usb_only:
+            report["powerMode"] = "usb_only"
+            report["usbMeter"] = {"volts": None, "amps": None}
+            add(report, "battery_operation", "NOT_TESTED", "USB-only run; no battery connected or USB-disconnect test performed.")
+            add(report, "charging_activity", "NOT_TESTED", "USB-only run; no battery charging test performed.")
+            add(report, "ina219_accuracy", "NOT_TESTED", "No reference current measurement; calibration remains unverified.")
+        else:
+            report["powerMode"] = "usb_and_battery"
+            ui.say("Power step: attach a healthy partially discharged battery in its normal circuit; leave USB connected.")
+            report["usbMeter"] = {"volts": ui.number("USB meter voltage (V)"),
+                                  "amps": ui.number("USB meter current (A)")}
+            charging = ui.ask("Charging LED/indicator: on, off, or unknown?").lower()
+            report["chargingIndicator"] = charging
+            report["samples"]["charging_device"] = telemetry(inbox, radio.interface, destination, "device_metrics")
+            if power:
+                report["samples"]["charging_power"] = telemetry(inbox, radio.interface, destination, "power_metrics")
+            radio.close()
+            ui.ask("Unplug ONLY the test board's USB; keep battery and reference radio connected. Press Enter.")
+            report["samples"]["battery_device"] = telemetry(inbox, peer.interface, destination, "device_metrics", 6)
+            if power:
+                report["samples"]["battery_power"] = telemetry(inbox, peer.interface, destination, "power_metrics", 6)
+                current_response(report)
+            battery_alive = report["samples"]["battery_device"] is not None
+            add(report, "battery_operation", "PASS" if battery_alive else "INCONCLUSIVE",
+                "Fresh telemetry response received over RF with USB unplugged." if battery_alive else "No battery-only response; power and RF causes unresolved.")
+            add(report, "charging_activity", "PASS" if charging == "on" else "INCONCLUSIVE",
+                "Operator observed charging indicator; termination/current accuracy unverified." if charging == "on" else "Charging activity not positively observed.")
+            add(report, "ina219_accuracy", "NOT_TESTED", "Raw firmware polarity retained; USB input current is not battery-branch calibration.")
         report["ledButtonNotes"] = ui.ask("Other LED/button observations (blank = not checked):")
     except (Exception, KeyboardInterrupt, SystemExit) as error:
         if isinstance(error, PreparationRequired):
@@ -537,7 +545,10 @@ def run_board(ui, peer, inbox, port, root, bench, log):
     finally:
         if radio.dirty:
             try:
-                ui.ask("Reconnect test board USB now for configuration restoration. Press Enter.")
+                if usb_only:
+                    ui.say("USB-only run: restoring and reboot-verifying original configuration.")
+                else:
+                    ui.ask("Reconnect test board USB now for configuration restoration. Press Enter.")
                 radio.restore(directory)
                 add(report, "restore_reboot", "PASS", "Original complete config, channels, identity and firmware verified after explicit reboot.")
             except (Exception, KeyboardInterrupt, SystemExit):
@@ -568,6 +579,7 @@ def main(argv=None):
     parser.add_argument("--list-ports", action="store_true", help="List serial ports without opening them")
     parser.add_argument("--peer", help="Reference RAK COM port, e.g. COM5")
     parser.add_argument("--port", help="Test one board on this COM port; otherwise prompt for a batch")
+    parser.add_argument("--usb-only", action="store_true", help="Skip battery/charging/meter steps; record those checks as not tested")
     parser.add_argument("--recover", type=Path, help="Restore one original.json or reference/original.json; requires --port")
     parser.add_argument("--region", choices=("US",), default="US", help="US/915 MHz bench hardware only")
     args = parser.parse_args(argv)
@@ -621,7 +633,7 @@ def main(argv=None):
                 if port is None:
                     break
                 report = record_missing(ui, directory) if port == "skip" else run_board(
-                    ui, radio, inbox, port, directory, bench, log)
+                    ui, radio, inbox, port, directory, bench, log, usb_only=args.usb_only)
                 reports.append({"label": report["label"], "verdict": report["verdict"], "usbSerial": report.get("usbSerial")})
                 save(directory / "batch.json", reports)
                 if args.port:

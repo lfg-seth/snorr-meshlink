@@ -1,5 +1,20 @@
 # Hardware inventory
 
+## 2026-11-07 - Testing-context rak01 carrier and modules
+
+Owner starts fresh bench-only labels and calls the attached board **rak01**.
+Owner confirms **RAK19003 carrier, no connected modules, no battery (USB only)**.
+USB **AA474A4710B85C2C**, node **!a65601b3**, COM8 identifies as RAK4631 and
+reports retained **2.7.26.4c96b9b**. This test label does not rename the radio or
+replace historical project assignments; no profile is selected by old names.
+Antenna attachment is owner-confirmed and thereafter assumed for this session.
+
+[Quick check](../docs/operations/rak-quick-check.md#rak01-usb-only-check---2026-11-07):
+USB/config and RX pass (3/3); TX observation at reference fails (0/3), with
+board/firmware/antenna/fixture cause not isolated. Original config restored and
+reboot-verified; no flash, new enclosure, stock-total change or damage diagnosis.
+Battery/charging and sensor function are not accepted. Serial closed.
+
 ## 2026-11-07 - Physical reference RAK identified and prepared
 
 Owner identifies the attached new reference as **!8737c2c9**, USB

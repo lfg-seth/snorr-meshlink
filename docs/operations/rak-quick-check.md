@@ -60,6 +60,10 @@ configured or flashed during implementation; only COM1 enumerated on the desktop
    .\.venv\Scripts\python.exe scripts/bench/check-rak.py --peer COM5 --port COM9
    ```
 
+   For a board with no battery connected, add `--usb-only`. Battery, charging
+   and meter steps are skipped and recorded NOT_TESTED; no USB disconnect is
+   requested. USB/config, radio, any fitted modules and restoration still run.
+
 ## What happens
 
 The reference receives its own private original-config backup before changes.
@@ -176,3 +180,40 @@ private snapshot/recovery pointers. The batch command is now:
 The batch temporarily selects its own channel and restores the prepared
 reference profile at completion. No second board, bidirectional RF test,
 sensor/charging test or per-board five-minute measurement has yet been run.
+
+## rak01 USB-only check - 2026-11-07
+
+Owner assigns **rak01** solely within this bench context, independently of saved
+radio/profile names and historical project assignments. Owner identifies a
+**RAK19003 carrier with no modules**, USB only, and directs that antenna attachment
+be assumed for this testing session. USB **AA474A4710B85C2C**, node **!a65601b3**,
+on **COM8** identifies as RAK4631 and retains **2.7.26.4c96b9b**. No historical
+profile is selected by the test label and no persistent device rename occurs.
+
+| Check | Measured result |
+| --- | --- |
+| USB/backup and intended test profile | Pass; complete original snapshot saved before temporary writes. |
+| Radio reception at rak01 | 3/3 direct reference probes; RSSI -13 dBm, SNR 6.25 / 5.75 / 6.25 dB. |
+| Radio transmission from rak01 | 0/3 matching direct receptions at the reference; failed fixture check. |
+| Requested local device metrics | No matching response; inconclusive. |
+| Temperature and INA219 | Not fitted, owner-reported. |
+| Battery/charging/meter | Not tested; no battery or supplied meter readings. |
+| Original board profile and reference restoration | Both pass full comparison through explicit reboot. Serial handles closed. |
+| Duration | 317.6 seconds including operator wait and the canceled power prompt; five-minute acceptance not met. |
+
+Result: **FAIL on the transmit check**, not a confirmed diagnosis of damaged
+radio silicon. Board, firmware, antenna path and reference/fixture causes are
+not isolated. Owner's fail-and-move-on policy applies; no further probes or
+component diagnosis were performed.
+
+The original CLI did not support skipping the battery workflow. It was stopped
+at its power prompt after the owner specified USB-only; raw report preserves
+the resulting EOFError. A separate scoped report retains all measured results,
+explicitly records the intentional stop and marks power checks NOT_TESTED.
+Added `--usb-only` plus an offline regression ensuring no battery query or USB
+disconnect prompt occurs. Its complete live flow awaits the next selected unit.
+
+Private evidence: `private/bench/rak-check-20261108T011619258740Z/`, board
+`board-20261108T011708487298Z/` (`report.json`, `scoped-report.json`,
+`scoped-report.md`, `original.json`, `restored.json`). Fresh test-label/antenna
+instructions are retained in `private/bench/rak-test-context.json`.
