@@ -143,6 +143,54 @@ def write_settings(interface, messages):
     node.commitSettingsTransaction()
 
 
+def restore_role_defaults(interface, expected, actual):
+    """Reapply only observed role-default side effects after the role is stable."""
+    saved_local, saved_module, _ = load_messages(expected)
+    local, module, _ = load_messages(actual)
+    if saved_local.device.role != local.device.role:
+        raise updater.UpdateError("Role readback differs; refusing dependent-setting repair.")
+    sections = []
+    for saved, observed, allowed in (
+            (saved_local, local, {"device", "position", "power", "display"}),
+            (saved_module, module, {"telemetry", "neighbor_info"})):
+        for field in saved.DESCRIPTOR.fields:
+            name = field.name
+            wanted, current = getattr(saved, name), getattr(observed, name)
+            if wanted == current:
+                continue
+            if name not in allowed:
+                raise updater.UpdateError("Unexpected profile difference; refusing automatic dependent-setting repair.")
+            current.CopyFrom(wanted)
+            sections.append((name, wanted, saved is saved_local))
+    user = copy.deepcopy(actual["user"])
+    repair_flag = user.get("isUnmessagable") != expected["user"].get("isUnmessagable")
+    if repair_flag:
+        if "isUnmessagable" not in expected["user"]:
+            raise updater.UpdateError("Cannot restore absent owner flag presence; inspect private readback.")
+        user["isUnmessagable"] = expected["user"]["isUnmessagable"]
+    candidate = dict(actual, user=user, localWire=updater.wire(local), moduleWire=updater.wire(module))
+    # Validate every remaining field, identity, key and channel before any write.
+    same_config(expected, candidate)
+    if not sections and not repair_flag:
+        return False
+    node = interface.localNode
+    node.beginSettingsTransaction()
+    for name, wanted, is_local in sections:
+        cache = node.localConfig if is_local else node.moduleConfig
+        getattr(cache, name).CopyFrom(wanted)
+        node.writeConfig(name)
+        time.sleep(0.15)
+    if repair_flag:
+        from meshtastic.protobuf import admin_pb2
+
+        request = admin_pb2.AdminMessage()
+        request.set_owner.is_licensed = expected["user"].get("isLicensed", False)
+        request.set_owner.is_unmessagable = expected["user"]["isUnmessagable"]
+        node._sendAdmin(request)
+    node.commitSettingsTransaction()
+    return True
+
+
 class Radio:
     def __init__(self, port, log):
         self.port = port
@@ -242,6 +290,10 @@ class Radio:
         assert_identity(self.before, self.snapshot())
         write_settings(self.interface, load_messages(self.before))
         self.reconnect()
+        actual = self.snapshot()
+        updater.private_json(directory / "restore-role-readback.json", actual)
+        if restore_role_defaults(self.interface, self.before, actual):
+            self.reconnect()
         # An explicit reboot also verifies persistence if commit did not reboot.
         self.interface.localNode.reboot(1)
         self.reconnect()

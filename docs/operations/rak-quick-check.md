@@ -74,6 +74,14 @@ temporarily disabled. Only device, LoRa, telemetry and channels are written;
 hardware-specific FEM mode is retained. Identity/security/position settings
 are preserved. Full intended profile readback gates testing.
 
+Restoring a changed role can reset other firmware defaults. After the role is
+read back, restoration may reapply observed differences in device, position,
+power, display, telemetry and neighbor settings, plus the owner's message-status
+flag. Before that corrective transaction, every remaining identity, key,
+channel, owner and config field must match the backup. Unexpected differences
+stop recovery; no ambiguous write is blindly retried. Names and license state
+are preserved. Final full comparison still runs after an explicit reboot.
+
 | Check | Evidence and limits |
 | --- | --- |
 | USB/config | Complete API-visible local/module configs, every channel, serialized protobufs, identity, firmware metadata and self node information. No raw flash/bootloader/filesystem backup. Missing identity/channel data prevents writes. |
@@ -252,3 +260,29 @@ original-settings recovery attempt, leaving the reference connected. If heat or
 a burning smell is observed, leave it disconnected instead. This is a recovery
 gate, not another function-test run. Do not mark the unit restored until a fresh
 USB readback verifies it. Further board diagnosis/retesting remains owner-selected.
+
+### Original configuration recovered - 2026-11-07
+
+USB-only replug while the battery remained connected did not return a port.
+After the owner disconnected both power sources and reconnected USB with no
+battery, **rak02 returned on COM17**. Recovery writes and reboots now retained
+USB access, but full comparison exposed firmware role-default side effects:
+rebroadcast mode, GPS/position intervals, neighbor interval and the message-status
+flag differed. Channels, keys and hardware identity already matched.
+
+Source inspection of `AdminModule::handleSetConfig` and
+`NodeDB::installRoleDefaults` establishes that changing back to the saved role
+installs those defaults. Reapplied the original affected sections/status flag
+with the role unchanged; **complete original config, owner, channels, keys and
+saved fixed position now match through explicit reboot**. Serial closed; no
+flashing or function-test repetition. This supersedes the initial restoration
+warning, while the original USB/reboot test failure and untested functions remain.
+
+Final private evidence:
+`private/bench/rak02-role-recovery-20261108T015055471250Z/`
+(`before.json`, `corrected.json`, `reboot-verified.json`, `result.json`). Earlier
+recovery snapshots are retained. Scoped result/context now point to this verified
+recovery. The script's restoration path now handles observed role defaults,
+with a regression reproducing the exact failure and guards against changing
+keys, channels, other owner fields or hardware identity. Next: move to the next
+owner-selected test unit; physical fault diagnosis remains separate.

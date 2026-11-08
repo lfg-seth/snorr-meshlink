@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-11-07 - Bench-only rak02 recovery follow-up
+
+Owner removes both power sources and reconnects **rak02 !77fdb9f1** USB only.
+COM17 returns. Standard restoration remains USB-reachable through reboot, but
+full comparison detects firmware-installed role defaults and a message-status
+flag change. Source confirms role changes reset those fields. Correct only the
+saved affected sections/flag after checking all other fields match.
+
+**Original full configuration/owner/keys/channels/fixed position pass complete
+readback through explicit reboot.** Serial closed; no flash or further function
+tests. This closes the restoration gate and supersedes the initial unverified
+status; initial USB/reboot stability failure is retained. Radio, AHT21, INA219,
+charging and battery-only behavior remain untested; component cause unknown.
+[Recovery snapshots](../docs/operations/rak-quick-check.md#original-configuration-recovered---2026-11-07).
+Next: owner-selected next test unit; rak02 diagnosis/retest remains separate.
+
 ## 2026-11-07 - Bench-only rak02 reboot/USB failure
 
 Desktop quick-check with test-only **rak02**, **!77fdb9f1**, USB

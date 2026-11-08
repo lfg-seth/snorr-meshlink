@@ -43,6 +43,79 @@ def fixture():
 
 
 class PreservationTests(unittest.TestCase):
+    def test_router_restoration_recovers_firmware_role_defaults_and_message_flag(self):
+        before = fixture()
+        saved_local, saved_module, saved_channels = check.load_messages(before)
+        saved_local.device.rebroadcast_mode = 2
+        saved_local.position.gps_update_interval = 600
+        saved_local.position.position_broadcast_secs = 21600
+        saved_module.neighbor_info.update_interval = 21600
+        before.update(localWire=check.updater.wire(saved_local), moduleWire=check.updater.wire(saved_module))
+        before["user"]["isUnmessagable"] = False
+        firmware_local, firmware_module = copy.deepcopy(saved_local), copy.deepcopy(saved_module)
+        firmware_channels = copy.deepcopy(saved_channels)
+        firmware_user = copy.deepcopy(before["user"])
+        firmware_local.device.role = 0
+        node = Mock(localConfig=copy.deepcopy(firmware_local), moduleConfig=copy.deepcopy(firmware_module),
+                    channels=copy.deepcopy(firmware_channels))
+
+        def write(section):
+            target = firmware_local if section in firmware_local.DESCRIPTOR.fields_by_name else firmware_module
+            cache = node.localConfig if target is firmware_local else node.moduleConfig
+            role_changed = section == "device" and target.device.role != cache.device.role
+            getattr(target, section).CopyFrom(getattr(cache, section))
+            if role_changed:
+                target.device.rebroadcast_mode = 5
+                target.position.gps_update_interval = 86400
+                target.position.position_broadcast_secs = 43200
+                firmware_module.neighbor_info.update_interval = 0
+                firmware_user["isUnmessagable"] = True
+
+        def refresh():
+            node.localConfig.CopyFrom(firmware_local)
+            node.moduleConfig.CopyFrom(firmware_module)
+
+        def snapshot():
+            return dict(before, user=copy.deepcopy(firmware_user), localWire=check.updater.wire(firmware_local),
+                        moduleWire=check.updater.wire(firmware_module),
+                        channelsWire=[check.updater.wire(c) for c in firmware_channels])
+
+        node.writeConfig.side_effect = write
+        node.writeChannel.side_effect = lambda i: firmware_channels[i].CopyFrom(node.channels[i])
+        node._sendAdmin.side_effect = lambda request: firmware_user.update(isUnmessagable=request.set_owner.is_unmessagable)
+        radio = check.Radio(SimpleNamespace(device="COM9", serial_number="USB-1"), None)
+        radio.before, radio.dirty = before, True
+        radio.interface = SimpleNamespace(localNode=node)
+        radio.snapshot = Mock(side_effect=snapshot)
+        radio.reconnect = Mock(side_effect=refresh)
+        with tempfile.TemporaryDirectory() as temporary, patch.object(check.time, "sleep"):
+            radio.restore(Path(temporary))
+        self.assertFalse(radio.dirty)
+        check.same_config(before, snapshot())
+        self.assertEqual(firmware_local.security, saved_local.security)
+
+    def test_dependent_restore_rejects_key_channel_owner_and_identity_changes_before_writes(self):
+        for unsafe in ("security", "channels", "owner", "hardware", "role"):
+            with self.subTest(unsafe=unsafe):
+                before, actual = fixture(), fixture()
+                local, _, _ = check.load_messages(actual)
+                local.position.gps_update_interval = 86400
+                if unsafe == "security":
+                    local.security.private_key = b"X" * 32
+                elif unsafe == "channels":
+                    actual["channelsWire"] = []
+                elif unsafe == "owner":
+                    actual["user"]["longName"] = "changed owner"
+                elif unsafe == "hardware":
+                    actual["hardwareId"] = "another board"
+                else:
+                    local.device.role = 0
+                actual["localWire"] = check.updater.wire(local)
+                interface = Mock()
+                with self.assertRaises(check.updater.UpdateError):
+                    check.restore_role_defaults(interface, before, actual)
+                interface.localNode.beginSettingsTransaction.assert_not_called()
+
     def test_diagnostic_profile_roundtrip_preserves_security_and_unrelated_settings(self):
         before = fixture()
         original = copy.deepcopy(before)
@@ -170,7 +243,7 @@ class PreservationTests(unittest.TestCase):
         radio.reconnect = Mock()
         changed = fixture()
         changed["channelsWire"] = []
-        radio.snapshot = Mock(side_effect=[fixture(), changed])
+        radio.snapshot = Mock(side_effect=[fixture(), fixture(), changed])
         with tempfile.TemporaryDirectory() as temporary, patch.object(check, "write_settings"):
             with self.assertRaises(check.updater.UpdateError):
                 radio.restore(Path(temporary))

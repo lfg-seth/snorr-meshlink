@@ -1,5 +1,20 @@
 # Hardware inventory
 
+## 2026-11-07 - Testing-context rak02 recovery verified
+
+**rak02 !77fdb9f1 / USB 820C9B4F0C2D7675 / COM17** returns after owner removes
+battery and USB, then reconnects USB only. Original full configuration, owner
+message-status flag, own keys/channels and fixed position are restored and
+verified through reboot; firmware retained, serial closed. Initial restore
+comparison exposed firmware role-default changes, corrected from the saved
+original snapshot. This supersedes the earlier unverified-restoration status.
+
+Original USB/reboot failure remains unresolved. No radio, INA219, AHT21,
+charging or battery-only function is accepted; no physical damage cause,
+new enclosure, stock-total or assignment change inferred. Recovery only, no
+function-test repetition or reflash.
+[Evidence](../docs/operations/rak-quick-check.md#original-configuration-recovered---2026-11-07).
+
 ## 2026-11-07 - Testing-context rak02 suspected reverse-polarity unit
 
 Next board is labelled **rak02** only within this bench context: USB

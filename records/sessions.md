@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-07 - rak02 original configuration recovered
+
+- Owner fully removes battery/USB, then reconnects USB only; **rak02 !77fdb9f1 / COM17** returns. No further function tests. [Recovery and evidence](../docs/operations/rak-quick-check.md#original-configuration-recovered---2026-11-07).
+- First recovery stays reachable but full comparison rejects role-default changes. Firmware role restoration resets rebroadcast/position/neighbor defaults and message-status flag; source and captured readback establish this software side effect. Reapply those saved values with role stable; complete original config, owner flag, identity/keys/channels and fixed position pass through explicit reboot. Serial closed, firmware retained, no flash.
+- This resolves the original-settings recovery gate; initial USB/reboot failure remains unresolved and INA219/AHT21/radio/charging functions remain untested. Do not infer battery or board damage from recovery success.
+- Updated restoration to repair only observed supported role-default differences after full pre-write validation; strict key/channel/owner/identity comparison remains. Regression fails on original role-reset pattern before the fix, then passes; additional guard rejects unrelated identity/security/channel changes before writes.
+- Validation: 77 offline bench tests, docs/whitespace and CLI checks pass. Publish on `codex/rak-quick-check`; unrelated edits preserved.
+- Next: move to next owner-selected test unit. rak02 stays set aside for later owner-selected diagnosis/retest; no repeat antenna question.
+
 ## 2026-11-07 - Bench-only rak02 loses USB after test reboot
 
 - Next test-only label **rak02**: **!77fdb9f1**, USB **820C9B4F0C2D7675**, initially COM17, RAK4631 / reported **2.7.26.4c96b9b** retained. Owner reports suspected reverse-polarity damage, INA219/AHT21, battery about 3.2 V and attached antenna. Carrier/wiring/meter/indicator details unknown. No historical profile selection or rename.
