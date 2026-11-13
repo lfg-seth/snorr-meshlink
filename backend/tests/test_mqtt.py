@@ -65,6 +65,37 @@ class AdapterTests(unittest.TestCase):
         with self.assertRaises(PacketRejected): decode(payload[:-1])
         with self.assertRaises(PacketRejected): decode(payload + b'\0')
 
+    def test_sd_golden_encrypted_direct_peer_and_invalid(self):
+        wire = bytes.fromhex('534e5344010f0300c03ca19e2a000000070000006400000000f15365805101000000000002000000010000000000200003000000')
+        config = {**CONFIG, 'infrastructure': CONFIG['gateways']}
+        def decode(payload, gateway='!9ea13cc0', source=0x9ea13cc0, packet_id=77):
+            msg = mesh_pb2.MeshPacket(id=packet_id)
+            setattr(msg, 'from', source)
+            nonce = struct.pack('<QI', packet_id, source) + bytes(4)
+            data = mesh_pb2.Data(portnum=portnums_pb2.PRIVATE_APP, payload=payload)
+            msg.encrypted = Cipher(algorithms.AES(bytes(16)), modes.CTR(nonce)).encryptor().update(data.SerializeToString())
+            env = mqtt_pb2.ServiceEnvelope(packet=msg, channel_id='Test', gateway_id=gateway)
+            return Adapter(config).decode(f'snorr/pilot/2/e/Test/{gateway}', env.SerializeToString(), NOW)
+        own = decode(wire)
+        peer = decode(wire, '!849ad7a0', packet_id=99)
+        self.assertEqual((own['packetId'], peer['packetId']), ('0000002a-00000007',)*2)
+        self.assertNotEqual(own['gatewayId'], peer['gatewayId'])
+        self.assertEqual(own['data']['totalBytes'], '9007199254740993')
+        self.assertEqual(own['data']['usedBytes'], '8589934592')
+        for offset, value in [(4,2),(5,2),(5,16),(6,1),(7,1),(8,1),(12,0),(16,0),(28,1)]:
+            bad = bytearray(wire)
+            bad[offset] = value
+            with self.assertRaises(PacketRejected): decode(bytes(bad))
+        for bad in [wire[:-1], wire + bytes(1), wire[:40] + bytes(8) + wire[48:]]:
+            with self.assertRaises(PacketRejected): decode(bad)
+        with self.assertRaises(PacketRejected): decode(wire, source=0x699c2ed8)
+        absent = bytearray(wire)
+        absent[5:7] = bytes(2)
+        absent[24:28] = bytes(4)
+        absent[32:48] = bytes(16)
+        self.assertIsNone(decode(bytes(absent))['data']['totalBytes'])
+        self.assertIsNone(decode(bytes(absent))['measuredAt'])
+
     def wire_report(self, payload, port=portnums_pb2.PRIVATE_APP, gateway='!9ea13cc0'):
         source = 0x05237743
         data = mesh_pb2.Data(portnum=port, payload=payload)

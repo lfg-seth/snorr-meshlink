@@ -18,6 +18,24 @@ def at(seconds):
     return datetime.fromtimestamp(seconds, timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
 
+def sd_health(payload, sender):
+    if len(payload) != 52:
+        raise PacketRejected('invalid SNSD size')
+    (_, version, flags, clock_source, reserved, observer, boot, sequence, uptime, utc,
+     interval, used, total, dropped) = struct.unpack('<4sBBBB6IQQI', payload)
+    if (version != 1 or flags not in (0, 1, 3, 7, 11, 15) or reserved or observer != sender
+            or not boot or not sequence or interval != 86400 or clock_source not in (0, 2, 3, 4)
+            or (utc < 1577836800 if clock_source else utc != 0)
+            or (not total or used > total if flags & 8 else bool(used or total))):
+        raise PacketRejected('invalid SNSD flags, identity or counters')
+    return {'kind': 'sd-health', 'packetId': f'{boot:08x}-{sequence:08x}',
+            'measuredAt': at(utc) if utc else None,
+            'data': {'bootId': boot, 'sequence': sequence, 'uptimeSeconds': uptime,
+                     'intervalSeconds': interval, 'clockSource': clock_source, 'flags': flags,
+                     'usedBytes': str(used) if flags & 8 else None,
+                     'totalBytes': str(total) if flags & 8 else None, 'dropped': dropped}}
+
+
 class Adapter:
     def __init__(self, config):
         self.root = config['root'].rstrip('/')
@@ -67,6 +85,11 @@ class Adapter:
                       'receivedAt': at(received_at)}
             device_id = (self.infrastructure if source in self.infrastructure else self.members)[source]
             if data.portnum == portnums_pb2.PRIVATE_APP:
+                if data.payload.startswith(b'SNSD'):
+                    sender = getattr(packet, 'from')
+                    if source not in self.infrastructure or self.gateways.get(source) != device_id:
+                        raise PacketRejected('invalid SD report provenance')
+                    return {**common, **sd_health(data.payload, sender), 'deviceId': device_id}
                 if data.payload.startswith(b'SNGH'):
                     if source not in self.gateways or source not in self.infrastructure or len(data.payload) != 32:
                         raise PacketRejected('invalid gateway health provenance/size')
