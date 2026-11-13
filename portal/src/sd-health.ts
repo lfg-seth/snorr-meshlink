@@ -13,7 +13,8 @@ export function sdHealthLabel(report: SdHealth | null | undefined, now: number, 
     : 'capacity unknown';
   const status = report.flags & 4 ? 'Logging' : report.flags & 2 ? 'Write failed' :
     report.flags & 1 ? 'Mount failed' : 'Card unavailable';
-  const freshness = age === null ? 'source time unknown' : `reported ${ageLabel(age)} ago`;
+  const receiptAge = (now - Date.parse(report.receivedAt)) / 1000;
+  const freshness = age === null ? `source time unknown · received ${ageLabel(receiptAge)} ago` : `reported ${ageLabel(age)} ago`;
   const lastKnown = !online || age === null || age < 0 || age >= report.intervalSeconds * 3;
   return `${lastKnown ? 'Last known · ' : ''}${status} · ${storage} · ${report.dropped} dropped this boot · ${freshness}`;
 }
