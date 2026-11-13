@@ -51,6 +51,14 @@ class AdapterTests(unittest.TestCase):
             p.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(nonce)).encryptor().update(data.SerializeToString())
             wire = mqtt_pb2.ServiceEnvelope(packet=p, channel_id='Test', gateway_id=gateway)
             return Adapter(config).decode(f'snorr/pilot/2/e/Test/{gateway}', wire.SerializeToString(), NOW)
+        signal = struct.pack('<4sBBbB7I',b'SNWF',1,2,-52,11,0x9ea13cc0,42,7,100,NOW-1,300,3)
+        wifi = decode(signal)
+        self.assertEqual((wifi['kind'], wifi['packetId'], wifi['data']['rssiDbm'],wifi['data']['association']),
+                         ('wifi-signal','0000002a-00000007',-52,3))
+        self.assertEqual(decode(signal,'!9ea13cc0')['packetId'], wifi['packetId'])
+        for bad in [signal[:-1],signal[:5]+bytes([0])+signal[6:],signal[:7]+bytes([0])+signal[8:]]:
+            with self.assertRaises(PacketRejected): decode(bad)
+        with self.assertRaises(PacketRejected): decode(signal,source=0x699c2ed8)
         payload = struct.pack('<4sBBHIIIIII', b'SNGH', 1, 0, 0, 0x9ea13cc0, 42, 7, 100, NOW-1, 180)
         actual = decode(payload)
         self.assertEqual(actual['kind'], 'gateway-health')

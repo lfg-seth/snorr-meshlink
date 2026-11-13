@@ -18,6 +18,20 @@ def at(seconds):
     return datetime.fromtimestamp(seconds, timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
 
+def wifi_signal(payload, sender):
+    if len(payload) != 36:
+        raise PacketRejected('invalid SNWF size')
+    _, version, state, rssi, channel, node, boot, seq, uptime, utc, interval, association = struct.unpack('<4sBBbB7I', payload)
+    if (version != 1 or state not in (0, 1, 2) or node != sender or not boot or not seq
+            or not 1 <= interval <= 4294967 or (utc and utc < 1577836800)
+            or (not (1 <= channel <= 14 and association) if state == 2 else bool(rssi or channel or association))):
+        raise PacketRejected('invalid SNWF fields')
+    return {'kind': 'wifi-signal', 'packetId': f'{boot:08x}-{seq:08x}', 'measuredAt': at(utc) if utc else None,
+            'data': {'bootId': boot, 'sequence': seq, 'uptimeSeconds': uptime, 'intervalSeconds': interval,
+                     'state': ('disconnected', 'unavailable', 'measured')[state], 'rssiDbm': rssi if state == 2 else None,
+                     'channel': channel or None, 'association': association or None}}
+
+
 def sd_health(payload, sender):
     if len(payload) != 52:
         raise PacketRejected('invalid SNSD size')
@@ -85,6 +99,10 @@ class Adapter:
                       'receivedAt': at(received_at)}
             device_id = (self.infrastructure if source in self.infrastructure else self.members)[source]
             if data.portnum == portnums_pb2.PRIVATE_APP:
+                if data.payload.startswith(b'SNWF'):
+                    if source not in self.infrastructure or self.gateways.get(source) != device_id:
+                        raise PacketRejected('invalid Wi-Fi report provenance')
+                    return {**common, **wifi_signal(data.payload, getattr(packet, 'from')), 'deviceId': device_id}
                 if data.payload.startswith(b'SNSD'):
                     sender = getattr(packet, 'from')
                     if source not in self.infrastructure or self.gateways.get(source) != device_id:

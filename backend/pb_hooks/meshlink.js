@@ -588,6 +588,7 @@ function state(e) {
         id: d.getString('key'),
         role: d.getString('kind') === 'repeater' ? 'Repeater' : 'Backhaul',
         gatewayHealth: d.getString('kind') === 'backhaul' ? require(`${__hooks}/gateway-health.js`).status(d) : null,
+        wifiSignal: d.getString('kind') === 'backhaul' ? c.object(d, 'readings').wifiSignal || null : null,
         sdHealth: d.getString('kind') === 'backhaul' ? c.object(d, 'readings').sdHealth || null : null,
         lastContactAt: d.getString('lastContactAt') || null,
         reportedAt: timesKnown[timesKnown.length - 1] || null,

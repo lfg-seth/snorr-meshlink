@@ -3,6 +3,15 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.3.0 - 2026-11-12
+
+Gateway cards show Wi-Fi RSSI in dBm, channel and sample age, plus SD capacity
+in IEC units. SNWF v1 reports use the configured device telemetry cadence.
+Encrypted MQTT receipts and normalized observations retain measurements and
+disconnects using existing collections. No database migration. Older gateways
+show awaiting report. Roll back portal and backend together to 0.2.0; original
+archives and observations remain intact. USB survey samples stay local.
+
 ## 0.2.0 - 2026-11-12
 
 Add daily SNSD v1 storage reports to encrypted MQTT ingestion and gateway
