@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-11-13 - Case 1 inventory and enclosure design images
+
+Record owner-reported Case 1 as one v4 PETG enclosure with one SMA antenna
+port, two 160 mA solar panels and two empty four-cell parallel 18650 holders
+(eight empty cell slots). No installed batteries or boards; existing cell/board
+stock totals are unchanged. HW-007 now accounts for at least two holders while
+its full stock count remains unknown. [Case inventory](inventory.md#case-enclosure-inventory---2026-11-13).
+
+Save the supplied v4 render and v3 screenshot in the
+[hardware design notes](../docs/hardware/enclosures.md). The v3 image establishes
+a design reference only, without a physical-case count or parts allocation.
+Panel output, holder interconnection and assembled operation are unverified.
+
+Validation: changed-document whitespace/local-link checks pass for all five
+Markdown files; both copied PNGs match their supplied originals by SHA-256.
+Branch `codex/case-inventory`; commit/push reported at handoff. Unrelated
+checkout changes are preserved in place.
+
+Next: owner describes the next physical case. Overall case, panel and holder
+totals remain open until intake is complete.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware

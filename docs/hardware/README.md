@@ -7,6 +7,7 @@ publication, and distinguish planned hardware from installed/measured hardware.
 
 | Node type | Documentation |
 | --- | --- |
+| Enclosures | [v3/v4 design images](enclosures.md) and [physical case inventory](../../records/inventory.md#case-enclosure-inventory---2026-11-13) |
 | Heltec V3 gateway | [Hardware and setup status](heltec-v3-gateway.md) |
 | RAK4631 repeater | Dedicated illustrated page pending LOCAL-5; existing [setup notes](../operations/rak-pilot-setup.md) and [current flashing handoff](../operations/board-flashing-handoff.md). |
 | Heltec V4 member tracker | Dedicated illustrated page pending LOCAL-5; existing [bench checklist](../operations/heltec-bench-checklist.md). |
