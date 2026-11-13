@@ -16,8 +16,8 @@ telemetry packets had plausible UTC. No decode exceptions occurred. R003 is
 absent and remains the previously held radio; this run does not clear its hold.
 
 The run supports sustained bench continuity, two-uplink reception, member GPS
-freshness and G001 logging health. It also exposes late reporting, uncertain
-power measurement paths, three portal enrollment gaps, and R009's missing GPS
+freshness and G001 logging health. It also exposes late reporting, uncalibrated
+power readings, three portal enrollment gaps, and R009's missing GPS
 measurement timestamp. It is not battery endurance, field coverage, forced-relay
 or full SD-file integrity acceptance.
 
@@ -48,9 +48,16 @@ Device ADC and INA219 voltage remain separate measurements.
 
 Firmware status **101 means charging or no detected battery**, not 101% state
 of charge. Battery percentages are firmware estimates; they do not measure
-capacity or calibrate the ADC. The power topology has not been supplied for this
-analysis; USB bypass of a battery-lead shunt is one possible explanation for
-near-zero readings, not a diagnosed defect.
+capacity or calibrate the ADC.
+
+**Owner clarification, November 13:** the run used mixed USB and battery power;
+the nodes showing sustained current were battery-powered, and the INA219 is
+inline with the battery pack. This identifies G001/R001/R002/R006/R009 as the
+battery-draw group in these measurements. The near-zero RAKs were supplied by
+USB, so their readings do not indicate a current-sensor fault or near-zero
+whole-node consumption. For the battery-powered nodes, the reported current is
+draw from the pack, subject to shunt calibration and sparse sampling. The
+clarification does not establish pack capacities or full-discharge runtime.
 
 - **G001:** after 01:00, 73 power samples average **135.3 mA**, median 136.6,
   range 125.4–158.0. Half-hour means mostly remain 132–139 mA; no progressive
@@ -58,9 +65,10 @@ near-zero readings, not a diagnosed defect.
   is **−537.7 mA**, followed by discharge; including that transition gives a
   misleading 126.9 mA overall mean. Device voltage falls 3.858→3.778 V and its
   estimate 66→57%; after 01:00, device voltage is 3.815→3.778 V. INA219 reads
-  roughly 0.11–0.12 V below the device ADC during steady operation. Verify the
-  supply/shunt location and compare a meter before using either for energy or
-  solar/runtime sizing.
+  roughly 0.11–0.12 V below the device ADC during steady operation. With the
+  battery-inline path confirmed, this is reported pack draw. A meter comparison
+  can establish calibration and explain the two voltage readings before final
+  energy or solar/runtime sizing.
 - **R001/R002/R006:** sampled mean draw is 12.9/12.5/11.8 mA. Voltage changes
   slowly. R001 finishes at only **3.434 V / 21% estimated**, R006 at
   **3.533 V / 30%**; these have less reported charge headroom than R002.
@@ -69,15 +77,33 @@ near-zero readings, not a diagnosed defect.
   controlled GPS-off comparison was made. Device voltage falls 3.641→3.614 V,
   estimated level 41→38%.
 - **R004/R005/R007/R008/R010:** all average within 0.3 mA of zero despite
-  active RF reporting. These values cannot establish whole-node consumption.
-  Confirm whether the shunts are in the actual active supply path before
-  treating them as unusually efficient devices or broken sensors.
+  active RF reporting. The owner confirms the mixed-power setup: these nodes
+  were supplied by USB while their shunts monitored the battery path. Their
+  near-zero battery-path readings are therefore consistent with the setup and
+  do not establish a sensor fault or whole-node consumption.
 - **B002/B003:** device voltage rises to plateaus at **4.311/4.367 V**, and
   status becomes 101; this resembles charging, rather than a battery-only
   discharge test. Legacy V3 also reports about 4.34 V and status 101. Verify
   those above-4.3-V ADC readings at the cell with a meter; the archive cannot
   distinguish ADC scaling from actual cell voltage. Neither member exports
   INA219 current, so their draw is unknown.
+
+### Conditional daily battery budget
+
+Multiplying the sampled discharge means by 24 hours gives approximately:
+
+| Battery-powered node | Sample mean draw | Equivalent charge per 24 h |
+| --- | --- | --- |
+| R001 | 12.86 mA | 309 mAh |
+| R002 | 12.47 mA | 299 mAh |
+| R006 | 11.83 mA | 284 mAh |
+| R009 | 48.82 mA | 1,172 mAh |
+| G001 | 135.33 mA, steady period | 3,248 mAh |
+
+These are budgeting extrapolations if the same load continues, not measured
+24-hour consumption or remaining runtime. R009 is about four times the ordinary
+RAK group's draw; G001 is about eleven times. Usable pack capacity, cutoff,
+temperature and a representative discharge run are still needed for runtime.
 
 ## Reporting cadence and airtime
 
@@ -223,9 +249,10 @@ recovery remain unverified by the archive alone.
 
 ## Next useful checks
 
-1. Establish actual supply/shunt routing for each assembly and meter-check
-   G001/B003/Legacy V3 voltage; resolve near-zero current paths before sizing
-   batteries or solar. R001 has the least reported charge headroom.
+1. R001 has the least reported charge headroom. Record usable pack capacities
+   for runtime estimates, and meter-check G001/B003/Legacy V3 voltage and shunt
+   calibration. The owner has confirmed battery-inline routing; USB-powered
+   nodes' near-zero battery-path current is not an unresolved fault.
 2. Reconcile R004/R006/R008 physical radio IDs with the portal registry.
 3. Select a separate diagnostic capture for late device/environment scheduling;
    keep it distinct from RF packet loss. R006's relative signal warrants a
@@ -233,7 +260,7 @@ recovery remain unverified by the archive alone.
 4. Include/verify R009 GPS measurement time and use an explicitly selected
    cadence for any freshness acceptance run. Continue member GPS quality checks.
 5. Copy and inspect actual SD files for logging completeness, then perform the
-   agreed battery-only/forced-relay/field tests. This read-only review changes
+   agreed full-discharge/forced-relay/field tests. This read-only review changes
    no board, service or setting.
 
 ## Evidence and verification

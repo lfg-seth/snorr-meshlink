@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-11-13 - Overnight bench power-path confirmation
+
+Owner confirms mixed USB/battery operation and INA219 inline with each battery
+pack; the nodes showing sustained current were on batteries. In the overnight
+archive these are G001/R001/R002/R006/R009. The five near-zero RAKs were
+USB-powered, so battery-path readings are not whole-node USB consumption and do
+not establish a sensor fault. Pack capacities and current/voltage calibration
+remain unmeasured here. No hardware quantities or wiring changed in this review.
+[Measurements and conditional daily budgets](bench-overnight-20261113.md).
+
 ## 2026-11-13 - G001 SD cadence firmware
 
 Screenless **G001 `!1bbf0638`**, USB **F8:5B:1B:BF:06:38**, now runs

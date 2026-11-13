@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-13 - Overnight battery-inline power clarification
+
+Owner confirms mixed power, with current-bearing nodes on batteries and INA219
+inline with the battery packs. Update the overnight report, inventory and
+follow-up row: G001/R001/R002/R006/R009 readings represent reported pack draw;
+five near-zero USB-powered RAK readings do not indicate current-sensor failure.
+The sampled means imply conditional daily budgets of about 3,248 mAh for G001,
+1,172 for R009 and 284-309 for the ordinary battery-powered RAKs if load persists.
+These are extrapolations, not measured capacity or remaining runtime.
+[Corrected interpretation](bench-overnight-20261113.md).
+
+Only records/chart labels change; no new measurements or device/service writes.
+Changed-document links, whitespace and chart rendering checked at handoff.
+Next: portal ID reconciliation, cadence diagnostics and R009 measurement time;
+capacity/calibration and full-discharge/relay/field acceptance remain open.
+Branch `codex/overnight-bench-20261113`; commit/push reported at handoff.
+
 ## 2026-11-13 - Overnight 13-node bench archive analysis
 
 Read-only review covers 18:00 November 12 through 07:14 November 13 Pacific;
