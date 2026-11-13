@@ -2,10 +2,11 @@
 
 ## Case enclosure inventory - 2026-11-13
 
-Owner-reported physical inventory: **Cases 1–11 are all v4 enclosures**.
+Owner-reported physical inventory: **16 cases — 12 v4, 2 v3 and 2 v1**.
+Cases 1–12 are v4; Cases 13–14 are v3; Cases 15–16 are v1.
 This intake counts enclosures, solar panels and empty battery holders; no
 batteries or boards are installed in these cases. Case numbers identify
-enclosures and do not assign a repeater or gateway. Design v3/v4 refers to the
+enclosures and do not assign a repeater or gateway. Design v1/v3/v4 refers to the
 enclosure revision.
 
 Each battery holder in this intake is a **four-cell 18650 parallel holder
@@ -24,25 +25,31 @@ Each battery holder in this intake is a **four-cell 18650 parallel holder
 | Case 9 | v4 | ASA | 1 × SMA; 1 × Type N | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
 | Case 10 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
 | Case 11 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
+| Case 12 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 13 | v3 | ASA | 1 × SMA | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 14 | v3 | ASA | 1 × Type N | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 15 | v1 | ASA | 1 × Type N | 3 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 16 | v1 | ASA | 1 × Type N | 3 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
 
-Totals for these 11 cases:
+Totals for these 16 cases:
 
 | Item | Owner-confirmed count |
 | --- | --- |
-| v4 enclosures | 11: 3 PETG, 8 ASA |
-| Empty four-cell parallel 18650 holders | 19, providing 76 empty cell slots |
-| SMA ports / connectors | 13 |
-| Type N connectors | 3 |
-| Fitted 160 mA solar panels | 8 |
+| Enclosures | 16: 12 v4, 2 v3, 2 v1 |
+| Enclosure materials | 4 PETG, 12 ASA |
+| Empty four-cell parallel 18650 holders | 27, providing 108 empty cell slots |
+| SMA ports / connectors | 15 |
+| Type N connectors | 6 |
+| Fitted 160 mA solar panels | 18 |
 | Fitted 200 mA solar panels | 10 |
-| All fitted solar panels | 18 |
+| All fitted solar panels | 28 |
 | Cases with external-panel pass-through | 2: Cases 10 and 11, for larger 5 W panels |
 | Installed batteries / boards | 0 / 0 |
 
 Cases 10 and 11 have no fitted solar panels. Their pass-through provision does
 not establish ownership, quantity or installation of external 5 W panels.
-The 19 holders accounted for here exceed HW-007's historical source quantity
-of 18 by one; retain that source quantity unchanged. Remaining loose parts and
+The 27 holders accounted for here exceed HW-007's historical source quantity
+of 18 by nine; retain that source quantity unchanged. Remaining loose parts and
 any additional cases are not counted here. Panel source-row matching remains
 unknown; existing battery-cell and board stock totals are unchanged. No new
 purchase or expense is inferred.
@@ -51,8 +58,8 @@ Panel current ratings and enclosure materials are supplied by the owner. Panel
 model, voltage, wattage of the fitted panels, interconnection and the connection
 between holders are not recorded; output and assembled operation have not been
 measured. [Owner-supplied v3 and v4 design images](../docs/hardware/enclosures.md)
-document the designs. The v3 screenshot alone does not establish another
-physical case or its parts count.
+document the designs. Physical quantities come from the owner's case-by-case
+reports; no v1 design image has been supplied.
 
 ## 2026-11-13 - G001 SD cadence firmware
 
@@ -341,7 +348,7 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 | HW-004 | 5 | Repeater | Solar panel; 1W | 40 | Unknown | Source note estimates closer to 0.25W each; not a measured project result |
 | HW-005 | 6 | Repeater | Fiberglass antenna; labelled 5.8dBi LoRa 915MHz | 10 | 10 | Owner-confirmed count matches listed quantity; condition and actual connectors/variant unverified |
 | HW-006 | 7 | Repeater | INA219 current/power sensor | 10 | Unknown | Verify boards and interfaces |
-| HW-007 | 8 | Repeater | Four-slot 18650 holder | 18 | At least 19 accounted for; total unknown | Cases 1–11 have 19 empty four-cell parallel holders (1S4P each), per owner 2026-11-13. Exceeds historical source quantity by 1; remaining loose stock unknown. Holders, not cells |
+| HW-007 | 8 | Repeater | Four-slot 18650 holder | 18 | At least 27 accounted for; total unknown | Cases 1–16 have 27 empty four-cell parallel holders (1S4P each), per owner 2026-11-13. Exceeds historical source quantity by 9; remaining loose stock unknown. Holders, not cells |
 | HW-008 | 9 | Repeater | Coax; Type N to U.F.L1 | 10 | Unknown | Source associates these with fiberglass antennas |
 | HW-009 | 10 | Client | Battery; source 1000mAh, earlier owner report 1100mAh | 4 | 6 | Owner previously reported six small V3 LiPo packs; on 2026-10-21 confirms G001/G002 each have an installed 1000mAh pack. Retain total without adding stock; remaining capacity labels, connectors and condition unverified |
 | HW-010 | 11 | Client | Battery; 3000mAh | 2 | 2 | Owner confirms 2 × 3000mAh batteries for V4 units; LiPo per owner; exact pack label, connector and condition unverified. Owner suspects larger batteries are needed; capacity choice awaits runtime testing |

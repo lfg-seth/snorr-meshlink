@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-13 - Cases 12–16 extend the enclosure inventory
+
+Add owner-reported Case 12 (v4/PETG), Cases 13/14 (v3/ASA) and Cases 15/16
+(v1/ASA) to the [case inventory](inventory.md#case-enclosure-inventory---2026-11-13).
+All 16 cases together have 27 empty four-cell parallel holders (108 cell slots),
+15 SMA ports/connectors, 6 Type N connectors and 28 fitted panels (18 × 160 mA,
+10 × 200 mA). Design totals are 12 v4, 2 v3 and 2 v1; material totals are
+4 PETG and 12 ASA. No batteries or boards are installed.
+
+HW-007 accounts for at least 27 holders; retain the historical source quantity
+of 18 and record the nine-holder difference without inferring purchases or
+uncounted loose stock. Cases 10/11 retain zero fitted panels and their external
+5 W panel pass-through provision. Update the design notes for the reported v3
+and v1 cases; no v1 image has been supplied.
+
+Validation: case-row arithmetic and transcription checked; changed-document
+whitespace/local-link checks pass. Branch `codex/case-inventory`; commit/push
+reported at handoff. Unrelated checkout work remains preserved.
+
+Next: record additional cases or revised allocations when supplied; use the
+inventory for owner-selected assembly. Panel output and assembled operation
+remain unmeasured; cell and board stock counts are unchanged.
+
 ## 2026-11-13 - Cases 2–11 added to v4 enclosure inventory
 
 Extend the owner-reported [case inventory](inventory.md#case-enclosure-inventory---2026-11-13)
