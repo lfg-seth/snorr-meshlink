@@ -71,7 +71,7 @@ async function render() {
       (r.sequence ? ` · +${r.uptimeMs} ms · #${r.sequence}` : ''));
     cell(row,r.event);
     const details=document.createElement('details'), summary=document.createElement('summary'), code=document.createElement('code');
-    summary.textContent=[r.source,r.packetId && 'id '+r.packetId,r.text||r.detail].filter(x=>x!==undefined).join(' · ');
+    summary.textContent=[r.source,r.packetId && 'id '+r.packetId,r.text||r.application?.type||r.detail].filter(x=>x!==undefined).join(' · ');
     code.textContent=JSON.stringify(r);
     details.append(summary,code); row.insertCell().append(details);
   }
@@ -80,7 +80,7 @@ async function render() {
   $('status').textContent=`${segments.length} files · Page ${page+1} · ${$('rows').childElementCount} events`;
 }
 const columns=['file','node','boot','segment','event','sequence','uptimeMs','observed','reconstructed','clockSource','source',
-  'packetId','related','detail','rssi','snr','text','raw','offset'];
+  'packetId','related','detail','rssi','snr','application','text','raw','offset'];
 async function exportFile(format) {
   const token=revision;
   if (!window.showSaveFilePicker) { $('status').textContent='Open this reader in a browser with streaming file saving, such as desktop Chrome or Edge.';return; }
@@ -93,7 +93,8 @@ async function exportFile(format) {
     for await (const r of filtered(token)) {
       if (format==='json') buffer+=(count?',\n':'')+JSON.stringify(r);
       else buffer+=columns.map(k=>{
-        let s=String(r[k]??''); if (/^[\s]*[=+@-]/.test(s) && typeof r[k]==='string') s="'"+s;
+        let s=k==='application' && r[k] ? JSON.stringify(r[k]) : String(r[k]??'');
+        if (/^[\s]*[=+@-]/.test(s) && typeof r[k]==='string') s="'"+s;
         return '"'+s.replaceAll('"','""')+'"';
       }).join(',')+'\r\n';
       if (buffer.length>=65536) {await out.write(buffer);buffer='';}
