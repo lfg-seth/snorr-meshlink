@@ -2,6 +2,21 @@
 
 SNORR MeshLink supports Search and Rescue on Mount Charleston, Nevada.
 
+## Current repeater and gateway numbering - 2026-11-12
+
+The owner restarts all repeater/gateway labels for Sunday deployment. Use the
+[current physical-device roster](records/deployment-nodes.md); earlier R/G
+labels, saved sites and number-based profiles are historical, not commissioning
+inputs. The first fresh **R001** is RAK19007/4631 **!f95b5501**, USB
+**E93C5FF0F97DD76B**, with INA219/AHT21 and retained `2.7.26.4c96b9b`.
+Case, battery/solar and location will be selected at deployment; the old fixed
+location is cleared. Member-node labels/identities are not reset.
+All prepared boards stay **CLIENT on the bench**; switch selected repeaters to
+ROUTER during final placement and verify their report cadence/profile again.
+The owner plans batches of 4-8 with mixed sensor fit; use the
+[plug-in label station](docs/operations/rak-batch-station.md) and record each
+unit's INA219/AHT21 fit explicitly.
+
 ## Mission and priorities
 
 1. Passive member GPS tracking for dispatch.

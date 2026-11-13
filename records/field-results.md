@@ -1,5 +1,25 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Fresh R001 board commissioning and paced RF check
+
+- Owner-confirmed RAK19007 with INA219/AHT21, USB **E93C5FF0F97DD76B** /
+  **!f95b5501**, starts the fresh **R001** series. Retain `2.7.26.4c96b9b`;
+  final CLIENT name/config/key/channel readback after explicit reboot passes. Enable
+  power at 180 s; device/environment/SNNS baseline 180 s retained. Historical
+  location cleared; case/battery/solar/site deliberately unassigned.
+- Current-connection USB returns AHT21/environment **27.700424 C / 25.928116%
+  RH** and INA219 power channel 1 **3.492 V / -326.7 mA**. Source times 91/106 s
+  are uptime-like, not verified UTC. Initial device-only capture retained.
+- Existing-peer request inconclusive. Owner-authorized reset reference **REF1**
+  supplies matched zero-hop/no-ACK broadcasts. Original burst **TX 2/3, RX 2/3**
+  (second attempt missed each way); change only pause from 0.3 to **5 seconds**:
+  **TX 3/3, RX 3/3**, SNR 6.5-7 / 6.5-6.75 dB. Final CLIENT repeat also passes
+  **3/3 each** in 44.4 s (TX 5.75-6.25 / RX 5.5-7 dB). Both profiles preserved,
+  serial closed. Pace comparison does not isolate the burst-loss cause or
+  establish range, sustained delivery, forced relay or field coverage.
+- [Full method, per-direction measurements and private evidence reference](../docs/operations/r001-commissioning-20261112.md).
+  No battery/solar/enclosure/location acceptance or V4 operation in this run.
+
 ## 2026-11-12 - Owner confirms INA219 replacement resolution
 
 Owner reports replacing the INA219 boards with new ones fixed the observed

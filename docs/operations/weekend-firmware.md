@@ -1,5 +1,14 @@
 # Weekend repeater and screenless V4 firmware
 
+**2026-11-12 owner amendment:** keep all bench boards **CLIENT**; final ROUTER
+change is Sunday with cadence/profile verification. Use the
+[batch ID label station](rak-batch-station.md). Start fresh R/G labels and select case,
+battery/solar/location on Sunday. Use the [current hardware roster](../../records/deployment-nodes.md)
+and [fresh R001 evidence](r001-commissioning-20261112.md). Older numbered
+updater/role-helper examples below refer to the historical inventory and must
+not select a new unit by its reused label; match USB/hardware identity first.
+The first R001 is already commissioned without a firmware reflash.
+
 Owner selects RAK repeaters and screenless V4 gateways for Sunday deployment,
 with two bench windows beforehand. This procedure covers firmware preparation
 and its remaining checks, not a claim of accepted mountain coverage/endurance.

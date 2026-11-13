@@ -6,11 +6,13 @@ remain historical references, without automatic synchronization. Linked GH-N
 imports retain original requirements. Priority stays passive member GPS,
 communications, then law-enforcement expansion. Listing work is not authorization.
 
+Fresh repeater/gateway numbering starts 2026-11-12. The [current physical roster](../records/deployment-nodes.md) identifies new R/G labels; older numbered entries/profiles below retain historical evidence and must not select a new unit by label. All bench boards remain CLIENT; ROUTER/site/case/power selection waits until Sunday, with cadence/profile readback after the role switch. Sensor fit is mixed and supplied per !ID.
+
 ## Current
 
 | Task | Lane | Handoff / next action |
 | --- | --- | --- |
-| R006 map placement / portal acceptance | Software / live verification | Selected `2.7.26.4c96b9b` admin/cadence bench reaches both gateways; full profiles restored. Portal acceptance still needs server access. Next: apply private map/cadence metadata and verify authenticated receipts. [Current bench evidence](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24); release/other-board work belongs to LOCAL-3. |
+| RAK batch intake / ID label station | Read-only USB intake | Visible watch-raks.py console owns new-RAK identity reads, excluding REF1 USB 70DF102F58D2A034 and all Heltec ports. CLIENT bench policy; sensor fit supplied per !ID. Next: owner plugs 4-8 and labels IDs, then worker prepares fresh R002 onward. Before any worker serial access run --pause and wait for status.json paused=true/busyPort=null; close worker ports before --resume, which refreshes final names/firmware. 95 bench tests and live R001/pause/resume pass. [Station procedure](../docs/operations/rak-batch-station.md). |
 
 ## Next
 
@@ -39,6 +41,7 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 | Task | Remaining check / evidence |
 | --- | --- |
+| Fresh R001 deployment assembly acceptance | CLIENT firmware/settings, explicit reboot, INA219/AHT21 and final paced RF TX/RX 3/3 each pass on USB E93C5FF0F97DD76B / !f95b5501, RAK19007, retained 4c96b9b. Initial burst 2/3 each remains recorded; cause unisolated. Owner selects case/battery/solar/location and final ROUTER role Sunday; old coordinates cleared. Next: assembly/site/role plus cadence verification, fresh portal enrollment and forced-relay/end-to-end acceptance. REF1 is reset/prepared for the next fresh R002; serial closed. [Roster](../records/deployment-nodes.md), [evidence](../docs/operations/r001-commissioning-20261112.md). |
 | Weekend RAK firmware / screenless V4 acceptance | Exact bench-proven `4c96b9b` UF2/OTA recovered, hashes/application equivalence verified, offline kit prepared and local updater corrected from historical `0634b77`; 81 bench/10 release checks pass. No rebuild/flash. Next: identify/connect one selected RAK, private backup/readback, role/location/B002 admin and fresh relay/report acceptance, then repeat for selected units. Another chat owns V4/SD firmware and its board. Owner has two bench windows before Sunday. GH-4 is resolved by replacement INA219 boards. [Runbook](../docs/operations/weekend-firmware.md), [scope](tasks/weekend-infrastructure-firmware.md). |
 | [LOCAL-11 - RAK quick function check](../docs/operations/rak-quick-check.md) | v2 broadcasts remove peer-key prerequisite: rak03 TX 3/3, RX 2/3 (strict RX fail; cause unisolated), AHT21 unconfirmed; both profiles restored, 117 s. rak01 hardware verdict corrected INCONCLUSIVE (old DM precondition unverified; raw 0/3 retained). rak02 original recovered, functions untested. Streamed USB-telemetry fallback has offline coverage only. Serial closed. Next: next selected unit and streamed sensor acceptance; power setup separate, no retests unless requested. Antennas assumed. |
 | RAK role / fixed location / B002 admin | Owner-requested [Linux USB script and remote CLI procedure](../docs/operations/repeater-role-change.md) prepared with decimal coordinate prompts and verified B002 public-key pin; no board changed. Next: run read-only backup then `--apply` for each selected R001–R006 on the laptop, retain role/location/admin reboot evidence and check fresh RF/MQTT/portal delivery. Actual enrollment/forced-relay write acceptance remain unverified. |

@@ -1,5 +1,58 @@
 # Session log
 
+## 2026-11-12 - CLIENT-mode R001 and batch label station
+
+- Owner explicitly restarts all repeater/gateway labels and defers case,
+  battery/solar/location until Sunday. Establish the [fresh physical roster](deployment-nodes.md);
+  prior number-based assignments/profiles are historical. Supersede the old
+  R006 map-placement Current entry rather than applying that location to a
+  freshly numbered assembly. Member labels and private radio identities stay.
+- Identify owner-confirmed RAK19007/INA219/AHT21 as **!f95b5501**, USB
+  **E93C5FF0F97DD76B / COM19**. Full private backup precedes writes. Retain
+  ordinary `2.7.26.4c96b9b` and initially retain its private radio; set **SNORR
+  Repeater 001 / R001**, enable INA219 power at 180 s and clear the old fixed
+  position. Complete profile/keys/channels/owner and absent coordinates pass
+  saved and explicit-reboot readback. Two existing admins, including B002,
+  preserved. No firmware flash or battery/solar/case work.
+- Both sensor types return current-connection data; [measurements and limits](../docs/operations/r001-commissioning-20261112.md).
+  Clock remains uptime-like/unknown UTC. An existing-peer telemetry query gives
+  no reply and remains inconclusive.
+- Owner supplies reference RAK and explicitly authorizes wipe without backup.
+  Full-reset **only USB 70DF102F58D2A034 / COM27**, retain `2.7.15.567b8ea`,
+  generate its own distinct keys and verify fresh **REF1** private reference
+  profile through reboot. No V4/COM31 access; the other chat retains ownership.
+- Paired version-2 broadcasts give **2/3 TX and 2/3 RX** at the original
+  0.3-second pause, with the second attempt missed both ways. Use the
+  diagnosing-bugs comparison: change only pause to **5 seconds**, retain
+  matcher/four-second deadline, and obtain **3/3 TX and 3/3 RX** in 43.7 s.
+  Cause of initial burst losses remains unisolated; no radio/firmware policy
+  patch or hardware fault claim. Preserve failed and passing evidence.
+- Owner requires all bench units stay CLIENT until Sunday. R001 changes to
+  CLIENT; preserve intended settings and accept its normal 300-second ls_secs
+  field with power saving disabled. Full explicit-reboot/profile verification
+  and another paced **3/3 TX + 3/3 RX** pass in **44.4 s**. Sunday role changes
+  must reverify cadence because firmware installs role defaults.
+- Add the read-only [RAK label CLI](../docs/operations/rak-batch-station.md) for
+  4-8-unit batches with mixed per-board sensor fit. It prints !ID/name/role/USB/
+  firmware on hot plug, excludes Heltec and selected REF1, closes each read,
+  and pauses/resumes for serial handoff and post-preparation label refresh.
+  A visible console is opened; live R001 identity and pause/resume pass.
+- Fix the observed host SDK reboot-close race: an already-null stream must not
+  be flushed again. Original-source regression reproduces; **95 offline bench
+  tests** pass using the clean pinned verifier. No firmware patch.
+- R001/REF1 direct-test serial handles close after profile verification; the
+  read-only label station owns intake afterward. Docs/links/whitespace checked.
+  Publication branch
+  `codex/sunday-rak001`; commit/push reported in handoff. Unrelated gateway work,
+  historical evidence and GitHub issue/board state are preserved.
+
+Next: owner labels USB suffix **D76B** as **R001**, leaves REF1 connected and
+plugs a batch of 4-8 RAKs into the label station, supplying INA219/AHT21 fit by
+!ID. Pause the watcher before worker writes; leave every prepared unit CLIENT.
+Fresh R002 onward requires independent USB/identity mapping.
+Actual case/power/site selection, fresh portal enrollment and forced-relay/
+end-to-end field acceptance remain separate from this board-level result.
+
 ## 2026-11-12 - Weekend RAK firmware kit and INA219 resolution
 
 - Owner confirms replacement INA219 boards fixed the discrepancy, with none

@@ -1,5 +1,20 @@
 # Weekend infrastructure firmware preparation
 
+## Owner amendment - 2026-11-12
+
+All bench-prepared nodes must remain **CLIENT**. Final ROUTER changes happen
+Sunday, followed by complete cadence/profile verification. Use the
+[batch ID label station](../../docs/operations/rak-batch-station.md) for 4-8
+connected RAKs; sensor fit is mixed and owner-supplied per !ID.
+
+Start all repeater/gateway labels fresh using the
+[current physical roster](../../records/deployment-nodes.md). Case, battery,
+solar and location will be selected Sunday; clear stale locations rather than
+inventing replacements. Old numbered updater/role-helper selections below are
+historical and cannot identify a freshly numbered board. The first R001 is
+USB E93C5FF0F97DD76B, with retained 4c96b9b and
+[completed board checks](../../docs/operations/r001-commissioning-20261112.md).
+
 ## Selected outcome and ownership
 
 Owner selects RAK repeaters and screenless Heltec V4 gateways, two bench

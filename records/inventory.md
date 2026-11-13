@@ -1,5 +1,23 @@
 # Hardware inventory
 
+## 2026-11-12 - Fresh R001 and reset bench reference
+
+Owner starts new repeater/gateway numbering and identifies the first assembly
+as **RAK19007 with INA219/AHT21**. Fresh **R001 / SNORR Repeater 001** is
+RAK4631 **!f95b5501**, USB **E93C5FF0F97DD76B**, hardware
+**6bd77df9f05f3ce901555bf96d5ed7fc**. Firmware `2.7.26.4c96b9b` retained;
+CLIENT bench role, names, enabled INA219 power and cleared historical location pass
+full explicit-reboot readback. Both sensor types return data; paced RF passes
+TX/RX 3/3 each, with initial 2/3 burst runs preserved. Case/power/site are
+unassigned until Sunday at owner direction; no stock/cost change inferred.
+
+The separately attached **REF1**, USB **70DF102F58D2A034 / !8737c2c9**, receives
+an owner-authorized full factory reset without an old-settings backup and a
+reboot-verified private reference profile with its own new keys. Compatible
+`2.7.15.567b8ea` retained. It is excluded from deployment numbering. Both serial
+handles closed. [Current roster](deployment-nodes.md),
+[measured evidence](../docs/operations/r001-commissioning-20261112.md).
+
 ## 2026-11-12 - INA219 discrepancy resolved by replacement
 
 Owner confirms that new INA219 boards replaced the problematic boards and that
