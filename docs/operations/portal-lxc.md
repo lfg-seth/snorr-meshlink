@@ -1,5 +1,9 @@
 # Portal LXC deployment
 
+**Current production release, 2026-11-12.** MeshLink 0.2.0 is deployed at
+`205b1909`. The authenticated Infrastructure page shows the screenless G001's
+daily SD report. [Registration, backups and acceptance](g001-screenless-rollout.md).
+
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
 ## INA219 current graphs / MeshLink 0.1.4 - 2026-10-24

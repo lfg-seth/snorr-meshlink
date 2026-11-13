@@ -32,10 +32,11 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   remains subject to measured hardware and field evidence. LoRaWAN, Meshtastic
   and MeshCore are distinct systems. The [decision map](.scratch/pilot/map.md)
   retains selection history and later amendments.
-- The pilot data path is member radio → optional RAK relay → Heltec V3 gateway
+- The pilot data path is member radio → optional RAK relay → Wi-Fi/MQTT gateway
   → private MQTT → Python ingestion worker → PocketBase → dispatch portal. Preserve GPS
-  measurement times, per-gateway receipts and deduplication. Current G001/G002
-  are receive-only. The earlier designated-gateway message-downlink design is
+  measurement times, per-gateway receipts and deduplication. Rollout G001 is the screenless V4.3 `!1bbf0638`. It uplinks
+  received RF and sends its own reports. Fresh rollout assignments supersede
+  bench labels per identified board. [G001 rollout](docs/operations/g001-screenless-rollout.md). The earlier designated-gateway message-downlink design is
   future communications scope; implementing it requires a selected assignment.
 - The portal uses React, approachable TypeScript, Vite and MapLibre/USGS layers
   on an Ubuntu Proxmox LXC, with HTTPS through Cloudflare Tunnel. Demo and live

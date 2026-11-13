@@ -1,5 +1,11 @@
 # Hardware inventory
 
+## 2026-11-12 - Rollout G001 supersedes the G007 bench label
+
+The screenless Heltec V4.3 `!1bbf0638` is rollout **G001**. The historical
+V3 `!9ea13cc0` retains its own production history as `legacy-v3-9ea13cc0`.
+[Production rollout and live SD card](../docs/operations/g001-screenless-rollout.md).
+
 ## 2026-11-12 - Screenless V4 commissioned as G007
 
 One owner-confirmed Heltec V4.3 / KCT8103L, MAC **F8:5B:1B:BF:06:38**,
