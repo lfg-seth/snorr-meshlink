@@ -1,0 +1,13 @@
+numpy==2.4.6
+numba==0.65.1
+networkx==3.6.1
+rasterio==1.5.2
+pyproj==3.8.0
+shapely==2.2.0
+scipy==1.18.1
+osmium==4.3.2
+reportlab==5.1.0
+matplotlib==3.11.2
+pillow>=12
+PyMuPDF>=1.26
+tzdata>=2025.2

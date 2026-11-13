@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-13 - Winter station and relay siting
+
+The [winter siting study](../docs/research/winter-mesh-siting.md) compares the two primary stations, nine placement slots and an optional home gateway. The private field atlas includes survey circles, staging, winter solar and conditional alternatives. Installation, owner-selected hardware assignments, station permission and winter access remain pending.
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.

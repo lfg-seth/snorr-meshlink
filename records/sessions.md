@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-13 - Winter mountain mesh siting
+
+Completed the [terrain, routing and winter solar study](../docs/research/winter-mesh-siting.md) with an offline field atlas, GIS layers, eleven site sheets and a navigation export in ignored private storage. The [workflow](../scripts/winter-siting/README.md) regenerates from locally cached public source data. Inspected the rendered report and cross-checked all sites, staging waypoints and eleven node-removal rasters.
+
+Next: survey the station antennas, confirm the winter approaches and run the private field sequence. The recommended layout has substantial single-failure exposure. Member reception, access, solar endurance and the optional home gateway remain unverified. No radio or portal change.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware

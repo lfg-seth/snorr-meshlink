@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-11-13 - Winter siting validation planned
+
+The [terrain study](../docs/research/winter-mesh-siting.md) supplies an attended validation sequence. Compare the Lee relay chain, a canyon blind stretch, the high and low Kyle-side alternatives and a possible Angel-to-valley uplink. Record dated packet attempts, per-gateway receipts, GPS fix age, antenna heights and access evidence. The study produced modeled results only.
+
 ## 2026-11-13 - G001 SD shares telemetry cadence
 
 Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports
