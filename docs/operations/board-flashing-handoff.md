@@ -1,5 +1,10 @@
 # Board flashing and configuration handoff
 
+**G007, 2026-11-12.** The screenless V4.3 `!1bbf0638` uses
+`heltec-v4-sd-gateway` at `898c113b5`. The 16 MB partition layout changed.
+Use this board's full verified backup to return to the original diagnostic.
+[Image hashes, pinout and installed profile](g007-screenless-gateway.md).
+
 2026-10-25 **former G004 V4 `!699c2ed8` is reassigned as client B003** at
 owner request. Reinstall checked **heltec-v4-gateway / 2.7.26.6fea6aa** with
 CLIENT role, private pilot radio, Wi-Fi/MQTT disabled and old credentials cleared,

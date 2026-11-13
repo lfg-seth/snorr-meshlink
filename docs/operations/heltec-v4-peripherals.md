@@ -1,5 +1,10 @@
 # Screenless Heltec V4 peripheral initialization
 
+**Recovery update, 2026-11-12.** This board now runs G007 with a larger app0
+partition. To recover the earlier diagnostic, restore this board's complete
+verified pre-install backup. The app-only procedure below describes the
+previous layout. [Installed layout and hashes](g007-screenless-gateway.md).
+
 ## Completed bench check - 2026-11-12
 
 Owner selects one screenless V4 with INA219 and an inserted 32 GB FAT32 card.
