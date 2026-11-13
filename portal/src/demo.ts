@@ -49,6 +49,7 @@ export type Message = {
   evidence: string;
 };
 export type Infrastructure = {
+  sdHealth?: import('./sd-health').SdHealth | null;
   gatewayHealth?: { state: string; label: string; radioAlive?: boolean; transportGatewayId?: string;
     measuredAt?: string; intervalSeconds?: number; wifiConnected?: boolean; mqttConnected?: boolean } | null;
   id: string;
@@ -246,6 +247,8 @@ export const infrastructure: Infrastructure[] = [
   {
     id: 'b1',
     name: 'Demo dispatch gateway',
+    sdHealth: {flags: 15, usedBytes: '12000000000', totalBytes: '32000000000', dropped: 0,
+      measuredAt: minutesAgo(390), receivedAt: minutesAgo(390), intervalSeconds: 86400},
     role: 'Backhaul',
     longitude: -115.64,
     latitude: 36.25,
@@ -264,6 +267,8 @@ export const infrastructure: Infrastructure[] = [
   {
     id: 'b2',
     name: 'Demo uplink gateway',
+    sdHealth: {flags: 0, usedBytes: null, totalBytes: null, dropped: 82,
+      measuredAt: minutesAgo(4800), receivedAt: minutesAgo(4800), intervalSeconds: 86400},
     role: 'Backhaul',
     longitude: -115.657,
     latitude: 36.303,

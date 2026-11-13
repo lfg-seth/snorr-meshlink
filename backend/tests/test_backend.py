@@ -112,6 +112,30 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(node()['state'], 'wifi-lost')
         self.assertEqual(len(warnings()), 1)
 
+    def test_daily_sd_generations_receipts_order_unknown_and_errors(self):
+        base = dict(bootId=41, sequence=1, uptimeSeconds=60, intervalSeconds=86400, flags=15,
+                    clockSource=3, usedBytes='8589934592', totalBytes='9007199254740993', dropped=3)
+        def report(boot, seq, age, **changes):
+            data = {**base, 'bootId':boot, 'sequence':seq, **changes}
+            return packet('b1', 'sd-health', data, age, f'{boot:08x}-{seq:08x}')
+        def current():
+            return next(d for d in self.state()['infrastructure'] if d['id']=='b1')['sdHealth']
+        first = report(41, 1, 2)
+        self.assertEqual(self.ingest(first)['outcome'], 'accepted')
+        self.assertEqual(self.ingest({**first, 'gatewayId':'b2'})['outcome'], 'duplicate')
+        self.assertEqual(current()['totalBytes'], '9007199254740993')
+        self.assertEqual(len([r for r in self.records('packet_receipts') if r['packetKey'].endswith(first['packetId'])]), 2)
+        self.denied(400, self.worker,'POST','/api/meshlink/worker/ingest',{**first, 'data':{**base,'dropped':6}})
+        self.ingest(report(42,2,None,clockSource=0))
+        self.assertEqual(current()['bootId'],41)
+        self.ingest(report(42,3,1,flags=0,usedBytes=None,totalBytes=None))
+        self.ingest(report(41,4,0))
+        self.ingest(report(43,5,5))
+        self.assertEqual((current()['bootId'],current()['flags'],current()['totalBytes']), (42,0,None))
+        for item in [report(42,6,0,totalBytes='0'), report(42,6,0,totalBytes='18446744073709551616'),
+                     report(42,6,0,flags=0), {**first,'deviceId':'r1'}]:
+            self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',item)
+
     def test_gateway_health_requires_backhaul_and_valid_flags(self):
         data = dict(bootId=1, sequence=1, uptimeSeconds=0, intervalSeconds=180,
                     wifiConnected=True, mqttConnected=False)

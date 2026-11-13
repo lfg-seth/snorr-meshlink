@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'none'; object-src 'none'">
+<title>MeshLink SD log reader</title>
+<style>
+body{font:16px system-ui,sans-serif;color:#172a37;background:#f8faf9;margin:2rem}h1{font-size:1.8rem}
+form{display:flex;gap:1rem;flex-wrap:wrap;padding:1rem 0}label{display:grid;gap:.3rem}input,button,select{font:inherit;padding:.4rem}
+table{border-collapse:collapse;font-size:.9rem;width:100%}td,th{text-align:left;padding:.45rem;border-bottom:1px solid #bccbc7;vertical-align:top}
+code{overflow-wrap:anywhere}summary{cursor:pointer}button{margin:.3rem}
+</style>
+<h1>MeshLink SD log reader</h1>
+<label>Copied SML segments <input id="files" type="file" multiple accept=".sml,.SML"></label>
+<form id="filters">
+<label>Node (hex)<input id="node" placeholder="Source or recorder"></label>
+<label>Event<select id="kind"><option value="">All events</option></select></label>
+<label>From (local time)<input type="datetime-local" id="from"></label>
+<label>Through (local time)<input type="datetime-local" id="to"></label>
+<button>Apply filters</button>
+</form>
+<div><button id="prev">Previous page</button><button id="next">Next page</button>
+<button id="csv">Export CSV</button><button id="json">Export JSON</button></div>
+<p id="status" role="status">Choose files to read on this computer.</p>
+<table><thead><tr><th>Recorder / boot</th><th>Time / sequence</th><th>Event</th><th>Packet and payload</th></tr></thead><tbody id="rows"></tbody></table>
+<script src="reader.js"></script><script src="ui.js"></script></html>

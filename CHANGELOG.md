@@ -3,6 +3,16 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.2.0 - 2026-11-12
+
+Add daily SNSD v1 storage reports to encrypted MQTT ingestion and gateway
+cards. The API preserves exact byte counts, loss counters and source time.
+Existing observations, device readings and packet receipts hold the new report.
+Deployment requires the matching portal and backend plus registered source and
+gateway mappings. Roll back both components to the previous checked release.
+Archived SNSD observations remain readable as JSON. SNGH v1 and SNNS v1 retain
+their existing contracts. Production rollout is pending owner selection.
+
 ## 0.1.4 - 2026-10-24
 
 Add INA219 sensor-path current history and a separate average of unique readings

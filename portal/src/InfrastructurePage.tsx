@@ -2,6 +2,7 @@ import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
 import { gatewayHealthLabel } from './gateway-health';
+import { sdHealthLabel } from './sd-health';
 import BatteryHistory from './BatteryHistory';
 import BatterySummary from './BatterySummary';
 import type { LoadBatteryHistory } from './BatteryChart';
@@ -133,6 +134,9 @@ export default function InfrastructurePage({
                   <Badge kind={gatewayHealthLabel(device.gatewayHealth, now, online).kind}>
                     {gatewayHealthLabel(device.gatewayHealth, now, online).label}
                   </Badge>
+                )}
+                {device.role === 'Backhaul' && (
+                  <span className="small">{sdHealthLabel(device.sdHealth, now, online)}</span>
                 )}
                 <span className="infra-value">
                   {device.battery === null

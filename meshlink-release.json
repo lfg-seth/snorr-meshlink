@@ -1,6 +1,6 @@
 {
   "product": "MeshLink",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "stage": "development",
   "components": [
     "portal",
@@ -12,6 +12,7 @@
     ],
     "firmware": "Existing stock Meshtastic telemetry and SNORR SNNS v1; not a required matching SNORR product version",
     "unknownClockPolicy": "Preserve unknown source time; telemetry receipt fallback is approximate",
+    "sdHealthWireVersions": [1],
     "gatewayHealthWireVersions": [
       1
     ]
