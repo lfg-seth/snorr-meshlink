@@ -102,11 +102,11 @@ class AdapterTests(unittest.TestCase):
         self.assertNotEqual(own['gatewayId'], peer['gatewayId'])
         self.assertEqual(own['data']['totalBytes'], '9007199254740993')
         self.assertEqual(own['data']['usedBytes'], '8589934592')
-        for offset, value in [(4,2),(5,2),(5,16),(6,1),(7,1),(8,1),(12,0),(16,0),(28,1)]:
+        for offset, value in [(4,2),(5,2),(5,16),(6,1),(7,1),(8,1),(12,0),(16,0)]:
             bad = bytearray(wire)
             bad[offset] = value
             with self.assertRaises(PacketRejected): decode(bytes(bad))
-        for bad in [wire[:-1], wire + bytes(1), wire[:40] + bytes(8) + wire[48:]]:
+        for bad in [wire[:-1], wire + bytes(1), wire[:40] + bytes(8) + wire[48:], wire[:28] + bytes(4) + wire[32:]]:
             with self.assertRaises(PacketRejected): decode(bad)
         with self.assertRaises(PacketRejected): decode(wire, source=0x699c2ed8)
         absent = bytearray(wire)
