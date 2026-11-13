@@ -38,6 +38,32 @@ not persistent AP identities. Repeated directionally consistent differences
 are more useful than one peak reading. A usable range needs a separate
 two-way traffic/delivery test under the intended installation conditions.
 
+**Bench baseline (2026-11-12):** G001 `!1bbf0638` ran firmware `246ec7285`
+(app SHA-256 `29911d7350fafb560fdbd52d891b8a88aac58598a3dc21f3bfe1f2871f015f0c`).
+The app-only write matched its on-chip digest and preserved the bootloader,
+partition table, NVS, OTA data and complete saved gateway profile. Over about
+60 seconds the USB collector accepted 45 samples: two startup disconnects,
+then 43 readings on channel 5/association 1, ranging from −44 to −33 dBm
+with a median of −38 dBm. Missing serial lines are not Wi-Fi disconnects.
+Raw evidence: `private/bench/g001-wifi/bench-fixed.csv`. This was one bench
+position; no antenna gain, AP distance or installation range was established.
+
+**Production acceptance:** MeshLink 0.3.0 at `1901aa7552865a525936c80cc5583116e2ce92db`
+passed all 93 backend and 65 portal checks on the release host. Both live and
+demo backup restores passed before and after deployment; all ten public
+assets matched the tagged build. At 20:04:07 Pacific, Nov 12 (04:04:07 UTC,
+Nov 13), the gateway's first autonomous SNWF report read **−40 dBm, channel
+5, association 1, interval 300 s**. It was stored once with two encrypted
+raw receipts, via G001 and via the legacy V3's independent radio uplink.
+The live authenticated Infrastructure card showed the reading alongside
+**<0.1% used (384 KiB of 29.7 GiB)**, zero dropped on its last SD report.
+Evidence: `private/bench/g001-wifi/live-browser-result.json`,
+`G001-live-WiFi-card.png`, `wifi-evidence.json` in the same private folder.
+Production rollback: `/opt/meshlink-rollback-wifi-1901aa7`; firmware recovery:
+verified prior app `private/bench/g001-wifi/rollback-app.bin`. Offline reader
+fixtures cover event 20 and SNWF; a physical SD file copy remains a separate
+inspection. No field-distance or comparative antenna run was performed.
+
 **Normal operation:** SNWF v1 follows actual periodic device telemetry mesh
 sends (G001 configured at 300 s, subject to airtime limits and scheduling).
 The 36-byte private payload is little-endian `<4sBBbB7I`: magic, version,

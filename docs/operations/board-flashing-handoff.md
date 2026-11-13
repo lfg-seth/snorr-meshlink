@@ -1,5 +1,9 @@
 # Board flashing and configuration handoff
 
+**G001 Wi-Fi survey update, 2026-11-12.** Current installed app is
+`heltec-v4-sd-gateway / 2.7.26.246ec72`, on unchanged partitions. See
+[app verification, rollback and USB walk test](g001-wifi-survey.md).
+
 **Rollout G001 (bench G007), 2026-11-12.** [Production identity and live card](g001-screenless-rollout.md). The screenless V4.3 `!1bbf0638` uses
 `heltec-v4-sd-gateway` at `898c113b5`. The 16 MB partition layout changed.
 Use this board's full verified backup to return to the original diagnostic.

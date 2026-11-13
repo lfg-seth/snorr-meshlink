@@ -1,5 +1,11 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Rollout G001 Wi-Fi bench baseline
+
+Of 45 USB samples, 2 showed startup disconnect and 43 measured the same
+association on channel 5: median −38 dBm, range −44 to −33 dBm. Distance and
+antenna performance were not measured. [Method and evidence](../docs/operations/g001-wifi-survey.md).
+
 ## 2026-11-12 - G007 bench and G001 radio receipts
 
 G007's automatic daily report reached its own MQTT uplink with 393,216 bytes

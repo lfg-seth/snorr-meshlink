@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-12 - G001 Wi-Fi telemetry and fast USB antenna survey
+
+Deployed MeshLink 0.3.0 (`1901aa7`) and app-only G001 firmware `246ec7285`.
+Integrated Wi-Fi reports and USB measurements with raw/archive history, portal
+and SD reader. Independent source review passed after fixing serial disable,
+RSSI handling and retired-boot ordering. Release-host tests: 93 backend, 65
+portal; all 4 offline reader tests passed. On Windows two initial API connection
+errors during concurrent compilation disappeared on full rerun (7 POSIX-only
+skips); clean Linux tests passed without skips. Pre/post backups restored and
+six services were active. Dual-route radio/own encrypted receipts and the
+authenticated live card showed −40 dBm, channel 5; existing SD report showed
+384 KiB of 29.7 GiB. USB survey median −38 dBm; no field range established.
+Next: repeated A/B at measured distances, physical card copy and long run.
+[Bench, wire format and deployment evidence](../docs/operations/g001-wifi-survey.md).
+
 ## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
 
 Renamed screenless V4.3 `!1bbf0638` to G001, preserved the previous V3's

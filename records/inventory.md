@@ -1,5 +1,11 @@
 # Hardware inventory
 
+## 2026-11-12 - G001 Wi-Fi survey firmware
+
+Screenless `!1bbf0638` now runs `2.7.26.246ec72`. App-only update;
+checked owner/profile/keys/channels preserved. No antenna or other hardware
+changes. [Installation and survey](../docs/operations/g001-wifi-survey.md).
+
 ## 2026-11-12 - Rollout G001 supersedes the G007 bench label
 
 The screenless Heltec V4.3 `!1bbf0638` is rollout **G001**. The historical
