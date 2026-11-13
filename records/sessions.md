@@ -1,5 +1,32 @@
 # Session log
 
+## 2026-11-13 - G001 physical SD-card capture audit
+
+Read the owner-identified G001 card without writes; privately copy and hash
+all 49 segments / 6,112,781 bytes. Independent binary parsing and the current
+published reader agree on 61,311 valid records, 48 valid footers and one open
+final tail, with no CRC corruption. Core raw/decoded/duplicate, GPS, telemetry,
+outbound, MQTT, boot/time, SD and Wi-Fi categories are present. All 7,458
+received-packet MQTT ciphertexts match observed raw radio frames. The longest
+boot has 41,160 consecutive sequences over about 7 h 49 min.
+
+Full acceptance remains open: three markers account for 49 missing event
+sequences; reset fields report four panics, two brownouts and two watchdog
+resets. No crash backtraces are stored. One mid-run TX has no completion/abort
+record; 86 MQTT intents lack skip reasons and 33 envelope outcomes remain
+unknown. Do not conflate these with server delivery or infer a root cause.
+The three firmware generations and later 300-second SD baseline match the
+published rollout history. [Evidence and limits](../docs/operations/g001-sd-audit-20261113.md).
+
+All four current offline reader tests, parser/correlation assertions and final
+source/copy hashes pass; document links and whitespace checks pass. No board,
+radio, service or card changes. Preserve unrelated root edits by recording on
+isolated branch `codex/g001-sd-audit`; completed commit is pushed at handoff.
+
+Next: select G001 reset/recording diagnosis with private serial/power evidence,
+then close transport/diagnostic gaps and physical fault/day-long acceptance.
+Antenna, calibration, field and solar checks remain separate.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
