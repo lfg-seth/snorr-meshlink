@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "description": "Saved bench baselines, not delivery guarantees. Recheck after role/profile changes. See docs/operations/live-node-dashboard.md.",
+  "profiles": {
+    "rak-client": {"device": 180, "environment": 180, "power": 180, "snns": 180, "neighbor_info": 21600, "nodeinfo": 10800},
+    "member": {"device": 180, "snns": 180, "neighbor_info": 21600, "nodeinfo": 10800, "position": 120},
+    "gateway-v3": {"device": 180, "snns": 180, "gateway": 180, "neighbor_info": 21600, "nodeinfo": 10800},
+    "gateway-sd": {"device": 300, "power": 300, "snns": 300, "gateway": 300, "wifi": 300, "sd": 86400, "nodeinfo": 10800}
+  },
+  "nodes": {
+    "!f95b5501": {"profile": "rak-client"},
+    "!05237743": {"profile": "rak-client"},
+    "!b4d6bc9f": {"profile": "rak-client"},
+    "!49ac6d7f": {"profile": "rak-client"},
+    "!a65601b3": {"profile": "rak-client"},
+    "!638b9515": {"profile": "rak-client"},
+    "!b456f760": {"profile": "rak-client"},
+    "!120b04fd": {"profile": "rak-client"},
+    "!da581e5f": {"profile": "rak-client", "streams": {"position": 3600}},
+    "!77fdb9f1": {"profile": "rak-client"},
+    "!699ca878": {"profile": "member"},
+    "!699c2ed8": {"profile": "member"},
+    "!1bbf0638": {"profile": "gateway-sd"},
+    "!9ea13cc0": {"profile": "gateway-v3"},
+    "!849ad7a0": {"profile": "gateway-v3"},
+    "!9e9f167c": {"profile": "gateway-v3", "streams": {"power": 180}},
+    "!9ea039cc": {"profile": "gateway-v3"},
+    "!b03d6790": {"profile": "gateway-v3"}
+  }
+}

@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-12 - Cadence-based colors and independent packet watchdogs
+
+- Replace fixed dashboard age bands with per-radio/per-stream saved cadences:
+  on-time green, one missed deadline yellow, two missed deadlines red, plus one
+  refresh interval of polling grace. Add the editable sanitized cadence file;
+  honor reported gateway/Wi-Fi/SD intervals and retain original value clocks.
+- W/A/P/R switch views; W shows a countdown for each packet/telemetry type.
+  Separate device, environment, power, SNNS, standard NeighborInfo, position,
+  backhaul, Wi-Fi, SD and NodeInfo. Other observed types have event-age timers.
+  Duplicate generations do not renew timers; reconnects preserve initial and
+  known-receipt deadlines. GPS receipt and measurement freshness remain separate.
+- All 34 offline tests and document checks pass. Eight live snapshots from
+  23:49:45 to 23:49:59 Pacific capture new B002/R007/R009 samples with zero skipped
+  decodes, then a second SSH session succeeds. Live per-type overdue states and
+  green daily SD countdown are verified. Windows W view switching, Q exit 0,
+  colors/countdowns and cursor restoration pass. [Usage and cadence evidence](../docs/operations/live-node-dashboard.md).
+- Branch `codex/live-node-dashboard`; commit/push reported at handoff. No
+  radio, serial, service or portal-configuration writes.
+
+Next: restart the CLI and use W for timers. Reapply/read back radio intervals
+after Sunday role changes, then update the monitoring cadence file. Prolonged
+network outages, Linux native UI and radio/field acceptance remain separate.
+
 ## 2026-11-12 - Live node terminal dashboard
 
 - Add `python scripts/watch-nodes.py`: three-second read-only SSH snapshots,

@@ -36,9 +36,20 @@ def reading(value, received, measured=None, sample=""):
             "quality": quality, "sample": sample or received}
 
 
+METRIC_STREAM = {
+    "voltage": "device", "charge": "device", "busy": "device", "tx": "device", "uptime": "device",
+    "temperature": "environment", "humidity": "environment", "envVoltage": "environment", "envCurrent": "environment",
+    "inaVoltage": "power", "inaCurrent": "power", "neighbors": "snns", "standardNeighbors": "neighbor_info",
+    "gps": "position", "gateway": "gateway", "wifi": "wifi", "sd": "sd",
+}
+
+
 class Measurements:
-    def __init__(self, nodes):
-        self.nodes = {n["radio"]: {**n, "lastContactAt": None, "readings": {}} for n in nodes}
+    def __init__(self, nodes, cadences=None):
+        cadences = cadences or {}
+        self.nodes = {n["radio"]: {**n, "lastContactAt": None, "readings": {}, "watchdogs": {
+            stream: {"cadenceSeconds": period, "lastReceivedAt": None, "sample": None, "basis": "saved-profile"}
+            for stream, period in cadences.get(n["radio"], {}).items() if period is not None}} for n in nodes}
         self.seen = OrderedDict()
         self.rejected = 0
 
@@ -48,6 +59,7 @@ class Measurements:
         if isinstance(value, float) and not math.isfinite(value):
             return
         new = reading(value, received, measured, sample)
+        new["stream"] = METRIC_STREAM.get(metric)
         old = self.nodes[radio]["readings"].get(metric)
         # Source clock orders clocked reports; duplicate transport copies cannot
         # renew a sample. Unknown clocks use receipt, never for GPS freshness.
@@ -59,6 +71,19 @@ class Measurements:
             if new_at < old_at or new_at == old_at and new["receivedAt"] <= old["receivedAt"]:
                 return
         self.nodes[radio]["readings"][metric] = new
+
+    def watch(self, radio, stream, received, sample, measured=None, cadence=None):
+        """Each validated packet type has its own arrival timer, separate from fix age."""
+        if radio not in self.nodes or epoch(received) is None:
+            return
+        watches = self.nodes[radio]["watchdogs"]
+        item = watches.setdefault(stream, {"cadenceSeconds": None, "lastReceivedAt": None,
+                                            "sample": None, "basis": "event"})
+        if isinstance(cadence, (int, float)) and not isinstance(cadence, bool) and math.isfinite(cadence) and 0 < cadence <= 604800:
+            item.update(cadenceSeconds=cadence, basis="reported-interval")
+        if item["sample"] == sample or item["lastReceivedAt"] and epoch(received) <= epoch(item["lastReceivedAt"]):
+            return
+        item.update(lastReceivedAt=received, measuredAt=measured, sample=sample)
 
     def contact(self, radio, received):
         node = self.nodes[radio]
@@ -91,11 +116,17 @@ class Measurements:
                 if name:
                     value = item.get("value") if "value" in item else item
                     self.put(radio, name, value, item["receivedAt"], item.get("measuredAt"))
+                    stream = METRIC_STREAM[name]
+                    generation = (f"{stream}:{value['bootId']}:{value['sequence']}"
+                                  if isinstance(value, dict) and "bootId" in value and "sequence" in value else item["receivedAt"])
+                    self.watch(radio, stream, item["receivedAt"], generation, item.get("measuredAt"),
+                               value.get("intervalSeconds") if isinstance(value, dict) else None)
             pos = json.loads(position or "{}")
             if pos.get("receivedAt"):
                 # Deliberately exclude coordinates and member assignments.
                 value = {k: pos.get(k) for k in ("satellites", "pdop", "altitude") if pos.get(k) is not None}
                 self.put(radio, "gps", value, pos["receivedAt"], pos.get("measuredAt"))
+                self.watch(radio, "position", pos["receivedAt"], pos["receivedAt"], pos.get("measuredAt"))
 
 
 RANGES = {
@@ -163,6 +194,11 @@ class Decoder:
             t = telem.Telemetry.FromString(d.payload)
             data = self.to_dict(t, preserving_proto_field_name=True)
             measured = utc(t.time) if t.time >= 1577836800 else None
+            group = next((k for k, value in data.items() if isinstance(value, dict)), None)
+            if group:
+                stream = {"device_metrics": "device", "environment_metrics": "environment",
+                          "power_metrics": "power"}.get(group, "telemetry:" + group)
+                self.state.watch(radio, stream, at, fingerprint, measured)
             for metric, value in telemetry_values(data):
                 self.state.put(radio, metric, value, at, measured, fingerprint)
         elif d.portnum == ports.POSITION_APP:
@@ -176,14 +212,20 @@ class Decoder:
             if p.HasField("altitude"):
                 data["altitude"] = p.altitude
             self.state.put(radio, "gps", data, at, measured, fingerprint)
+            self.state.watch(radio, "position", at, fingerprint, measured)
         elif d.portnum in (ports.PRIVATE_APP, ports.NEIGHBORINFO_APP):
             report = self.adapter.decode(topic, binary, epoch(at))
             if not report:
+                self.state.watch(radio, "private-other", at, fingerprint)
                 return
             kind, data = report["kind"], report["data"]
             measured = report.get("measuredAt")
             if kind == "neighbors":
-                self.state.put(radio, "neighbors", data.get("totalNeighbors", len(data.get("rows", []))),
+                standard = data.get("reportType") == "neighbor-info"
+                stream = "neighbor_info" if standard else "snns"
+                generation = f"snns:{data['bootId']}:{data['sequence']}" if not standard else fingerprint
+                self.state.watch(radio, stream, at, generation, measured)
+                self.state.put(radio, "standardNeighbors" if standard else "neighbors", data.get("totalNeighbors", len(data.get("rows", []))),
                                at, measured, fingerprint)
             elif kind in ("gateway-health", "sd-health"):
                 # Re-sent SD generations keep their original clock/receipt.
@@ -194,6 +236,22 @@ class Decoder:
                     if old.get("bootId") == data["bootId"] and old.get("sequence", -1) >= data["sequence"]:
                         return
                 self.state.put(radio, metric, data, at, measured, fingerprint)
+                self.state.watch(radio, metric, at, f"{metric}:{data['bootId']}:{data['sequence']}",
+                                 measured, data.get("intervalSeconds"))
+            elif kind in ("wifi", "wifi-signal"):
+                self.state.put(radio, "wifi", data, at, measured, fingerprint)
+                self.state.watch(radio, "wifi", at, f"wifi:{data['bootId']}:{data['sequence']}",
+                                 measured, data.get("intervalSeconds"))
+            else:
+                self.state.watch(radio, "private-other", at, fingerprint)
+        else:
+            # Event-driven packet types get an age timer but no invented deadline.
+            try:
+                packet_type = ports.PortNum.Name(d.portnum).lower()
+            except ValueError:
+                packet_type = str(d.portnum)
+            stream = "nodeinfo" if d.portnum == ports.NODEINFO_APP else "packet:" + packet_type
+            self.state.watch(radio, stream, at, fingerprint)
 
 
 def configured_nodes(cfg, roster):
@@ -220,7 +278,7 @@ def run(settings):
     """One incremental reader per SSH session; archive cursor avoids full rescans."""
     try:
         cfg = json.loads(Path(settings["config"]).read_text())
-        state = Measurements(configured_nodes(cfg, settings["roster"]))
+        state = Measurements(configured_nodes(cfg, settings["roster"]), settings.get("cadences"))
         decoder = Decoder(cfg, state, settings["backend"])
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
