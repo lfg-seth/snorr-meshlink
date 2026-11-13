@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-13 - G001 sleep and periodic-upload power estimates
+
+Owner reports about 160 mA from the portal/INA219 with an uncertain measurement
+path. Preserve this as unverified whole-device consumption. Primary-source
+research distinguishes family sleep figures from continuous RX/SD requirements;
+20-40 mA is an engineering target, not a measurement. Conditional 25 mA offline /
+160 mA online examples give 29.5-34.0 mA for 15-minute uploads and 26.1-27.3 mA
+for hourly uploads with 30-60 seconds online. Firmware disables Wi-Fi power
+saving and has only a 16-entry MQTT backlog; SD replay requires new durable
+upload work and truthful historical freshness. No radio/service changes.
+[Sources, assumptions and measurement plan](../docs/research/g001-power-estimates.md).
+
+Next: verify whole-input current and compare a selected live Wi-Fi modem-sleep
+trial before choosing delayed uploads. Changed-document checks pass; no bench power measurement was performed.
+Branch codex/g001-power-estimates; publication reported at handoff.
+
 ## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
 
 Renamed screenless V4.3 `!1bbf0638` to G001, preserved the previous V3's
