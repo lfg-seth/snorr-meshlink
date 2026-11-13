@@ -1,6 +1,12 @@
 # Board flashing and configuration handoff
 
-**G001 Wi-Fi survey update, 2026-11-12.** Current installed app is
+**G001 SD cadence update, 2026-11-13.** Current installed app is
+`heltec-v4-sd-gateway / 2.7.26.5bd4923`. SD-health timing follows
+`telemetry.device_update_interval`, currently 300 seconds; MeshLink 0.3.1
+accepts the advertised interval. Full profile/keys and non-app flash regions
+are preserved. [Image, rollback and live evidence](g001-sd-cadence.md).
+
+**G001 Wi-Fi survey update, 2026-11-12.** Earlier installed app was
 `heltec-v4-sd-gateway / 2.7.26.246ec72`, on unchanged partitions. See
 [app verification, rollback and USB walk test](g001-wifi-survey.md).
 

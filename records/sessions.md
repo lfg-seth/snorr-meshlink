@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-13 - G001 SD health follows saved telemetry cadence
+
+Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
+`5bd492399`, preserving its complete profile, keys and non-app flash regions.
+SD scheduling and advertised interval now use `telemetry.device_update_interval`,
+currently 300 seconds, with existing reboot reservation and admission checks.
+Three automatic SD generations reach both uplinks; SD/SNGH source gaps match
+at 361/345 seconds. Fresh authenticated public state, one observation and both
+normalized raw receipt routes pass; storage is healthy with zero dropped logs.
+
+PR #68 merged as `62dcc0b`; immutable MeshLink 0.3.1 is deployed after explicit
+owner approval. Native SD and existing SNNS/SNGH fixtures pass; the exact tagged
+release passes 94 backend/66 portal tests and main/tag hosted CI. Public assets,
+six services, protected-state hashes and pre/post live/demo isolated recovery
+pass. Serial/MQTT closed and temporary package mapping removed. Earlier legacy
+invalid-interval fixture failure is corrected; Cloudflare public acceptance uses
+the documented curl path. [Hashes, rollback and evidence](../docs/operations/g001-sd-cadence.md).
+
+Records use `codex/g001-sd-cadence`; completed commits are pushed at handoff.
+Unrelated dirty root edits are preserved. Next: owner-selected copied-card
+inspection and sustained operation; antenna A/B, calibration, field coverage
+and battery/solar acceptance remain separate.
+
 ## 2026-11-12 - G001 Wi-Fi telemetry and fast USB antenna survey
 
 Deployed MeshLink 0.3.0 (`1901aa7`) and app-only G001 firmware `246ec7285`.
