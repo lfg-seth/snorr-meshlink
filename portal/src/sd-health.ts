@@ -14,7 +14,7 @@ function size(bytes: bigint) {
 }
 
 export function sdHealthLabel(report: SdHealth | null | undefined, now: number, online: boolean) {
-  if (!report) return 'SD logging unknown · awaiting daily report';
+  if (!report) return 'SD logging unknown · awaiting report';
   const age = report.measuredAt ? (now - Date.parse(report.measuredAt)) / 1000 : null;
   let storage = 'capacity unknown';
   if (report.usedBytes !== null && report.totalBytes !== null && BigInt(report.totalBytes) > 0n) {

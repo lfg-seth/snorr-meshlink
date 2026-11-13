@@ -38,7 +38,7 @@ def sd_health(payload, sender):
     (_, version, flags, clock_source, reserved, observer, boot, sequence, uptime, utc,
      interval, used, total, dropped) = struct.unpack('<4sBBBB6IQQI', payload)
     if (version != 1 or flags not in (0, 1, 3, 7, 11, 15) or reserved or observer != sender
-            or not boot or not sequence or interval != 86400 or clock_source not in (0, 2, 3, 4)
+            or not boot or not sequence or not 180 <= interval <= 2147468 or clock_source not in (0, 2, 3, 4)
             or (utc < 1577836800 if clock_source else utc != 0)
             or (not total or used > total if flags & 8 else bool(used or total))):
         raise PacketRejected('invalid SNSD flags, identity or counters')

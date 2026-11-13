@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
 from client import ApiError
-from mqtt_adapter import Adapter, PacketRejected
+from mqtt_adapter import Adapter, PacketRejected, sd_health
 from mqtt_worker import Spool, Worker
 
 CONFIG = {'host': 'mqtt.example.invalid', 'username': 'worker', 'password': 'fictional',
@@ -41,6 +41,18 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
 
 
 class AdapterTests(unittest.TestCase):
+    def test_sd_health_accepts_saved_telemetry_intervals_and_legacy_daily(self):
+        def payload(interval):
+            return struct.pack('<4sBBBB6IQQI', b'SNSD', 1, 15, 3, 0, 0x9ea13cc0,
+                               42, 7, 100, NOW - 1, interval, 8589934592, 9007199254740993, 3)
+        for interval in (180, 300, 900, 86400, 2147468):
+            actual = sd_health(payload(interval), 0x9ea13cc0)
+            self.assertEqual(actual['data']['intervalSeconds'], interval)
+            self.assertEqual(actual['data']['totalBytes'], '9007199254740993')
+        for interval in (0, 179, 2147469, 4294967295):
+            with self.assertRaises(PacketRejected):
+                sd_health(payload(interval), 0x9ea13cc0)
+
     def test_gateway_health_wire_provenance_flags_clock_and_peer_route(self):
         config = {**CONFIG, 'infrastructure': {'!9ea13cc0': 'g001', '!849ad7a0': 'g002'}}
         def decode(payload, gateway='!849ad7a0', source=0x9ea13cc0):
@@ -90,11 +102,11 @@ class AdapterTests(unittest.TestCase):
         self.assertNotEqual(own['gatewayId'], peer['gatewayId'])
         self.assertEqual(own['data']['totalBytes'], '9007199254740993')
         self.assertEqual(own['data']['usedBytes'], '8589934592')
-        for offset, value in [(4,2),(5,2),(5,16),(6,1),(7,1),(8,1),(12,0),(16,0),(28,1)]:
+        for offset, value in [(4,2),(5,2),(5,16),(6,1),(7,1),(8,1),(12,0),(16,0)]:
             bad = bytearray(wire)
             bad[offset] = value
             with self.assertRaises(PacketRejected): decode(bytes(bad))
-        for bad in [wire[:-1], wire + bytes(1), wire[:40] + bytes(8) + wire[48:]]:
+        for bad in [wire[:-1], wire + bytes(1), wire[:40] + bytes(8) + wire[48:], wire[:28] + bytes(4) + wire[32:]]:
             with self.assertRaises(PacketRejected): decode(bad)
         with self.assertRaises(PacketRejected): decode(wire, source=0x699c2ed8)
         absent = bytearray(wire)
