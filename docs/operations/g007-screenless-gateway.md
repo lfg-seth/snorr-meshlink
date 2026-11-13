@@ -1,5 +1,8 @@
 # G007 screenless V4 logging gateway
 
+**Current rollout identity, 2026-11-12.** This screenless board is now G001.
+The names below record the earlier bench test. [Production rollout](g001-screenless-rollout.md).
+
 ## Installation on 2026-11-12
 
 The owner identifies the selected board as Heltec V4.3 with KCT8103L. USB and

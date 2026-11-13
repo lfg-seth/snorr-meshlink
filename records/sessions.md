@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
+
+Renamed screenless V4.3 `!1bbf0638` to G001, preserved the previous V3's
+history, deployed tagged `205b1909` and verified the original daily SD report
+on the live authenticated card. Pre/post recovery passed. Next physical gates
+are copied card-file inspection and a sustained run.
+[Production rollout and live SD card](../docs/operations/g001-screenless-rollout.md).
+
 ## 2026-11-12 - G007 screenless logging gateway
 
 Installed reviewed firmware `898c113b5` on G007 and verified its full private

@@ -1,6 +1,6 @@
 # Board flashing and configuration handoff
 
-**G007, 2026-11-12.** The screenless V4.3 `!1bbf0638` uses
+**Rollout G001 (bench G007), 2026-11-12.** [Production identity and live card](g001-screenless-rollout.md). The screenless V4.3 `!1bbf0638` uses
 `heltec-v4-sd-gateway` at `898c113b5`. The 16 MB partition layout changed.
 Use this board's full verified backup to return to the original diagnostic.
 [Image hashes, pinout and installed profile](g007-screenless-gateway.md).
