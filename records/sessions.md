@@ -1,5 +1,34 @@
 # Session log
 
+## 2026-11-13 - Overnight 13-node bench archive analysis
+
+Read-only review covers 18:00 November 12 through 07:14 November 13 Pacific;
+the main 00:30-07:14 window follows G001's recorded update. All 13 active radios
+continue reporting without observed uptime decrease, boot change or telemetry
+clock fault. Of 4,838 unique packets, G001 sees 4,831, Legacy V3 4,835 and both
+see 4,828. Device/environment intervals have long source-time gaps while power
+mostly holds three-minute cadence. These are observations, not measured RF
+attempt/loss counts. [Full evidence and trends](bench-overnight-20261113.md).
+
+G001 steady sampled current averages 135.3 mA; R009 48.8 mA; R001/R002/R006
+11.8-12.9 mA. Five RAK shunts remain near zero with active radios, so supply
+paths/calibration need confirmation. R001 ends near 3.43 V / 21% estimated.
+B002/B003 deliver 311 fresh timestamped fixes; R009 omits measurement time in
+all seven positions. R004/R006/R008 remain archive-readable but normal portal
+ingestion rejects their fresh IDs as unknown sources. G001's 69 SD generations
+report one boot, healthy flags, zero drops and continuing storage growth.
+
+Aggregate-only export and count consistency checks pass; all packet decoding
+stays on the server with zero exceptions. No coordinates, tracks, member names,
+keys or packet bytes exported. Chart rendered and visually inspected;
+changed-document link and whitespace checks pass. No hardware, service,
+portal or configuration changes. Branch `codex/overnight-bench-20261113`;
+commit/push reported at handoff; existing unfinished workspace edits preserved.
+
+Next: confirm actual power paths, reconcile three portal IDs, separately capture
+sender scheduling diagnostics and verify R009 measurement time. Copied-card,
+battery-only, forced-relay and field acceptance remain separate.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware

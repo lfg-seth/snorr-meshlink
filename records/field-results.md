@@ -1,5 +1,22 @@
 # Field testing and tangible results
 
+## 2026-11-13 - Overnight bench archive review
+
+Measured 00:30-07:14 Pacific after the recorded G001 update: 13 active radios,
+4,838 unique selected-node packets, no observed reset or telemetry-clock fault.
+Both uplinks share 4,828 packets; G001/Legacy V3 see 4,831/4,835 respectively.
+G001 steady sampled INA219 mean is 135.3 mA, R009 48.8 mA, R001/R002/R006
+11.8-12.9 mA. Five other RAK shunts read near zero, with unknown active supply
+paths. Device/environment gaps exceed saved cadence; source-time gaps and
+dual-uplink receipt agreement do not isolate airtime deferral from RF loss.
+Members deliver 311 timestamped fresh fixes; R009 measurement time is absent.
+G001 SD reports one boot, zero drops and growing used space. R004/R006/R008
+fresh IDs remain rejected by normal portal ingestion despite valid archived
+telemetry. [Full per-node measurements, trends and limits](bench-overnight-20261113.md).
+
+Read-only archive evidence, not an independently counted RF transmission test,
+calibrated whole-node power measurement, battery endurance or field acceptance.
+
 ## 2026-11-13 - G001 SD shares telemetry cadence
 
 Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports
