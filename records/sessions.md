@@ -1,5 +1,27 @@
 # Session log
 
+## 2026-11-12 - Live node terminal dashboard
+
+- Add `python scripts/watch-nodes.py`: three-second read-only SSH snapshots,
+  independent per-cell freshness colors, new-sample highlights, monochrome
+  markers, narrow-terminal views, JSON/one-shot modes and reconnection.
+- Resolve fresh repeater labels from the physical roster; decode archive-only
+  radios in memory without changing registration. Preserve measurement/receipt
+  distinctions, old member battery ages, unknown GPS time and current polarity.
+  Credentials, member names, packet bytes and coordinates stay off the output.
+- All 18 offline regressions and changed-document checks pass. Live validation
+  reads eight distinct snapshots over 14 seconds, observes changed gateway/R009
+  cells and zero skipped decode rows, then verifies a second SSH connection.
+  Windows ANSI redraw and cursor restoration pass in the terminal preview.
+  [Usage, data contract and checks](../docs/operations/live-node-dashboard.md).
+- Branch `codex/live-node-dashboard`; commit/push reported at handoff. No
+  service, portal assignment, radio setting or serial-port changes.
+
+Next: run the dashboard during bench/deployment work. Portal registry
+reconciliation remains separate; Linux native terminal presentation, prolonged
+network-outage recovery and field/sensor acceptance are not established by this
+short Windows/live-stream check.
+
 ## 2026-11-12 - R009 RAK12501 GPS compatibility readback
 
 - Owner identifies RAK12501 on fresh R009 / !da581e5f. Exact ordinary4c source

@@ -40,6 +40,10 @@ python -m unittest discover -s scripts/tests -v
 
 Existing operation tools remain separate entry points:
 
+- [Live node dashboard](../docs/operations/live-node-dashboard.md) uses
+  `watch-nodes.py` for an updating terminal table, per-cell freshness colors
+  and new-sample highlights over read-only SSH. Local Python and OpenSSH suffice;
+  it uses physical roster IDs and does not change portal or radio settings.
 - [RAK quick function check](../docs/operations/rak-quick-check.md) uses
   `bench/check-rak.py` for guided Windows USB/radio/sensor/power triage, private
   original/final config records and restoration. Requires a USB reference RAK;
