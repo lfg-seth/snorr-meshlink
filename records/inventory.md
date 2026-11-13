@@ -1,5 +1,17 @@
 # Hardware inventory
 
+## 2026-11-12 - Fresh RAK batch and hardware holds
+
+Identify nine additional deployment candidates independently by USB/!ID. Eight
+are firmware/profile-staged CLIENT on ordinary 4c96b9b; R008 is owner-held
+without a write. Together with the earlier R001, nine deployment units are
+staged; that is not nine accepted assemblies. In this batch, R002, R004, R005, R006, R007, R009 pass the
+bounded board checks. R003 remains a radio/connection hold; R010 is unplugged
+for owner-confirmed solder rework after missing INA power. No stock purchase,
+carrier-model inference, battery allocation or cost change. All deployment
+RAKs have INA219 per owner; use actual temperature/RH to identify AHT21.
+[Fresh physical roster](deployment-nodes.md), [measurements/limits](../docs/operations/rak-batch-20261112.md).
+
 ## 2026-11-12 - Fresh R001 and reset bench reference
 
 Owner starts new repeater/gateway numbering and identifies the first assembly

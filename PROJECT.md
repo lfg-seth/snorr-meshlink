@@ -13,9 +13,10 @@ Case, battery/solar and location will be selected at deployment; the old fixed
 location is cleared. Member-node labels/identities are not reset.
 All prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.
-The owner plans batches of 4-8 with mixed sensor fit; use the
-[plug-in label station](docs/operations/rak-batch-station.md) and record each
-unit's INA219/AHT21 fit explicitly.
+The owner plans batches of 4-8; all deployment RAKs have INA219. Use the
+[plug-in label station](docs/operations/rak-batch-station.md), automatically
+detect AHT21 from measured temperature and relative humidity, and record each
+unit's sensor results.
 
 ## Mission and priorities
 

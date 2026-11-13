@@ -12,17 +12,29 @@ physical radio's own identity/keys. Member-node labels were not reset.
 selected repeaters' ROUTER switch for final placement Sunday; verify cadence
 and full profile after that switch. [Batch label station](../docs/operations/rak-batch-station.md).
 
-Only identified units accepted below belong to this new roster; do not infer
-additional units or gateway assignments from the old R001-R006/G001-G006 lists.
+Only identified units and explicit holds below belong to this new roster;
+acceptance differs by row. Do not infer additional units or gateway assignments
+from the old R001-R006/G001-G006 lists.
 Portal registry/history has not been reassigned by this board-preparation step.
 
 | Fresh label / radio name | Physical identity | Assembly | Firmware / completed bench scope | Remaining deployment setup |
 | --- | --- | --- | --- | --- |
 | **R001 / SNORR Repeater 001** | USB **E93C5FF0F97DD76B**; radio **!f95b5501**; hardware **6bd77df9f05f3ce901555bf96d5ed7fc** | Owner-confirmed **RAK19007**, RAK4631 core, INA219 and AHT21 | Retained **2.7.26.4c96b9b**, **CLIENT**; device/environment/power 180 s, saved-baseline SNNS; full reboot/profile and both sensor readings pass; final CLIENT paced RF TX/RX **3/3 each**. [Evidence](../docs/operations/r001-commissioning-20261112.md). | Case, battery/solar, actual location and final ROUTER switch selected by owner Sunday; old fixed location cleared. Recheck reporting cadence after switching role. Forced relay/end-to-end field acceptance separate. |
+| **R002 / SNORR Repeater 002** | USB **397EBE4F36E1F126**; radio **!05237743**; hardware `26f1e1364fbe7e3943772305d079efb7` | RAK4631; INA219 owner-confirmed; AHT21 detected | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R003 / SNORR Repeater 003** | USB **1E1F729F05162A2E**; radio **!b4d6bc9f**; hardware `2e2a16059f721f1e9fbcd6b4f61e1bbc` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **0/3 TX, 0/3 RX**; Observed earlier; final CH1 unverified. HOLD: radio acceptance failed. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R004 / SNORR Repeater 004** | USB **BEF65915B4E4F06C**; radio **!49ac6d7f**; hardware `6cf0e4b41559f6be7f6dac493cfb81d1` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R005 / SNORR Repeater 005** | USB **AA474A4710B85C2C**; radio **!a65601b3**; hardware `2c5cb810474a47aab30156a671567827` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R006 / SNORR Repeater 006** | USB **76642362C6FCE382**; radio **!638b9515**; hardware `82e3fcc66223647615958b63dd296ca1` | RAK4631; INA219 owner-confirmed; AHT21 detected | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R007 / SNORR Repeater 007** | USB **BADB1E79E9739FC4**; radio **!b456f760**; hardware `c49f73e9791edbba60f756b42c43bbf3` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R009 / SNORR Repeater 009** | USB **E9B12C5CA98FBCB8**; radio **!da581e5f**; hardware `b8bc8fa95c2cb1e95f1e58dafebb06cc` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R010 / SNORR Repeater 010** | USB **820C9B4F0C2D7675**; radio **!77fdb9f1**; hardware `75762d0c4f9b0c82f1b9fd774661875b` | RAK4631; INA219 owner-confirmed; AHT21 detected | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; Not detected; solder rework. HOLD: owner confirms solder rework. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
 
-Physical tag: **R001**. Match USB suffix **D76B** when distinguishing it from
-the temporary reference. Next repeater label is **R002** after identifying that
-physical board independently. No fresh gateway number is assigned here.
+Current batch bench passes: **R002, R004, R005, R006, R007, R009**, plus previously accepted **R001**.
+R003 is held for radio/connection acceptance; R010 for owner-confirmed solder
+rework. **R008 is reserved, not configured**: !120b04fd / USB F4D0968336047CA0,
+owner-set-aside. These holds do not make the numbering available for another
+physical board. The next unused repeater number is **R011**. This session does
+not assign gateway numbers or alter portal enrollment/history.
 
 ## Bench reference - excluded from deployment numbering
 

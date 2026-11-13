@@ -8,10 +8,12 @@ from pathlib import Path
 import re
 import sys
 import time
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_ID = (0x239A, 0x8029)
 BOOTLOADER_ID = (0x239A, 0x0029)
+MAX_HEARTBEAT_AGE = 30
 
 
 def clean(value):
@@ -93,7 +95,116 @@ def station_lease(path):
 
 def show(row):
     return (f"{row['nodeId']}  |  {row['name'] or '(unnamed)'}  |  {row['role']}  |  "
-            f"{clean(row['port'])}  |  USB {clean(row['usbSerial'])}  |  {row['firmware']}")
+            f"{clean(row['port'])}  |  USB {clean(row['usbSerial'])}  |  {row['firmware']}"
+            + ("  |  REFERENCE" if row.get("reference") else ""))
+
+
+def process_running(pid):
+    if not isinstance(pid, int) or pid <= 0:
+        return False
+    if os.name == "nt":
+        # os.kill(pid, 0) must not be used on Windows: use a read-only query.
+        import ctypes
+        from ctypes import wintypes
+        api = ctypes.WinDLL("kernel32", use_last_error=True)
+        api.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        api.OpenProcess.restype = wintypes.HANDLE
+        api.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+        api.CloseHandle.argtypes = [wintypes.HANDLE]
+        handle = api.OpenProcess(0x1000, False, pid)
+        if not handle:
+            return ctypes.get_last_error() == 5  # Conservatively treat access-denied as alive.
+        try:
+            code = wintypes.DWORD()
+            return bool(api.GetExitCodeProcess(handle, ctypes.byref(code))) and code.value == 259
+        finally:
+            api.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+
+
+def process_token(pid):
+    """Read process creation identity, so a reused PID cannot validate old status."""
+    if not isinstance(pid, int) or pid <= 0:
+        return None
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        api = ctypes.WinDLL("kernel32", use_last_error=True)
+        api.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        api.OpenProcess.restype = wintypes.HANDLE
+        api.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+        api.CloseHandle.argtypes = [wintypes.HANDLE]
+        handle = api.OpenProcess(0x1000, False, pid)
+        if not handle:
+            return None
+        try:
+            created, exited, kernel, user = (wintypes.FILETIME() for _ in range(4))
+            if not api.GetProcessTimes(handle, ctypes.byref(created), ctypes.byref(exited),
+                                      ctypes.byref(kernel), ctypes.byref(user)):
+                return None
+            return f"windows:{created.dwHighDateTime:08x}{created.dwLowDateTime:08x}"
+        finally:
+            api.CloseHandle(handle)
+    try:
+        # Linux start ticks survive PID reuse. Other Unix systems fail closed.
+        stat = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8")
+        return "proc:" + stat[stat.rindex(")") + 2:].split()[19]
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def live_status(saved, now=None):
+    result = dict(saved)
+    alive = process_running(saved.get("pid"))
+    same_process = bool(alive and saved.get("processStart")
+                        and saved["processStart"] == process_token(saved.get("pid")))
+    try:
+        heartbeat = datetime.fromisoformat(saved.get("heartbeatUtc", ""))
+        age = ((now or datetime.now(timezone.utc)) - heartbeat).total_seconds()
+        recent = 0 <= age <= MAX_HEARTBEAT_AGE
+    except (TypeError, ValueError):
+        recent = False
+    verified = same_process and recent
+    result["running"] = bool(saved.get("running") and verified)
+    result["stale"] = bool(saved.get("running") and not verified)
+    if not result["running"]:
+        result.update(paused=False, busyPort=None)
+    return result
+
+
+def stop_requested(path, state):
+    """An orphan request for an earlier watcher must not stop a new instance."""
+    try:
+        request = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return bool(isinstance(request, dict) and state.get("processStart")
+                and request.get("pid") == state["pid"]
+                and request.get("processStart") == state["processStart"])
+
+
+def request_stop(path, saved):
+    state = live_status(saved)
+    if not state["running"]:
+        return False
+    atomic_json(path, {"pid": state["pid"], "processStart": state["processStart"]})
+    return True
+
+
+def update_presence(known, ports, excluded, emit):
+    present = {p.serial_number.upper() for p in candidates(ports, excluded)}
+    for usb, row in known.items():
+        connected = usb in present
+        if row.get("connected", True) and not connected:
+            emit(f"{row['nodeId']}  |  DISCONNECTED  |  USB {clean(usb)}")
+        row["connected"] = connected
+    return present
 
 
 def poll(ports, seen, excluded, probe, emit, paused=lambda: False):
@@ -125,7 +236,10 @@ def main(argv=None):
     mode.add_argument("--once", action="store_true", help="Identify connected RAKs once and exit")
     mode.add_argument("--pause", action="store_true", help="Ask the running watcher to release ports before bench writes")
     mode.add_argument("--resume", action="store_true", help="Resume and refresh IDs/names after bench writes")
+    mode.add_argument("--stop", action="store_true", help="Stop the watcher after its current read closes")
+    mode.add_argument("--status", action="store_true", help="Report status with a live process check")
     parser.add_argument("--exclude-usb", action="append", default=[], help="USB serial to leave alone; repeat as needed")
+    parser.add_argument("--reference-usb", action="append", default=[], help="Show this USB unit as REFERENCE instead of hiding it")
     parser.add_argument("--station-dir", type=Path, default=ROOT / "private/bench/rak-label-station")
     parser.add_argument("--poll", type=float, default=1, help="Hot-plug poll seconds (default: 1)")
     args = parser.parse_args(argv)
@@ -134,16 +248,27 @@ def main(argv=None):
         parser.error("Use an ignored private/ station directory and poll >= 0.2 seconds")
     station.mkdir(parents=True, exist_ok=True)
     pause = station / "pause"
+    stop = station / "stop"
+    status = station / "status.json"
+    if args.status:
+        saved = json.loads(status.read_text(encoding="utf-8")) if status.exists() else {"running": False}
+        print(json.dumps(live_status(saved), indent=2), flush=True)
+        return 0
+    if args.stop:
+        saved = json.loads(status.read_text(encoding="utf-8")) if status.exists() else {"running": False}
+        message = ("Stop requested; watcher will close its current read and exit."
+                   if request_stop(stop, saved) else "No verified running watcher; no stop request created.")
+        print(message, flush=True)
+        return 0
     if args.pause:
         pause.write_text("Pause requested before bench mutations.\n", encoding="utf-8")
-        print("Pause requested. Wait for status.json paused=true before opening boards.", flush=True)
+        print("Pause requested. Use --status and require running=true, stale=false, paused=true, busyPort=null before opening boards.", flush=True)
         return 0
     if args.resume:
         pause.unlink(missing_ok=True)
         print("Watcher resumed; connected boards will be reread and show new names/firmware.", flush=True)
         return 0
     from serial.tools.list_ports import comports
-    status = station / "status.json"
     lock = station / "watch.lock"
     lease = station_lease(lock)
     try:
@@ -152,12 +277,20 @@ def main(argv=None):
         parser.error(f"A watcher already owns this station. Close its window first: {lock}")
     seen, known = set(), {}
     was_paused = False
-    state = {"pid": os.getpid(), "running": True, "paused": False, "busyPort": None}
+    state = {"pid": os.getpid(), "running": True, "paused": False, "busyPort": None,
+             "processStart": process_token(os.getpid()),
+             "version": 2, "heartbeatUtc": datetime.now(timezone.utc).isoformat()}
+    references = {s.upper() for s in args.reference_usb}
     emit = lambda message: print(message, flush=True)
     emit("SNORR RAK label station -- ID only, no configuration writes")
     emit("Plug boards in; label each with its !ID. Ctrl+C stops and closes ports.")
+    emit("All RAKs are shown by default; reported names may be historical. REFERENCE is visible.")
     try:
         while True:
+            state["heartbeatUtc"] = datetime.now(timezone.utc).isoformat()
+            if stop_requested(stop, state):
+                emit("Stop requested; watcher serial ports closed.")
+                break
             if pause.exists():
                 state.update(paused=True, busyPort=None)
                 atomic_json(status, state)
@@ -173,19 +306,28 @@ def main(argv=None):
                 emit("RESUMED -- refreshing IDs, names and firmware.")
             was_paused = False
             state["paused"] = False
+            ports = list(comports())
+            present = update_presence(known, ports, args.exclude_usb, emit)
             def probe(port):
                 state["busyPort"] = port.device
+                state["heartbeatUtc"] = datetime.now(timezone.utc).isoformat()
                 atomic_json(status, state)
                 safe_serial = re.sub(r"[^A-Za-z0-9_-]", "_", port.serial_number)
                 try:
                     with (station / f"probe-{safe_serial}.log").open("a", encoding="utf-8") as log:
-                        return identify(port, log)
+                        row = identify(port, log)
+                        row.update(reference=port.serial_number.upper() in references, connected=True)
+                        return row
                 finally:
                     state["busyPort"] = None
+                    state["heartbeatUtc"] = datetime.now(timezone.utc).isoformat()
                     atomic_json(status, state)
-            for row in poll(list(comports()), seen, args.exclude_usb, probe, emit, pause.exists):
+            for row in poll(ports, seen, args.exclude_usb, probe, emit,
+                            lambda: pause.exists() or stop_requested(stop, state)):
                 known[row["usbSerial"]] = row
-                atomic_json(station / "nodes.json", list(known.values()))
+            state.update(connectedRaks=len(present),
+                         identifiedConnected=sum(r.get("connected", False) for r in known.values()))
+            atomic_json(station / "nodes.json", list(known.values()))
             atomic_json(status, state)
             if args.once:
                 break
@@ -195,6 +337,7 @@ def main(argv=None):
     finally:
         state.update(running=False, paused=False, busyPort=None)
         atomic_json(status, state)
+        stop.unlink(missing_ok=True)
         lease.__exit__(None, None, None)
     return 0
 

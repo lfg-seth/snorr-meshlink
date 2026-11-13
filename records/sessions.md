@@ -1,5 +1,36 @@
 # Session log
 
+## 2026-11-12 - Fresh RAK batch, USB station correction and holds
+
+- Supersede mixed/per-ID sensor intake: owner confirms all deployment RAKs
+  have INA219; AHT21 is detected from temperature and RH. Keep CLIENT until
+  Sunday. Preserve private original profiles and generate only missing own
+  keys. All eight fresh R002-R010 selections except owner-held R008 pass
+  4c96b9b/full settings through explicit reboot; only R003/R004/R006 flash.
+- Batch board passes: **R002, R004, R005, R006, R007, R009**, plus earlier R001 separately. R003 is held
+  after USB timeouts and completed 0/3 each RF; R010 is owner-held for solder
+  rework after INA power is absent, despite passing RF/AHT. R008 remains
+  unmodified. R004: quiet RF 3/3 each passes. Preserve every failed/passing RF comparison.
+- Correct the ID watcher that hid REF1 and trusted a stopped process's status.
+  Reference stays visible, disconnects are shown, heartbeat/process creation
+  identity validates handoff, and stop requests target one instance. **107
+  offline bench tests pass**; root alone owns hardware, with source/SDK review
+  delegated read-only. Windows failed-port errors improve after owner USB
+  changes, but a nine-open-interface run fails on R003. Use sequential board
+  access and paired RF; no general Windows stability guarantee or driver tweak.
+  Corrected live console shows R004/R006/REF1; validated pause passes and
+  identification resumes for subsequent plug-in labels.
+- Verify ten distinct X25519 key pairs from private saved evidence. Publish
+  sanitized [batch evidence](../docs/operations/rak-batch-20261112.md) and the
+  [fresh roster](deployment-nodes.md); preserve unrelated V4/SD and portal work.
+  Branch `codex/rak-station-audit`; commit/push reported at handoff.
+
+Next: physical labels and held-board repairs/inspection are the owner's work;
+agent can verify the next selected batch and retest repaired units. Actual
+case/power/site, final ROUTER plus cadence readback, fresh portal assignments
+and forced-relay/end-to-end acceptance remain. The corrected visible station
+handles subsequent !ID labels and never changes board settings.
+
 ## 2026-11-12 - CLIENT-mode R001 and batch label station
 
 - Owner explicitly restarts all repeater/gateway labels and defers case,

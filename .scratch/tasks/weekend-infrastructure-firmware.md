@@ -5,7 +5,8 @@
 All bench-prepared nodes must remain **CLIENT**. Final ROUTER changes happen
 Sunday, followed by complete cadence/profile verification. Use the
 [batch ID label station](../../docs/operations/rak-batch-station.md) for 4-8
-connected RAKs; sensor fit is mixed and owner-supplied per !ID.
+connected RAKs. All deployment RAKs have INA219; automatically detect AHT21
+from measured temperature and relative humidity and record results per !ID.
 
 Start all repeater/gateway labels fresh using the
 [current physical roster](../../records/deployment-nodes.md). Case, battery,

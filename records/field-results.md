@@ -1,5 +1,19 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Batched RAK firmware and direct radio checks
+
+All eight selected boards pass own-profile/key comparison through explicit
+reboot, fresh names and CLIENT / 4c96b9b. Three require application upgrades;
+two generate their own initially absent keys. Ten staged/reference key pairs
+are distinct and mathematically valid. Batch board passes: R002, R004, R005, R006, R007, R009.
+R003 is held after USB timeouts and a completed 0/3 TX / 0/3 RX test;
+R010 passes RF/AHT but is held for owner-confirmed INA solder rework. R008 is
+set aside unmodified. R004: quiet RF 3/3 each passes. R006's 10 s comparison passes 3/3 each;
+earlier packet losses remain recorded, with approximately 19-44% measured
+channel utilization during the run. Firmware cadence settings, direct RF and
+USB connection results do not establish field relay/coverage or power runtime.
+[Per-board results and raw-evidence references](../docs/operations/rak-batch-20261112.md).
+
 ## 2026-11-12 - Fresh R001 board commissioning and paced RF check
 
 - Owner-confirmed RAK19007 with INA219/AHT21, USB **E93C5FF0F97DD76B** /
