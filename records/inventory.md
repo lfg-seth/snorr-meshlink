@@ -1,5 +1,19 @@
 # Hardware inventory
 
+## 2026-11-12 - Screenless V4 INA219 and SD connections verified
+
+Owner-selected screenless Heltec V4, USB/MAC **F8:5B:1B:BF:06:38**, COM31,
+independently identifies ESP32-S3 v0.2 with **2 MB PSRAM / 16 MB flash**.
+Owner wiring: INA219 SDA17/SCL18; SD SCK47/MOSI48/MISO6/CS4; both 3V3/GND.
+Standalone diagnostic replaces only app0 after complete verified private flash
+backup. INA219-compatible register/configuration check **passes at 0x40**,
+bus **4.220-4.224 V**; calibrated current/polarity remain unverified.
+SDHC card reports **31,914,983,424 bytes** and **passes 16 KB write/remount/read
+comparison and temporary-file removal**. FAT32 is owner-reported; full physical
+capacity/endurance untested. Exact PCB subrevision, gateway/device assignment,
+shunt and power path remain unknown. No stock-total/cost change inferred.
+[Image, recovery, measurements and limits](../docs/operations/heltec-v4-peripherals.md).
+
 ## 2026-11-07 - Testing-context rak03 AHT21 unit
 
 Bench-only **rak03** identifies USB **397EBE4F36E1F126**, node **!05237743**,

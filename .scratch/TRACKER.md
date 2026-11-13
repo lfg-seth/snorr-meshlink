@@ -68,6 +68,12 @@ GPS-derived event time with truthful fallback and explicit boot records required
 Health broadcasts optional and cannot override V3 silence. Next: identify boards,
 GPS/time sources and cards for verified pinouts/implementation brief. Implementation deferred.
 
+Separate owner-selected 2026-11-12 peripheral check is complete on screenless
+S3R2 V4 **F8:5B:1B:BF:06:38**: INA219 at 0x40 and 32 GB card 16 KB
+write/remount/read comparison pass. Standalone diagnostic remains installed;
+gateway assignment/firmware, calibration and sustained logging are not accepted.
+[Bench evidence and recovery](../docs/operations/heltec-v4-peripherals.md).
+
 Owner activation is required before research, design, implementation or testing. Details live in the linked import or [wishlist](../records/wishlist.md); migration and mentioning an idea keep it parked.
 
 | Task | Hold / future outcome |

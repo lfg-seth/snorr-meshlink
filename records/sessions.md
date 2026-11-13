@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-12 - Screenless V4 INA219 and SD initialization passes
+
+- Owner connects screenless **V4 / COM31 / F8:5B:1B:BF:06:38** and supplies
+  INA219 SDA17/SCL18 and SD SCK47/MOSI48/MISO6/CS4 wiring, both 3V3/GND.
+  Chip verifies ESP32-S3 v0.2 / 2 MB PSRAM / 16 MB flash. Original program emits
+  LoRa test messages; Meshtastic API does not complete.
+- Complete flash backup passes transfer-digest verification on lower-speed
+  retry after one failed USB read. Install standalone diagnostic v1 into app0
+  only, with esptool written-data hash verification; preserve other partitions.
+  [Images, recovery and measured evidence](../docs/operations/heltec-v4-peripherals.md).
+- **INA219 PASS** at **0x40**, five register sets/configuration readback and
+  restoration; bus **4.220-4.224 V**. **SD PASS** at 1 MHz, reported
+  **31,914,983,424 bytes**, **16,384 bytes** written, unmount/remount/reopen
+  compared and temporary file removed. No existing files opened. Serial closed;
+  diagnostic remains installed, with radio held in reset and no Wi-Fi/Bluetooth.
+- Validation: target build and documentation/whitespace checks pass. Publish
+  coherent diagnostic/evidence on `codex/heltec-v4-peripherals`, preserving
+  unrelated working-tree edits.
+- Requested connectivity check complete. Next: owner-selected gateway/recorder
+  firmware and assignment. Current calibration/polarity, full-card capacity,
+  sustained logging, GPS/backhaul/portal and field gates remain unverified;
+  broad LOCAL-10 logging implementation stays deferred.
+
 ## 2026-11-07 - Bench-only rak03 check and radio-method correction
 
 - **rak03 !05237743**, USB **397EBE4F36E1F126**, COM14, retains reported RAK4631 / **2.7.26.4c96b9b**. Owner reports AHT21/no INA219; carrier and battery connection unconfirmed. Explicitly run USB/radio/AHT scope, power excluded; antenna assumed attached. No historical profile application or persistent rename.

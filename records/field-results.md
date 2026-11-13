@@ -1,5 +1,29 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Screenless V4 INA219 and SD bench connection check
+
+Owner-selected **COM31 / F8:5B:1B:BF:06:38**, verified ESP32-S3 v0.2 with
+2 MB PSRAM / 16 MB flash. Owner wiring INA SDA17/SCL18, SD
+SCK47/MOSI48/MISO6/CS4, both 3V3/GND. Complete original flash privately backed
+up and digest-verified; standalone diagnostic written/hash-verified to app0 only.
+
+**INA219-compatible connection PASS** at **0x40**: five bus/shunt/calibration
+register sets, configuration write/readback and original-setting restoration.
+Bus **4.220-4.224 V**, initial shunt **0.000-0.020 mV**, calibration register
+zero; no calibrated current or polarity acceptance. Four subsequent USB health
+samples retain readable registers through 22.3 seconds uptime.
+
+**SD connection PASS** at **1 MHz**: reported **31,914,983,424 bytes**,
+**16,384 bytes** written to a new random file, flushed/closed, unmounted,
+remounted, reopened and fully compared; temporary file removed. Formatting
+disabled and existing files not opened. FAT32 is owner-reported; full physical
+capacity, endurance, power loss and sustained logging remain untested.
+
+Serial closed; standalone diagnostic remains installed with radio reset and
+no Wi-Fi/Bluetooth. No gateway/Meshtastic provisioning, RF/backhaul, GPS/time,
+portal or field acceptance claimed. [Exact image, private evidence, recovery
+and limits](../docs/operations/heltec-v4-peripherals.md).
+
 ## 2026-11-07 - Bench-only rak03 broadcast radio check
 
 Desktop, bench-only **rak03 !05237743**, USB **397EBE4F36E1F126**, COM14,
