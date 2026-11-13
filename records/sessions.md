@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-13 - Backhaul storage and capacity audit
+
+Read-only SSH and SQLite aggregate inspection maps the MQTT queue, exact
+PocketBase archive, decoded histories, isolated demo, MeshMonitor, metrics,
+backups and G001 SD storage. [Measured sizes and limits](../docs/operations/backhaul-storage.md):
+portal filesystem 16.48/64 GiB used, including 10.33 GiB of local backups;
+live `pb_data` allocation 84.4 MiB and 68,118 archived MQTT receipts. The latest
+G001 report shows 3,080,192/31,902,400,512 bytes used. No service, radio,
+retention or data changes; raw traffic and credentials remain private.
+
+Next: compare a later snapshot for growth and separately select the existing
+off-host backup/recovery work. This single baseline does not close sustained
+storage, SD retrieval or recovery acceptance. Documentation checks and source
+publication reported at handoff; branch `codex/backhaul-storage-audit`.
+
 ## 2026-11-13 - G001 sleep and periodic-upload power estimates
 
 Owner reports about 160 mA from the portal/INA219 with an uncertain measurement
