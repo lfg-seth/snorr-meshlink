@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-11-13 - SD high-load capacity estimates
+
+Owner asks about 100 nodes and 100% busy channel. Extend the overnight report:
+proportional estimates are 98.4 MB/day / 324 days for 100 nodes and 63.9 MB/day /
+499 days at 100% busy versus the roughly 20% bench baseline. These are separate
+sensitivity cases; identical per-node traffic would demand more than one
+channel's airtime at 100 nodes. LongFast airtime and recorder event-size models
+support a deliberately padded 300 MB/day budget, about 106 days retained history.
+This is a sizing scenario, not a guaranteed maximum or high-load acceptance.
+[Derivation, sources and limits](bench-overnight-20261113.md#sd-capacity-under-heavier-traffic--sizing-scenarios).
+
+Source confirms oldest valid closed segments are reclaimed as space is needed;
+capacity estimates describe retention before/while rotation, not card hardware
+lifespan. No radio, hardware, firmware or service changes. Arithmetic/source and
+changed-document checks run at handoff. Next: selected copied-SD/event-count
+and load/rotation verification; existing portal/cadence/GPS follow-ups unchanged.
+Branch `codex/overnight-bench-20261113`; commit/push reported at handoff.
+
+
 ## 2026-11-13 - Overnight battery-inline power clarification
 
 Owner confirms mixed power, with current-bearing nodes on batteries and INA219

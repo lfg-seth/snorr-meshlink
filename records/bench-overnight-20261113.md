@@ -247,6 +247,86 @@ main overnight window, during that compatibility transition; none occur after
 00:30. Physical copied-card parsing, per-packet completeness and reboot
 recovery remain unverified by the archive alone.
 
+## SD capacity under heavier traffic — sizing scenarios
+
+The owner asks about 100 nodes and 100% channel utilization. These estimates use
+the observed 12.786 MB/day growth and 31.896 GB remaining. MB/GB are decimal.
+No high-load hardware test or synthetic radio transmission was performed.
+
+| Scenario | Estimated storage per day | Time until remaining space is used |
+| --- | --- | --- |
+| Observed 13-node bench mix | 12.8 MB | 2,495 days / 6.8 years |
+| 100 nodes, proportional per-node bench mix | 98.4 MB | 324 days / 10.7 months |
+| 100% channel busy, proportional to roughly 20% observed | 63.9 MB | 499 days / 16.4 months |
+| Deliberately padded stress budget | 300 MB | 106 days / 3.5 months |
+
+The first two extrapolations are separate sensitivity cases. Multiplying the
+same 13-node traffic mix by 100/13 would also scale roughly 20% busy time to
+154%, which a single channel cannot provide as sequential successfully received
+frames. Thus the 100-node row is a storage-demand illustration, not a promise
+that all 100 radios can sustain the existing report mix/cadences without loss
+or deferral. Node count alone does not determine storage; packet rates, sizes,
+repeats and the events generated per packet matter. The busy percentage also
+includes activity that may not yield a clean packet. Noise/collisions can make
+channel utilization high without proportionally increasing useful stored data.
+
+### Packet-size cross-check and conservative allowance
+
+The installed recorder format has **52 fixed bytes per event plus 0–640 bytes
+of event payload**, with 24-byte segment headers and 12-byte footers. A normal
+received/uplinked packet can generate separate raw RX, decoded, MQTT intent,
+MQTT envelope and MQTT result records; retries, queue/discard events, duplicates
+and the gateway's own reports change that count. It does not write one fixed
+640-byte block for every packet.
+
+The source and official radio documentation agree on this profile's LongFast
+settings: SF11, 250 kHz, coding rate 4/5. Pinned code adds a 16-symbol preamble,
+CRC and explicit header; low-data-rate optimization is off at this symbol time.
+Using Semtech's airtime equation, 16/64/128/255-byte radio frames take about
+0.354/0.723/1.214/2.157 seconds. Larger packets consume more space but also take
+longer to arrive; the radio byte rate is not an unbounded function of node count.
+
+For illustration, five 52-byte event headers plus raw radio bytes, application
+payload bounded by radio length minus the 16-byte mesh header, and an envelope
+assumed to be radio length plus 100 bytes gives **44–96 MB/day** over the listed
+packet sizes if reception runs back-to-back all day. This is a model, not copied
+card-file measurement; the +100-byte allowance is a stated sizing assumption.
+
+A deliberately inflated variant allows eight event headers and a 640-byte
+envelope even for the shortest frame. That produces about **62–261 MB/day** for
+the same sizes; combining the largest stored envelope with the shortest RF
+frame is intentionally pessimistic. Rounding above that range to **300 MB/day**
+gives approximately **106 days of history**. Use this as a conservative planning
+budget for the present firmware/profile, not a proven universal maximum.
+Repeated local faults or a different firmware/event policy or faster modem
+profile require a new model. Queue/writer completeness at saturation remains
+unmeasured; sufficient card capacity does not prove every packet will be saved.
+
+### Full-card behavior and limits
+
+The current recorder is designed to reclaim its oldest fully validated closed
+log segments when a new FAT allocation needs space. The numbers therefore
+describe time until first reclaim / approximate retained history under constant
+load, rather than a scheduled recording stop. It does not delete arbitrary,
+malformed or torn files to make room. Other data occupying the card reduces the
+space available for rolling logs; damaged files or I/O errors can still obstruct
+recording. Rotation's offline fixtures exist; this review does not establish
+months of physical high-load rotation or card endurance.
+
+This also clarifies the earlier 6.8-year figure: it is a capacity/retention
+extrapolation, not an SD hardware lifespan. SD wear cannot be estimated from
+these archive counters without card endurance specifications and actual
+physical-write behavior. RF congestion is already visible as delayed reports
+in the overnight run and warrants measurement independently of storage space.
+
+Primary sources: [Meshtastic radio presets](https://meshtastic.org/docs/overview/radio-settings/)
+and [Semtech AN1200.13, section 4](https://meshtastic.org/assets/files/LoRa_Design_Guide-b3f1bb6c4d86b62a065c50d5961bc6b2.pdf).
+Project source inspected: `firmware/SNORR_SD_GATEWAY.md`,
+`firmware/src/mesh/SnorrRecorder.cpp`, `RadioLibInterface.cpp`, `Router.cpp`,
+`firmware/src/mqtt/MQTT.cpp`, `MeshRadio.h` and `RadioInterface.h`.
+Private reproducible calculation: `private/overnight-analysis-20261113/sd-sizing.py`
+and `sd-sizing.json`; no new operational data exported.
+
 ## Next useful checks
 
 1. R001 has the least reported charge headroom. Record usable pack capacities
