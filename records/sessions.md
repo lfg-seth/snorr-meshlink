@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-12 - Screenless gateway requirements and build prompt
+
+- Prepared the [LOCAL-10 dispatch prompt](../.scratch/tasks/local-10-screenless-v4-gateway.md)
+  for screenless V4 **F8:5B:1B:BF:06:38**, following the owner interview. Own
+  device/INA219/SNNS/backhaul reports use 300 seconds; mesh relaying/downlinks
+  disabled, NTP accepted and optional sleep retained disabled.
+- Owner clarifies **no retention age limit**: keep six months if it fits;
+  delete oldest owned closed segments only when recording needs space and
+  preserve unrelated files. Gateway continues through SD failures with gaps.
+- Added requested daily custom SD-health/portal integration to the brief:
+  whole-card used %, used/total bytes, logging state, lost-record count and
+  report age. Separate versioned payload preserves existing SNGH compatibility.
+- Recorded planned 8/12-cell and one/two 5 V / 5 W panel supply; actual topology,
+  INA219 calibration and solar endurance remain unverified. Wi-Fi secret stays
+  outside published records. No firmware build/flash, serial or live deployment.
+- Validation: documentation links/whitespace and requirements review at handoff.
+  Next: dispatch the brief to the selected build agent, including independent
+  review and selected-board checks; live portal deployment remains separate.
+  Publish on `codex/heltec-v4-gateway-brief`, preserving unrelated edits.
+
 ## 2026-11-12 - Screenless V4 INA219 and SD initialization passes
 
 - Owner connects screenless **V4 / COM31 / F8:5B:1B:BF:06:38** and supplies

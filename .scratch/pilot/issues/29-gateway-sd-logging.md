@@ -2,7 +2,8 @@
 
 Requested 2026-10-31. Current status belongs to the local tracker. Ticket capture
 and requirements interview only; implementation, wiring and flashing await a
-selected assignment. Owner confirms two newly purchased screenless Heltec V4s
+selected assignment. The 2026-11-12 section below selects one V4's build brief;
+the broader fleet scope remains separate. Owner confirms two newly purchased screenless Heltec V4s
 with external Wi-Fi antenna connections, intended as primary gateways, one per
 fire department. Two existing V3s will be repurposed as recording devices;
 other future uses remain unspecified. Exact identities/revisions remain to
@@ -54,9 +55,10 @@ data stays private and out of Git.
   packets within the configured receiver/channel capability; this is not a claim
   to monitor every frequency simultaneously. Optional future storage-health
   broadcasts must not silently override this passive requirement.
-- Target 30 days of retained logs on each assigned card, subject to measured
-  traffic/record size and capacity. Rotate oldest closed files when full. Report
-  actual retained span and gaps; do not promise 30 days on every card untested.
+- Initial capacity target: 30 days, subject to measured traffic/record size and
+  capacity. The 2026-11-12 clarification below rules out an age cap: retain all
+  history that fits and rotate only when space is needed. Report actual retained
+  span and gaps; do not promise retention on an untested card.
 - Owner is not especially concerned about abrupt power loss. Use approximately
   five seconds as a provisional flush target, not a hard maximum-loss guarantee.
   Measure the lost tail and recovery behavior; prioritize reliable recording
@@ -78,7 +80,48 @@ data stays private and out of Git.
   state. Preserve the boot marker when SD becomes writable; missing-card/data
   gaps must remain visible rather than implying continuous recording.
 
-## Decisions still open
+## Selected screenless V4 gateway - 2026-11-12
+
+Owner requests a build-and-flash prompt after the requirements interview.
+[Dispatch brief](../../tasks/local-10-screenless-v4-gateway.md) defines execution
+and verification; this interview does not itself build or flash firmware.
+
+- Selected board is screenless S3R2 V4 **F8:5B:1B:BF:06:38**, 2 MB PSRAM /
+  16 MB flash, with verified INA219/32 GB SD connections in the
+  [peripheral bench record](../../../docs/operations/heltec-v4-peripherals.md).
+  G007 is an acceptable temporary name; owner plans later renaming. Preserve
+  hardware/security identity independently of the display name.
+- Upload received traffic through private Wi-Fi/MQTT and transmit own reports.
+  Disable mesh relaying and portal/MQTT downlinks. Both external Wi-Fi and LoRa
+  antennas are owner-confirmed attached.
+- Device/battery, INA219 power, passive SNNS neighbor signals and SNGH backhaul
+  health use a **300-second baseline**, subject to airtime/jitter. Logging is
+  continuous. Keep Wi-Fi/LoRa awake; optional sleep support remains disabled.
+  Active discovery and custom automatic sleep policy are outside this build.
+- **Retention is capacity-driven, with no age limit.** If six months fits,
+  retain six months. Delete oldest owned closed segments only when space is
+  needed to continue writing. Preserve unrelated files; no automatic format,
+  30-day expiry, arbitrary quota or early percentage threshold. Continue gateway
+  operation through SD faults and record/report gaps.
+- Use **NTP; no GPS is required on this gateway**. Preserve truthful unknown
+  UTC/boot/uptime and received GPS measurement times separately. This overrides
+  the earlier GPS-first time preference for this selected board.
+- Deliver portable versioned logs and a local browser reader with CSV/JSON
+  export. Preserve raw bytes and decoded data; process copied files locally.
+- Send **one custom SD-health packet per day**, superseding the proposed text
+  message. Integrate with MeshLink ingestion/API/existing device card: whole-card
+  used percent, used/total bytes, logging state, dropped-log count and report age.
+  Missing/invalid capacity stays unknown. Daily storage freshness is separate
+  from five-minute backhaul health. Existing wire contracts remain compatible.
+- Intended power: **8 or 12 existing project 18650 cells**, **one or two
+  5 V / 5 W panels**. Charger/protection/topology, installed allocation, INA219
+  shunt/path and calibration remain unverified. Firmware acceptance does not
+  establish solar endurance or approve pack wiring.
+- Provision owner-supplied Wi-Fi and authorized MQTT/channel secrets privately,
+  outside saved prompts/source/diagnostics. Other V4/V3 boards and automatic
+  historical portal backfill remain separate assignments.
+
+## Remaining engineering and broader-fleet decisions
 
 1. Physical board identities/revisions, attached peripherals and verified pinouts.
 2. Available GPS/time sources and card assignments; validate retention capacity.

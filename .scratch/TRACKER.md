@@ -23,6 +23,7 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 | Task | Lane | Next action / prerequisite |
 | --- | --- | --- |
+| [LOCAL-10 - Screenless V4 logging gateway](tasks/local-10-screenless-v4-gateway.md) | Software / Bench dispatch | Requirements/prompt prepared for F8:5B:1B:BF:06:38: five-minute own reports, capacity-only SD rotation with no age cap, NTP and daily custom SD-health/portal support. Next: dispatch the brief for implementation, independent review, build and identity-checked flash. No gateway firmware built/flashed in the interview; other V4/V3 boards remain deferred. [Owner decisions](pilot/issues/29-gateway-sd-logging.md#selected-screenless-v4-gateway---2026-11-12). |
 | B003 GPS/client acceptance (former G004 V4) | Bench | Owner reassigns `!699c2ed8` to unassigned B003; checked `2.7.26.6fea6aa`, complete client profile/keys/reboot, GPS default pins at 60/120 seconds and 180-second device/SNNS baseline pass. Active G004 mapping removed/history preserved; fresh SNNS passes both gateways/public portal. Battery/position RF skips at >25% channel utilization; source clock unknown. Next: RF battery/GPS/clock and agreed outdoor/phone-free runtime/native acceptance. [Evidence](../docs/operations/b003-v4-client.md). |
 | [LOCAL-3 - Production firmware readiness](pilot/issues/25-production-firmware-readiness.md) | Bench / Software follow-ups | Reviewed `4c96b9ba0` installed on R002/R004/R006/G001/G002; [R002](../docs/operations/r002-three-minute.md) and [R004](../docs/operations/r004-three-minute.md) full profile/reboot and 180-second device/environment/power plus 195-second SNNS source gaps pass through both gateways. R006 B002 PKI, 180/300/900 SNNS and interrupted edit/restoration pass; serial closed, original admin allowlist restored. Next bench: forced-relay admin/lost-command handling excluding direct reception; resolve rebooting-write ACK ambiguity before inaccessible use. New `6fea6aa68` pin and all-four gateway health/outage rollout pass separately; continue software freshness contract. [Admin measurements/limits](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24). Release, portal, soak and GH-4/GH-8/LOCAL-4/field gates remain open. |
 | [GH-2 — Phone-free GPS freshness/runtime](../records/tracking-import/github-2.md) | Bench preparation → run | Next: [prepare the B001/B002 run plan](tasks/gh-2-run-plan.md), then agree hardware, sampling and missing/stale criteria before measuring. Preserve 15-minute stale, four-hour minimum/12-hour target. |
@@ -60,13 +61,12 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 ## Deferred
 
-SD logging requirements interview: [LOCAL-10](pilot/issues/29-gateway-sd-logging.md).
-Two new screenless/external-Wi-Fi V4 primary gateways (one per fire department)
-plus two repurposed V3 recorders. Capture scope, overwrite-oldest rotation and
-offline export accepted; V3s passive receive-only. Target 30-day retention;
-GPS-derived event time with truthful fallback and explicit boot records required.
-Health broadcasts optional and cannot override V3 silence. Next: identify boards,
-GPS/time sources and cards for verified pinouts/implementation brief. Implementation deferred.
+Broader SD recording: [LOCAL-10](pilot/issues/29-gateway-sd-logging.md).
+One identified screenless V4's gateway brief is in Next. Other V4/V3 work remains
+deferred; V3s must stay passive receive-only. Retain all history that fits;
+overwrite oldest owned closed segments only when capacity requires it. The
+selected V4 uses NTP and daily custom SD-health reporting; broader GPS/time and
+other-board assignments still need identification and owner selection.
 
 Separate owner-selected 2026-11-12 peripheral check is complete on screenless
 S3R2 V4 **F8:5B:1B:BF:06:38**: INA219 at 0x40 and 32 GB card 16 KB

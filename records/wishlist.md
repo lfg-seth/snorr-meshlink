@@ -12,11 +12,18 @@ Owner clarification: two newly purchased screenless V4s with external Wi-Fi
 connections become primary gateways, one at each fire department; two existing
 V3s become recorders. Owner accepts comprehensive capture, oldest-file overwrite,
 continued operation through card failures and offline reconstruction/export first.
-Follow-up: V3s are passive receive-only; target 30-day retention. Owner is not
+Follow-up: V3s are passive receive-only. The original 30-day capacity target is
+not an age limit: the 2026-11-12 clarification retains all history that fits,
+deleting oldest owned closed segments only when space is needed. Owner is not
 especially concerned about power loss; five-second flushing remains a provisional
 target rather than a guarantee. GPS-derived log timestamps and explicit boot
 records required, with truthful unknown-time handling. Exact boards, available
 GPS/time sources, card assignments and verified pinouts remain prerequisites.
+
+2026-11-12: one verified screenless V4 has an owner-selected
+[gateway build brief](../.scratch/tasks/local-10-screenless-v4-gateway.md),
+including daily custom SD-health packets and portal integration. Other V4/V3
+implementation remains separate; current dispatch status belongs to the tracker.
 
 These are owner-requested future ideas, first recorded on 2026-10-12 and extended on the dates below. They are outside the current pilot scope and active ticket frontier. Do not start research, design, implementation, or testing for them until the owner explicitly brings them forward. Passive member GPS tracking remains the first priority.
 

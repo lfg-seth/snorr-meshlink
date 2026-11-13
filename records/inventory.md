@@ -1,5 +1,16 @@
 # Hardware inventory
 
+## 2026-11-12 - Screenless gateway power plan clarified
+
+Owner intends the identified screenless V4 **F8:5B:1B:BF:06:38** to run from
+**8 or 12 of the existing project 18650 cells**, with **one or two 5 V / 5 W
+solar panels**. This is a planned allocation, not confirmed pack assembly,
+panel installation or changed stock/purchase totals. Exact charger/protection,
+topology, cell capacity, INA219 shunt/current path and calibration remain
+unverified. No deep sleep now; optional support remains disabled. G007 is an
+acceptable temporary name, not a completed provisioning result.
+[Selected requirements](../.scratch/pilot/issues/29-gateway-sd-logging.md#selected-screenless-v4-gateway---2026-11-12).
+
 ## 2026-11-12 - Screenless V4 INA219 and SD connections verified
 
 Owner-selected screenless Heltec V4, USB/MAC **F8:5B:1B:BF:06:38**, COM31,
