@@ -1,5 +1,29 @@
 # Session log
 
+## 2026-11-13 - Cases 2–11 added to v4 enclosure inventory
+
+Extend the owner-reported [case inventory](inventory.md#case-enclosure-inventory---2026-11-13)
+through Case 11; all eleven are v4 designs. Totals are 3 PETG/8 ASA enclosures,
+19 empty four-cell parallel holders (76 cell slots), 13 SMA ports/connectors,
+3 Type N connectors and 18 fitted solar panels (8 × 160 mA, 10 × 200 mA).
+All cases remain without batteries or boards. Cases 10/11 have zero fitted
+panels and a pass-through for larger 5 W panels; external panel ownership or
+quantity is not inferred.
+
+HW-007 now accounts for at least 19 holders, one more than the retained
+historical source quantity of 18; loose stock remains uncounted. No purchase,
+cell-stock or board-stock change. Update the v4 design note to cover the full
+reported batch, retaining the separate v3 design reference.
+
+Validation: row-derived totals and per-case transcription checked; changed
+Markdown whitespace and local-link checks pass. Branch `codex/case-inventory`;
+commit/push reported at handoff. Unrelated checkout edits are preserved.
+
+The supplied intake is recorded and its completed tracker entry is removed.
+Next: use this inventory when the owner selects case/board/power allocations;
+record any further case details when supplied. Assembly and output measurements
+remain separate from this owner-reported parts inventory.
+
 ## 2026-11-13 - Case 1 inventory and enclosure design images
 
 Record owner-reported Case 1 as one v4 PETG enclosure with one SMA antenna

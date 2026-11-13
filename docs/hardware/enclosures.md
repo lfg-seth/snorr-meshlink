@@ -10,9 +10,11 @@ has been matched to these images yet.
 
 ## v4
 
-Case 1 is the owner-identified v4 PETG enclosure. Its reported parts are listed
-in the inventory; the render documents its appearance rather than proving
-installed hardware or measured performance.
+The owner identifies Cases 1–11 as v4 enclosures: three PETG and eight ASA.
+Case 1 is PETG and is represented by the supplied render. See the inventory for
+each case's holders, connectors and panels, including Cases 10/11 with no fitted
+panels and a pass-through for larger 5 W panels. The render documents the design's
+appearance rather than proving installed hardware or measured performance.
 
 ![Owner-supplied v4 enclosure render showing two angled solar-panel faces](assets/enclosure-v4-render.png)
 
