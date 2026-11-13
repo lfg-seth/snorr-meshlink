@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-13 - G001 SD cadence firmware
+
+Screenless **G001 `!1bbf0638`**, USB **F8:5B:1B:BF:06:38**, now runs
+`heltec-v4-sd-gateway / 2.7.26.5bd4923`. SD health shares saved device
+telemetry timing, currently 300 seconds. App-only update and full profile/key
+preservation pass; existing card, sensors, pinout and hardware quantities are
+unchanged. [Hashes, recovery and live acceptance](../docs/operations/g001-sd-cadence.md).
+
 ## 2026-11-12 - G001 Wi-Fi survey firmware
 
 Screenless `!1bbf0638` now runs `2.7.26.246ec72`. App-only update;

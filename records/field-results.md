@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-13 - G001 SD shares telemetry cadence
+
+Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports
+advertise the retained 300-second device setting and arrive through own and
+legacy-V3 encrypted uplinks. SD and SNGH source gaps match at 361 and 345
+seconds; exact 300-second delivery is not established. MeshLink 0.3.1 stores
+one observation with both routes and exposes healthy storage, 3,080,192 of
+31,902,400,512 bytes used, zero dropped records and the 300-second interval
+in authenticated public state. No field, calibration or endurance conclusion.
+[Installation, measurements and recovery](../docs/operations/g001-sd-cadence.md).
+
 ## 2026-11-12 - Rollout G001 Wi-Fi bench baseline
 
 Of 45 USB samples, 2 showed startup disconnect and 43 measured the same

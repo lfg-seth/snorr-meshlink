@@ -77,4 +77,5 @@ even for unsupported packets; observations deduplicate a report by source,
 boot and sequence and retain each route's receipt. The newest eligible sample
 appears on the gateway card; after three expected intervals it is last known.
 Loss before reception, SD/queue drops, unavailable storage and offline periods
-cannot be recovered from a displayed signal value. SD health remains daily.
+cannot be recovered from a displayed signal value. On 2026-11-13,
+[SD health also adopts the saved device telemetry baseline](g001-sd-cadence.md).
