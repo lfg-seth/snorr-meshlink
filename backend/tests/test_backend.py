@@ -156,6 +156,11 @@ class BackendTests(unittest.TestCase):
         for item in [report(42,6,0,totalBytes='0'), report(42,6,0,totalBytes='18446744073709551616'),
                      report(42,6,0,flags=0), {**first,'deviceId':'r1'}]:
             self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',item)
+        for seq, interval in enumerate((180, 300, 900, 86400, 2147468), 6):
+            self.assertEqual(self.ingest(report(42,seq,0,intervalSeconds=interval))['outcome'], 'accepted')
+            self.assertEqual(current()['intervalSeconds'], interval)
+        for interval in (0, 179, 2147469, 4294967295, '300', 300.5):
+            self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',report(42,11,0,intervalSeconds=interval))
 
     def test_gateway_health_requires_backhaul_and_valid_flags(self):
         data = dict(bootId=1, sequence=1, uptimeSeconds=0, intervalSeconds=180,

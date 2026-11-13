@@ -11,5 +11,13 @@ test('daily cadence, full rotating storage, unknown capacity and feed outage', (
   assert.match(sdHealthLabel(data,t,false), /^Last known/);
   assert.match(sdHealthLabel({...data,flags:3,usedBytes:null,totalBytes:null},t,true), /Write failed · capacity unknown/);
   assert.match(sdHealthLabel({...data,measuredAt:null},t,true), /source time unknown/);
-  assert.match(sdHealthLabel(null,t,true), /awaiting daily report/);
+  assert.match(sdHealthLabel(null,t,true), /awaiting report/);
+});
+
+test('telemetry-paced SD freshness uses the reported interval', () => {
+  const t = Date.parse('2026-11-13T20:00:00Z');
+  const data = {flags:15,usedBytes:'320000000',totalBytes:'32000000000',dropped:0,
+    measuredAt:new Date(t).toISOString(),receivedAt:new Date(t).toISOString(),intervalSeconds:300};
+  assert.match(sdHealthLabel(data,t+899000,true), /^Logging/);
+  assert.match(sdHealthLabel(data,t+900000,true), /^Last known/);
 });

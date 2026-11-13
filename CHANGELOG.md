@@ -3,6 +3,15 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.3.1 - 2026-11-13
+
+Accept SNSD v1 SD-health reports at the saved device telemetry cadence, retaining
+compatibility with older daily reports. Cards use the advertised interval for
+freshness and await a report without assuming daily timing. No database migration
+or private configuration change. Roll back portal and backend together to 0.3.0;
+that version rejects the faster SD reports, so restore prior firmware as well.
+Raw archives and existing observations remain intact. Deployment is owner-selected.
+
 ## 0.3.0 - 2026-11-12
 
 Gateway cards show Wi-Fi RSSI in dBm, channel and sample age, plus SD capacity
