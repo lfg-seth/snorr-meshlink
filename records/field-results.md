@@ -875,4 +875,14 @@ Independent gateway reboot follow-up — Both saved profiles, including exact pr
 
 ## Reporting measures
 
+### 2026-11-12 - Live 13-node clock observation
+
+Read-only production archive: all 13 active radios currently clocked; 393 valid
+UTC and 17 unknown-time telemetry reports in the sampled hour, with no observed
+future or backward source timestamps. R006's latest boot remained unknown at
+21 minutes uptime and was clocked by 29 minutes. R009 supplies mesh clock time
+but omits GPS measurement time. GPS-only provenance, cold-start/forced-relay
+acceptance and physical SD-file integrity remain unverified.
+[Measurements, identities, method and evidence](clock-audit-20261112.md).
+
 Track member-device participation, coverage along tested routes, position age, delivery completeness, message delivery, mission runtime, repeater uptime during observed periods, and supported expenses. State the sample size and test conditions with each claim. An untested route or unobserved period has no measured result.

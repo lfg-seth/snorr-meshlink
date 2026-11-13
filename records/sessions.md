@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-12 - Live 13-node timestamp audit
+
+Read-only last-hour archive review finds 393 clocked and 17 unknown-time
+telemetry packets across 13 active radios; no future times or per-stream
+clock regressions. Both active uplinks receive the traffic. R006 still lacks
+UTC at 21 minutes uptime after a reboot, but is clocked by 29 minutes.
+Documentation links and whitespace checks pass in the isolated record branch.
+R009 carries valid position clock-sharing time while omitting the separate GPS
+measurement timestamp. [Measured results and limits](clock-audit-20261112.md).
+
+Next: selected cold-start/forced-relay clock acquisition without competing
+USB/phone/NTP, and source-loss/recovery. GPS-only provenance, R009 measurement-age
+configuration and physical SD-file/sustained-run acceptance remain open.
+Evidence records published on `codex/mesh-clock-audit`; existing unrelated edits
+preserved. No radios, serial ports or services changed.
+
 ## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
 
 Renamed screenless V4.3 `!1bbf0638` to G001, preserved the previous V3's
