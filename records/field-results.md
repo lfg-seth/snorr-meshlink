@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-12 - G007 bench and G001 radio receipts
+
+G007's automatic daily report reached its own MQTT uplink with 393,216 bytes
+used of 31,902,400,512 and zero dropped records. G001 also received G007's
+automatic device, INA219 power, passive-neighbor and backhaul reports by radio.
+The bench covered the installed configuration. Field coverage, card endurance
+and battery/solar autonomy require separate measurements.
+[Bench methods and results](../docs/operations/g007-screenless-gateway.md#live-bench-evidence).
+
 ## 2026-10-24 - Four-gateway Wi-Fi-loss fallback bench
 
 G001/G002/G003 Heltec V3 and replacement G004 Heltec V4 run checked

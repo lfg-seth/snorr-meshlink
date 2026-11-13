@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-12 - Screenless V4 commissioned as G007
+
+One owner-confirmed Heltec V4.3 / KCT8103L, MAC **F8:5B:1B:BF:06:38**,
+is now gateway **G007 `!1bbf0638`**. It has 16 MB flash, 2 MB PSRAM, two
+attached antennas, INA219 on SDA17/SCL18 at 0x40 and a 32 GB nominal FAT32
+card on SCK47/MOSI48/MISO6/CS4. Mounted capacity measured 31,902,400,512 bytes.
+[Image, recovery and profile](../docs/operations/g007-screenless-gateway.md).
+
 ## 2026-10-24 - B002 latest firmware and three-minute reporting
 
 Existing original OLED V4 **B002 `!699ca878`**, USB

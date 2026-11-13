@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-12 - G007 screenless logging gateway
+
+Installed reviewed firmware `898c113b5` on G007 and verified its full private
+profile across reboot. Published MeshLink 0.2.0 with daily SD health and the
+offline reader. Both G007 and G001 delivered encrypted bench traffic. The next
+application step is a separately selected production rollout with G007
+registration and authenticated card verification. Physical card retrieval,
+sustained retention and solar runtime remain open.
+[Installation, checks and measured results](../docs/operations/g007-screenless-gateway.md).
+
 ## 2026-10-25 - RAK script main integration and branch audit
 
 - Owner selects merging the RAK role/location/B002 admin script to main and

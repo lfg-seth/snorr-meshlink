@@ -1,5 +1,10 @@
 # Board flashing and configuration handoff
 
+**G007, 2026-11-12.** The screenless V4.3 `!1bbf0638` uses
+`heltec-v4-sd-gateway` at `898c113b5`. The 16 MB partition layout changed.
+Use this board's full verified backup to return to the original diagnostic.
+[Image hashes, pinout and installed profile](g007-screenless-gateway.md).
+
 2026-10-24 **G001/G002/G003/G004** now run checked **2.7.26.6fea6aa**
 from published **6fea6aa68**: V3 target for G001–G003, OLED V4 target for
 replacement G004 **`!699c2ed8`**. CLIENT, **LoRa TX enabled**, over-LoRa SNNS,
