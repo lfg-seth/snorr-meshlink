@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-11-12 - R009 RAK12501 GNSS identified
+
+Owner confirms one RAK12501 on R009 / !da581e5f / USB E9B12C5CA98FBCB8.
+The pinned ordinary 4c96b9b image supports its L76K; live GPS mode is already
+ENABLED, default UART, 120 s receiver update and 3,600 s smart position report.
+No new image/settings/location write. Exact slot/antenna and fresh fix remain
+unverified; no purchase, cost or battery allocation inferred. Other boards'
+GPS fit is not inferred. [Compatibility/readback](../docs/operations/r009-gps-20261112.md).
+
 ## 2026-11-12 - R010 solder repair and R008 commissioning
 
 Owner confirms R010 / !77fdb9f1 solder rework is complete. Its INA219 CH1

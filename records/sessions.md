@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-11-12 - R009 RAK12501 GPS compatibility readback
+
+- Owner identifies RAK12501 on fresh R009 / !da581e5f. Exact ordinary4c source
+  includes L76K UART probe/initialization; manufacturer confirms Meshtastic
+  compatibility. No special image or rebuild is required.
+- Live read-only USB check confirms CLIENT / 2.7.26.4c96b9b, GPS ENABLED,
+  120 s receiver update, 3,600 s smart position report, no GPIO overrides and
+  disabled fixed position. Preserve identity/keys, sensor/report and radio
+  settings; no hardware write/flash or gateway access. Serial closed.
+- Record the owner-confirmed module and [GPS evidence](../docs/operations/r009-gps-20261112.md).
+  Eight seconds without a new local position packet is not a fix verdict.
+  Nine prior board passes remain distinct from GPS acceptance.
+  Branch `codex/r009-gps-check`; commit/push reported at handoff.
+
+Next: connected GPS antenna/compatible UART slot and sky-view fix check.
+R009 may serve as a GPS source for the end-to-end test after a fresh fix;
+select any temporary faster position cadence explicitly. All bench units
+remain CLIENT and Sunday site/power/ROUTER setup remains deferred.
+
 ## 2026-11-12 - R003/R008/R010 repair retest
 
 - Owner reconnects all three and confirms R010 solder rework. Repaired R010
