@@ -1,5 +1,33 @@
 # Session log
 
+## 2026-11-12 - R003/R008/R010 repair retest
+
+- Owner reconnects all three and confirms R010 solder rework. Repaired R010
+  passes complete profile/keys after power cycle, INA219 CH1, AHT21 and paced
+  RF 3/3 each. Clear its earlier solder hold.
+- Identify R008 / !120b04fd / USB F4D0968336047CA0; capture its previously
+  unavailable complete original, change ROUTER to CLIENT before updating,
+  verify pinned application-only 4c96b9b, own keys and full explicit reboot.
+  Both sensors and RF 3/3 each pass; fresh R008 name applied.
+- R003 still needs a hold. Its reader/stream die before RX on the first
+  retest; after owner cable-only swap both interfaces stay alive but yield
+  0/3 TX and 0/3 RX. USB-closed device/power queries give no matched reply.
+  INA219 responds over USB. Read-only comparison finds no radio/channel
+  discrepancy against passing R004/R006; no speculative firmware rewrite.
+  Owner explicitly sets R003 aside; further diagnosis is parked.
+- Eleven distinct X25519 key pairs pass offline checks. Worker ports close;
+  reference and gateway settings remain unchanged. Record [retest evidence](../docs/operations/rak-repair-retest-20261112.md)
+  and update the [current roster](deployment-nodes.md) to nine board passes,
+  R003 held. Preserve old failures and unrelated V4 work.
+  Branch `codex/rak-repair-retest`; commit/push reported at handoff.
+
+Next: keep R003 aside, label R008 and keep every staged board CLIENT. The next
+firmware gate is forced-relay member GPS through a RAK and the screenless V4
+to the portal, followed by gateway outage/recovery and sustained-run evidence.
+The owner supplies physical RF separation and hardware access; agent can handle
+capture/readback/analysis. Sunday case/power/location and ROUTER plus cadence
+readback remain; R003 is not a prerequisite for the nine passing boards.
+
 ## 2026-11-12 - Fresh RAK batch, USB station correction and holds
 
 - Supersede mixed/per-ID sensor intake: owner confirms all deployment RAKs

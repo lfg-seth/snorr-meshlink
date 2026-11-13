@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-11-12 - R010 solder repair and R008 commissioning
+
+Owner confirms R010 / !77fdb9f1 solder rework is complete. Its INA219 CH1
+voltage/current now return alongside AHT21; full profile and RF 3/3 each pass.
+Reconnected R008 / !120b04fd is backed up and updated from 2.7.17.36133d29d
+to 4c96b9b; CLIENT/full explicit reboot, both sensors and RF 3/3 each pass.
+R003 remains held after a cable-only comparison: USB stays connected but RF
+0/3 each and independent remote queries do not pass. It still returns INA
+power over USB; no permanent damage conclusion. Nine boards pass the bounded
+checks, one is held; ten physical labels are assigned. No stock, cost or
+battery allocation change. [Retest](../docs/operations/rak-repair-retest-20261112.md),
+[roster](deployment-nodes.md).
+
 ## 2026-11-12 - Fresh RAK batch and hardware holds
 
 Identify nine additional deployment candidates independently by USB/!ID. Eight

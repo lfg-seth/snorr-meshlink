@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Repaired R010 and newly prepared R008 pass
+
+Owner-reworked R010 now supplies INA219 CH1 4.2 V / -0.3 mA and AHT21;
+R008 supplies 4.236 V / -0.2 mA and AHT21 after its verified firmware update.
+Both preserve their own keys and complete CLIENT profiles and pass strict
+3/3 TX / 3/3 RX at 5 s spacing, 4 s deadline. R003 loses USB on one retest;
+with a known-good cable its USB session stays alive but RF returns 0/3 both
+ways. Two fresh remote telemetry queries with its USB closed also yield no
+matched reply. Retain earlier received packets as historical reception only.
+R003 stays held; nine total board-level passes do not accept final power,
+coverage, relay or site setup. [Measurements and limits](../docs/operations/rak-repair-retest-20261112.md).
+
 ## 2026-11-12 - Batched RAK firmware and direct radio checks
 
 All eight selected boards pass own-profile/key comparison through explicit
