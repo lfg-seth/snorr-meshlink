@@ -298,6 +298,48 @@ class TerminalTests(unittest.TestCase):
         self.assertNotIn("\x1b", text)
         self.assertNotIn("\x07", text)
 
+    def test_every_view_keeps_the_readings_node_order(self):
+        labels = ("B003", "R010", "Legacy V3", "G002", "B002", "R001", "G001")
+        nodes = []
+        for i, label in enumerate(labels):
+            n = self.snapshot()["nodes"][0]
+            n.update(label=label, radio=f"!{i:08x}")
+            nodes.append(n)
+        s = {"at": at(NOW), "nodes": nodes}
+        expected = ["R001", "R010", "G001", "G002", "Legacy V3", "B002", "B003"]
+        for view in ("all", "power", "radio", "watchdogs", "all"):
+            text = watch.Dashboard(False).render(s, NOW, 0, view=view)
+            rows = [line[:10].strip() for line in text.splitlines() if line[:10].strip() in expected]
+            self.assertEqual(rows, expected, view)
+
+    def test_four_hour_cutoff_hides_old_and_never_seen_nodes_in_every_view(self):
+        nodes = []
+        for i, (label, age) in enumerate((("R001", 14399), ("R002", 14400), ("R003", 14401), ("R004", None))):
+            n = node()
+            n.update(label=label, radio=f"!{i:08x}", readings={}, watchdogs={},
+                     lastContactAt=at(NOW - age) if age is not None else None)
+            nodes.append(n)
+        s = {"at": at(NOW), "nodes": nodes}
+        d = watch.Dashboard(False)
+        for view in ("all", "power", "radio", "watchdogs"):
+            text = d.render(s, NOW, 0, view=view)
+            self.assertIn("R001", text)
+            for label in ("R002", "R003", "R004"):
+                self.assertNotIn(label, text)
+            self.assertIn("Hidden: 3 nodes", text)
+        self.assertEqual(len(watch.Dashboard(False, show_inactive=True).display_nodes(s, NOW)), 4)
+
+    def test_activity_uses_receipts_and_hidden_nodes_reappear_on_new_report(self):
+        n = node()
+        n.update(lastContactAt=None, readings={}, watchdogs={})
+        s = {"at": at(NOW), "nodes": [n]}
+        d = watch.Dashboard(False)
+        self.assertEqual(d.display_nodes(s, NOW), [])
+        n["watchdogs"]["position"] = {"cadenceSeconds": 3600, "lastReceivedAt": at(NOW - 30)}
+        n["readings"]["gps"] = sampler.reading({"satellites": 9}, at(NOW - 30), at(NOW - 86400))
+        self.assertEqual(d.display_nodes(s, NOW), [n])
+        self.assertEqual(d.display_nodes(s, NOW + 14400), [])
+
 
 if __name__ == "__main__":
     unittest.main()

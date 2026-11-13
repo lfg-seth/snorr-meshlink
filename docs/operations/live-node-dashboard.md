@@ -25,6 +25,14 @@ timer; SNNS cannot reset device, environment or power deadlines. Standard
 NeighborInfo is tracked separately from passive SNNS. The header summarizes
 on-time, late, two-or-more-missed, waiting and event-driven streams.
 
+All table views keep the same order: repeaters, gateways, legacy gateway, then
+member nodes, with labels ordered within each group. Nodes with no packet
+activity in the last four hours, including never-heard nodes, are hidden from
+the tables, summaries and details. Activity uses receipt time rather than GPS
+or sensor measurement time. The exact four-hour boundary is hidden; a new
+report makes the node reappear automatically. `--show-inactive` includes all
+nodes for troubleshooting. Filtering does not reset watchdog history.
+
 ## Reporting cadence
 
 The [cadence file](../../scripts/node-cadence.json) records saved profiles by
@@ -105,6 +113,7 @@ python scripts/watch-nodes.py --view watchdogs --packet device --packet environm
 python scripts/watch-nodes.py --interval 5
 python scripts/watch-nodes.py --host my-meshlink-ssh-alias
 python scripts/watch-nodes.py --no-color
+python scripts/watch-nodes.py --show-inactive
 python scripts/watch-nodes.py --json
 python scripts/watch-nodes.py --demo
 ```
@@ -173,3 +182,9 @@ matrix shows independently late/missing streams and the daily SD deadline.
 ANSI in-place redraw, W switching to watchdog timers, Q exiting with status 0,
 narrow rendering and cursor restoration pass in the terminal preview. Linux native rendering and
 prolonged outage recovery remain unmeasured.
+
+2026-11-13 follow-up: 37 offline tests pass, including consistent ordering
+across A/W/P/R, the exact four-hour cutoff, never-heard nodes, optional inactive
+display and reappearance based on a new receipt despite an old GPS fix.
+A live 00:18 Pacific snapshot shows 13 active nodes in the same grouped order
+and hides five inactive/never-heard nodes.

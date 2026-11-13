@@ -18,6 +18,7 @@ import threading
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+ACTIVITY_WINDOW = 4 * 3600
 ESC = "\033["
 COLORS = {"fresh": "32", "aging": "33", "stale": "31", "unknown": "90"}
 METRICS = [
@@ -172,8 +173,9 @@ def watchdog_status(item, now, started_at, grace=0):
 
 
 class Dashboard:
-    def __init__(self, color, grace=0, flash=1.5):
+    def __init__(self, color, grace=0, flash=1.5, show_inactive=False):
         self.color, self.grace, self.flash = color, grace, flash
+        self.show_inactive = show_inactive
         self.samples = {}
         self.highlights = {}
         self.initialized = False
@@ -223,6 +225,21 @@ class Dashboard:
         return {stream: {**self.watch(node, stream), **watchdog_status(
             self.watch(node, stream), now, self.started_at if self.started_at is not None else now, self.grace)} for stream in streams}
 
+    def display_nodes(self, snapshot, now):
+        """One receipt-based activity filter and stable order for every view."""
+        def active(node):
+            times = [epoch(node.get("lastContactAt"))]
+            times += [epoch(item.get("receivedAt")) for item in node["readings"].values()]
+            times += [epoch(item.get("lastReceivedAt")) for item in self.watchdogs(node, now).values()]
+            return any(stamp is not None and 0 <= now - stamp < ACTIVITY_WINDOW for stamp in times)
+
+        def order(node):
+            label = clean(node["label"])
+            group = 0 if label.startswith("R") else 1 if label.startswith("G") else 2 if label.startswith("Legacy") else 3
+            return group, label, node["radio"]
+
+        return sorted((n for n in snapshot["nodes"] if self.show_inactive or active(n)), key=order)
+
     def watchdog_cell(self, item, width):
         state = item.get("state", "unknown")
         period, due = item.get("cadenceSeconds"), item.get("dueInSeconds")
@@ -258,6 +275,7 @@ class Dashboard:
         return ESC + COLORS[state] + (";7" if highlight else "") + "m" + value + ESC + "0m"
 
     def render(self, snapshot, now, tick, status="", width=140, height=None, view="all", packets=None):
+        nodes = self.display_nodes(snapshot, now)
         feed = snapshot.get("feed", {})
         beat = epoch(feed.get("heartbeatAt"))
         online = feed.get("connected") and beat is not None and 0 <= now - beat < 20
@@ -268,12 +286,15 @@ class Dashboard:
         if self.color and (not online or lag is None or lag > 15):
             title = ESC + "31m" + title + ESC + "0m"
         counts = {"fresh": 0, "aging": 0, "stale": 0, "unknown": 0, "event": 0}
-        for node in snapshot["nodes"]:
+        for node in nodes:
             for item in self.watchdogs(node, now).values():
                 counts[item["state"]] += 1
         lines = [title, "READ ONLY | " + (status or "Connected over SSH"),
                  f"Watchdogs: {counts['fresh']} OK, {counts['aging']} late, {counts['stale']} missed 2+, "
                  f"{counts['unknown']} waiting, {counts['event']} event | W timers / A values / Q quit"]
+        hidden = len(snapshot["nodes"]) - len(nodes)
+        if hidden:
+            lines.append(f"Hidden: {hidden} nodes inactive for 4h+ or never heard (--show-inactive to include).")
         narrow = view == "all" and width < 100
         columns = METRICS[:8] if view == "power" or narrow else METRICS[:2] + METRICS[8:] if view == "radio" else METRICS
         sections = [] if view == "watchdogs" else [("", columns)]
@@ -282,18 +303,16 @@ class Dashboard:
                 lines.append(heading)
             lines.append(" ".join(name.ljust(size) for name, size, _ in columns))
             lines.append(" ".join("-" * size for _, size, _ in columns))
-            for node in sorted(snapshot["nodes"], key=lambda n: (
-                    0 if n["label"].startswith("R") else 1 if n["label"].startswith("G") else 2 if n["label"].startswith("Legacy") else 3,
-                    n["label"])):
+            for node in nodes:
                 lines.append(" ".join(self.cell(node, metric, size, now, tick) for _, size, metric in columns))
         if view == "watchdogs":
-            available = {stream for n in snapshot["nodes"] for stream in self.watchdogs(n, now)}
+            available = {stream for n in nodes for stream in self.watchdogs(n, now)}
             streams = list(packets) if packets else [s for s in STREAMS if s in available] + sorted(available - STREAMS.keys())
             capacity = max(1, (width - 11) // 11)
             visible = streams[:capacity]
             lines += ["Node       " + " ".join(STREAMS.get(s, s.replace("packet:", "").replace("_app", ""))[:10].ljust(10) for s in visible),
                       "---------- " + " ".join("-" * 10 for _ in visible)]
-            for node in sorted(snapshot["nodes"], key=lambda n: n["label"]):
+            for node in nodes:
                 watches = self.watchdogs(node, now)
                 lines.append(clean(node["label"]).ljust(10)[:10] + " " + " ".join(
                     self.watchdog_cell(watches.get(s, {}), 10) for s in visible))
@@ -303,10 +322,10 @@ class Dashboard:
         lines += ["", f"Green: on cadence | Yellow/~: 1 cycle missed | Red/!: 2+ missed | Gray/?: unknown ({self.grace:g}s grace)",
             "New sample: brief highlight. mA: + charging / - discharging. USB*: charging or no detected battery.",
             "Values age by source/receipt time. Packet watchdogs use unique arrivals; GPS fix age is separate (15m ceiling)."]
-        unregistered = [n["label"] for n in snapshot["nodes"] if not n.get("registered", True)]
+        unregistered = [n["label"] for n in nodes if not n.get("registered", True)]
         if unregistered:
             lines.append("Archive only (not registered in portal): " + ", ".join(clean(label) for label in unregistered))
-        for node in snapshot["nodes"]:
+        for node in nodes:
             r = node["readings"]
             details = []
             gateway = r.get("gateway")
@@ -509,6 +528,7 @@ def main(argv=None):
     parser.add_argument("--demo", action="store_true", help="Synthetic color/highlight preview; no SSH")
     parser.add_argument("--view", choices=("all", "power", "radio", "watchdogs"), default="all", help="Table columns (W/A/P/R switches live)")
     parser.add_argument("--packet", action="append", default=[], help="Watchdog stream to display; repeat to select types (e.g. device, power, snns)")
+    parser.add_argument("--show-inactive", action="store_true", help="Include nodes inactive for 4h+ or never heard")
     parser.add_argument("--remote-python", default="/opt/meshlink-mqtt-venv/bin/python")
     parser.add_argument("--database", default="/var/lib/meshlink/pb_data/data.db")
     parser.add_argument("--config", default="/etc/meshlink/mqtt.json")
@@ -539,7 +559,7 @@ def main(argv=None):
     ansi = tty and enable_ansi() and (os.name == "nt" or os.environ.get("TERM") != "dumb")
     interactive = ansi and not (args.once or args.plain or args.json)
     color = not args.json and (args.color == "always" or args.color == "auto" and ansi and "NO_COLOR" not in os.environ)
-    dashboard = Dashboard(color, grace=args.grace)
+    dashboard = Dashboard(color, grace=args.grace, show_inactive=args.show_inactive)
     stream, snapshot = None, None
     next_connect, backoff, last_data = 0, 2, None
     error = "Connecting..."

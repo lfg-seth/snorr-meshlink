@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-13 - Stable dashboard order and inactive-node hiding
+
+- All A/W/P/R views share the readings order: repeaters, gateways, legacy
+  gateway, then member labels. Hide nodes at four hours without receipt
+  activity, including never-heard nodes, from tables/summaries/details.
+  New activity restores the row; `--show-inactive` includes hidden nodes.
+  Watchdog history remains intact; stale source/GPS time does not hide a node
+  that has fresh packet receipts. [Usage](../docs/operations/live-node-dashboard.md).
+- All 37 offline regressions and document checks pass, including cross-view
+  ordering, the four-hour boundary and receipt-based reappearance. Live 00:18
+  Pacific verification shows 13 active rows in the shared order and five hidden
+  inactive/never-heard nodes. No sampler,
+  radio, service or portal changes. Branch `codex/live-node-dashboard`;
+  commit/push reported at handoff.
+
+Next: restart the CLI, switch A/W, and use `--show-inactive` when diagnosing a
+hidden board. Existing cadence/field acceptance gates remain separate.
+
 ## 2026-11-12 - Cadence-based colors and independent packet watchdogs
 
 - Replace fixed dashboard age bands with per-radio/per-stream saved cadences:
