@@ -1,5 +1,14 @@
 # Board flashing and configuration handoff
 
+2026-11-12 **weekend RAK preparation**: reuse the exact bench-proven ordinary
+**2.7.26.4c96b9b** images through the explicitly selected
+[deployment manifest](repeater-deployment-image.json) and private offline kit.
+The updater's local-bundle path now selects this build, not historical
+`0634b77`; public pin remains unset. Read the [weekend runbook](weekend-firmware.md)
+for identity/backup, optional update and subsequent role/location/admin order.
+No board was flashed during kit preparation. The other chat owns screenless
+V4/SD implementation. GH-4 is [owner-resolved by INA219 replacement](ina219-audit.md#current-disposition---2026-11-12).
+
 2026-10-25 **former G004 V4 `!699c2ed8` is reassigned as client B003** at
 owner request. Reinstall checked **heltec-v4-gateway / 2.7.26.6fea6aa** with
 CLIENT role, private pilot radio, Wi-Fi/MQTT disabled and old credentials cleared,

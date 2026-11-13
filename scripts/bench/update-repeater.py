@@ -21,7 +21,7 @@ import traceback
 
 ROOT = Path(__file__).resolve().parents[2]
 PROFILE_PATH = Path(__file__).with_name("repeater-profiles.json")
-LOCAL_MANIFEST_PATH = ROOT / "docs" / "operations" / "repeater-production-image.json"
+LOCAL_MANIFEST_PATH = ROOT / "docs" / "operations" / "repeater-deployment-image.json"
 
 
 class UpdateError(Exception):
@@ -166,21 +166,21 @@ def local_bundle_image(directory):
     manifest = json.loads(manifest_bytes)
     if (manifest.get("schemaVersion") != 1 or manifest.get("repository") != "lfg-seth/firmware"
             or manifest.get("target") != "rak4631"
-            or manifest.get("source") != "0634b775f65804968f5a18a7e8824db415556db2"
-            or manifest.get("version") != "2.7.26.0634b77"
-            or manifest.get("tag") != "snorr-rak4631-2.7.26.0634b77-pre.1"
+            or manifest.get("source") != "4c96b9ba0360f01752892a41d09ccacda82747bb"
+            or manifest.get("version") != "2.7.26.4c96b9b"
+            or manifest.get("tag") != "snorr-rak4631-2.7.26.4c96b9b-pre.1"
             or manifest.get("publishedArtifact") is not False
             or manifest.get("hardwareVerified") is not False
             or manifest.get("snorrNeighborLoraIntervalSeconds") != 180):
         raise UpdateError("Tracked local-build manifest does not match the explicit unpublished RAK production build.")
-    expected_names = {"firmware-rak4631-2.7.26.0634b77.uf2", "firmware-rak4631-2.7.26.0634b77-ota.zip"}
+    expected_names = {"firmware-rak4631-2.7.26.4c96b9b.uf2", "firmware-rak4631-2.7.26.4c96b9b-ota.zip"}
     if len(manifest.get("artifacts", [])) != 2 or {asset["name"] for asset in manifest["artifacts"]} != expected_names:
         raise UpdateError("Tracked local-build manifest has an unexpected asset set.")
     sys.path.insert(0, str(ROOT / "firmware" / "bin"))
     from verify_snorr_release import verify_assets
 
     verify_assets(directory, manifest_bytes)
-    image = directory / "firmware-rak4631-2.7.26.0634b77.uf2"
+    image = directory / "firmware-rak4631-2.7.26.4c96b9b.uf2"
     validate_uf2(image)
     return manifest, manifest_bytes, image
 

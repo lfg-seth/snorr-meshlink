@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-12 - INA219 discrepancy resolved by replacement
+
+Owner confirms that new INA219 boards replaced the problematic boards and that
+no discrepancies have been observed since. Record the hardware-replacement
+resolution of GH-4; replacement quantity, physical device mapping, date and
+cost were not supplied, so stock and spending totals are unchanged.
+[Current disposition and retained diagnosis](../docs/operations/ina219-audit.md#current-disposition---2026-11-12).
+
 ## 2026-11-12 - Screenless gateway power plan clarified
 
 Owner intends the identified screenless V4 **F8:5B:1B:BF:06:38** to run from

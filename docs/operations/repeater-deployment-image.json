@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "repository": "lfg-seth/firmware",
+  "target": "rak4631",
+  "source": "4c96b9ba0360f01752892a41d09ccacda82747bb",
+  "version": "2.7.26.4c96b9b",
+  "tag": "snorr-rak4631-2.7.26.4c96b9b-pre.1",
+  "publishedArtifact": false,
+  "hardwareVerified": false,
+  "snorrNeighborLoraIntervalSeconds": 180,
+  "artifacts": [
+    {
+      "name": "firmware-rak4631-2.7.26.4c96b9b.uf2",
+      "bytes": 1519104,
+      "sha256": "f83039d32c8637beff30f1a8d06e8addd106ad817f611dbc440b9bac04c65206"
+    },
+    {
+      "name": "firmware-rak4631-2.7.26.4c96b9b-ota.zip",
+      "bytes": 760310,
+      "sha256": "09ecab0ce889d5b7b5001644f61384882973f346e30e535d485fa0366f9c84e3"
+    }
+  ]
+}

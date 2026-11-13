@@ -8,6 +8,16 @@ ignored storage.
 
 ## Current rollout status
 
+- **2026-11-12 weekend preparation:** the exact previously bench-proven ordinary
+  `4c96b9b` UF2/OTA assets are recovered and checksum/application-verified.
+  The explicit local updater now requires the new
+  [deployment manifest](repeater-deployment-image.json) and matching four-file
+  bundle. [Current runbook](weekend-firmware.md). Historical `0634b77` assets/
+  manifest remain preserved, but their older local-bundle instructions below
+  no longer select the current candidate. Public pin remains unset; no new
+  release, rebuild or board flash is claimed. GH-4 is owner-resolved by new
+  INA219 boards; see the [current audit disposition](ina219-audit.md#current-disposition---2026-11-12).
+
 - **2026-10-24 R002:** owner requests the same latest/three-minute update and
   confirms fitted INA219. Ordinary **2.7.26.4c96b9b** and complete original
   profile preservation pass; [saved profile and delivery evidence](r002-three-minute.md)

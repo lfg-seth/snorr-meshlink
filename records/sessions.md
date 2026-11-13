@@ -1,5 +1,41 @@
 # Session log
 
+## 2026-11-12 - Weekend RAK firmware kit and INA219 resolution
+
+- Owner confirms replacement INA219 boards fixed the discrepancy, with none
+  observed since. Resolve GH-4 locally on that owner-observed basis; update
+  audit, inventory and results while preserving historical measurements. No
+  replacement quantity/cost or new calibration measurement is invented.
+- Owner selects RAK repeaters and screenless V4 gateways, bench today/tomorrow
+  and Sunday deployment. Another chat owns V4/SD implementation and its board;
+  preserve its unfinished shared firmware. Prepare the isolated RAK artifact
+  outcome and [firmware runbook](../docs/operations/weekend-firmware.md).
+- Recover the exact previously bench-proven ordinary `2.7.26.4c96b9b` UF2 and
+  OTA ZIP from published source `4c96b9ba0`; both recorded SHA256/size checks,
+  all 2,967 application-only UF2 blocks, ZIP integrity and matching UF2/OTA
+  application bytes pass. Create the four-file private local bundle and
+  offline kit; no firmware rebuild, source edit, serial access or flash.
+- Fix the updater's stale explicit-local selection from `0634b77` to this
+  exact image using a new fixed manifest. Preserve the historical manifest/
+  assets; public release pin remains unset with no implicit fallback. Existing
+  identity/key/profile/UF2 guards remain. The updater still saves CLIENT, so
+  role/location/admin configuration follows any updater write.
+- Regression fails twice before the pin fix and passes after. All **81 bench
+  tests**, **10 release tests**, docs/whitespace and real-bundle verification
+  pass using a clean local copy of pinned firmware, isolated from the V4 work.
+  Bundle copies are under ignored `private/bench/releases/weekend-rak-4c96b9b/`
+  in the original and prepared checkouts. Offline-kit SHA256:
+  `f7c4ab1d6c3aa3924df9bccd952b305bc07ce9734ce9b8931dc60fe721f83eb1`.
+- Publication branch: `codex/weekend-firmware-scope`; commit/push reported at
+  handoff. No GitHub issue/board synchronization, new firmware release or
+  production service mutation. Shared unrelated edits remain preserved.
+
+Next: owner connects one selected RAK for private identity/profile readback
+and chosen role/location/admin commissioning; test fresh reports and a forced
+relay path. Per-board rollout, ambiguous remote-write handling, gateway TLS/
+clock/reconnect/SD failure checks and overall deployment acceptance remain
+unverified. Full operational history/runtime is not established by this kit.
+
 ## 2026-11-12 - Screenless gateway requirements and build prompt
 
 - Prepared the [LOCAL-10 dispatch prompt](../.scratch/tasks/local-10-screenless-v4-gateway.md)

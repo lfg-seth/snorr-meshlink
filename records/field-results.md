@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## 2026-11-12 - Owner confirms INA219 replacement resolution
+
+Owner reports replacing the INA219 boards with new ones fixed the observed
+discrepancy, with no discrepancies seen since. GH-4 is resolved on that
+owner-observed basis. This entry records the supplied outcome, not a new
+agent-run meter, calibration or runtime test. Earlier measurements remain
+historical evidence. [Current audit disposition](../docs/operations/ina219-audit.md#current-disposition---2026-11-12).
+
 ## 2026-11-12 - Screenless V4 INA219 and SD bench connection check
 
 Owner-selected **COM31 / F8:5B:1B:BF:06:38**, verified ESP32-S3 v0.2 with

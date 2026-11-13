@@ -1,5 +1,16 @@
 # INA219 current audit — 2026-10-16
 
+## Current disposition - 2026-11-12
+
+The owner reports that replacing the INA219 boards with new boards fixed the
+discrepancy and that no discrepancies have been observed since replacement.
+**GH-4 is resolved by hardware replacement on the owner's observed results.**
+The earlier diagnostic questions below are historical, not an active firmware
+blocker or a request to repeat calibration work. Replacement dates, quantities
+and affected physical IDs were not supplied; no new measurement is claimed.
+
+## Historical R004 follow-up - 2026-10-24
+
 2026-10-24 R004 update: owner requests latest ordinary firmware and three-minute
 telemetry/SNNS on the reconnected INA219 assembly. Ordinary **rak4631 /
 2.7.26.4c96b9b** replaces its diagnostic image; device/environment/power

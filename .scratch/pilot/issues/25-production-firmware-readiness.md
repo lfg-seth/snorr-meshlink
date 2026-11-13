@@ -1,5 +1,16 @@
 # LOCAL-3 — Production firmware readiness before mountain redeployment
 
+## Weekend firmware priority - 2026-11-12
+
+The owner narrows immediate work to RAK repeater and screenless V4 gateway
+firmware, with bench availability today/tomorrow and deployment Sunday.
+Another chat owns V4/SD implementation; this session prepares the ordinary RAK
+artifact/install/recovery inputs and [firmware acceptance checklist](../../tasks/weekend-infrastructure-firmware.md).
+The INA219 discrepancy is owner-resolved by replacement boards, with no further
+discrepancies observed; [GH-4 disposition](../../../docs/operations/ina219-audit.md#current-disposition---2026-11-12).
+Retain ordinary-image sensor fixes; do not reopen that hardware diagnosis as a
+firmware prerequisite. Historical pending statements below predate this update.
+
 Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shared product
 versioning, cross-target manifests/changelog and fleet rollout accounting live
 there; this child supplies its implementation and target-specific acceptance.
@@ -177,7 +188,7 @@ Immutable imports and GitHub issues/Project remain unchanged during the trial.
 | [GH-51 gateway timing](../../../records/tracking-import/github-51.md) / [GH-52 repeater timing](../../../records/tracking-import/github-52.md) | Consumed into section 3 as one shared contract; original timestamp-only proposal remains superseded by the open design choice. |
 | [GH-26 R001](../../../records/tracking-import/github-26.md) / [GH-27 R002](../../../records/tracking-import/github-27.md) | Remaining sensor, sustained and both-gateway acceptance consumed into section 5; preserve completed flash/profile evidence. |
 | Three-minute repeater rollout | Firmware release/updater/remaining-board acceptance consumed here. R006 private map placement and pending portal acceptance remain a separate current handoff. |
-| [GH-4 INA219](../../../records/tracking-import/github-4.md) | Separate hardware diagnosis dependency: confirm shunt/polarity and simultaneous same-path meter readings, including battery-only operation. No arbitrary scaling fix. Unvalidated current cannot support runtime/charging claims. |
+| [GH-4 INA219](../../../records/tracking-import/github-4.md) | Resolved 2026-11-12 on the owner's report: replacing INA219 boards fixed the discrepancy and no discrepancies have been observed since. [Current disposition](../../../docs/operations/ina219-audit.md#current-disposition---2026-11-12); historical measurements retained. |
 | [GH-8 utilization](../../../records/tracking-import/github-8.md) | Separate diagnosis dependency; measure all selected nodes at the proposed cadence before accepting airtime/GPS impact. No blind role or radio-power change. |
 | [GH-40 reconnect](../../../records/tracking-import/github-40.md) | Remaining acceptance consumed by LOCAL-4; original evidence retained. |
 | [GH-2 GPS/runtime](../../../records/tracking-import/github-2.md), [GH-3 relay/outages](../../../records/tracking-import/github-3.md), [GH-18 field plan](../../../records/tracking-import/github-18.md) | Separate deployment gates: phone-free GPS, 15-minute stale threshold, member runtime four-hour minimum/12-hour target, forced relay, offline viewing and agreed field criteria. Those member-runtime targets are not an unattended repeater power budget. |

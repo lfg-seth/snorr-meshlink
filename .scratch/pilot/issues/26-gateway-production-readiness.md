@@ -1,5 +1,16 @@
 # LOCAL-4 - Heltec V3 gateway hardware and production readiness
 
+## Weekend scope update - 2026-11-12
+
+The owner selects screenless V4 gateways, rather than existing V3 gateways,
+for Sunday deployment. Another chat owns the selected V4/SD implementation;
+use the [weekend firmware checklist](../../tasks/weekend-infrastructure-firmware.md)
+for its security/reconnect/clock and delivery acceptance. The V3 hardware plan
+below remains a separate outcome. GH-4's INA219 discrepancy is owner-resolved
+by replacing the boards, with no subsequent discrepancies observed; retain
+the [current disposition](../../../docs/operations/ina219-audit.md#current-disposition---2026-11-12)
+without requiring another diagnosis for this firmware cut.
+
 Parent: [LOCAL-6 - SNORR firmware releases](28-snorr-firmware-releases.md). Shared product
 versioning, cross-target manifests/changelog and fleet rollout accounting live
 there; this child supplies its implementation and target-specific acceptance.
