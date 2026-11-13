@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-13 - Stored versus queryable backhaul data
+
+Inspected deployed source `62dcc0bf`, live SQLite schemas and aggregate field/type
+counts. [Coverage matrix](../docs/operations/backhaul-storage.md#structured-data-coverage---november-13-follow-up)
+distinguishes normalized JSON/columns, raw-only MQTT evidence, MeshMonitor
+telemetry/text/packet metadata, SD-only events and uncollected information.
+Confirmed Wi-Fi signal history and current SD cadence support on the server;
+portal ordinary uptime/airtime/utilization remain raw-only there but are typed
+in MeshMonitor. Live portal message table is empty; MeshMonitor has 50 messages.
+No raw member data exported and no service/radio/retention changes.
+
+Next: owner selects any desired normalization or unified query work; no
+implementation is activated by this audit. Documentation checks and publication
+reported at handoff on `codex/backhaul-storage-audit`.
+
 ## 2026-11-13 - Backhaul storage and capacity audit
 
 Read-only SSH and SQLite aggregate inspection maps the MQTT queue, exact

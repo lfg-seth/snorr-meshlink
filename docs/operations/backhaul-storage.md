@@ -95,3 +95,84 @@ snapshot before projecting retention capacity; the demo generator and backup
 contents materially affect growth. No direct SD retrieval, sustained
 collection-completeness test, physical-host/snapshot accounting or off-host
 recovery acceptance was performed.
+
+## Structured data coverage - November 13 follow-up
+
+Read-only deployed-code/schema and aggregate inspection at approximately
+00:40–00:43 Pacific. The server's `SOURCE_COMMIT` is
+`62dcc0bfe70984332a9ffe5646238d8224320e7c`; it includes Wi-Fi signal ingestion
+and variable SD cadence validation beyond the original 0.2.0 source in this
+audit branch. Inspect deployed behavior rather than assuming this checkout is
+the live release. No payload contents, coordinates, names or credentials were
+exported. Schema presence alone is not evidence of populated measurements.
+
+| Information | Portal database | Separate MeshMonitor database |
+| --- | --- | --- |
+| Member GPS latitude/longitude, measurement/receipt clocks and timestamp quality | Structured `positions`; PDOP and satellite count when supplied | Structured latitude/longitude/altitude telemetry; timestamp semantics differ |
+| Device battery voltage | Structured observation history | Structured telemetry |
+| Battery percentage, channel utilization, transmit airtime and general device uptime | Retained in raw MQTT envelopes, not ordinary normalized device telemetry; gateway-health and SNNS carry their own uptime | Actual typed telemetry rows exist for all four |
+| Infrastructure temperature/humidity and sensor voltage/current | Structured observations, with environment versus power-channel identity; channels 1–8 supported, observed channels 1 and 3 | Actual environment and channel-1 telemetry rows exist; do not assume support for every portal channel |
+| SNNS and standard NeighborInfo | `neighbor_reports`, `link_observations`, current-neighbor state; SNNS includes RSSI/SNR, hearing age/count and boot/sequence | Custom PRIVATE_APP reports are logged as unsupported; no equivalent custom SNNS/SNGH/SNSD/SNWI normalization was observed |
+| Gateway Wi-Fi/MQTT health, boot/sequence, uptime/interval | Structured observation history and latest state | Custom report packet metadata/preview only |
+| Gateway Wi-Fi signal/state/channel/association | Structured observation history and latest state; 50 accepted generations at sample | Custom report packet metadata/preview only |
+| Gateway SD mounted/write flags, used/total bytes, drop counter and clocks | Structured observation history and latest state; 4 accepted generations at sample | Custom report packet metadata/preview only |
+| Per-gateway receipts, accepted/duplicate/rejected ingestion results | `packet_receipts` with source/gateway/time/outcome and normalized JSON | Separate MQTT packet log with source/destination/gateway/channel, application type, receive metadata and outcome |
+| RF packet RSSI/SNR and hop metadata | Exact envelope retains fields, but no general normalized packet-level table | Populated `mqtt_packet_log` fields; a field's presence/default does not establish a valid physical measurement |
+| NodeInfo identity/hardware/role announcements | Raw archive; portal identity/configuration remains provisioned separately | Structured node records and NodeInfo packet log |
+| Received radio text | Raw archive; operational MQTT text adapter absent and live `messages` has zero rows | 50 stored message rows; 97 received text packets logged at sample |
+| Routing/ACK packets | Raw archive, not operational delivery/route history | 116 routing packets logged as unsupported; `traceroutes` has zero rows |
+
+Structured does not mean every metric is a dedicated SQL column. Portal
+device/time/identity fields are columns with relevant indexes; coordinates
+and metrics live in structured JSON `payload` fields. They are directly
+queryable with SQLite JSON functions, without decrypting/reparsing protobuf.
+For example, SQL can select `json_extract(payload,'$.power1CurrentMa')` from
+`observations`, filtered by `deviceId`, `measuredAt` or `receivedAt`. Some
+sensor metrics/history have portal APIs; arbitrary cross-stream analytics
+still require private SQL/tooling. There is no single unified history/query
+schema across PocketBase, MeshMonitor, Prometheus and SD files.
+
+The raw archive's receipt ID, topic, received/ingested times are SQL fields.
+QoS, retained/duplicate flags, byte length, decode outcome/reason and base64
+payload are JSON metadata. At sampling it held 65,017 normalized, 1,663 rejected
+and 1,618 unsupported deliveries. Thus rejected/unsupported does not mean
+discarded: the original MQTT bytes remain, including unregistered-source
+traffic received within the worker's subscribed/authorized topics. Those
+payloads require envelope/protobuf parsing and sometimes decryption before
+their unnormalized contents become analytical fields. The terminal dashboard
+does this on read for additional metrics; it does not persist a new metric table.
+
+The archive's `normalized` outcome means the adapter produced a supported
+normalized packet; backend acceptance/duplicate/rejection is a separate
+`packet_receipts` result. Radio duplicates across MQTT deliveries are kept in
+the archive and receipt history while supported observations deduplicate.
+
+### Files, logs and collection gaps
+
+- G001 SD segments hold raw RF receive bytes/status/airtime and RSSI/SNR,
+  decode/duplicate references, retained application protobuf bytes, local
+  publish results, encrypted RF TX-start frames, TX-complete interrupts,
+  Wi-Fi/MQTT link events, boot/reset and clock anchors, gap/eviction records.
+  These are binary files with a local reader/exporter, not centrally imported
+  queryable event rows. Decoded admin contents are intentionally excluded.
+- Server service/system logs, PocketBase internal logs and selected bench
+  captures exist separately. Nginx portal access logging is explicitly off.
+  A continuous central radio serial/debug-console archive or cross-host log
+  search has not been deployed. MeshMonitor has its own populated audit log;
+  this audit does not assert all services omit IPs or authentication metadata.
+- No receiver records RF it never detects/reads, collisions/noise as a full
+  waveform, or transmissions suppressed before a packet is created. No
+  complete every-hop path, proven human delivery/read receipt, or exact
+  network-wide loss history can be reconstructed from these stores alone.
+- MQTT disconnect/buffering limits can leave server gaps. SD may retain local
+  RF evidence but there is no automatic SD upload/replay to fill those gaps.
+  SD queue overflow, unsynced power-loss tails and capacity eviction remain
+  recorded/possible loss boundaries, not guarantees of complete capture.
+- Supported solar/intrusion ingestion fields do not establish live sensors:
+  neither key appears in current live observation history. Whole-system energy,
+  calibrated battery capacity and runtime are not directly measured merely
+  because voltage/current history exists. Member environment/power and
+  infrastructure GPS are not normalized by the portal MQTT adapter.
+
+No retention policy or implementation change was made. These coverage gaps
+are findings; addressing them requires an owner-selected scope.
