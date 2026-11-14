@@ -8,6 +8,12 @@ The reproducible comparison uses a 5 m projected terrain grid for member visibil
 
 The private field report carries the site sequence, alternatives, gaps and outage impacts. Start with the Lee gateway and first two relay tests. The highest-impact Kyle-side branch depends on a maintainable upper mounting point and end-to-end receipts through it. Keep physical assignments in the deployment roster when the owner selects hardware.
 
+## Field atlas
+
+The revised packet opens with the proposed deployment and the two priority road gaps. Its north-up area guide uses mapped campground boundaries and ski runs. Common-scale panels show the nine individual footprints and eleven site failures. An additional map distinguishes terrain reachable through each station. The field tests pair a mountain locator with the link being tested, named transmit and receive sites, antenna heights and the expected packet observations.
+
+The cartographic design uses consistent panel scales for comparisons and distinct palettes for site identity and route status. [UK Government Analysis Function chart guidance](https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-charts/), [ColorBrewer scheme guidance](https://colorbrewer2.org/learnmore/schemes.html).
+
 ## Sources
 
 - High-resolution 3DEP terrain provides bare-earth orthometric elevations in metres. The dataset catalog and downloaded tile headers establish the source projection. [USGS 1 metre DEM](https://data.usgs.gov/datacatalog/data/USGS%3A77ae0551-c61e-4979-aedd-d797abdcde0e), [USGS DEM references](https://www.usgs.gov/faqs/what-projection-horizontal-datum-vertical-datum-and-resolution-a-usgs-digital-elevation-model).

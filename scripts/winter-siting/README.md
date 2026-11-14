@@ -16,7 +16,11 @@ The OSM line extract preserves object IDs from the pinned Geofabrik PBF. If chan
 
 The PDF and GPX appear at the root of the study directory. `gis/` contains the scored boundary, linework, candidate and selected locations, approaches, network edges, segments by status, gaps, individual footprints and single-node losses. GeoJSON is WGS84. GeoTIFF is EPSG:26911 with 255 outside the boundary. Reachability values are 0 for disconnected/blind, 1 for failure-vulnerable, and 2 for surviving every single removal. The visibility and loss files use 0/1. `tables/results.json` contains the full comparison results, including the height tests, optional home and alternate site allocations.
 
-Run independent checks and render every page with:
+Maps, bookmarks, GPX waypoint names and field sheets use the same human-readable names. For example, LB is Lower Bristlecone and SG is Showgirl. In the site, staging and approach GeoJSON layers, display `field_name` and `field_code`. Use the original `id` to join model tables, link endpoints, profile filenames and rasters. The dictionary in `field_names.py` records the crosswalk. These labels refer to proposed sites. Board assignments belong to the deployment roster.
+
+The north-up station map traces routes separately to Lee and Kyle. A location that reaches both can still share a downstream repeater. The outage maps recompute the route to either operating gateway after each individual removal. The colored footprint overlay shows which repeater alone sees a cell, with a shared class for overlap. The nine individual panels give the complete footprint of each repeater at a common scale.
+
+Run independent checks and render every page.
 
 ```powershell
 python scripts/winter-siting/verify.py private/winter-siting

@@ -1,10 +1,6 @@
 """Offline letter-size field atlas. Values and plotted pins use the model output."""
-import json
-import math
-from io import BytesIO
 from pathlib import Path
 from xml.sax.saxutils import escape
-import numpy as np
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.colors import HexColor, white
 from reportlab.lib.utils import ImageReader
@@ -12,9 +8,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph
-from cartography import Maps,PALETTE,plt
-from terrain import load_dem
-from native import Profiles
+from cartography import Maps
+from field_names import field_name, field_code, navigation_name
+from briefing import cover, briefing_pages, profile_pages, solar_windows, legend
 
 INK='#182e39';TEAL='#16675d';MUTED='#4c656a';LINE='#ccdad6';LIGHT='#edf4f0'
 
@@ -85,116 +81,32 @@ class Book:
 
 def make_report(root,cfg,r):
     b=Book(root/'Mount-Charleston-winter-mesh.pdf')
-    maps=Maps(root,r);sites=maps.sites;order=r['selected'];active=r['gateways']+order
-    scen=r['scenarios'];rec=scen['Recommended'];total=r['total'];safe=scen['Survives every single loss']
-    fails=r['failures'];worst=max(fails,key=lambda i:fails[i]['road_km'])
-    def route(code):return ' > '.join(r['paths'].get(code,['isolated']))
-    def hardest(name):return (r['roads'].get(name) or [{}])[0]
-    roadnames=['SR 156','SR 157','SR 158','Lucky Strike','Macks Canyon','Champion']
-    def impacted(code):
-        return ', '.join(f'{name} {fails[code][name]:.0f}%' for name in sorted(roadnames,key=lambda n:-fails[code][n])[:2])
+    maps=Maps(root,r);order=r['selected'];active=r['gateways']+order
+    scen=r['scenarios'];rec=scen['Recommended'];fails=r['failures']
+    cover(b,maps)
+    briefing_pages(b,maps,r,cfg)
     def coverage_rows(labels):
         return [[k,num(scen[k]['road_km']),num(scen[k]['trail_km']),num(scen[k]['land_km2'])] for k in labels]
-    b.begin('Deployment decision','Mount Charleston winter mesh','Winter 2026-27   /   Nine omnidirectional repeaters, two station gateways. Site codes identify field locations independently of physical radio labels.')
-    b.p(f"Survey both stations first. Start the repeater sequence at {sites[order[0]]['name']}, then {sites[order[1]]['name']}. Verify their gateway receipts before carrying radios up the next approach.")
-    rows=[]
-    prior=scen['Direct']
-    for i,k in enumerate(order,1):
-        v=scen['Order '+str(i)]
-        rows.append([str(i),k,sites[k]['name'],route(k),f"+{v['road_km']-prior['road_km']:.1f} km"])
-        prior=v
-    b.table(['Order','Site','Placement','One modeled route','Roads added'],rows,[43,42,183,173,99])
-    b.h('Most consequential gaps')
-    for name in ['Macks Canyon','Lucky Strike']:
-        g=hardest(name)
-        if g:b.p(f"{name} has a continuous {g['km']:.2f} km blind stretch, from {ll(g['a'])} to {ll(g['b'])}.",9.8,5)
-    b.h('Single-failure objective')
-    b.p(f"{num(safe['road_km'])} km of {num(rec['road_km'])} reachable road survives every single-node loss. Removing {sites[worst]['name']} ({worst}) costs {num(fails[worst]['road_km'])} km of road. Verify that a packet from Fletcher reaches Kyle through the higher Cathedral tree at the planned heights.")
-    b.p('This is a terrain-based deployment trial. The model provides neither dispatch assurance nor authority to mount equipment. Carry the GIS and GPX with this copy.',9)
-    b.end()
-    for mode,title,sub in [
-        ('union','Combined terrain visibility','All selected antenna footprints at a 1.2 m member endpoint. Teal cells have a clear bare-earth ray to at least one antenna. Uncolored cells have none.'),
-        ('overlay','Nine repeater footprints','Each dot color identifies a repeater. Interleaved colors show overlap. The nine individual GeoTIFFs preserve full footprints at every 80 m cell.'),
-        ('reach','Reach to a fire station','Teal survives the loss of any one radio or station. Amber reaches a station in the intact layout and loses that path under at least one failure. Uncolored land is blind or disconnected.')]:
-        b.begin('Overview maps',title,sub);b.image(maps.image(mode),454)
-        if mode=='overlay':
-            for i,k in enumerate(order):
-                x=36+(i%3)*180;y=b.y-(i//3)*18
-                b.text(x,y-8,k,9,b.bold,PALETTE[i]);b.text(x+19,y-8,sites[k]['name'][:24],8.2)
-            b.y-=58
-        elif mode=='reach':
-            b.p('Red road sections are blind at 40 m midpoint spacing. Hollow circles mark the scored highway ends. A diamond marks a station and a triangle a repeater. Gray fine lines show adjoining named trails. One colored cell describes the sample at its center.')
-        else:
-            b.p('The outline defines the scored mountain area. Dark lines show the six priority road corridors. Light lines show named adjoining paths. Gray relief includes the canyon walls and ridges that intercept the radio rays.')
-        b.p('NAD83 / UTM zone 11N. Terrain USGS 3DEP. Roads and trails © OpenStreetMap contributors, ODbL. Grid north is within about 1° of true north here.',8.6)
-        b.end()
-    b.begin('Coverage evidence','How much of the mountain is reachable?','Distances sum modeled centerlines inside the scoring boundary. Land uses grid-cell centers. Each scenario has identical denominators.')
-    b.table(['Configuration','Road km','Trail km','Land km²'],[['All scored geometry',num(total['road_km']),num(total['trail_km']),num(total['land_km2'])]]+
-            coverage_rows(['Direct','Nominal starting pins','Starting / lower','Starting / higher','Recommended','Survives every single loss','Fletcher unavailable','Roof antenna','60 percent F1 backbone']),[267,91,91,91])
-    facility=sorted(set(rec)-set(roadnames)-{'road_km','trail_km','land_km2'})
-    b.table(['Facility or corridor','Direct','Start / low','Nine','Survives all'],
-            [[n]+[f'{scen[k][n]:.0f}%' for k in ['Direct','Starting / lower','Recommended','Survives every single loss']] for n in roadnames+facility],[184,78,96,77,105],8.3)
-    b.p('Facility percentages use 30 m samples inside mapped campground boundaries. The resort score follows mapped ski runs by length. McWilliams includes former Dolomite loops. Kyle Canyon Campground is scored as its mapped footprint; the November update lists day use. Roads include both mapped branches at divided segments.',8.7)
-    b.end()
-    b.begin('Survey limits','Road endpoints and blind stretches','WGS84 latitude, longitude. Highway endpoints mark the mountain scoring limits. Keep US 95 and valley contacts outside the placement score.')
-    b.table(['Highway','One scored end','Other scored end'],[[k,ll(a),ll(z)] for k,(a,z) in r['highways'].items()],[100,220,220])
-    b.h('Longest contiguous modeled road gap in each corridor')
-    b.table(['Corridor','Length','From','To'],[[k,f"{hardest(k)['km']:.2f} km",ll(hardest(k)['a']),ll(hardest(k)['b'])] if hardest(k) else [k,'0 km','All sampled centers reachable',''] for k in roadnames],[88,63,194,195])
-    b.p("SR 156 follows Lee Canyon Road, SR 157 follows Kyle Canyon Road and SR 158 follows Deer Creek Road between the canyons. The USFS and Nevada highway sources identify these corridors. The OSM line named Lucky Strike Trail includes an asphalt private-access portion and the eastbound gravel track. Champion is FR 45203. Mack's Canyon Road follows the westward unpaved spur from SR 156.")
-    b.p('The eastern Lucky Strike and Kyle boundaries clip the mountain approaches. Northbound Lee coverage stops at the study boundary. Approximate the ends of shorter gaps from road-gaps.geojson, then walk or drive both shoulders of the predicted transition. Features intersecting the boundary are clipped.')
-    b.h('Away from roads')
-    b.p(f"The intact layout reaches {num(rec['trail_km'])} of {num(total['trail_km'])} km of mapped named trails and {num(rec['land_km2'])} of {num(total['land_km2'])} km² of land. Short dead pockets can fall between samples. Trail geometry describes potential member locations even when a route is closed to visitors.")
-    b.end()
-    b.begin('Failure analysis','What breaks when one node fails?','Each row removes the radio, all its edges and its member footprint. The graph searches again from the surviving station sinks, allowing up to three forwarding repeaters.')
-    b.table(['Removed','Lost roads km','Lost trails km','Lost land km²','Largest road losses¹'],[[k,num(fails[k]['road_km']),num(fails[k]['trail_km']),num(fails[k]['land_km2']),impacted(k)] for k in sorted(active,key=lambda k:-fails[k]['road_km'])],[72,76,77,90,225],8.5)
-    b.p('¹ Percentage points of each entire named corridor. A point can depend on several nodes in series, so the rows overlap. The survives-all layer intersects all eleven independent outage scenarios.')
-    b.h('Station RF and internet outages')
-    b.p('Both station radios are modeled as receive-and-uplink sinks with rebroadcast disabled. Losing station Wi-Fi or MQTT therefore removes the same paths to remote dispatch as losing that radio. A powered station can still hear RF locally. Field evidence must establish buffering or later replay.')
-    b.h('Coverage-first comparison')
-    v=scen['Resilience alternative'];w=scen['Alternative survives all']
-    b.p(f"Giving intact coverage more weight chooses {', '.join(r['resilience_layout'])}. It reaches {num(v['road_km'])} km of road with {num(w['road_km'])} km surviving all single removals. The recommended arrangement gives up {v['road_km']-rec['road_km']:.2f} km of intact road to protect {safe['road_km']-w['road_km']:.2f} km more during single failures.")
-    b.end()
     b.begin('Alternatives','Where a change of site pays off','Each alternate row moves one of the nine and keeps the other eight. The reported alternative is the highest-scoring equal-or-easier access class tested for that slot.')
-    b.table(['Remove','Replacement','Alternative roads','Alternative trails','Road loss if simply removed'],
-            [[k,r['alternatives'][k]['easy'],num(r['alternatives'][k]['metrics']['road_km'])+' km',num(r['alternatives'][k]['metrics']['trail_km'])+' km',num(fails[k]['road_km'])+' km'] for k in order],[64,98,113,110,155])
-    b.table(['Starting-layout or sensitivity test','Road km','Trail km','Land km²'],coverage_rows(['Starting / lower','Starting / higher','Starting / no Angel Vegas','Starting / no Angel mountain','Starting / neither Angel','Higher / no Vegas','Higher / no mountain','Higher / neither','Fletcher unavailable','Tenth candidate']),[267,91,91,91],8.1)
-    b.p(f"Without Fletcher, use {', '.join(r['no_fletcher'])}. The strongest tenth candidate was {r['extra']}, adding {scen['Tenth candidate']['road_km']-rec['road_km']:.2f} road km. Keep the nine; the gap trials and 3 m mast test come first. The candidate register at the back decodes every alternate site.",9.2)
+    b.table(['Field code','Replacement','Alternative roads','Alternative trails','Road loss if simply removed'],
+            [[field_code(k),navigation_name(r['alternatives'][k]['easy']),num(r['alternatives'][k]['metrics']['road_km'])+' km',num(r['alternatives'][k]['metrics']['trail_km'])+' km',num(fails[k]['road_km'])+' km'] for k in order],[64,98,113,110,155])
+    b.table(['Layout or sensitivity test','Road km','Trail km','Land km²'],coverage_rows(['Direct','Starting / lower','Starting / higher','Starting / no Angel Vegas','Starting / no Angel mountain','Starting / neither Angel','Higher / no Vegas','Higher / no mountain','Higher / neither','Recommended','Survives every single loss','60 percent F1 backbone','Fletcher unavailable','Tenth candidate']),[267,91,91,91],8.1)
+    b.p(f"Without Fletcher, use {', '.join(map(field_code,r['no_fletcher']))}. The strongest tenth candidate was {field_name(r['extra'])}, adding {scen['Tenth candidate']['road_km']-rec['road_km']:.2f} road km. Keep the nine; the gap trials and 3 m mast test come first. The register at the back gives coordinates for every alternate site.",9.2)
     b.end()
-    more_pages(b,maps,root,cfg,r,active,facility)
+    more_pages(b,maps,root,cfg,r,active)
     b.c.save()
 
 
-def more_pages(b,maps,root,cfg,r,active,facility):
+def more_pages(b,maps,root,cfg,r,active):
     sites=maps.sites;rec=r['scenarios']['Recommended'];order=r['selected'];scen=r['scenarios']
-    dem,meta=load_dem(root/'cache/terrain-local.tif')
-    wavelength=299.792458/cfg['frequency_mhz']
-    native=Profiles((root/'source').glob('USGS_1M*.tif'),dem,meta,wavelength,6371000*cfg['effective_earth_k'])
-    profile_dir=root/'tables/profiles';profile_dir.mkdir(exist_ok=True)
-    selected_pairs=[('FL','CH'),('FL','CL'),('CH','GK'),('LC','LF'),('LF','GL'),('LC','GL')]
-    for page in range(2):
-        b.begin('Radio engineering','Critical terrain profiles' if page==0 else 'Lee-side relay clearances',
-                'Height in metres above NAVD88. Brown is curved-Earth terrain, teal is the direct ray and amber is its lower 60% first-Fresnel envelope. The inset reports the limiting sample anywhere along the path.')
-        for a,z in selected_pairs[3*page:3*page+3]:
-            s,t=sites[a],sites[z];path=next(p for p in r['pairs'] if {p['a'],p['b']}=={a,z})
-            dist,ground,line,f1=native.trace((s['x'],s['y'],s['h']),(t['x'],t['y'],t['h']))
-            np.savetxt(profile_dir/(a+'-'+z+'.csv'),np.column_stack([dist,ground,line,f1]),delimiter=',',fmt='%.3f',
-                       header='distance_m,terrain_plus_bulge_m,radio_ray_m,first_fresnel_radius_m',comments='')
-            fig,ax=plt.subplots(figsize=(8.4,1.75))
-            ax.fill_between(dist/1000,ground,np.min(ground)-15,color='#dfd4bf');ax.plot(dist/1000,ground,color='#745d3e',lw=.9)
-            ax.plot(dist/1000,line,color=TEAL,lw=1.1);ax.plot(dist/1000,line-.6*f1,color='#bc742a',lw=.9,ls='--')
-            ax.set_ylabel('m NAVD88',fontsize=8);ax.set_xlabel('km from '+a,fontsize=8);ax.tick_params(labelsize=8);ax.grid(alpha=.15)
-            fig.tight_layout(pad=.4);buf=BytesIO();fig.savefig(buf,format='png',dpi=145);plt.close(fig);buf.seek(0)
-            b.p(f"{a} ({s['h']:g} m AGL) to {z} ({t['h']:g} m)   |   {dist[-1]/1000:.2f} km   |   min clearance {path['clear_m']:+.1f} m   |   min F1 {path['f1']:.2f}",9.5,2)
-            b.image(buf,106)
-        b.p('Minimum F1 is the smallest clearance divided by the local first-Fresnel radius along the ray. Its location can differ from the minimum clearance in metres. Sample spacing ≤1 m. Local foliage, poles, snow and buildings are absent from the DEM.',9)
-        b.end()
+    profile_pages(b,maps,root,cfg,r)
     b.begin('Antenna height','Test a mast before moving a radio','Both station pins stay fixed on the supplied premises. The baseline antenna is 1 m above local ground. Each height trial changes a single endpoint and repeats member and infrastructure visibility.')
     b.table(['Location','AGL tested (m)','Reachable road km at each height','New backbone links'],[
-        [k,'1, '+', '.join(str(v['height']) for v in r['heights'] if v['id']==k),
+        [field_code(k),'1, '+', '.join(str(v['height']) for v in r['heights'] if v['id']==k),
          f"{rec['road_km']:.2f}, "+', '.join(f"{v['road_km']:.2f}" for v in r['heights'] if v['id']==k),
-         ', '.join(sorted({j for v in r['heights'] if v['id']==k for j in v['new']})) or 'None'] for k in r['gateways']],[68,100,275,97])
+         ', '.join(field_code(j) for j in sorted({j for v in r['heights'] if v['id']==k for j in v['new']})) or 'None'] for k in r['gateways']],[68,100,275,97])
     b.table(['Repeater','4 to 7 m: roads gained','Trails gained','New backbone links'],[
-        [v['id'],f"{v['road_km']-rec['road_km']:+.2f} km",f"{v['trail_km']-rec['trail_km']:+.2f} km",', '.join(v['new']) or 'None']
+        [navigation_name(v['id']),f"{v['road_km']-rec['road_km']:+.2f} km",f"{v['trail_km']-rec['trail_km']:+.2f} km",', '.join(map(field_code,v['new'])) or 'None']
         for v in r['heights'] if v['id'] in order],[102,153,135,150])
     b.p('Neither station gained a backbone link or 250 m of scored road at any tested height through 12 m. The terrain alone gives no reason to specify a taller mast there. At a station, record actual antenna AGL, roof lip, nearby wall and departure bearing. Compare 1, 2 and 4 m first, using the same antenna, cable, remote radio and packet cadence.')
     b.h('Member carried, in a vehicle and on the roof')
@@ -208,28 +120,30 @@ def more_pages(b,maps,root,cfg,r,active,facility):
     b.p('Macks Canyon Road reopened in July 2026. The recreation partner also retains an older two-mile camping note. Neither source establishes plowing. Confirm the gate and turning room below the snow line. Champion is undeveloped and unpaved. On 1 November, the weekly update listed Fletcher View open, Hilltop closing 4 November, and McWilliams and Mahogany Grove closed for the season. [6,7]')
     b.h('Conditional Kyle branch')
     fallback=scen['Higher Cathedral unavailable']
-    b.p(f"If the higher Cathedral pin or access route fails, reallocate the nine to {', '.join(r['no_high_cathedral'])}. That layout reaches {fallback['road_km']:.1f} road km and {fallback['trail_km']:.1f} trail km. If Fletcher alone is inaccessible, use the separate Fletcher fallback on the alternatives page. Do not transfer a result from the upper pin to the lower one.")
-    b.p('Orange dashed approaches combine any mapped centerline with an estimated final connector. Where only a direct estimate exists it is a terrain transect. Positive ascent sums the climbs along that estimate. Snow, cliffs, driveway restrictions and unrepresented switchbacks can make a short estimate unusable.')
+    b.p(f"If the higher Cathedral pin or access route fails, reallocate the nine to {', '.join(map(field_code,r['no_high_cathedral']))}. That layout reaches {fallback['road_km']:.1f} road km and {fallback['trail_km']:.1f} trail km. If Fletcher alone is inaccessible, use the separate Fletcher fallback on the alternatives page. Do not transfer a result from the upper pin to the lower one.")
+    b.p('On the site sheets, a solid rust line follows a mapped centerline. Dashes mark the estimated connectors. Where only a direct estimate exists the whole approach is dashed. Positive ascent sums the climbs along that estimate. Snow, cliffs, driveway restrictions and unrepresented switchbacks can make a short estimate unusable.')
     b.end()
     b.begin('Optional third gateway','Angel to the Las Vegas valley','Historical member contacts justify an attended trial. The two-station recommendation gives no credit to Las Vegas or to an unselected home.')
+    b.image(maps.valley_image(cfg['valley_sectors']),148)
+    b.p('Each box covers one 1 km test sector. The numbered rows below give the paths that clear terrain out of nine sampled per sector. Solid lines mark sectors with a clear sample from Angel Vegas. Dashed lines mark sectors with none.',9.1,6)
     rows=[]
-    for name in dict.fromkeys(v['sector'] for v in r['valley']):
+    for idx,(name,lon,lat) in enumerate(cfg['valley_sectors'],1):
         v=[i for i in r['valley'] if i['sector']==name]
-        rows.append([name,f"{v[0]['clear']}/9",f"{v[1]['clear']}/9",f"{v[0]['km']:.1f}",f"{v[0]['best_f1']:.2f}"])
+        rows.append([str(idx)+'   '+name,f"{v[0]['clear']}/9",f"{v[1]['clear']}/9",f"{v[0]['km']:.1f}",f"{v[0]['best_f1']:.2f}"])
     b.table(['Broad test sector','Vegas side','Mountain side','Range km¹','Best F1¹'],rows,[210,78,98,77,77])
     b.p('¹ From Vegas-side Angel. Nine test points spaced 500 m in a 1 km square represent each broad sector. Each hypothetical home antenna is 4 m AGL. Regional 20 m terrain sampling includes the intervening foothills, effective Earth curvature and both endpoints. Buildings and home Wi-Fi reach remain unknown.')
     h=r['home']
     b.table(['Hypothetical network','Road km','Trail km','Land km²'],[
         [label,num(v['road_km']),num(v['trail_km']),num(v['land_km2'])] for label,v in [
-            ('Two stations, main nine',rec),(f"Third sink; move {h['swapped']} to AV",h['nine']),('Same nine, Kyle station failed',h['no_kyle']),
-            ('Same nine, Lee station failed',h['no_lee']),('Same nine, home unavailable',h['no_home']),('Third sink; keep nine and add AV',h['ten'])]],[258,94,94,94])
-    b.p('Third-sink rows assume a verified Angel Vegas-to-home radio link, internet, AC and permission. Only packets reaching AV within the hop budget can use this uplink; the model gives no direct member-to-house credit. Every antenna is omni. Ridge terrain, rather than an antenna pointing direction, distinguishes the two Angel pins.')
+            ('Two stations, main nine',rec),(f"Third sink; move {field_name(h['swapped'])} to Angel Vegas",h['nine']),('Same nine, Kyle station failed',h['no_kyle']),
+            ('Same nine, Lee station failed',h['no_lee']),('Same nine, home unavailable',h['no_home']),('Third sink; keep nine and add Angel Vegas',h['ten'])]],[258,94,94,94])
+    b.p('Third-sink rows assume a verified Angel Vegas-to-home radio link, internet, AC and permission. Only packets reaching Angel Vegas within the hop budget can use this uplink; the model gives no direct member-to-house credit. Every antenna is omni. Ridge terrain, rather than an antenna pointing direction, distinguishes the two Angel pins.')
     b.p('First test western North Las Vegas, then Centennial Hills. Use a consenting home or authorized surrogate at the intended antenna height. Alternate the two Angel pins, record per-packet RSSI/SNR and gateway upload IDs, then disable the other gateways during a controlled test. A successful voice or historical radio contact alone cannot qualify a tracking uplink.')
     b.end()
     b.begin('Winter energy','Panel orientation at the tree','Azimuth is clockwise from true north. Tilt is degrees above horizontal. Terrain windows use Pacific local time, PST in November through February and PDT for the March and April dates.')
-    b.table(['Site','Nov–Apr az / tilt','December az / tilt','December-only gain','Dec 21 direct window'],[
-        [k,f"{sites[k]['solar']['az']}° / {sites[k]['solar']['tilt']}°",f"{sites[k]['solar']['dec_az']}° / {sites[k]['solar']['dec_tilt']}°",
-         f"{sites[k]['solar']['dec_gain']:.1f}%",sites[k]['solar']['windows']['Dec 21']] for k in active],[55,103,112,110,160])
+    solar_windows(b,sites,active)
+    gains=[sites[k]['solar']['dec_gain'] for k in active]
+    b.p(f'Adjusting each mount solely for December yields {min(gains):.1f}–{max(gains):.1f}% more modeled December energy. The field sheets give each December-only bearing and tilt.',9.6)
     b.p('For each site, trace a terrain horizon every 2° in azimuth out to 30 km at an assumed panel height of 2 m. The model combines NOAA sun angles at five-minute intervals with NASA POWER monthly DNI and diffuse climatology for 2001–2025. A representative day is weighted by days in its month. The orientation grid is 5°. Terrain-only windows assume clear sky. Solar resource is regional and does not resolve a specific tree. [9,10]')
     b.p('For a single fitted face, point its normal at the listed bearing. For the two angled v4 faces, center their outward normals around that bearing if the case geometry allows. Check both faces with an inclinometer and compass set to true. V3 has one fitted panel; v1 has three with unverified angles. Cases 10 and 11 have external 5 W pass-throughs. Panel nameplate current alone cannot establish winter charging.')
     b.p('At each tree, sight the solstice arc from panel height. Mark branch or trunk shade at the beginning, middle and end of the listed window. Check snow shedding and log panel input, battery temperature, voltage and overnight draw across an actual storm cycle before relying on autonomy.')
@@ -237,9 +151,14 @@ def more_pages(b,maps,root,cfg,r,active,facility):
     b.end()
     for index,k in enumerate(active):
         s=sites[k];station=k in r['gateways'];solar=s['solar'];alt=r['alternatives'].get(k)
-        b.begin('Station gateway' if station else f'Repeater field sheet  /  {order.index(k)+1} of 9',k+'  /  '+s['name'],
+        b.begin('Station gateway' if station else f'Repeater field sheet  /  {order.index(k)+1} of 9',navigation_name(k),
                 ('Station survey rendezvous. ' if station else 'Search circle 20 m. ')+s['note'])
-        b.image(maps.image('site',k),170)
+        b.image(maps.site_image(k),198)
+        map_key=[('Member can see this radio','#61ad99','fill')]
+        if not station:
+            if s['approach'].startswith('mapped'):map_key.append(('Mapped approach','#a95033','line'))
+            map_key.extend([('Estimated connector','#a95033','dash'),('20 m search circle','#af502e','point')])
+        legend(b,map_key)
         offset=('Fixed station point; identify the actual mount on the premises.' if station else
                 f"From nominal move {s['shift']:.0f} m at {s['bearing']}° true. {s['tested_cells']} possible cells screened in.")
         b.table(['Navigation and mounting','Field value'],[
@@ -250,9 +169,14 @@ def more_pages(b,maps,root,cfg,r,active,facility):
             ],[144,396],8.1)
         if 'conditional_stop' in s:
             b.p(f"Owner vehicle option: nearest mapped drive line {ll(s['conditional_stop'])}, final straight-line offset {s['conditional_walk_m']} m. Reconnoiter a lawful off-road stop; this coordinate is a road reference.",8.5,5)
-        b.p('Modeled chain: '+' > '.join(r['paths'].get(k,['isolated']))+
-            f". Removing {k} loses {r['failures'][k]['road_km']:.2f} road km and {r['failures'][k]['trail_km']:.2f} trail km."+
-            (f" Closest equal-or-easier alternative: {alt['easy']} / {sites[alt['easy']]['name']}." if alt else ''),9.2,5)
+        b.p('Modeled chain: '+' → '.join(map(field_name,r['paths'][k]))+
+            f". Removing {field_name(k)} loses {r['failures'][k]['road_km']:.2f} road km and {r['failures'][k]['trail_km']:.2f} trail km."+
+            (f" Closest equal-or-easier alternative: {navigation_name(alt['easy'])}." if alt else ''),9.2,5)
+        if not station:
+            step=order.index(k)+1
+            before=scen['Direct' if step==1 else f'Order {step-1}']
+            after=scen[f'Order {step}']
+            b.p(f"Deployment step {step} adds {after['road_km']-before['road_km']:.2f} km of gateway-reachable road and {after['trail_km']-before['trail_km']:.2f} km of trail over the preceding step.",9.2,5)
         if 'nominal_footprint' in s:
             b.p(f"Local pin comparison: individual road footprint {s['nominal_footprint']['road_km']:.2f} km nominal and {s['selected_footprint']['road_km']:.2f} km selected. Routing and weighted member coverage also influence the choice.",8.3,4)
         b.p(f"Winter solar: face {solar['az']}° true at {solar['tilt']}° above horizontal. December-only optimum {solar['dec_az']}° / {solar['dec_tilt']}°. Check branches at the actual fitted panel.",9.1,5)
@@ -264,17 +188,6 @@ def more_pages(b,maps,root,cfg,r,active,facility):
 
 def field_and_sources(b,root,cfg,r):
     s={v['id']:v for v in r['sites']}
-    b.begin('Field validation','The shortest tests that change the layout','Run attended trials at agreed stops. Use a known-good GPS member, two available station receivers and temporary masts. Site codes and GPS logs stay private.')
-    steps=[
-        ('1   Lee station / Lower Bristlecone',f"GL {ll(s['GL']['ll'])}; LF {ll(s['LF']['ll'])}. Verify the 1 m station endpoint and a 4 m omni at the proposed tree. At a marked stop, alternate on-person, cabin and external roof positions. Record packet sequence, GPS fix time and which station uploads it."),
-        ('2   Lee and Deer Creek junction',f"LC {ll(s['LC']['ll'])}. Force the LC > LF > GL path by isolating other relays during a controlled test. The LC–LF ray has only 0.31 F1 minimum. If messages fail, compare 4 and 7 m, then move within the circle. Confirm a separate receiving route before relying on redundant map cells."),
-        ('3   Upper Macks Canyon',f"Start at {ll(r['roads']['Macks Canyon'][0]['a'])}; the persistent blind stretch ends at {ll(r['roads']['Macks Canyon'][0]['b'])}. Sample at the mouth, the transition and near the mapped upper terminus only if passable. Try both canyon walls at a safe stop. If repeatable receipts extend deep into the canyon, re-score the field evidence before moving a unit from elsewhere."),
-        ('4   Kyle station / Cathedral / Fletcher','First work from the station and a permitted Cathedral approach. Compare lower and higher pins at matched height. Send identifiable Fletcher packets via one relay to Kyle, then remove that relay. A lower-pin success or an inaccessible upper pin changes the deployment branch. The modeled upper approach gains nearly 300 m; confirm a workable ascent before carrying equipment.'),
-        ('5   Lucky Strike and optional valley','Use an authorized stop on either side of the mapped east-branch gap. Compare the Lucky Strike shoulder with mountain-side Angel. For a home test, isolate Vegas-side Angel and verify raw gateway receipts and GPS measurement age from a consenting northwest-valley station.'),
-    ]
-    for title,detail in steps:b.h(title);b.p(detail,9.4,5)
-    b.p('Use ten paced unique payloads per configuration as a diagnostic sample. Log attempted/received IDs, antenna AGL and orientation, hop settings, RSSI/SNR, UTC, weather and gateway/backhaul status. Revisit on another day. Record reception separately from dispatch GPS age; the project stale threshold is 15 minutes.',8.8)
-    b.end()
     b.begin('Model notes','Terrain, routing and uncertainty','The rankings compare feasible paths through sampled bare earth. No deployment reception, clearance of vegetation, winter parking inspection or battery-runtime test occurred in this study.')
     b.h('Terrain and footprints')
     b.p('Six USGS NV_Southern_D23 1 m bare-earth lidar tiles cover the mountain. Source NAD83 / UTM zone 11N, NAVD88 orthometric metres. A 1/3 arc-second NAD83 geographic tile n37w116 (2026-06-10 file) extends the terrain toward the valley. Continuous reprojection uses bilinear interpolation; the local model uses a 5 m working grid and the regional horizon/valley uses 20 m. Raw metadata dates, bounds and checksums are in inputs/sources.json. [1,2]')
@@ -299,7 +212,9 @@ def field_and_sources(b,root,cfg,r):
         ('10','NOAA solar position calculation','https://gml.noaa.gov/grad/solcalc/solareqns.PDF'),
         ('11','Meshtastic managed flood and hop-limit semantics','https://meshtastic.org/docs/overview/mesh-algo/'),
         ('12','Recreation.gov McWilliams including Dolomite loops','https://www.recreation.gov/camping/campgrounds/232168'),
-        ('13','Nevada DOT state-maintained highway description index','https://www.dot.nv.gov/home/showpublisheddocument/23124/638718361041470000')]
+        ('13','Nevada DOT state-maintained highway description index','https://www.dot.nv.gov/home/showpublisheddocument/23124/638718361041470000'),
+        ('14','UK Government Analysis Function, chart and small-multiple guidance','https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-charts/'),
+        ('15','ColorBrewer, choosing color schemes for maps','https://colorbrewer2.org/learnmore/schemes.html')]
     for idx,label,url in sources:
         b.text(36,b.y-9,idx,8,b.bold,TEAL);b.text(57,b.y-9,label,9,b.font)
         b.c.linkURL(url,(55,b.y-12,574,b.y+1),relative=0);b.y-=18
@@ -314,7 +229,7 @@ def field_and_sources(b,root,cfg,r):
         b.begin('Candidate register','Mounting-point comparisons','All candidate radios use 4 m AGL. Road km here are individual terrain footprints. An isolated radio can see a road without delivering its packets to either station.')
         subset=candidates[page:page+17]
         b.table(['Code / location','Nominal WGS84','Selected WGS84','Offset m','Road km nominal / selected'],
-                [[v['id']+' / '+v['name'],ll(v['nom_ll']),ll(v['ll']),f"{v['shift']:.0f}",f"{v['nominal_footprint']['road_km']:.1f} / {v['selected_footprint']['road_km']:.1f}"] for v in subset],
+                [[navigation_name(v['id']),ll(v['nom_ll']),ll(v['ll']),f"{v['shift']:.0f}",f"{v['nominal_footprint']['road_km']:.1f} / {v['selected_footprint']['road_km']:.1f}"] for v in subset],
                 [138,124,124,50,104],8)
         b.p('Supplied sites retain the original nominal pin. For new candidates the nominal point comes from a terrain search near a mapped stop or from road-corridor sampling. The table gives the subsequent 20 m refinement. All proposed final trees, funding and permissions remain unassigned.')
         b.end()

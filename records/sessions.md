@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-13 - Map-first winter field packet
+
+Revised the [winter field atlas](../docs/research/winter-mesh-siting.md) with matching PDF and GPS site names, a presentation cover, north-up road-gap and recreation-area maps, separate routes to each station, individual viewsheds and all eleven outage footprints. The private packet pairs six terrain profiles with locators and makes the first Lee, Kyle and road-gap checks printable.
+
+The [verification](../scripts/winter-siting/README.md) compares the exported sites, staging waypoints, road-gap endpoints and network-removal masks against the model. Next, measure both station antennas and record packet IDs on the controlled Lee chain. Upper Cathedral access and repeatable end-to-end receipt still determine whether to retain the Kyle branch.
+
 ## 2026-11-13 - Winter mountain mesh siting
 
 Completed the [terrain, routing and winter solar study](../docs/research/winter-mesh-siting.md) with an offline field atlas, GIS layers, eleven site sheets and a navigation export in ignored private storage. The [workflow](../scripts/winter-siting/README.md) regenerates from locally cached public source data. Inspected the rendered report and cross-checked all sites, staging waypoints and eleven node-removal rasters.

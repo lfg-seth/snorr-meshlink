@@ -21,6 +21,7 @@ def bearing(lon1,lat1,lon2,lat2):
 
 
 def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg):
+    from field_names import field_code, field_name, navigation_name
     raw=json.loads((root/'source/local-osm.geojson').read_bytes())['features']
     graph=nx.Graph()
     for f in raw:
@@ -88,12 +89,12 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
         ascent=sum(max(0,b-a) for a,b in zip(elevations,elevations[1:]))
         s.update(stop_ll=inverse.transform(*start),stop=stop,stop_evidence=status,walk_m=round(line.length),
                  ascent_m=round(ascent),approach=flag)
-        waypoint(*end,code+' '+s['name'],'Search circle only; '+s['note'])
-        waypoint(*start,code+' STAGE',stop+'; '+status)
-        stops.append((Point(start),dict(id=code,name=stop,evidence=status)))
-        if line.length:approaches.append((line,dict(id=code,method=flag)))
+        waypoint(*end,navigation_name(code),'Search circle only; '+s['note'])
+        waypoint(*start,navigation_name(code)+' - stage',stop+'; '+status)
+        stops.append((Point(start),dict(id=code,name=stop,field_name=field_name(code),field_code=field_code(code),evidence=status)))
+        if line.length:approaches.append((line,dict(id=code,field_name=field_name(code),field_code=field_code(code),method=flag)))
     for s in sites:
-        gsites.append((Point(s['x'],s['y']),{k:s[k] for k in ('id','name','z','h','shift','bearing','access')}|{'selected':sites.index(s) in active,'nom_lon':s['nom_ll'][0],'nom_lat':s['nom_ll'][1]}))
+        gsites.append((Point(s['x'],s['y']),{k:s[k] for k in ('id','name','z','h','shift','bearing','access')}|{'field_name':field_name(s['id']),'field_code':field_code(s['id']),'selected':sites.index(s) in active,'nom_lon':s['nom_ll'][0],'nom_lat':s['nom_ll'][1]}))
     save_features(root/'gis/sites.geojson',gsites);save_features(root/'gis/staging.geojson',stops)
     save_features(root/'gis/approaches.geojson',approaches)
     ET.ElementTree(nav).write(root/'navigation.gpx',encoding='utf-8',xml_declaration=True)
