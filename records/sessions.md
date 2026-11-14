@@ -1,5 +1,35 @@
 # Session log
 
+## 2026-11-14 - Parallel survey firmware and mobile app assignments
+
+Completed owner-invoked firmware and GUI grilling. Published separate
+[firmware](../.scratch/tasks/direct-hop-survey-firmware.md) and
+[GUI](../.scratch/tasks/direct-hop-survey-gui.md) Astra ultra prompts with a
+[shared v1 interface](../docs/operations/survey-interface-v1.md). Both chats
+start from `96e0f30` on `codex/survey-assignments` in distinct child checkouts.
+Firmware chat `01a1dbfc-c694-7561-92dd-bd1d998f1dc7` exclusively owns the
+three reported RAKs/GPS V4 after identification; GUI chat
+`01a1dbfc-d696-7c22-89c0-3e379b3ef23c` uses simulation and no serial devices.
+
+Owner permits aggressive dedicated survey airtime, latest-direct-PING quiet
+renewal for fifteen minutes on all hearers, selected-target pongs and no survey
+forwarding. Client firmware owns polling/GPS gating; host owns durable logs and
+heartbeats. Survey GPS loss pauses; explicit bench mode continues without fixes.
+Cancellable two-hour soak is an ordinary local process, not per-packet model
+reasoning. GUI backend survives browser closure and supports one controller.
+Home AO pre-cache is preferred if modest/lawful; Starlink plus opportunistic
+caching is the fallback. No implementation or board acceptance is claimed here.
+
+Current WebKit Duo guidance and Tailscale docs checked. Read-only host lookup
+verified owner's IP/FQDN and existing 8443 -> 5180 mapping, which both prompts
+preserve. Documentation whitespace/local links pass; independent read-only
+review found no actionable contradictions. Branch `codex/survey-assignments`,
+publication reported at handoff. Original checkout's unrelated changes preserved.
+
+Next: firmware implementation/build/bench evidence and an early working
+simulated Tailscale GUI link for owner Duo/iPad Safari testing. Live adapter,
+native-device behavior and field acceptance remain separate gates.
+
 ## 2026-11-13 - Direct-hop vehicle survey readiness
 
 Owner resumes the direct-link drive-test discussion. The prepared RAK
