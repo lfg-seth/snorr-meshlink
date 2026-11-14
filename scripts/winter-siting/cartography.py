@@ -22,7 +22,7 @@ RED='#a6344a'
 BLANK='#eeede7'
 MUTE='#526970'
 ROAD_NAMES=('SR 156','SR 157','SR 158','Macks Canyon','Angel Peak','Champion')
-SITE_COLORS=['#227e85','#a7cf58','#d383a4','#a171b0','#5d9cd0','#bd973d','#539e61','#ce7850','#7883bb']
+SITE_COLORS=['#227e85','#a7cf58','#d383a4','#a171b0','#5d9cd0','#bd973d','#539e61','#ce7850','#7883bb','#ad525c']
 SHARED='#435a63'
 OFFSETS={'GK':(7,8),'CH':(7,-11),'GL':(7,6),'LF':(-7,-10),'LC':(-7,6),'CM':(7,7),
          'EL':(6,7),'SG':(6,-9),'FL':(-7,6),'AL':(6,7),'KJ':(7,7),'CL':(-7,8),'SK':(-6,-7),'AM':(6,7),'DC':(-5,8)}

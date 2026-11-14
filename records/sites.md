@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-13 - Sisters and two temporary expansion slots
+
+Sisters is the tenth planning site at the owner's replacement pin. At the assumed 1 m Lee antenna height it requires a shorter path into the station. First measure Lee's actual antenna height. Lee Junction South is the first winter expansion trial. Add Macks Mouth North as a twelfth trial only after the relay and channel-load checks pass. The longer-carry Lee Meadows East and Macks North Ridge pair offers greater terrain coverage and a marginal inter-ridge path. No physical boards were assigned or placed. [Private packet workflow and modeled comparisons](../docs/research/winter-mesh-siting.md).
+
 ## 2026-11-13 - Owner-confirmed mountain access
 
 The owner confirms agency authority to access the entire mountain and place equipment, including the helipad beside the Upper Bristlecone trailhead. Both supplied Angel Peak positions are reachable directly by vehicle. The corrected Vegas-side point and the mountain-side point are in the private study inputs. Snow conditions, exact mount, radio assignment and on-site validation remain open. The [revised siting study](../docs/research/winter-mesh-siting.md) selects the helipad and the mountain-side Angel Peak site.

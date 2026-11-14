@@ -20,7 +20,7 @@ def bearing(lon1,lat1,lon2,lat2):
     return round(az%360),round(d,1)
 
 
-def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg):
+def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg,trial_ids=(),survey_ids=()):
     from field_names import field_code, field_name, navigation_name
     raw=json.loads((root/'source/local-osm.geojson').read_bytes())['features']
     graph=nx.Graph()
@@ -56,7 +56,7 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
         code=s['id'];end=s['x'],s['y'];pt=Point(end)
         s['ll']=inverse.transform(*end);s['nom_ll']=inverse.transform(s['nx'],s['ny'])
         s['bearing'],s['shift']=bearing(*s['nom_ll'],*s['ll'])
-        if i not in active:continue
+        if i not in active and code not in trial_ids and code not in survey_ids:continue
         flag='estimated'
         if code=='SK':
             start=next(p.coords[0] for p,tags in parking if tags['osm_id']==official[code])
@@ -97,8 +97,10 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
         ascent=sum(max(0,b-a) for a,b in zip(elevations,elevations[1:]))
         s.update(stop_ll=inverse.transform(*start),stop=stop,stop_evidence=status,walk_m=round(line.length),
                  ascent_m=round(ascent),approach=flag)
-        waypoint(*end,navigation_name(code),'Search circle only; '+s['note'])
-        waypoint(*start,navigation_name(code)+' - stage',stop+'; '+status)
+        if i not in active and code not in trial_ids:continue
+        if i in active:
+            waypoint(*end,navigation_name(code),'Search circle only; '+s['note'])
+            waypoint(*start,navigation_name(code)+' - stage',stop+'; '+status)
         stops.append((Point(start),dict(id=code,name=stop,field_name=field_name(code),field_code=field_code(code),evidence=status)))
         if line.length:approaches.append((line,dict(id=code,field_name=field_name(code),field_code=field_code(code),method=flag)))
     selected_ids={sites[i]['id'] for i in active}

@@ -2,7 +2,7 @@
 
 ## 2026-11-13 - Winter siting validation planned
 
-The [terrain study](../docs/research/winter-mesh-siting.md) supplies an attended validation sequence. Start at Upper Bristlecone Helipad with Lee Fire Station receiving. Repeat through that relay from Lee Junction. Compare the upper Macks gap, the high and low Kyle alternatives and the two drive-up Angel Peak positions for a possible valley uplink. Record dated packet attempts, per-gateway receipts, GPS fix age, antenna heights and access evidence. The study produced modeled results only.
+The [terrain study](../docs/research/winter-mesh-siting.md) supplies an attended validation sequence. Start at Upper Bristlecone Helipad with Lee Fire Station receiving. Repeat through that relay from Lee Junction. Compare the upper Macks gap, the high and low Kyle alternatives and the two drive-up Angel Peak positions for a possible valley uplink. Record dated packet attempts, per-gateway receipts, GPS fix age, antenna heights and access evidence. The study produced modeled results only. For the Sisters revision, measure Lee Fire Station antenna AGL, then test the temporary Lee Junction South link to Lee and Sisters. Check served-control and newly reached stops with matched 10/11/10 runs. If those pass, add Macks Mouth North and repeat 11/12/11. Record attempted unique member GPS IDs, paired station/dispatch receipts, stale fixes, age, channel utilization, forwarding copies and queue drops. Actual winter access and busy-hour load remain unmeasured.
 
 ## 2026-11-13 - G001 SD shares telemetry cadence
 

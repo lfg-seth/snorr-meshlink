@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-13 - Sisters and the 10–12 repeater winter comparison
+
+Added the supplied Sisters pin as repeater ten. Modeled the previous nine and current ten on the same terrain and roads, screened 3,923 grid points along the Lee corridors and compared 23 connected singleton expansions and 265 connected pairs. Sisters alone adds no station-reachable road. Lee Junction South gives Sisters a path to Lee and raises SR 156 to 98.8%. With Macks Mouth North, Macks reaches 38.3% under the shorter-carry and new-link clearance screen. A longer-carry pair reaches 59.4% on Macks with a marginal radio path. The private atlas, trial GPX and GIS layers show where each change occurs. [Study and reproducible workflow](../docs/research/winter-mesh-siting.md).
+
+Verified per-station coverage rasters, stage routes, road lengths and gaps, twelve site sheets, both GPX files and the rendered 38-page packet. The next field actions are to measure Lee's antenna and run the marked GPS laps with ten, eleven and twelve sites in sequence. Activation of either extra relay depends on repeatable gap recovery and delivery/freshness under representative traffic.
+
 ## 2026-11-13 - Authorized drive-up sites and mountain road scope
 
 Reran the [winter siting study](../docs/research/winter-mesh-siting.md) with the corrected Angel Peak Vegas-side pin, agency-authorized mountain access and the SR 158 approach to both drive-up points. The revised layout starts at the Upper Bristlecone helipad and includes Angel Peak Mountain Side. The packet combines the highways on one map, maps the valley trials on the actual street network and focuses on normal packet delivery.

@@ -20,7 +20,8 @@ def verify(root):
     cfg=json.loads((root/'inputs/study.json').read_bytes())
     active=r['gateways']+r['selected']
     sites={v['id']:v for v in r['sites']}
-    assert len(set(active))==11
+    assert len(set(active))==12
+    assert r['selected']==cfg['baseline_nine']+[cfg['additional_repeater']]
     assert len({field_code(k) for k in sites})==len(sites)
     def data(name):
         with rasterio.open(root/'gis'/(name+'.tif')) as ds:
@@ -33,6 +34,40 @@ def verify(root):
     graph=nx.Graph();graph.add_nodes_from(active)
     graph.add_edges_from((p['a'],p['b']) for p in r['pairs'] if p['active'] and p['los'])
     maps=Maps(root,r)
+    expansion=r['expansion']
+    stages=[expansion['step_one'],expansion['pair']]
+    assert stages[1]['sites'][:1]==stages[0]['sites']
+    assert not set(stages[1]['sites'])&set(active)
+    for row in stages+[expansion['strict_pair'],expansion['access_pair']]:
+        selected=set(active+row['sites'])
+        network=nx.Graph()
+        network.add_nodes_from(selected)
+        for p in r['pairs']:
+            if not {p['a'],p['b']}<=selected or not p['los']:continue
+            if (row is expansion['strict_pair'] or row is expansion['access_pair']) and not p['active'] and p['f1']<.6:continue
+            network.add_edge(p['a'],p['b'])
+        for k,path in row['paths'].items():
+            assert path[-1] in r['gateways'] and path[0]==k and len(path)-1<=cfg['hop_limit']
+            assert nx.is_path(network,path)
+    for name,d in r['addition']['roads'].items():
+        lines=[(g,p) for g,p in maps.status if p['name']==name]
+        total=sum(g.length for g,p in lines)
+        assert abs(total/1000-d['road_km'])<1e-5
+        def masks(p):return (p['previous']=='reachable',p['status']=='reachable',p['with_eleven'],p['with_twelve'])
+        assert all(list(masks(p))==sorted(masks(p)) for g,p in lines)
+        from shapely.ops import linemerge,unary_union
+        for j,row in enumerate(stages,2):
+            result=row['corridors'][name]
+            distance=sum(g.length for g,p in lines if masks(p)[j])
+            gain=sum(g.length for g,p in lines if masks(p)[j] and not masks(p)[1])
+            assert abs(distance/total*100-result['reachable_pct'])<.001
+            assert abs(gain/1000-result['gain_km'])<1e-5
+            holes=unary_union([g for g,p in lines if not masks(p)[j]])
+            if holes.geom_type=='MultiLineString':holes=linemerge(holes)
+            lengths=[g.length for g in getattr(holes,'geoms',[holes])]
+            assert abs(max(lengths,default=0)/1000-result['gap_km'])<1e-5
+        for attribute in ('lee_before','lee_after'):
+            assert abs(100*sum(g.length for g,p in lines if p[attribute])/total-d[attribute])<.001
     station_masks=maps.station_masks(cfg['hop_limit'])
     assert set(np.unique(field))=={0,1,255}
     assert np.array_equal(np.logical_or.reduce(list(station_masks.values())),field==1)
@@ -72,14 +107,41 @@ def verify(root):
     for k in cfg['drive_up_sites']:
         label=navigation_name(k)+(' - drive-up test' if k in extra else ' - stage')
         assert math.dist(waypoints[label],sites[k]['nom_ll'])<1e-6
-    doc=pymupdf.open(root/'Mount-Charleston-winter-field-plan.pdf')
+    trial_nav=ET.parse(root/'expansion-trials.gpx')
+    trial_points={w.findtext('g:name',namespaces=ns):(float(w.get('lon')),float(w.get('lat'))) for w in trial_nav.findall('g:wpt',ns)}
+    for i,k in enumerate(expansion['pair']['sites'],11):
+        assert math.dist(trial_points[f'Trial {i} - '+navigation_name(k)],sites[k]['ll'])<1e-6
+        assert math.dist(trial_points[f'Trial {i} - stage'],sites[k]['stop_ll'])<1e-6
+    from expansion_pages import field_stops
+    for code,pt in field_stops(maps).items():
+        coords=next(ll for label,ll in trial_points.items() if label.startswith(code+' - '))
+        assert math.dist(forward.transform(*coords),(pt.x,pt.y))<.03
+    from cartography import features
+    practical_lines=features(root,'winter-trial-roads')
+    practical_stops=field_stops(maps,practical_lines)
+    for code,source in [('E','A'),('F','B')]:
+        coords=next(ll for label,ll in trial_points.items() if label.startswith(code+' - '))
+        pt=practical_stops[source]
+        assert math.dist(forward.transform(*coords),(pt.x,pt.y))<.03
+    for i,k in enumerate(expansion['access_pair']['sites'],11):
+        ref=expansion['access_reference']
+        assert sites[k]['walk_m']<=ref['walk_m'] and sites[k]['ascent_m']<=ref['ascent_m']
+        assert math.dist(trial_points[f'Winter {i} - '+navigation_name(k)],sites[k]['ll'])<1e-6
+        assert math.dist(trial_points[f'Winter {i} - stage'],sites[k]['stop_ll'])<1e-6
+    for name in ('SR 156','Macks Canyon'):
+        segments=[(g,p) for g,p in practical_lines if p['name']==name]
+        for key,row in [('with_eleven','access_step'),('with_twelve','access_pair')]:
+            measured=100*sum(g.length for g,p in segments if p[key])/sum(g.length for g,p in segments)
+            assert abs(measured-expansion[row]['corridors'][name]['reachable_pct'])<.001
+    doc=pymupdf.open(root/'Mount-Charleston-winter-field-plan-Sisters.pdf')
     pages=[p.get_text() for p in doc]
     assert len(doc.get_toc())==len(doc)
     assert 'Winter mesh field plan' in pages[0] and 'Deployment order' in pages[1]
     assert sum('Navigation and mounting' in p for p in pages)==len(active)
     for phrase in ('Where the roads reach dispatch','Which fire station gets the packet?',
                    'Where each repeater stands alone','Which repeater covers which slope?',
-                   'Angel Peak to the Las Vegas valley',
+                   'Angel Peak to the Las Vegas valley','Which gaps do two more radios fill?',
+                   'Test the paths into Lee Fire Station','Will fresh GPS still reach dispatch?','Try the shorter winter approaches first',
                    'Kyle Canyon terrain profiles','Lee Canyon terrain profiles'):
         assert any(phrase in page for page in pages),phrase
     content=' '.join(pages).lower()
@@ -108,7 +170,7 @@ def verify(root):
             x=(idx%4)*250;y=(idx//4)*340
             sheet.paste(im,(x,y));ImageDraw.Draw(sheet).text((x+8,y+319),str(start+idx+1),fill='black')
         sheet.save(render/f'contact-{start//8+1}.png')
-    print(f'{len(doc)} pages rendered. The 11 site sheets and {len(waypoints)} waypoints match the model. Both station masks and the scoped Angel Peak road pass independent checks.')
+    print(f'{len(doc)} pages rendered. {len(active)} site sheets, {len(waypoints)} infrastructure waypoints and {len(trial_points)} trial waypoints. Station masks, stage paths, lengths, gap geometry and Angel Peak road scope verified.')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('directory',type=Path)

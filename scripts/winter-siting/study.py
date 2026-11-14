@@ -80,8 +80,10 @@ def run(root):
         weights[flags]*=cfg['class_weights'][kind]/weights[flags].sum()
     # Explore road-accessible bridges throughout the corridor before refining a 20 m circle.
     # Sort geographically along the main corridor, then sample both sides of each centreline.
-    anchors=points(dem,meta,[forward.transform(v[3],v[2]) for v in cfg['sites']],cfg['repeater_m'])
-    seed_ids=[s[0] for s in cfg['sites']]
+    scout_ids=set(cfg.get('lee_scout',{}).get('ids',[]))
+    seeds=[s for s in cfg['sites'] if s[0] not in scout_ids]
+    anchors=points(dem,meta,[forward.transform(v[3],v[2]) for v in seeds],cfg['repeater_m'])
+    seed_ids=[s[0] for s in seeds]
     anchor_gate=[seed_ids.index(g) for g in cfg['gateways']]
     anchors[anchor_gate,2]-=cfg['repeater_m']-cfg['gateway_m']
     probes=sample_targets[::18]; pw=weights[::18]*18
@@ -135,6 +137,7 @@ def run(root):
                           h=cfg['gateway_m'] if access=='station' else cfg['repeater_m'],
                           difficulty={'station':0,'search':1,'corridor':1,'owner':1,'conditional':4,'hike':3,'hard':7}[access]))
     nominal=np.array([site_origin(s) for s in sites])
+    original_anchors=np.array([k not in scout_ids for k in ids])
     survey=np.vstack((sample_targets[::8],land_targets[::120]))
     survey_w=np.r_[weights[::8]*8,np.full(len(land_targets[::120]),.08/len(land_targets[::120]))]
     for i,s in enumerate(sites):
@@ -151,7 +154,8 @@ def run(root):
                 o=np.array([x,y,ground(x,y)+s['h']])
                 vis=sight(dem,meta,o,survey,12,wav,radius)
                 infra=sight(dem,meta,o,nominal,6,wav,radius)
-                score=vis@survey_w+.048*sum(float(infra[g]) for g in gateway)+.002*sum(infra)-.001*slope
+                neighbors=infra if s['id'] in scout_ids else infra[original_anchors]
+                score=vis@survey_w+.048*sum(float(infra[g]) for g in gateway)+.002*sum(neighbors)-.001*slope
                 options.append((score,-math.hypot(dx,dy),x,y))
         if options:
             _,_,s['x'],s['y']=max(options)
@@ -185,9 +189,16 @@ def run(root):
     masks=[integer(np.r_[m,a]) for m,a in zip(member,area)]
     hops=cfg['hop_limit']
     allowed=[i for i,s in enumerate(sites) if s.get('mount_warning')]
-    rec,merit=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed)
-    first=[ids.index(k) for k in cfg['preferred_first_tests'] if ids.index(k) in rec]
-    rec=first+[i for i in rec if i not in first]
+    from road_runs import road_runs
+    nine=[ids.index(k) for k in cfg['baseline_nine']]
+    added=ids.index(cfg['additional_repeater'])
+    rec=nine+[added]
+    if len(set(rec))!=10 or set(rec)&set(allowed+gateway):
+        raise ValueError('The baseline and added site must be ten distinct screened repeater locations.')
+    # Preserve the accepted baseline. Reuse the normal scoring function for equal-size alternatives.
+    # Expansion-only search points must not change the historically selected baseline or its sensitivity runs.
+    original_only=allowed+[i for i in range(len(sites)) if ids[i] in scout_ids]
+    _,merit=choose(sites,gateway,links,hops,masks,grouped,10,excluded=original_only,forced=[added])
     print('Selected', [ids[i] for i in rec],flush=True)
     recset=gateway+rec
     def score(indices,failed=None, matrix=links, members=member, lands=area):
@@ -208,6 +219,13 @@ def run(root):
             out[name]=round(float(sw[m & mask].sum()/sw[mask].sum()*100),2)
         return out
     baseline_m,baseline_a,paths=score(recset)
+    prior_m,prior_a,_=score(gateway+nine)
+    def lee_reach(layout):
+        lee=ids.index('GL')
+        nodes=routes_to_gateways([lee]+layout,[lee],links,hops)
+        return member[list(nodes)].any(0)
+    prior_lee=lee_reach(nine)
+    current_lee=lee_reach(rec)
     summary={'selected':[ids[i] for i in rec],'gateways':cfg['gateways'],'sites':sites,
              'paths':{ids[i]:[ids[j] for j in p] for i,p in paths.items()},'scenarios':{},'alternatives':{},
              'heights':[],'roads':{},'pairs':[],'valley':[],'sample_count':len(samples)}
@@ -225,22 +243,70 @@ def run(root):
     for name,omit in [('no Vegas',['AV']),('no mountain',['AM']),('neither',['AM','AV'])]:
         scenario('Higher / '+name,[i for i in upper if ids[i] not in omit])
     scenario('Recommended',recset)
-    # Re-optimize the other eight positions for each owner drive-up candidate.
+    scenario('Previous nine',gateway+nine)
+    summary['baseline_nine']=cfg['baseline_nine']
+    summary['addition']={'id':ids[added],'roads':{}}
+    from expansion import compare_expansion
+    expansion=compare_expansion(ids,sites,gateway,rec,allowed,score,samples,sw,baseline_m,merit)
+    # Hold the same ten-site service fixed and test whether the added hops
+    # keep at least 60% of the first Fresnel radius clear at every sampled point.
+    guarded=links.copy()
+    for (i,j),(_,fraction,_) in profiles.items():
+        if i not in recset or j not in recset:
+            guarded[i,j]=guarded[j,i]=fraction>=.6
+    def guarded_score(layout):return score(layout,matrix=guarded)
+    conservative=compare_expansion(ids,sites,gateway,rec,allowed,guarded_score,samples,sw,baseline_m,merit)
+    expansion['strict_pair']=conservative['pair']
+    expansion['strict_step']=conservative['step_one']
+    expansion['strict_single']=conservative['best_single']
+    summary['expansion']=expansion
+    optional=expansion['pair']['sites']
+    for label in ('step_one','pair','strict_pair','best_single'):
+        choice=expansion[label]
+        matrix=guarded if label=='strict_pair' else links
+        relay_indices=[ids.index(k) for k in choice['sites']]
+        m,a,_=score(recset+relay_indices,matrix=matrix)
+        sans,land,_=score(gateway+nine+relay_indices,matrix=matrix)
+        choice['all_metrics']=metrics(m,a)
+        choice['sisters_marginal']=dict(road_km=round(metrics(m,a)['road_km']-metrics(sans,land)['road_km'],3),
+                                        trail_km=round(metrics(m,a)['trail_km']-metrics(sans,land)['trail_km'],3),
+                                        land_km2=round(metrics(m,a)['land_km2']-metrics(sans,land)['land_km2'],3))
+    eleven=score(recset+[ids.index(optional[0])])[0]
+    twelve=score(recset+[ids.index(k) for k in optional])[0]
+    for name in ('SR 156','Macks Canyon'):
+        road_mask=np.array([s['kind']=='road' and s['name']==name for s in samples])
+        old_runs=road_runs(samples,name,~prior_m)
+        new_runs=road_runs(samples,name,~baseline_m)
+        new_reach=road_runs(samples,name,~prior_m & baseline_m)
+        def describe(run):
+            line=run[0];mid=line.interpolate(.5,normalized=True)
+            return dict(km=line.length/1000,a=inverse.transform(*line.coords[0]),b=inverse.transform(*line.coords[-1]),mid=inverse.transform(mid.x,mid.y))
+        delta={'old_gap':describe(old_runs[0]) if old_runs else None,'new_gap':describe(new_runs[0]) if new_runs else None,
+               'gain':describe(new_reach[0]) if new_reach else None,
+               'gained_km':sw[road_mask & baseline_m & ~prior_m].sum()/1000,
+               'road_km':sw[road_mask].sum()/1000,
+               'lee_before':100*sw[road_mask & prior_lee].sum()/sw[road_mask].sum(),
+               'lee_after':100*sw[road_mask & current_lee].sum()/sw[road_mask].sum()}
+        if old_runs:
+            ix=old_runs[0][1]
+            delta['old_gap_recovered_km']=sw[ix][baseline_m[ix]].sum()/1000
+        summary['addition']['roads'][name]=delta
+    # Hold the extra repeater in place while comparing each owner drive-up location.
     summary['drive_up_trials']={}
     for key in cfg['owner_site_trials']:
         index=ids.index(key)
         if index in allowed:
             raise ValueError(f'Owner site {key} has no physically screened mount; inspect the search mask.')
-        chosen,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed,forced=[index])
+        chosen,_=choose(sites,gateway,links,hops,masks,grouped,10,excluded=original_only,forced=list(dict.fromkeys([added,index])))
         gains=metrics(*score(gateway+chosen)[:2])
         summary['drive_up_trials'][key]={'layout':[ids[i] for i in chosen],'metrics':gains,
                                         'direct_gateways':[ids[j] for j in gateway if links[index,j]]}
     if ids.index('FL') in rec:
-        nofl,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('FL')])
+        nofl,_=choose(sites,gateway,links,hops,masks,grouped,10,excluded=original_only+[ids.index('FL')],forced=[added])
     else:nofl=rec
     summary['no_fletcher']=[ids[i] for i in nofl]
     scenario('Fletcher unavailable',gateway+nofl)
-    noch,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('CH')])
+    noch,_=choose(sites,gateway,links,hops,masks,grouped,10,excluded=original_only+[ids.index('CH')],forced=[added])
     summary['no_high_cathedral']=[ids[i] for i in noch]
     scenario('Higher Cathedral unavailable',gateway+noch)
     nominal_links=links_for(nominal)[0]
@@ -269,9 +335,6 @@ def run(root):
     for code in ('AV','AM'):
         i=ids.index(code)
         scenario('Recommended +/- '+code,([k for k in recset if k!=i] if i in recset else recset+[i]))
-    candidates=[i for i in range(len(sites)) if i not in recset+allowed and not ({'CL','CH'}<={ids[j] for j in rec+[i]})]
-    extra=max(candidates,key=lambda i:merit(rec+[i]));summary['extra']=ids[extra]
-    scenario('Tenth candidate',recset+[extra])
     raster('terrain-union',area[recset].any(0))
     raster('relay-overlap',area[rec].sum(0))
     raster('reachability',baseline_a.astype('uint8'))
@@ -295,20 +358,13 @@ def run(root):
             aa[i]=sight(dem,meta,orig[i],land_targets,5,wav,radius)
             m,a,_=score(recset,matrix=mat,members=mm,lands=aa)
             summary['heights'].append(dict(id=ids[i],height=h,new=[ids[j] for j in recset if mat[i,j] and not links[i,j]],**metrics(m,a)))
-    save_features(gis/'route-status.geojson',[(s['segment'],dict(name=s['name'],status=('reachable' if b else 'blind'))) for s,b in zip(samples,baseline_m) if s['segment'] is not None])
+    save_features(gis/'route-status.geojson',[(s['segment'],dict(name=s['name'],status=('reachable' if b else 'blind'),
+                  previous=('reachable' if old else 'blind'),lee_before=bool(l0),lee_after=bool(l1),
+                  with_eleven=bool(el),with_twelve=bool(tw)))
+                  for s,b,old,l0,l1,el,tw in zip(samples,baseline_m,prior_m,prior_lee,current_lee,eleven,twelve) if s['segment'] is not None])
     gaps=[]
     for name in sorted({s['name'] for s in samples if s['kind']=='road'}):
-        # Join contiguous pieces in their original measured order; avoid fragile geometric exact-equality at splits.
-        runs=[];run=[]
-        for s,v in zip(samples,baseline_m):
-            if s['name']!=name or v or s['segment'] is None:
-                if run:runs.append(run);run=[]
-                continue
-            coords=list(s['segment'].coords)
-            if run and math.dist(run[-1],coords[0])>.01:runs.append(run);run=[]
-            run+=coords if not run else coords[1:]
-        if run:runs.append(run)
-        geom=[LineString(k) for k in runs if len(k)>1]
+        geom=[line for line,_ in road_runs(samples,name,~baseline_m)]
         for g in geom:gaps.append((g,dict(name=name,length_m=round(g.length,1))))
         ranking=sorted(geom,key=lambda g:-g.length)
         summary['roads'][name]=[dict(km=g.length/1000,a=inverse.transform(*g.coords[0]),b=inverse.transform(*g.coords[-1])) for g in ranking[:3]]
@@ -321,8 +377,27 @@ def run(root):
         pairs.append((LineString([origins[i,:2],origins[j,:2]]),data));summary['pairs'].append(data)
     save_features(gis/'links.geojson',pairs)
     from supplemental import finish_sites,solar,valley
-    finish_sites(root,sites,recset,gateway,parking,driving,routes,dem,meta,cfg)
-    solar(root,sites,recset,rg,rm,dem,meta,cfg)
+    trial_ids=list(dict.fromkeys(optional+expansion['best_single']['sites']+expansion['strict_pair']['sites']))
+    survey_ids={key for row in expansion['compared'] for key in row['sites']}
+    finish_sites(root,sites,recset,gateway,parking,driving,routes,dem,meta,cfg,trial_ids,survey_ids)
+    # A conservative logistics comparison uses the already proposed Fletcher carry as its benchmark.
+    reference=sites[ids.index('FL')]
+    too_far=[i for i,s in enumerate(sites) if s['id'] in survey_ids and
+             (s['walk_m']>reference['walk_m'] or s['ascent_m']>reference['ascent_m'])]
+    practical=compare_expansion(ids,sites,gateway,rec,allowed+too_far,guarded_score,samples,sw,baseline_m,merit)
+    expansion['access_pair']=practical['pair']
+    expansion['access_step']=practical['step_one']
+    expansion['access_reference']=dict(walk_m=reference['walk_m'],ascent_m=reference['ascent_m'])
+    trial_ids=list(dict.fromkeys(trial_ids+practical['pair']['sites']))
+    first_access=practical['step_one']['sites']
+    full_access=practical['pair']['sites']
+    access11=guarded_score(recset+[ids.index(k) for k in first_access])[0]
+    access12=guarded_score(recset+[ids.index(k) for k in full_access])[0]
+    save_features(gis/'winter-trial-roads.geojson',[(s['segment'],dict(name=s['name'],
+                  status='reachable' if current else 'blind',with_eleven=bool(el),with_twelve=bool(tw)))
+                  for s,current,el,tw in zip(samples,baseline_m,access11,access12)
+                  if s['kind']=='road' and s['name'] in ('SR 156','Macks Canyon')])
+    solar(root,sites,recset+[ids.index(k) for k in trial_ids],rg,rm,dem,meta,cfg)
     summary['valley']=valley(sites,ids,cfg,rg,rm,wav,radius)
     # Portable drive-up tests use the supplied vehicle position, before tree refinement.
     drive_sites=[dict(s,x=s['nx'],y=s['ny'],z=ground(s['nx'],s['ny'])) if s['id'] in ('AM','AV') else s for s in sites]
@@ -330,15 +405,15 @@ def run(root):
     # Model a hypothetical receiving home reachable from the Vegas-side Angel only.
     # No direct home/member rays are credited and the home never forwards on RF.
     av=ids.index('AV')
-    move=max((i for i in rec if i!=av),key=lambda i:merit([j for j in rec if j!=i]+[av]))
+    move=max((i for i in rec if i not in (av,added)),key=lambda i:merit([j for j in rec if j!=i]+[av]))
     home_ix=len(sites);ext=np.pad(links,((0,1),(0,1)))
     ext[av,home_ix]=ext[home_ix,av]=True
     def homecase(layout):
         p=routes_to_gateways(gateway+layout+[home_ix],gateway+[home_ix],ext,hops)
         ix=[i for i in p if i!=home_ix]
         return metrics(member[ix].any(0),area[ix].any(0))
-    h9=rec if av in rec else [i for i in rec if i!=move]+[av]
-    summary['home']={'swapped':ids[move] if av not in rec else None,'nine':homecase(h9),'add_vegas_site':homecase(list(dict.fromkeys(rec+[av])))}
+    home_layout=rec if av in rec else [i for i in rec if i!=move]+[av]
+    summary['home']={'swapped':ids[move] if av not in rec else None,'same_count':homecase(home_layout),'add_vegas_site':homecase(list(dict.fromkeys(rec+[av])))}
     for file in gis.glob('viewshed-*.tif'):
         if file.stem.removeprefix('viewshed-') not in {ids[i] for i in recset}:file.unlink()
     # Older packets exported loss rasters. Keep them out of the current GIS set.

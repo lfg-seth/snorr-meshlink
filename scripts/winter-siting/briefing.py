@@ -28,7 +28,7 @@ def cover(b,m):
     c.restoreState()
     c.setFillColor(HexColor(INK));c.rect(0,0,612,119,fill=1,stroke=0)
     b.text(40,79,'WINTER 2026–27',12,b.bold,'#fcf8e9')
-    b.text(40,53,'Nine repeaters   /   Two fire-station gateways',13,b.font,'#e4eee5')
+    b.text(40,53,'Ten planned repeaters   /   Two expansion trials   /   Two stations',13,b.font,'#e4eee5')
     b.text(40,29,'Private planning copy     •     Terrain model dated 13 November 2026',9,b.font,'#c1d4ca')
     c.showPage()
 
@@ -98,8 +98,8 @@ def tests(b,m):
     b.end()
 
 def cover_chart(b,m,r):
-    colors=[('#81978e','Stations only','Direct'),('#648499','Starting seven','Starting / lower'),(TEAL,'Recommended nine','Recommended')]
-    b.begin('Mountain coverage','What the repeaters add','The map traces the named trail network. Teal sections have a terrain path to dispatch through Lee or Kyle. The bars compare station-only service, the original seven placements and the recommended nine.')
+    colors=[('#81978e','Stations only','Direct'),('#648499','Starting seven','Starting / lower'),(TEAL,'Ten with Sisters','Recommended')]
+    b.begin('Mountain coverage','What the repeaters add','The map traces the named trail network. Teal sections have a terrain path to dispatch through Lee or Kyle. The bars compare station-only service, the original seven placements and the ten-site plan.')
     b.image(m.operating_roads(trails=True),243)
     legend(b,ROADS)
     for title,key,unit in [('Roads','road_km','km'),('Named trails','trail_km','km'),('Mountain land','land_km2','km²')]:
@@ -142,14 +142,16 @@ def briefing_pages(b,m,r,cfg):
             x=36+180*j;b.text(x,b.y-10,str(i+j+1).zfill(2),9.4,b.bold,TEAL)
             b.text(x+18,b.y-10,f'{field_name(k)} ({field_code(k)})',9.4,b.bold)
         b.y-=21
-    b.p(f"UB and LJ together bring modeled SR 156 reach from {r['scenarios']['Direct']['SR 156']:.0f}% to {r['scenarios']['Order 2']['SR 156']:.0f}%. The long mapped gap on upper Macks Canyon is the first drive check.")
+    b.p(f"UB and LJ together bring modeled SR 156 reach from {r['scenarios']['Direct']['SR 156']:.0f}% to {r['scenarios']['Order 2']['SR 156']:.0f}%. Sisters is slot 10. Measure Lee’s antenna first. For winter expansion, test Lee Junction South (11), then Macks Mouth North (12). Pages 4–7 map the choices and the GPS acceptance test.")
     b.end()
     road_page(b,m,r)
+    from expansion_pages import expansion_pages
+    expansion_pages(b,m,r,cfg)
     tests(b,m)
-    b.begin('Terrain visibility','Where a member can see a radio','Green land has a modeled clear terrain ray between a 1.2 m member antenna and at least one of the eleven infrastructure antennas. The next map identifies the receiving station.')
-    b.image(m.overview('union'),419);legend(b,[('Antenna visible','#72bca9','fill'),('Terrain blocks all eleven',BLANK,'fill')]+STATIONS)
+    b.begin('Terrain visibility','Where a member can see a radio','Green land has a modeled clear terrain ray between a 1.2 m member antenna and at least one of the twelve infrastructure antennas. The next map identifies the receiving station.')
+    b.image(m.overview('union'),419);legend(b,[('Antenna visible','#72bca9','fill'),('Terrain blocks all twelve',BLANK,'fill')]+STATIONS)
     code_key(b,order,r['gateways']);b.end()
-    b.begin('Station destinations','Which fire station gets the packet?','Each color names the station that a member can reach with all nine repeaters operating. Dark teal means the member has a modeled path to both stations.')
+    b.begin('Station destinations','Which fire station gets the packet?','Each color names the station that a member can reach with the ten planned repeater sites. Dark teal means the member has a modeled path to both stations.')
     station_image,mask=m.station_image(cfg['hop_limit']);b.image(station_image,410)
     legend(b,[('Neither',BLANK,'fill'),('Kyle only','#9e83b6','fill'),('Lee only','#77b6c9','fill'),('Either station',TEAL,'fill'),STATIONS[1]])
     area_per_cell=cfg['area_pixel_m']**2/1e6
@@ -166,7 +168,7 @@ def briefing_pages(b,m,r,cfg):
             b.text(x+17,b.y-9,field_name(k)+' ('+field_code(k)+')',9.4)
         b.y-=17
     b.end()
-    b.begin('Repeater footprints','Which repeater covers which slope?','All nine panels use the same north-up frame and scale. Green shows one repeater’s complete footprint. The triangle marks its mount. Road length below each panel counts individual visibility.')
+    b.begin('Repeater footprints','Which repeater covers which slope?','All ten panels use the same north-up frame and scale. Green shows one repeater’s complete footprint. The triangle marks its mount. Road length below each panel counts individual visibility.')
     b.image(m.mini_grid(order),503)
     legend(b,[('Visible to this repeater','#4a9f8f','fill'),('Outside its footprint',BLANK,'fill'),('Selected mount',INK,'triangle')])
     b.p('The helipad covers a small area around the resort. Its value is the clear relay path from Lee Junction down to Lee Fire Station. The individual footprints show only the first radio contact.',10)

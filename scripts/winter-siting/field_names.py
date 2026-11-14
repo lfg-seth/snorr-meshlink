@@ -16,6 +16,12 @@ LABELS = {
     'ML': ('ME', 'Macks East'), 'MW': ('MW', 'Macks West'),
     'BC': ('DCN', 'Deer Creek North'), 'BS': ('DCS', 'Deer Creek South'),
     'EK': ('KH', 'Kyle Highway'),
+    'BE': ('LBE', 'Lee Bowl East'), 'BW': ('LBW', 'Lee Bowl West'),
+    'JS': ('LJS', 'Lee Junction South'), 'LE': ('LME', 'Lee Meadows East'),
+    'SE': ('SER', 'Sisters East Ridge'), 'MN': ('MMN', 'Macks Mouth North'),
+    'MS': ('MSS', 'Macks South Shoulder'), 'UN': ('UMN', 'Upper Macks North'),
+    'MR': ('MSR', 'Macks South Ridge'), 'NR': ('MNR', 'Macks North Ridge'),
+    'RE': ('LRE', 'Lee Road East'), 'SN': ('SNE', 'Sisters Northeast'),
 }
 
 def field_code(key):
