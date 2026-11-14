@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#192f2a" />
+    <title>Field Survey · SNORR MeshLink</title>
+    <link rel="stylesheet" href="/survey.css" />
+  </head>
+  <body>
+    <header>
+      <div class="mast">
+        <div class="identity">
+          <b class="mark" aria-hidden="true">⌁</b><strong>SNORR</strong
+          ><span>MeshLink</span>
+        </div>
+        <span id="source" class="source">Connecting</span>
+      </div>
+    </header>
+    <main>
+      <div class="title">
+        <div>
+          <p class="eyebrow">Direct-hop instruments</p>
+          <h1>Field survey</h1>
+        </div>
+        <div class="health">
+          <span id="connection">Connecting…</span
+          ><span id="recording">Recorder pending</span>
+        </div>
+      </div>
+      <div id="alert" role="status" hidden></div>
+      <section class="runbar" aria-label="Survey controls">
+        <div>
+          <span class="eyebrow">Survey state</span
+          ><strong id="run">Connecting</strong>
+        </div>
+        <label>Target repeater<select id="target"></select></label
+        ><label
+          >Mode<select id="mode">
+            <option value="survey">Survey</option>
+            <option value="bench">Bench</option>
+          </select></label
+        >
+        <div class="commands">
+          <button class="primary" id="go" disabled>Start survey</button
+          ><button id="stop" disabled>Stop</button
+          ><button id="control" hidden>Take controls</button>
+        </div>
+      </section>
+      <nav aria-label="Workspace">
+        <button class="active" data-view="field">Field map</button
+        ><button data-view="readout">Readout</button
+        ><button data-view="journal">Run log</button
+        ><button data-view="setup">Setup</button>
+      </nav>
+      <section id="replaybar" class="runbar" hidden>
+        <div>
+          <span class="eyebrow">Recorded session playback</span
+          ><b id="replaytime"></b>
+        </div>
+        <button id="play">Play 1×</button><button id="step">Next event</button
+        ><button id="exitReplay">Return to live</button>
+      </section>
+      <div id="field" class="workspace">
+        <section class="card mapcard">
+          <div class="cardhead">
+            <div>
+              <p class="eyebrow">Position &amp; signal</p>
+              <h2>Survey map</h2>
+            </div>
+            <button class="primary" id="openMap" aria-haspopup="dialog">
+              Open map ↗
+            </button>
+          </div>
+          <div id="maphome">
+            <div class="mapstage">
+              <canvas
+                id="map"
+                aria-label="Survey map. Drag to pan. Pinch, use the wheel or press plus and minus to zoom. Arrow keys pan."
+                tabindex="0"
+              ></canvas>
+              <div class="maptools">
+                <button id="follow" aria-pressed="true">◎ Follow</button
+                ><button id="zoomIn" aria-label="Zoom in">+</button
+                ><button id="zoomOut" aria-label="Zoom out">−</button>
+              </div>
+              <span class="north" aria-hidden="true">▲ N</span>
+              <div class="scale" id="scale"></div>
+              <div class="attr">
+                USGS 3DEP ·
+                <a
+                  href="https://www.openstreetmap.org/copyright"
+                  rel="noreferrer"
+                  >© OpenStreetMap</a
+                >
+              </div>
+            </div>
+          </div>
+          <div id="optionshome">
+            <div id="mapsettings">
+              <div class="mapoptions">
+                <label
+                  >Direction<select id="direction">
+                    <option value="uplink">Vehicle → repeater</option>
+                    <option value="downlink">Repeater → vehicle</option>
+                  </select></label
+                >
+                <label
+                  >Color by<select id="metric">
+                    <option value="snr_db">SNR</option>
+                    <option value="rssi_dbm">RSSI</option>
+                  </select></label
+                ><label
+                  >Show target<select id="filter">
+                    <option value="">All targets</option>
+                  </select></label
+                >
+              </div>
+              <div class="legend">
+                <span class="ramp"></span><span id="range">−20 to +10 dB</span
+                ><span>× Timeout</span><span>△ Site</span>
+              </div>
+            </div>
+          </div>
+          <p class="fine">
+            <span class="tag" id="mapready">Loading area</span> Dashed trail
+            estimates travel between GPS fixes. Tap a sample to inspect.
+          </p>
+          <div id="pickhome"><p id="pick" hidden></p></div>
+        </section>
+        <aside id="instruments" class="card">
+          <div class="cardhead">
+            <div>
+              <p class="eyebrow">Live link telemetry</p>
+              <h2>Instrument panel</h2>
+            </div>
+          </div>
+          <div class="readings">
+            <div>
+              <span class="eyebrow">Vehicle → repeater</span
+              ><strong id="up">—</strong>
+            </div>
+            <div>
+              <span class="eyebrow">Repeater → vehicle</span
+              ><strong id="down">—</strong>
+            </div>
+          </div>
+          <dl id="facts"></dl>
+          <label id="simlabel"
+            >Simulation scenario<select id="scenario"></select
+          ></label>
+        </aside>
+      </div>
+      <section class="card secondary" id="journal" hidden>
+        <div class="cardhead">
+          <div>
+            <p class="eyebrow">Recorded evidence</p>
+            <h2>Run log</h2>
+          </div>
+          <button id="refreshSessions">Refresh sessions</button>
+        </div>
+        <div class="formrow">
+          <label
+            >Recording<select id="session">
+              <option value="">Current session</option>
+            </select></label
+          ><button id="replay">Replay on map</button
+          ><button id="older">Older events</button
+          ><button id="newer">Newer events</button>
+          <a id="csv" class="button" href="/export.csv" download>Export CSV</a
+          ><a id="raw" class="button" href="/export.jsonl" download
+            >Raw JSONL</a
+          >
+        </div>
+        <p id="windowInfo" class="fine"></p>
+        <div id="events"></div>
+        <pre id="detail" hidden></pre>
+      </section>
+      <section class="card secondary" id="setup" hidden>
+        <div class="cardhead">
+          <div>
+            <p class="eyebrow">Adapter capabilities</p>
+            <h2>Survey setup</h2>
+          </div>
+        </div>
+        <p id="build"></p>
+        <form id="lockTarget" class="formrow" hidden>
+          <label
+            >Repeater node ID<input
+              name="node"
+              required
+              pattern="![0-9a-fA-F]{8}"
+              maxlength="9"
+              autocomplete="off"
+              autocapitalize="none" /></label
+          ><button>Lock target</button>
+        </form>
+        <form id="settings">
+          <div class="settingsgrid"></div>
+          <button class="primary">Apply settings</button>
+        </form>
+        <details>
+          <summary>Fixed repeater locations</summary>
+          <form id="site" class="formrow">
+            <label>Target ID<input name="id" required maxlength="100" /></label
+            ><label
+              >Latitude<input
+                name="lat_deg"
+                required
+                type="number"
+                step="any"
+                min="-90"
+                max="90"
+                inputmode="decimal" /></label
+            ><label
+              >Longitude<input
+                name="lon_deg"
+                required
+                type="number"
+                step="any"
+                min="-180"
+                max="180"
+                inputmode="decimal" /></label
+            ><button>Save site</button>
+          </form>
+          <label
+            >Import site records (JSON array)<input
+              type="file"
+              id="sitefile"
+              accept="application/json,.json"
+          /></label>
+        </details>
+        <p id="mapinfo" class="fine"></p>
+      </section>
+    </main>
+    <dialog id="mapdialog" aria-label="Full-page survey map">
+      <div id="mapmount"></div>
+      <div class="maphud">
+        <div class="hudtop">
+          <button id="closeMap" aria-label="Close map and return to survey">
+            ← Survey</button
+          ><span class="map-source" id="fullSource"></span>
+        </div>
+        <div class="pills" aria-label="Survey indicators">
+          <span id="pillTarget"></span><span id="pillSignal"></span
+          ><span id="pillGps"></span><span id="pillRecord"></span><span id="pillMap" hidden></span>
+        </div>
+      </div>
+      <div class="hudfoot">
+        <div id="pickmount"></div>
+        <div class="hudrow">
+          <details id="maplayers">
+            <summary>Layers</summary>
+            <div id="optionmount"></div>
+          </details>
+          <div class="hudactions">
+            <button id="mapAction" class="primary">Start survey</button
+            ><button id="mapStop">Stop</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

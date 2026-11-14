@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-11-14 - Private direct-hop survey app and phone map
+
+Delivered the [separate survey app](../survey-app/README.md) with a deterministic
+client/responder simulator, headless host heartbeat, durable source-isolated event
+recording, session replay and CSV/JSONL export. Verified the private HTTPS Serve
+listener on 9447 and the existing 8443 mapping. The first phone test led to a
+full-page map with anchored pinch zoom, drag, Follow and compact telemetry.
+The private offline AO uses existing OSM roads and USGS elevation and fits in
+681,288 bytes. Runtime evidence and area data remain in ignored storage.
+
+Verified 14 Chromium viewport sizes, touch pan/pinch, rotation, browser closure
+during recording, outage controls, bounded long-history playback and a 10,000-event
+archive. The transport-free Python suite exercises fault interlocks, idempotency,
+disk/queue failure and the firmware worker's draft Python API. The firmware chat
+retains exclusive bench ownership. Next, owner retests the revised map on native
+Safari and the bench owner verifies real adapter, timing and RF measurements
+after handoff. Branch `codex/survey-gui-20261114`. Linux and field acceptance
+remain open. [Run instructions and verification](../survey-app/README.md).
+
 ## 2026-11-14 - Parallel survey firmware and mobile app assignments
 
 Completed owner-invoked firmware and GUI grilling. Published separate
