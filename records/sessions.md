@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-11-13 - Direct-hop vehicle survey readiness
+
+Owner resumes the direct-link drive-test discussion. The prepared RAK
+`2.7.26.4c96b9b` provides passive neighbor reports with a 180-second minimum,
+but no requested ping/pong responder. Immutable source inspection confirms
+zero-hop replies, API throttles and the traceroute forced-ACK/hop-rewrite trap.
+[Assessment and primary sources](../docs/research/direct-hop-upstream-research-20261113.md).
+
+Calculated 48-56-byte authenticated LONG_FAST frames occupy 0.600-0.682 seconds
+each. Two-second exchanges are a bench target; approximately three-second
+quiet-test and six-to-seven-second coexistence intervals are proposals, not
+measured rates or accepted policy. Aggregate target revisit and GPS/health
+suppression above polite utilization are explicit. No build, flash or RF test.
+
+Next: selected responder/Dell logger implementation, then third-node exclusion,
+both-direction metrics, exact encoded-size/latency/queue/cadence measurements
+and final ROUTER-role verification. Field relay/GPS acceptance stays separate.
+Documentation links/whitespace and airtime arithmetic checked. Branch
+`codex/direct-hop-survey`; commit/push reported at handoff. Other checkout work
+is preserved in place.
+
 ## 2026-11-13 - G001 sleep and periodic-upload power estimates
 
 Owner reports about 160 mA from the portal/INA219 with an uncertain measurement

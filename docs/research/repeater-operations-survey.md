@@ -2,7 +2,11 @@
 
 2026-10-13. Draft for owner discussion; no firmware implementation, bench measurements, field results or installation permission. Decision discussion: [Define repeater operations and direct-link placement testing](../../.scratch/pilot/issues/14-repeater-operations-survey.md).
 
-Owner put this issue and project work on hold for desktop handoff on 2026-10-13. Resume only at owner direction. [Handoff](../operations/desktop-handoff.md) preserves setup and current progress. Accepted prototype choices below are planning records, not a completed implementation or field readiness claim.
+Owner put this issue and project work on hold for desktop handoff on 2026-10-13.
+Owner resumes the drive-test discussion on 2026-11-13; the
+[current firmware and timing assessment](direct-hop-upstream-research-20261113.md)
+records the implementation gap and next bench gate. Accepted prototype choices
+below remain planning records, not completed implementation or field readiness.
 
 ## Owner requirements
 
