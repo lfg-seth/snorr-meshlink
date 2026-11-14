@@ -3,8 +3,9 @@
 Owner-approved assignment boundary, 2026-11-14. The
 [firmware assignment](../../.scratch/tasks/direct-hop-survey-firmware.md) and
 [GUI assignment](../../.scratch/tasks/direct-hop-survey-gui.md) implement this
-interface in parallel. This is a proposed software contract, not installed
-firmware or live acceptance. The tracker owns task status.
+interface in parallel. The [implemented USB protocol and adapter](survey-usb-v1.md)
+cover the dedicated firmware targets. The [firmware bench record](survey-firmware-20261114.md)
+tracks build verification and physical acceptance. The tracker owns task status.
 
 ## Ownership and architecture
 

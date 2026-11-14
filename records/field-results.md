@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-11-14 - Four-board direct-hop survey preparation
+
+Identified and backed up three RAK4631s and the original GPS Heltec V4 over USB. Each device read back its intended staging profile on the original firmware with TX disabled. The V4 full flash recovery image was captured. The four-board installation was blocked before execution. Bench RF duration is 0 seconds. Rate, directional reception, utilization, quiet behavior and outdoor GPS await measurement. [Per-board firmware and recovery evidence](../docs/operations/survey-firmware-20261114.md).
+
 ## 2026-11-12 - G007 bench and G001 radio receipts
 
 G007's automatic daily report reached its own MQTT uplink with 393,216 bytes

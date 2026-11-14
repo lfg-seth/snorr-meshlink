@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-14 - Direct-hop survey firmware prerelease and bench staging
+
+Published survey RAK4631 and original Heltec V4 builds from firmware `bcb22e037`, pinned the submodule and delivered the Windows/Linux USB adapter and cancellable recorder. Native ASan/UBSan controller tests passed for both roles. Independent fixed-diff review and artifact SHA-256 values are in the [firmware handoff](../docs/operations/survey-firmware-20261114.md).
+
+Identified three RAKs and the GPS V4 over USB, saved individual recovery inputs and verified all four original images with TX disabled. The automatic execution review blocked flashing. No survey image is installed, serial handles are closed and RF soak duration is zero. Next, obtain explicit four-board install approval, check the antennas before enabling TX, then collect the live acceptance evidence. The GUI can consume the [published adapter contract](../docs/operations/survey-usb-v1.md).
+
 ## 2026-11-14 - Parallel survey firmware and mobile app assignments
 
 Completed owner-invoked firmware and GUI grilling. Published separate

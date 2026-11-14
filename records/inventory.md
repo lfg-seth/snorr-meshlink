@@ -1,5 +1,9 @@
 # Hardware inventory
 
+## 2026-11-14 - Direct-hop survey bench staging
+
+USB identity and profile readbacks confirmed three RAK4631s (`!a65601b3`, `!b456f760`, `!49ac6d7f`) and the original GPS Heltec V4 (`!699c2ed8`) at the station. Their original images remain installed and all four read back TX disabled. Individual recovery inputs are private. [Per-board build, staging and ownership](../docs/operations/survey-firmware-20261114.md).
+
 ## 2026-11-12 - Rollout G001 supersedes the G007 bench label
 
 The screenless Heltec V4.3 `!1bbf0638` is rollout **G001**. The historical
