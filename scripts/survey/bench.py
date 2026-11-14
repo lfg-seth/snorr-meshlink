@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import queue
 import statistics
 import sys
 import time
@@ -69,7 +70,34 @@ def distribution(values):
     }
 
 
-def summarize(out, client_id, responder_ids, elapsed):
+def check_progress(client, session, mode, last_attempt, last_result_at, max_gap, now):
+    state = client.state
+    if not session or (state.get("session_id"), state.get("mode"), state.get("run_state")) != (
+        session,
+        mode,
+        "running",
+    ):
+        raise RuntimeError("survey session, mode or running state changed")
+    while True:
+        try:
+            event = client.read_event(timeout=0)
+        except queue.Empty:
+            break
+        data = event["data"]
+        if (
+            event["name"] == "result"
+            and data["session_id"] == session
+            and data["status"] != "late"
+            and data["attempt_id"] > last_attempt
+        ):
+            last_attempt = data["attempt_id"]
+            last_result_at = event["host_monotonic_ns"] / 1e9
+    if now - last_result_at > max_gap:
+        raise RuntimeError("survey controller stopped completing attempts")
+    return last_attempt, last_result_at
+
+
+def summarize(out, client_id, responder_ids, elapsed, started=None, session=None):
     """Join each successful result to independent RX and actual TX-start observations."""
     counts, faults, wires = Counter(), Counter(), Counter()
     successes, all_heard = Counter(), Counter()
@@ -77,7 +105,7 @@ def summarize(out, client_id, responder_ids, elapsed):
     results, air, responders = [], [], []
     rtts, measured_tx, local_util, remote_util = [], [], [], []
     gps_valid = gps_total = quiet_background = 0
-    quiet_suppressed = {}
+    quiet_suppressed, success_times = {}, {}
     for path in out.glob("*.jsonl"):
         observer = path.stem
         quiet_start = quiet_duration = None
@@ -102,22 +130,28 @@ def summarize(out, client_id, responder_ids, elapsed):
                     elif kind == "rx":
                         rx[observer, data["from"], data["packet_id"]] = data
                     elif kind == "airtx":
-                        air.append((observer, data))
-                        tx[observer, data["packet_id"]] = data
-                        if (
+                        during_quiet = (
                             quiet_start is not None
                             and data["from"] == number(observer)
-                            and data["local_class"] in (1, 3)
                             and (event["firmware_ms"] - quiet_start) % (2**32) < quiet_duration
-                        ):
-                            quiet_background += 1
+                        )
+                        air.append((observer, data, during_quiet))
+                        tx[observer, data["packet_id"]] = data
+
                 elif name == "result" and observer == client_id:
+                    if session is not None and data.get("session_id") != session:
+                        continue
                     counts[data["status"]] += 1
                     if data.get("channel_util_pct") is not None:
                         local_util.append(data["channel_util_pct"])
                     if data["status"] == "success":
                         results.append(data)
                         successes[data["target_id"]] += 1
+                        if started is not None:
+                            relative_time = event["host_monotonic_ns"] / 1e9 - started
+                            success_times.setdefault(data["target_id"], []).append(
+                                min(elapsed, max(0, relative_time))
+                            )
                         for key, samples in (
                             ("rtt_ms", rtts),
                             ("measured_tx_ms", measured_tx),
@@ -129,19 +163,24 @@ def summarize(out, client_id, responder_ids, elapsed):
                             wires[data["wire_bytes"]] += 1
 
     uplink_matches = downlink_matches = uplink_mismatches = downlink_mismatches = 0
-    matched_air = Counter()
+    matched_air, complete_witnesses, downlink_by_target = Counter(), Counter(), Counter()
     for data in results:
         target, request, reply = data["target_id"], data["request_packet_id"], data["reply_packet_id"]
-        if responder_ids and all((observer, request) in pings for observer in responder_ids):
+        every_hearer = responder_ids and all(
+            pings.get((observer, request), {}).get("target_id") == target for observer in responder_ids
+        )
+        if every_hearer:
             all_heard[target] += 1
         sent = tx.get((client_id, request), {})
         replied = tx.get((target, reply), {})
-        if (
+        both_tx = (
             sent.get("from") == number(client_id)
             and replied.get("from") == number(target)
             and sent["local_class"] == replied["local_class"] == 2
-        ):
+        )
+        if both_tx:
             matched_air[target] += 1
+        directions = set()
         for observer, source, packet, direction in (
             (target, client_id, request, "uplink"),
             (client_id, target, reply, "downlink"),
@@ -152,26 +191,52 @@ def summarize(out, client_id, responder_ids, elapsed):
                     "rssi_dbm": received["rssi_dbm"],
                     "snr_db": received["snr_quarter_db"] / 4,
                 }
+                if matches:
+                    directions.add(direction)
                 if direction == "uplink":
                     uplink_matches += int(matches)
                     uplink_mismatches += int(not matches)
                 else:
                     downlink_matches += int(matches)
                     downlink_mismatches += int(not matches)
+        if "downlink" in directions:
+            downlink_by_target[target] += 1
+        if every_hearer and both_tx and len(directions) == 2:
+            complete_witnesses[target] += 1
 
     survey_packets = {
         (source, packet) for (_, source, packet), observation in rx.items() if observation["port"] == 310
     }
     forwarded = header_violations = 0
-    for observer, data in air:
+    unverified_quiet_tx = 0
+    for observer, data, during_quiet in air:
         if data["local_class"] == 2 or (data["from"], data["packet_id"]) in survey_packets:
             forwarded += int(data["from"] != number(observer))
             header_violations += int(bool(data["hop_limit"] or data["hop_start"] or data["want_ack"]))
+        elif during_quiet:
+            # Inspect independent decodes as well as the sender's classification. Private port
+            # 256 covers SNNS. An unclassified broadcast without a decode remains inconclusive.
+            peers = [
+                rx.get((peer, data["from"], data["packet_id"]), {})
+                for peer in (client_id, *responder_ids)
+                if peer != observer
+            ]
+            ports = {item["port"] for item in peers if item.get("port")}
+            broadcast = data.get("to") == 0xFFFFFFFF
+            if data["local_class"] in (1, 3) or (broadcast and ports & {3, 4, 67, 71, 256}):
+                quiet_background += 1
+            elif broadcast and not ports:
+                unverified_quiet_tx += 1
     unexpected = sum(
         pings.get((observer, request), {}).get("target_id") != observer for observer, request in responders
     )
+    max_success_gaps = {}
+    for target, times in success_times.items():
+        boundaries = [0, *sorted(times), elapsed]
+        max_success_gaps[target] = round(max(b - a for a, b in zip(boundaries, boundaries[1:])), 3)
     return dict(
         elapsed_s=round(elapsed, 3),
+        longest_gap_between_successes_s=max_success_gaps,
         statuses=dict(counts),
         successes_by_target=dict(successes),
         round_trips_per_min=round(len(results) * 60 / elapsed, 3) if elapsed else None,
@@ -186,6 +251,9 @@ def summarize(out, client_id, responder_ids, elapsed):
         all_observers_heard=sum(all_heard.values()),
         all_observers_heard_by_target=dict(all_heard),
         matched_tx_pairs_by_target=dict(matched_air),
+        complete_witnesses_by_target=dict(complete_witnesses),
+        downlink_matches_by_target=dict(downlink_by_target),
+        unverified_quiet_broadcasts=unverified_quiet_tx,
         unexpected_responders=unexpected,
         uplink_metric_matches=uplink_matches,
         downlink_metric_matches=downlink_matches,
@@ -247,7 +315,7 @@ def main():
     elapsed = 0
     reason = "startup"
     started = None
-    failure = None
+    failure = session = max_gap = None
     observer_ids = [n for _, n in args.responder]
 
     def save(name, value):
@@ -261,8 +329,9 @@ def main():
                 stack.enter_context(station_lease(args.station_dir))
             connected = []
             for port, n in all_devices:
-                a = stack.enter_context(SurveyAdapter(port, n, out / (n + ".jsonl")))
-                connected.append(a)
+                adapter = SurveyAdapter(port, n, out / (n + ".jsonl"))
+                adapter.auto_heartbeat = False
+                connected.append(stack.enter_context(adapter))
             client = connected[0]
             if client.hello["role"] != "client" or any(
                 a.hello["role"] != "responder" for a in connected[1:]
@@ -284,6 +353,14 @@ def main():
                 call(client, "heartbeat")
                 call(client, "start", mode=args.mode)
                 started = time.monotonic()
+                session = client.state.get("session_id")
+                last_attempt, last_result_at = 0, started
+                last_beat = started
+                max_gap = (
+                    client.settings["max_attempt_interval_ms"]
+                    + args.timeout_ms
+                    + client.settings["heartbeat_timeout_ms"]
+                ) / 1000
                 last_summary = 0
                 while True:
                     elapsed = time.monotonic() - started
@@ -292,8 +369,13 @@ def main():
                         break
                     if any(a.problem for a in connected):
                         raise ConnectionError("USB transport lost")
-                    if client.state.get("run_state") == "paused":
-                        raise RuntimeError("firmware paused")
+                    now = time.monotonic()
+                    last_attempt, last_result_at = check_progress(
+                        client, session, args.mode, last_attempt, last_result_at, max_gap, now
+                    )
+                    if now - last_beat >= client.heartbeat_ms / 1000:
+                        call(client, "heartbeat")
+                        last_beat = time.monotonic()
                     if elapsed >= args.seconds:
                         reason = "duration_reached"
                         break
@@ -318,7 +400,7 @@ def main():
     except Exception as exc:
         reason = "failed"
         failure = f"{type(exc).__name__}: {exc}"
-    result = summarize(out, args.client[1], observer_ids, elapsed)
+    result = summarize(out, args.client[1], observer_ids, elapsed, started, session)
     faults = result["faults"]
     counts = result["successes_by_target"]
     passed = (
@@ -332,14 +414,20 @@ def main():
         and not result["observed_hop_or_ack_violations"]
         and not result["observed_owned_background_tx_during_quiet"]
     )
+    if args.mode == "bench" and max_gap is not None:
+        max_silent = 2 * len(args.target) * max_gap
+        result["bench_max_gap_without_target_success_s"] = max_silent
+        passed = passed and all(
+            result["longest_gap_between_successes_s"].get(t, float("inf")) <= max_silent for t in args.target
+        )
     if observer_ids:
         observed_targets = set(args.target) & set(observer_ids)
         passed = (
             passed
             and all(result["all_observers_heard_by_target"].get(t, 0) for t in args.target)
-            and all(result["matched_tx_pairs_by_target"].get(t, 0) for t in observed_targets)
-            and result["uplink_metric_matches"] >= len(observed_targets)
-            and result["downlink_metric_matches"] >= len(args.target)
+            and all(result["complete_witnesses_by_target"].get(t, 0) for t in observed_targets)
+            and all(result["downlink_matches_by_target"].get(t, 0) for t in args.target)
+            and not result["unverified_quiet_broadcasts"]
             and not result["uplink_metric_mismatches"]
             and not result["downlink_metric_mismatches"]
         )

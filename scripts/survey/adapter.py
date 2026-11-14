@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import collections
+import os
 import json
 import queue
 import struct
@@ -161,7 +162,10 @@ class SurveyAdapter:
                 import serial
 
                 self.factory = serial.Serial
-            self.serial = self.factory(port=self.port, baudrate=115200, timeout=0.08, write_timeout=1)
+            options = {"exclusive": True} if os.name == "posix" else {}
+            self.serial = self.factory(
+                port=self.port, baudrate=115200, timeout=0.08, write_timeout=1, **options
+            )
             self.thread = threading.Thread(target=self._run, name="survey-usb", daemon=True)
             self.thread.start()
             if not self.connected.wait(16) or self.problem:

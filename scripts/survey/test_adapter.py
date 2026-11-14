@@ -1,4 +1,5 @@
 import json
+import os
 import tempfile
 from pathlib import Path
 import threading
@@ -6,7 +7,7 @@ import time
 import unittest
 
 from adapter import Decoder, LIMITS, MAGIC, OPS, REQUEST, SYNC, SurveyAdapter, payload
-from bench import summarize
+from bench import check_progress, summarize
 
 
 def frame(s):
@@ -195,7 +196,12 @@ class AdapterTests(unittest.TestCase):
         client, target, witness = "!00000002", "!00000003", "!00000004"
 
         def event(name, millis, **data):
-            return {"name": name, "firmware_ms": millis, "data": data}
+            return {
+                "name": name,
+                "firmware_ms": millis,
+                "host_monotonic_ns": 10_000_000_000 + millis * 1_000_000,
+                "data": data,
+            }
 
         def packet(kind, millis, source, pid, **values):
             return event("statistics", millis, type=kind, packet_id=pid, **{"from": source}, **values)
@@ -207,6 +213,7 @@ class AdapterTests(unittest.TestCase):
                 source,
                 pid,
                 local_class=classification,
+                to=0xFFFFFFFF,
                 hop_start=0,
                 hop_limit=0,
                 want_ack=0,
@@ -232,27 +239,71 @@ class AdapterTests(unittest.TestCase):
             downlink={"rssi_dbm": -88, "snr_db": 0},
         )
         logs = {
-            client: [tx(110, 2, 99, 2), rx(710, 3, 100, -88, 0), result],
+            client: [tx(110, 2, 99, 2), rx(710, 3, 100, -88, 0), result, packet("rx", 805, 4, 103, port=67)],
             target: [
                 rx(150, 2, 99, -77, -5),
                 quiet,
                 event("statistics", 151, type="pong", request_packet_id=99, enqueued=True),
                 tx(400, 3, 100, 2),
             ],
-            witness: [quiet, tx(210, 4, 101, 1), tx(211, 2, 99, 0), tx(910000, 4, 102, 1)],
+            witness: [
+                quiet,
+                tx(210, 4, 101, 1),
+                tx(211, 2, 99, 0),
+                tx(800, 4, 103, 0),
+                tx(900, 4, 104, 0),
+                tx(910000, 4, 102, 1),
+            ],
         }
         with tempfile.TemporaryDirectory() as t:
             for observer, rows in logs.items():
                 (Path(t) / (observer + ".jsonl")).write_text("".join(json.dumps(r) + "\n" for r in rows))
-            s = summarize(Path(t), client, [target, witness], elapsed=60)
+            s = summarize(Path(t), client, [target, witness], elapsed=60, started=10)
+            self.assertEqual(s["longest_gap_between_successes_s"], {target: 59.29})
             self.assertEqual(s["all_observers_heard_by_target"], {target: 1})
             self.assertEqual(s["matched_tx_pairs_by_target"], {target: 1})
             self.assertEqual(s["uplink_metric_matches"], 1)
             self.assertEqual(s["downlink_metric_matches"], 1)
             self.assertEqual(s["observed_survey_forwards"], 1)
-            self.assertEqual(s["observed_owned_background_tx_during_quiet"], 1)
+            self.assertEqual(s["observed_owned_background_tx_during_quiet"], 2)
+            self.assertEqual(s["unverified_quiet_broadcasts"], 1)
+            self.assertEqual(s["complete_witnesses_by_target"], {target: 1})
             self.assertEqual(s["client_channel_util_pct"]["median"], 50)
             self.assertEqual(s["unexpected_responders"], 0)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX serial ownership")
+    def test_linux_port_contention(self):
+        import pty
+        import serial
+
+        master, slave = pty.openpty()
+        try:
+            port = os.ttyname(slave)
+            with tempfile.TemporaryDirectory() as t, serial.Serial(port, exclusive=True):
+                with self.assertRaises(serial.SerialException):
+                    with SurveyAdapter(port, "!00000002", Path(t) / "events.jsonl"):
+                        pass
+        finally:
+            os.close(slave)
+            os.close(master)
+
+    def test_soak_requires_the_started_session_and_continuing_progress(self):
+        client = SurveyAdapter("fake", "!00000002", "unused")
+        client.state = {"session_id": 17, "mode": "bench", "run_state": "running"}
+        client.events.put(
+            {
+                "name": "result",
+                "host_monotonic_ns": 12_000_000_000,
+                "data": {"session_id": 17, "attempt_id": 1, "status": "timeout"},
+            }
+        )
+        self.assertEqual(check_progress(client, 17, "bench", 0, 5, 6, 13), (1, 12))
+        with self.assertRaisesRegex(RuntimeError, "stopped completing"):
+            check_progress(client, 17, "bench", 1, 12, 6, 19)
+        for change in ({"mode": "survey"}, {"session_id": 22}, {"run_state": "idle"}):
+            client.state = {"session_id": 17, "mode": "bench", "run_state": "running", **change}
+            with self.assertRaisesRegex(RuntimeError, "state changed"):
+                check_progress(client, 17, "bench", 1, 12, 6, 13)
 
     def test_summary_absent_measurements(self):
         with tempfile.TemporaryDirectory() as t:

@@ -39,6 +39,8 @@ Two independent read-only subagents inspected the fixed firmware diffs across th
 
 The native controller suite compiled both production survey roles with fake hardware boundaries under ASan and UBSan. Both passed directness/authorization, renewal and expiry, queue pressure, replay, timing, GPS, host-loss and result-correlation cases relevant to their role. Windows and Linux adapter tests use a framed serial peer. They cover partial frames, identity checks, command ACK/idempotence across reconnect, directional metrics, null fixes and evidence summaries. These checks do not measure propagation or receiver performance. [Native suite at the pin](https://github.com/lfg-seth/firmware/tree/bcb22e037293df5531da391bb88d46b6969633b0/test/test_direct_survey) · [Host tests](../../scripts/survey/test_adapter.py).
 
+The host review of fixed project diff `7ad7494..4415be7` identified stalled-session, aggregate-metric, quiet-classification and Linux port ownership gaps. The recorder now verifies continued results in the same run, reports each target’s longest gap between successes, requires matching independent evidence per observed target, and checks peer decodes of transmissions during quiet. Linux PTY contention exercises the exclusive open. The GUI bridge and serial adapter also passed a synthetic end-to-end start, duplicate ACK and stop check.
+
 ## Resume on the station
 
 1. Obtain explicit four-board install approval following the execution review. Recheck the watcher, exclusive station lease, current USB identities, retained profiles and release digests. Leave TX disabled during installation.
