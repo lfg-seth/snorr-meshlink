@@ -21,6 +21,32 @@ def save_features(path, pairs):
                 for g,p in pairs]
     path.write_text(json.dumps(dict(type='FeatureCollection',features=features)),encoding='utf8')
 
+def angel_approach(rows,cfg,highway):
+    """Follow connected road centerlines from SR 158 to both supplied drive-up points."""
+    import networkx as nx
+    settings=cfg['angel_approach']
+    ways=[g for g,p in rows if p['osm_id'] in settings['osm_ways']]
+    if len(ways)!=len(settings['osm_ways']):
+        raise ValueError('The pinned Angel Peak approach is missing a source way')
+    graph=nx.Graph()
+    for way in ways:
+        for a,b in zip(way.coords,list(way.coords)[1:]):
+            graph.add_edge(a,b,weight=Point(a).distance(Point(b)))
+    start=min(graph,key=lambda xy:highway.distance(Point(xy)))
+    assert highway.distance(Point(start))<2,'Approach does not meet SR 158'
+    paths=[]
+    for key in settings['destinations']:
+        site=next(s for s in cfg['sites'] if s[0]==key)
+        target=Point(forward.transform(site[3],site[2]))
+        a,b=min(graph.edges,key=lambda ab:LineString(ab).distance(target))
+        edge=LineString([a,b])
+        stop=edge.interpolate(edge.project(target))
+        assert stop.distance(target)<50,'Drive-up point too far from mapped road'
+        end=min([a,b],key=lambda xy:nx.shortest_path_length(graph,start,xy,weight='weight')+Point(xy).distance(stop))
+        path=nx.shortest_path(graph,start,end,weight='weight')
+        paths.append(LineString(path+[stop.coords[0]]))
+    return list(parts(unary_union(paths),'LineString'))
+
 
 def geography(root, cfg):
     bounds = transform(forward.transform,box(*cfg['boundary_wsen']))
@@ -36,7 +62,8 @@ def geography(root, cfg):
         name=p.get('name','')
         hw=p.get('highway','')
         if name=='Upper Bristlecone Trail' and hw=='path':
-            excluded.append(g.buffer(30.48))
+            # The owner has agency placement authority. Keep mounts off the walking surface.
+            excluded.append(g.buffer(1.5))
         if p.get('building') or p.get('aeroway')=='helipad':
             excluded.append(g.buffer(8 if p.get('building') else 35))
         if p.get('amenity')=='parking':
@@ -58,6 +85,7 @@ def geography(root, cfg):
             facilities.append((g,name))
         if p.get('piste:type') in ('downhill','nordic') and g.geom_type=='LineString':
             facilities.append((clipped,'Lee ski terrain'))
+    roads['Angel Peak']=angel_approach(rows,cfg,unary_union(roads['SR 158']))
     if not all(k in roads for k in cfg['route_names'].values()):
         raise ValueError('A requested road is missing')
     routes=[]

@@ -185,7 +185,7 @@ def run(root):
     masks=[integer(np.r_[m,a]) for m,a in zip(member,area)]
     hops=cfg['hop_limit']
     allowed=[i for i,s in enumerate(sites) if s.get('mount_warning')]
-    rec,merit=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed,resilience_weight=cfg['survival_weight'])
+    rec,merit=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed)
     first=[ids.index(k) for k in cfg['preferred_first_tests'] if ids.index(k) in rec]
     rec=first+[i for i in rec if i not in first]
     print('Selected', [ids[i] for i in rec],flush=True)
@@ -209,7 +209,7 @@ def run(root):
         return out
     baseline_m,baseline_a,paths=score(recset)
     summary={'selected':[ids[i] for i in rec],'gateways':cfg['gateways'],'sites':sites,
-             'paths':{ids[i]:[ids[j] for j in p] for i,p in paths.items()},'scenarios':{},'failures':{},'alternatives':{},
+             'paths':{ids[i]:[ids[j] for j in p] for i,p in paths.items()},'scenarios':{},'alternatives':{},
              'heights':[],'roads':{},'pairs':[],'valley':[],'sample_count':len(samples)}
     def scenario(label,idx,**kwargs):
         m,a,p=score(idx,**kwargs)
@@ -225,17 +225,22 @@ def run(root):
     for name,omit in [('no Vegas',['AV']),('no mountain',['AM']),('neither',['AM','AV'])]:
         scenario('Higher / '+name,[i for i in upper if ids[i] not in omit])
     scenario('Recommended',recset)
-    resilient,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed,resilience_weight=cfg['coverage_led_weight'])
-    summary['resilience_layout']=[ids[i] for i in resilient]
-    scenario('Resilience alternative',gateway+resilient)
-    survive=[score(gateway+resilient,i)[:2] for i in gateway+resilient]
-    summary['scenarios']['Alternative survives all']=metrics(np.logical_and.reduce([v[0] for v in survive]),np.logical_and.reduce([v[1] for v in survive]))
+    # Re-optimize the other eight positions for each owner drive-up candidate.
+    summary['drive_up_trials']={}
+    for key in cfg['owner_site_trials']:
+        index=ids.index(key)
+        if index in allowed:
+            raise ValueError(f'Owner site {key} has no physically screened mount; inspect the search mask.')
+        chosen,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed,forced=[index])
+        gains=metrics(*score(gateway+chosen)[:2])
+        summary['drive_up_trials'][key]={'layout':[ids[i] for i in chosen],'metrics':gains,
+                                        'direct_gateways':[ids[j] for j in gateway if links[index,j]]}
     if ids.index('FL') in rec:
-        nofl,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('FL')],resilience_weight=cfg['survival_weight'])
+        nofl,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('FL')])
     else:nofl=rec
     summary['no_fletcher']=[ids[i] for i in nofl]
     scenario('Fletcher unavailable',gateway+nofl)
-    noch,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('CH')],resilience_weight=cfg['survival_weight'])
+    noch,_=choose(sites,gateway,links,hops,masks,grouped,9,excluded=allowed+[ids.index('CH')])
     summary['no_high_cathedral']=[ids[i] for i in noch]
     scenario('Higher Cathedral unavailable',gateway+noch)
     nominal_links=links_for(nominal)[0]
@@ -250,15 +255,7 @@ def run(root):
         data=np.full(inside.shape,255,'uint8')
         data[inside]=arr
         write_raster(gis/(label+'.tif'),data,affine,255)
-    stable_m,stable_a=baseline_m.copy(),baseline_a.copy()
     for i in recset:
-        m,a,p=score(recset,i)
-        assert i not in p and not np.any(m & ~baseline_m) and not np.any(a & ~baseline_a)
-        lost=metrics(baseline_m & ~m,baseline_a & ~a)
-        summary['failures'][ids[i]]=lost
-        stable_m &= m
-        stable_a &= a
-        raster('loss-'+ids[i],baseline_a & ~a)
         raster('viewshed-'+ids[i],area[i])
         if i in rec:
             leftset=[k for k in rec if k!=i]
@@ -268,8 +265,6 @@ def run(root):
             easy=[k for k in options if sites[k]['difficulty']<=sites[i]['difficulty']]
             easy=max(easy,key=lambda k:merit(leftset+[k])) if easy else alt
             summary['alternatives'][ids[i]]={'best':ids[alt],'easy':ids[easy],'metrics':metrics(*score(gateway+leftset+[easy])[:2])}
-    summary['scenarios']['Survives every single loss']=metrics(stable_m,stable_a)
-    summary['scenarios']['Single loss vulnerable']=metrics(baseline_m & ~stable_m,baseline_a & ~stable_a)
     for k in range(1,len(rec)+1):scenario('Order '+str(k),gateway+rec[:k])
     for code in ('AV','AM'):
         i=ids.index(code)
@@ -279,7 +274,7 @@ def run(root):
     scenario('Tenth candidate',recset+[extra])
     raster('terrain-union',area[recset].any(0))
     raster('relay-overlap',area[rec].sum(0))
-    raster('reachability',baseline_a.astype('uint8')+stable_a.astype('uint8'))
+    raster('reachability',baseline_a.astype('uint8'))
     scenario('60 percent F1 backbone',recset,matrix=np.array([[profiles[max(i,j),min(i,j)][1]>=.6 if i!=j else False for j in range(len(sites))] for i in range(len(sites))]))
     for kind,h in [('Inside vehicle',cfg['in_vehicle_m']),('Roof antenna',cfg['roof_m'])]:
         if h==cfg['member_m']:scenario(kind,recset)
@@ -289,12 +284,6 @@ def run(root):
                 mm[i]=sight(dem,meta,origins[i],sample_targets+[0,0,h-cfg['member_m']],5,wav,radius)
                 aa[i]=sight(dem,meta,origins[i],land_targets+[0,0,h-cfg['member_m']],5,wav,radius)
             scenario(kind,recset,members=mm,lands=aa)
-    # Backhaul-only failure has the same sink reachability under no-rebroadcast station profiles.
-    for i in gateway:
-        reduced_gateway=[g for g in gateway if g!=i]
-        sub=links.copy();sub[i,:]=False;sub[:,i]=False
-        back=routes_to_gateways(recset,reduced_gateway,sub,hops)
-        assert set(back)==set(score(recset,i)[2])
     for i in recset:
         for h in (cfg['gateway_heights'][1:] if i in gateway else [sites[i]['h']+cfg['lift_m']]):
             orig=origins.copy();orig[i,2]+=h-sites[i]['h']
@@ -306,7 +295,7 @@ def run(root):
             aa[i]=sight(dem,meta,orig[i],land_targets,5,wav,radius)
             m,a,_=score(recset,matrix=mat,members=mm,lands=aa)
             summary['heights'].append(dict(id=ids[i],height=h,new=[ids[j] for j in recset if mat[i,j] and not links[i,j]],**metrics(m,a)))
-    save_features(gis/'route-status.geojson',[(s['segment'],dict(name=s['name'],status=('survives' if st else 'vulnerable' if b else 'blind'))) for s,b,st in zip(samples,baseline_m,stable_m) if s['segment'] is not None])
+    save_features(gis/'route-status.geojson',[(s['segment'],dict(name=s['name'],status=('reachable' if b else 'blind'))) for s,b in zip(samples,baseline_m) if s['segment'] is not None])
     gaps=[]
     for name in sorted({s['name'] for s in samples if s['kind']=='road'}):
         # Join contiguous pieces in their original measured order; avoid fragile geometric exact-equality at splits.
@@ -335,22 +324,28 @@ def run(root):
     finish_sites(root,sites,recset,gateway,parking,driving,routes,dem,meta,cfg)
     solar(root,sites,recset,rg,rm,dem,meta,cfg)
     summary['valley']=valley(sites,ids,cfg,rg,rm,wav,radius)
+    # Portable drive-up tests use the supplied vehicle position, before tree refinement.
+    drive_sites=[dict(s,x=s['nx'],y=s['ny'],z=ground(s['nx'],s['ny'])) if s['id'] in ('AM','AV') else s for s in sites]
+    summary['valley_drive_up']=valley(drive_sites,ids,cfg,rg,rm,wav,radius)
     # Model a hypothetical receiving home reachable from the Vegas-side Angel only.
     # No direct home/member rays are credited and the home never forwards on RF.
     av=ids.index('AV')
     move=max((i for i in rec if i!=av),key=lambda i:merit([j for j in rec if j!=i]+[av]))
     home_ix=len(sites);ext=np.pad(links,((0,1),(0,1)))
     ext[av,home_ix]=ext[home_ix,av]=True
-    def homecase(layout,failed=None):
-        p=routes_to_gateways(gateway+layout+[home_ix],gateway+[home_ix],ext,hops,failed)
+    def homecase(layout):
+        p=routes_to_gateways(gateway+layout+[home_ix],gateway+[home_ix],ext,hops)
         ix=[i for i in p if i!=home_ix]
         return metrics(member[ix].any(0),area[ix].any(0))
-    h9=[i for i in rec if i!=move]+[av]
-    summary['home']={'swapped':ids[move],'nine':homecase(h9),'ten':homecase(rec+[av]),'no_kyle':homecase(h9,gateway[0]),'no_lee':homecase(h9,gateway[1]),'no_home':homecase(h9,home_ix)}
-    # Preserve individual source and raster generations while removing superseded model layers.
-    for prefix in ('viewshed-','loss-'):
-        for file in gis.glob(prefix+'*.tif'):
-            if file.stem[len(prefix):] not in {ids[i] for i in recset}:file.unlink()
+    h9=rec if av in rec else [i for i in rec if i!=move]+[av]
+    summary['home']={'swapped':ids[move] if av not in rec else None,'nine':homecase(h9),'add_vegas_site':homecase(list(dict.fromkeys(rec+[av])))}
+    for file in gis.glob('viewshed-*.tif'):
+        if file.stem.removeprefix('viewshed-') not in {ids[i] for i in recset}:file.unlink()
+    # Older packets exported loss rasters. Keep them out of the current GIS set.
+    for file in gis.glob('loss-*.tif'):
+        archive=root/'cache/archived-loss-rasters'
+        archive.mkdir(exist_ok=True)
+        file.replace(archive/file.name)
     tips=[]
     for name in ('SR 156','SR 157','SR 158'):
         group=[g for g,p in routes if p['name']==name]

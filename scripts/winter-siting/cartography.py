@@ -21,11 +21,11 @@ GOLD='#e4ad50'
 RED='#a6344a'
 BLANK='#eeede7'
 MUTE='#526970'
-ROAD_NAMES=('SR 156','SR 157','SR 158','Macks Canyon','Lucky Strike','Champion')
+ROAD_NAMES=('SR 156','SR 157','SR 158','Macks Canyon','Angel Peak','Champion')
 SITE_COLORS=['#227e85','#a7cf58','#d383a4','#a171b0','#5d9cd0','#bd973d','#539e61','#ce7850','#7883bb']
 SHARED='#435a63'
 OFFSETS={'GK':(7,8),'CH':(7,-11),'GL':(7,6),'LF':(-7,-10),'LC':(-7,6),'CM':(7,7),
-         'EL':(6,7),'SG':(6,-9),'FL':(-7,6),'AL':(6,7),'KJ':(7,7),'CL':(-7,8)}
+         'EL':(6,7),'SG':(6,-9),'FL':(-7,6),'AL':(6,7),'KJ':(7,7),'CL':(-7,8),'SK':(-6,-7),'AM':(6,7),'DC':(-5,8)}
 
 def finish(fig):
     buf=BytesIO()
@@ -114,12 +114,12 @@ class Maps:
                 label(ax,s['x'],s['y'],field_name(k) if style=='name' else field_code(k),OFFSETS.get(k,(6,5)),size)
 
     def labels_roads(self,ax,which=ROAD_NAMES):
-        frac={'SR 156':.78,'SR 157':.45,'SR 158':.34,'Macks Canyon':.67,'Lucky Strike':.30,'Champion':.28}
+        frac={'SR 156':.78,'SR 157':.45,'SR 158':.34,'Macks Canyon':.67,'Angel Peak':.30,'Champion':.28}
         for name in which:
             g=max((g for g,n in self.roads if n==name),key=lambda g:g.length)
             pt=g.interpolate(frac[name],normalized=True)
-            pretty={'Macks Canyon':'Macks Canyon Rd','Lucky Strike':'Lucky Strike Rd','Champion':'Champion Rd'}.get(name,name)
-            off={'Lucky Strike':(-6,-11),'Macks Canyon':(-2,10),'SR 158':(8,-8),'Champion':(12,-9),'SR 156':(8,-10)}.get(name,(4,-10))
+            pretty={'Macks Canyon':'Macks Canyon Rd','Angel Peak':'Angel Peak approach','Champion':'Champion Rd'}.get(name,name)
+            off={'Angel Peak':(-6,-11),'Macks Canyon':(-2,10),'SR 158':(8,-8),'Champion':(12,-9),'SR 156':(8,-10)}.get(name,(4,-10))
             label(ax,pt.x,pt.y,pretty,off,9,'#3e5159')
 
     def path(self,ax,sequence,color=TEAL,dash=False):
@@ -130,7 +130,6 @@ class Maps:
     def overview(self,mode):
         fig,ax=plt.subplots(figsize=(8.1,6.5));self.base(ax)
         if mode=='union':self.layer(ax,self.values('terrain-union'),[BLANK,'#72bca9'])
-        elif mode=='reach':self.layer(ax,self.values('reachability'),[BLANK,GOLD,TEAL])
         elif mode=='overlap':
             counts=self.values('relay-overlap')
             classes=np.zeros_like(counts)
@@ -142,59 +141,56 @@ class Maps:
         elif mode=='deployment':
             edges={tuple(sorted((a,b))) for seq in self.r['paths'].values() for a,b in zip(seq,seq[1:])}
             for edge in sorted(edges):self.path(ax,edge)
-            for name,offset in [('Macks Canyon',(-8,12)),('Lucky Strike',(6,10))]:
+            for name,offset in [('Macks Canyon',(-8,12))]:
                 g=self.longest_gap[name]
                 if g is not None:
                     ax.plot(*g.xy,color=RED,lw=3,zorder=6)
                     p=g.interpolate(.45,normalized=True)
                     label(ax,p.x,p.y,name+' gap',offset,10,RED)
-        self.sites_on(ax,self.order if mode=='overlap' else self.active,style='name' if mode=='deployment' else 'code',size=11)
-        if mode!='deployment':self.labels_roads(ax,('SR 156','SR 157','SR 158','Lucky Strike','Macks Canyon'))
+        self.sites_on(ax,self.order if mode=='overlap' else self.active,style='code',size=11)
+        if mode!='deployment':self.labels_roads(ax,('SR 156','SR 157','SR 158','Angel Peak','Macks Canyon'))
         self.scale(ax);fig.tight_layout(pad=.05)
         return finish(fig)
 
-    def mini_grid(self,mode,keys):
+    def mini_grid(self,keys):
         cols=3 if len(keys)>4 else 2;rows=(len(keys)+cols-1)//cols
         fig,axes=plt.subplots(rows,cols,figsize=(8.1,2.45*rows),squeeze=False)
         for ax,k in zip(axes.flat,keys):
             self.base(ax,detail=False)
-            if mode=='foot':
-                self.layer(ax,self.values('viewshed-'+k),[BLANK,'#4a9f8f'])
-                subtitle=f"{self.sites[k]['selected_footprint']['road_km']:.1f} km of road visible"
-            else:
-                intact=self.values('reachability');loss=self.values('loss-'+k)
-                v=np.where(intact==255,255,np.where(loss==1,2,(intact>0).astype(int)))
-                self.layer(ax,v,[BLANK,'#a7cfc2',RED]);subtitle=f"{self.r['failures'][k]['road_km']:.1f} road km lost"
+            self.layer(ax,self.values('viewshed-'+k),[BLANK,'#4a9f8f'])
+            subtitle=f"{self.sites[k]['selected_footprint']['road_km']:.1f} km of road visible"
             self.sites_on(ax,[k],style=None)
-            ax.set_title(field_name(k),fontsize=10.5,loc='left',fontweight='bold',color=INK,pad=4)
+            title={'SK':'Upper Bristlecone (UB)','AM':'Angel Peak (AM)','AV':'Angel Peak (AV)'}.get(k,field_name(k))
+            ax.set_title(title,fontsize=10,loc='left',fontweight='bold',color=INK,pad=4)
             ax.set_xlabel(subtitle,fontsize=9,labelpad=1,color=MUTE)
         for ax in list(axes.flat)[len(keys):]:ax.axis('off')
         fig.subplots_adjust(wspace=.13,hspace=.30)
         return finish(fig)
 
-    def corridor(self,ax,name,highlight=False,ends=False):
-        group=[g for g,n in self.roads if n==name]
-        bounds=unary_union(group).bounds;self.base(ax,frame(bounds,.23,1250),detail=False)
-        for status,color in [('survives',TEAL),('vulnerable',GOLD),('blind',RED)]:
-            segments=[np.asarray(g.coords) for g,p in self.status if p['name']==name and p['status']==status]
-            ax.add_collection(LineCollection(segments,colors=color,linewidths=3.8,zorder=5,capstyle='round'))
-        if ends:
-            for tag,coords in zip(('A','B'),self.r['highways'][name]):
-                x,y=forward.transform(*coords);ax.scatter(x,y,s=46,fc='white',ec=INK,zorder=9)
-                label(ax,x,y,tag,(-7,0) if tag=='B' and name=='SR 156' else (4,8),10)
-        if highlight and self.longest_gap[name] is not None:
-            g=self.longest_gap[name]
-            for tag,pt in zip(('A','B'),(g.coords[0],g.coords[-1])):
-                ax.scatter(*pt,s=44,facecolor='white',edgecolor=RED,zorder=9)
-                label(ax,*pt,tag,(5,8),10,RED)
-        self.scale(ax,True)
-
-    def corridors(self,names,ends=False):
-        fig,axes=plt.subplots(1,len(names),figsize=(8.25,3.9),squeeze=False)
-        for ax,n in zip(axes.flat,names):
-            self.corridor(ax,n,highlight=not ends,ends=ends)
-            ax.set_title(n,fontsize=12,fontweight='bold',color=INK,loc='left')
-        fig.subplots_adjust(wspace=.15)
+    def operating_roads(self,trails=False):
+        fig,ax=plt.subplots(figsize=(8.1,6.3))
+        self.base(ax,detail=False)
+        for cls,color in [('reachable',TEAL),('blind',RED)]:
+            seg=[np.asarray(g.coords) for g,p in self.status
+                 if (p['name'] not in ROAD_NAMES)==trails and p['status']==cls]
+            ax.add_collection(LineCollection(seg,colors=color,linewidths=1.8 if trails else 4,
+                                            zorder=5,capstyle='round'))
+        self.sites_on(ax,self.r['gateways'],'code',10)
+        self.labels_roads(ax,('SR 156','SR 157','SR 158','Macks Canyon','Champion'))
+        if not trails:
+            for name,ends in self.r['highways'].items():
+                for end in ends:
+                    x,y=forward.transform(*end)
+                    ax.scatter(x,y,s=38,fc='white',ec=INK,lw=1.2,zorder=6)
+            for k,short,offset in [('SK','Upper Bristlecone',(-5,-12)),('AM','Mountain pin',(-6,11)),('AV','Vegas pin',(7,-6))]:
+                v=self.sites[k];ax.scatter(v['nx'],v['ny'],s=32,marker='^',fc=INK,ec='white',lw=.9,zorder=8)
+                label(ax,v['nx'],v['ny'],short,offset,9)
+            self.labels_roads(ax,('Angel Peak',))
+            gap=self.longest_gap['Macks Canyon']
+            if gap:
+                for tag,xy in zip('AB',[gap.coords[0],gap.coords[-1]]):
+                    ax.scatter(*xy,s=28,fc='white',ec=RED,zorder=6);label(ax,*xy,tag,(2,-9),9,RED)
+        self.scale(ax);fig.tight_layout(pad=.05)
         return finish(fig)
 
     def locator(self,ax,keys,edges=()):
@@ -225,19 +221,6 @@ class Maps:
         fig.subplots_adjust(left=.01,right=.99,top=.91,bottom=.02,wspace=.09)
         return finish(fig)
 
-    def comparison_maps(self):
-        fig,axes=plt.subplots(1,3,figsize=(8.1,2.52))
-        intact=self.values('reachability')
-        direct=np.logical_or.reduce([self.values('viewshed-'+k)==1 for k in self.r['gateways']])
-        for ax,(title,mask) in zip(axes,[('Stations alone',direct),('All nine repeaters',intact>0),
-                                         ('Survives any one loss',intact==2)]):
-            self.base(ax,detail=False)
-            self.layer(ax,np.where(intact==255,255,mask.astype(int)),[BLANK,TEAL])
-            self.sites_on(ax,self.r['gateways'],None)
-            ax.set_title(title,fontsize=10.5,weight='bold',color=INK,pad=4)
-        fig.subplots_adjust(left=.01,right=.99,bottom=.02,top=.89,wspace=.12)
-        return finish(fig)
-
     def station_masks(self,hops):
         import networkx as nx
         active_pairs=[(p['a'],p['b']) for p in self.r['pairs'] if p['active'] and p['los']]
@@ -256,98 +239,59 @@ class Maps:
         fig,ax=plt.subplots(figsize=(8.1,6.5));self.base(ax)
         self.layer(ax,v,[BLANK,'#9e83b6','#77b6c9',TEAL])
         self.sites_on(ax,self.r['gateways'],'name',12)
-        self.labels_roads(ax,('Macks Canyon','SR 156','SR 157','SR 158','Lucky Strike'))
+        self.labels_roads(ax,('Macks Canyon','SR 156','SR 157','SR 158','Angel Peak'))
         self.scale(ax);fig.tight_layout(pad=.05)
         return finish(fig),v
 
-    def road_trail_image(self):
-        fig,axes=plt.subplots(1,2,figsize=(8.1,3.35))
-        for ax,road in zip(axes,[True,False]):
-            self.base(ax,detail=False)
-            for status,color in [('survives',TEAL),('vulnerable',GOLD),('blind',RED)]:
-                seg=[np.asarray(g.coords) for g,p in self.status
-                     if (p['name'] in ROAD_NAMES)==road and p['status']==status]
-                ax.add_collection(LineCollection(seg,colors=color,linewidths=2 if road else 1.15,zorder=5))
-            self.sites_on(ax,self.r['gateways'],None);self.scale(ax,True)
-            if road:self.labels_roads(ax,('SR 156','SR 157','SR 158','Macks Canyon','Lucky Strike'))
-            else:
-                for n,fraction,offset in [('Bristlecone Trail',.4,(-4,8)),('North Loop Trail',.5,(-4,8)),('Fletcher Canyon Trail',.4,(4,7)),('South Loop Trail',.4,(4,-8))]:
-                    lines=[g for g,p in self.routes if p['kind']=='trail' and p['name']==n]
-                    if lines:
-                        p=max(lines,key=lambda g:g.length).interpolate(fraction,normalized=True)
-                        label(ax,p.x,p.y,n.replace(' Trail',''),offset,8)
-            ax.set_title('Scored roads' if road else 'Named trails',fontsize=12,loc='left',color=INK,weight='bold')
-        fig.subplots_adjust(left=.01,right=.99,bottom=.01,top=.91,wspace=.12)
-        return finish(fig)
-
-    def facility_names(self):
-        return sorted({p['name'] for _,p in self.facilities})
-
-    def valley_image(self,sectors):
-        fig,ax=plt.subplots(figsize=(8.1,3.2))
+    def valley_image(self,cfg):
+        from city_streets import streets
+        sectors=cfg['valley_sectors'];bounds=cfg['valley_map_wsen']
+        fig,ax=plt.subplots(figsize=(10.3,4.4))
         terrain_file=self.root/'cache/terrain-regional.tif'
         with rasterio.open(terrain_file) as source:
             z=source.read(1,out_shape=(470,650),resampling=rasterio.enums.Resampling.bilinear)
             b=source.bounds
             relief=LightSource(azdeg=315,altdeg=38).hillshade(z,dx=(b.right-b.left)/650,dy=(b.top-b.bottom)/470)
-            ax.imshow(relief,extent=[b.left,b.right,b.bottom,b.top],cmap='Greys_r',alpha=.42,vmin=-.2,vmax=1.3)
-        origin=self.sites['AV']
-        points=[Point(origin['x'],origin['y'])]
+            ax.imshow(relief,extent=[b.left,b.right,b.bottom,b.top],cmap='Greys_r',alpha=.28,vmin=-.2,vmax=1.3)
+        roads=streets(self.root,bounds)
+        layers={};label_roads=[]
+        for kind,ref,name,coords in roads:
+            x,y=forward.transform(*np.array(coords).T)
+            xy=np.column_stack((x,y))
+            layers.setdefault(kind,[]).append(xy)
+            if kind=='motorway' or name in cfg['city_labels']:
+                label_roads.append((ref,name,xy))
+        for kinds,color,width in [(['residential','unclassified'],'#a8b8b4',.32),(['tertiary'],'#a2b3af',.5),
+                                  (['secondary','primary'],'#718987',.76),(['motorway','trunk'],'#7b6332',2.4),
+                                  (['motorway','trunk'],'#ffe79d',1.24)]:
+            lines=[xy for k in kinds for xy in layers.get(k,())]
+            ax.add_collection(LineCollection(lines,colors=color,linewidths=width,zorder=2))
+        origin=self.sites['AV'];ox,oy=origin['nx'],origin['ny']
         for idx,(name,lon,lat) in enumerate(sectors,1):
-            x,y=forward.transform(lon,lat);points.append(Point(x,y))
-            count=next(v['clear'] for v in self.r['valley'] if v['sector']==name and v['angel']=='AV')
+            x,y=forward.transform(lon,lat)
+            count=next(v['clear'] for v in self.r['valley_drive_up'] if v['sector']==name and v['angel']=='AV')
             col=TEAL if count else RED
-            ax.plot([origin['x'],x],[origin['y'],y],c=col,lw=1.3,ls='-' if count else '--',zorder=3)
+            ax.plot([ox,x],[oy,y],c=col,lw=1.45,ls='-' if count else '--',zorder=3)
             ax.add_patch(Rectangle((x-500,y-500),1000,1000,facecolor='white',edgecolor=col,lw=1.45,zorder=4))
-            label(ax,x,y,str(idx),[(6,-9),(5,-10),(-6,8),(5,8)][idx-1],11,col)
-        self.sites_on(ax,['AV'],None);label(ax,origin['x'],origin['y'],'Angel Vegas',(5,8),11)
-        ext=frame(unary_union(points).bounds,.14,12500)
-        ax.set_xlim(ext[:2]);ax.set_ylim(ext[2:]);ax.set_aspect('equal')
+            short=('Centennial Hills','Lone Mountain','Providence','North Las Vegas')[idx-1]
+            dx,dy=[(-3,-15),(3,-14),(-6,12),(-4,13)][idx-1]
+            label(ax,x,y,f'{idx}  {short}',(dx,dy),9.6,col)
+        for k in ('AV','AM'):
+            s=self.sites[k];ax.scatter(s['nx'],s['ny'],s=35,marker='^',fc=INK,ec='white',lw=.85,zorder=9)
+        label(ax,ox,oy,'Angel Peak · Vegas side',(1,-14),11)
+        s=self.sites['AM'];label(ax,s['nx'],s['ny'],'Mountain side',(1,12),10)
+        for street,info in cfg['city_labels'].items():
+            short,lon,lat,dx,dy=info
+            target=np.array(forward.transform(lon,lat))
+            coords=[xy for ref,n,xy in label_roads if street==n or street in ref.split(';')]
+            if not coords:raise ValueError('Missing city landmark: '+street)
+            pts=np.concatenate(coords);near=pts[np.argmin(np.linalg.norm(pts-target,axis=1))]
+            label(ax,*near,short,(dx,dy),8.8,'#594723' if street in ('US 95','CC 215') else '#3f5059')
+        w,south=forward.transform(bounds[0],bounds[1]);east,n=forward.transform(bounds[2],bounds[3])
+        ax.set_xlim(w,east);ax.set_ylim(south,n);ax.set_aspect('equal')
         ax.set_xticks([]);ax.set_yticks([])
         for s in ax.spines.values():s.set_visible(False)
         self.scale(ax);fig.tight_layout(pad=0)
-        return finish(fig)
-
-    def area_guide(self):
-        fig,ax=plt.subplots(figsize=(8.05,6.1))
-        self.base(ax)
-        for idx,n in enumerate(self.facility_names(),1):
-            area=unary_union([g for g,p in self.facilities if p['name']==n])
-            for g,p in self.facilities:
-                if p['name']==n:
-                    ax.plot(*(g.exterior.xy if g.geom_type=='Polygon' else g.xy),
-                            lw=2,color=TEAL,zorder=6)
-            p=area.centroid
-            offsets={1:(23,32),2:(23,13),3:(23,-8),4:(-33,-17),5:(-29,16),6:(-32,38)}
-            dx,dy=offsets[idx]
-            ax.annotate(str(idx),(p.x,p.y),xytext=(dx,dy),textcoords='offset points',
-                        ha='center',va='center',fontsize=10,weight='bold',color='white',
-                        arrowprops=dict(arrowstyle='-',color=TEAL,lw=1.1),zorder=9,
-                        bbox=dict(boxstyle='circle,pad=.2',fc=TEAL,ec='white',lw=1))
-        self.labels_roads(ax,('SR 156','SR 157','SR 158','Champion','Macks Canyon','Lucky Strike'))
-        self.sites_on(ax,self.r['gateways'],'code')
-        for name in ['Lucky Strike','Macks Canyon']:
-            g=self.longest_gap[name]
-            if g is not None:ax.plot(*g.xy,color=RED,lw=2.6,zorder=5)
-        self.scale(ax);fig.tight_layout(pad=.1)
-        return finish(fig)
-
-    def facility_grid(self):
-        names=self.facility_names()
-        fig,axes=plt.subplots(2,3,figsize=(8.3,5.3))
-        v=self.values('reachability')
-        for idx,(ax,n) in enumerate(zip(axes.flat,names),1):
-            shapes=[g for g,p in self.facilities if p['name']==n];site=unary_union(shapes)
-            self.base(ax,frame(site.bounds,.17,550),detail=False)
-            self.layer(ax,v,[BLANK,GOLD,TEAL])
-            for g in shapes:
-                ax.plot(*(g.exterior.xy if g.geom_type=='Polygon' else g.xy),color=INK,lw=1.5,zorder=6,
-                        path_effects=[effects.withStroke(linewidth=2.6,foreground='white')])
-            ax.set_title(str(idx)+'  '+n.replace(' Group Campground','').replace(' Campground','').replace('Lee ski terrain','Lee ski runs'),
-                         color=INK,fontsize=11,fontweight='bold',loc='left',pad=2)
-            ax.set_xlabel(f"{self.r['scenarios']['Recommended'][n]:.0f}% reachable in the intact layout",fontsize=8.5)
-            self.scale(ax,True)
-        fig.subplots_adjust(wspace=.16,hspace=.32)
         return finish(fig)
 
     def site_image(self,k):

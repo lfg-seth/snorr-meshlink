@@ -1,4 +1,4 @@
-"""Sink-only gateways; graph search works on live nodes after each failure."""
+"""Trace a bounded relay path to either receiving station."""
 
 
 def routes_to_gateways(ids, gateways, links, hops, failed=None):
@@ -22,7 +22,7 @@ def union_mask(indices, masks):
     return result
 
 
-def choose(sites, gateways, links, hops, masks, weights, limit, excluded=(), forced=(), resilience_weight=.07):
+def choose(sites, gateways, links, hops, masks, weights, limit, excluded=(), forced=()):
     """Deterministic multi-start greedy construction and one-for-one local exchange."""
     candidates=[i for i in range(len(sites)) if i not in set(gateways)|set(excluded)]
     cache={}
@@ -36,13 +36,8 @@ def choose(sites, gateways, links, hops, masks, weights, limit, excluded=(), for
         paths=routes_to_gateways(active,gateways,links,hops)
         mask=union_mask(paths,masks)
         coverage=sum((mask & s).bit_count()*w for s,w in weights)
-        # Coverage first; resilience and shorter approaches distinguish similar layouts.
-        survive=mask
-        for i in active:
-            survive &= union_mask(routes_to_gateways(active,gateways,links,hops,i),masks)
-        resilience=sum((survive & s).bit_count()*w for s,w in weights)
         difficulty=sum(sites[i]['difficulty'] for i in chosen)
-        value=coverage+resilience_weight*resilience-.00022*difficulty
+        value=coverage-.00022*difficulty
         cache[key]=value
         return value
     def fill(seed):

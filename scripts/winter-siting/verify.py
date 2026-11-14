@@ -1,4 +1,4 @@
-"""Independent graph/outage, GIS, navigation and rendered field-sheet consistency checks."""
+"""Check station routing, scoped drive-up roads, navigation and the rendered packet."""
 import argparse
 from pathlib import Path
 import json
@@ -20,7 +20,7 @@ def verify(root):
     cfg=json.loads((root/'inputs/study.json').read_bytes())
     active=r['gateways']+r['selected']
     sites={v['id']:v for v in r['sites']}
-    assert len(set(active))==11 and len(r['failures'])==11
+    assert len(set(active))==11
     assert len({field_code(k) for k in sites})==len(sites)
     def data(name):
         with rasterio.open(root/'gis'/(name+'.tif')) as ds:
@@ -32,32 +32,31 @@ def verify(root):
     assert np.array_equal(data('relay-overlap')[inside],sum(footprints[k].astype('uint8') for k in r['selected'])[inside])
     graph=nx.Graph();graph.add_nodes_from(active)
     graph.add_edges_from((p['a'],p['b']) for p in r['pairs'] if p['active'] and p['los'])
-    survived=inside.copy()
-    def independently_reachable(failed):
-        g=graph.copy()
-        if failed:g.remove_node(failed)
-        connected=set()
-        for target in r['gateways']:
-            if target in g:
-                # Stop at the other sink; do not forward through it.
-                gg=g.copy();gg.remove_nodes_from(set(r['gateways'])-{target})
-                connected.update(nx.single_source_shortest_path_length(gg,target,cutoff=cfg['hop_limit']))
-        assert failed not in connected
-        return np.logical_or.reduce([footprints[k] for k in connected])
-    intact=independently_reachable(None)
-    for k in active:
-        m=independently_reachable(k)
-        assert np.array_equal(intact & ~m,data('loss-'+k)==1)
-        survived &= m
-    assert np.array_equal(intact,inside & (field>=1)) and np.array_equal(survived,field==2)
     maps=Maps(root,r)
     station_masks=maps.station_masks(cfg['hop_limit'])
-    assert np.array_equal(np.logical_or.reduce(list(station_masks.values())),intact)
+    assert set(np.unique(field))=={0,1,255}
+    assert np.array_equal(np.logical_or.reduce(list(station_masks.values())),field==1)
     for station,mask in station_masks.items():
-        other,=set(r['gateways'])-{station}
-        assert np.array_equal(mask,independently_reachable(other))
-    for name in ('Macks Canyon','Lucky Strike'):
+        g=graph.copy();g.remove_nodes_from(set(r['gateways'])-{station})
+        nodes=nx.single_source_shortest_path_length(g,station,cutoff=cfg['hop_limit'])
+        assert np.array_equal(mask,np.logical_or.reduce([footprints[k] for k in nodes]))
+    from shapely.geometry import Point
+    from shapely.ops import unary_union
+    road=unary_union([g for g,n in maps.roads if n=='Angel Peak'])
+    highway=unary_union([g for g,n in maps.roads if n=='SR 158'])
+    assert road.distance(highway)<1
+    pins=[Point(sites[k]['nx'],sites[k]['ny']) for k in cfg['angel_approach']['destinations']]
+    assert all(road.distance(p)<50 for p in pins)
+    assert road.bounds[2]<max(p.x for p in pins)+60
+    segments=[(g,p['status']) for g,p in maps.status if p['name']=='Angel Peak']
+    assert abs(sum(g.length for g,_ in segments)-road.length)<1
+    percent=100*sum(g.length for g,cl in segments if cl=='reachable')/road.length
+    assert abs(percent-r['scenarios']['Recommended']['Angel Peak'])<.01
+    for name in ('Macks Canyon','Angel Peak'):
         gap=maps.longest_gap[name]
+        if gap is None:
+            assert not r['roads'][name]
+            continue
         model=r['roads'][name][0]
         assert abs(gap.length/1000-model['km'])<.001
         for point,key in ((gap.coords[0],'a'),(gap.coords[-1],'b')):
@@ -68,17 +67,24 @@ def verify(root):
     nav=ET.parse(root/'navigation.gpx')
     ns={'g':'http://www.topografix.com/GPX/1/1'}
     waypoints={w.findtext('g:name',namespaces=ns):[float(w.get('lon')),float(w.get('lat'))] for w in nav.findall('g:wpt',ns)}
-    assert len(waypoints)==22
-    doc=pymupdf.open(root/'Mount-Charleston-winter-mesh.pdf')
+    extra=set(cfg['drive_up_sites'])-set(active)
+    assert len(waypoints)==2*len(active)+len(extra)
+    for k in cfg['drive_up_sites']:
+        label=navigation_name(k)+(' - drive-up test' if k in extra else ' - stage')
+        assert math.dist(waypoints[label],sites[k]['nom_ll'])<1e-6
+    doc=pymupdf.open(root/'Mount-Charleston-winter-field-plan.pdf')
     pages=[p.get_text() for p in doc]
     assert len(doc.get_toc())==len(doc)
     assert 'Winter mesh field plan' in pages[0] and 'Deployment order' in pages[1]
     assert sum('Navigation and mounting' in p for p in pages)==len(active)
-    for phrase in ('Two road gaps to drive first','Which fire station gets the packet?',
+    for phrase in ('Where the roads reach dispatch','Which fire station gets the packet?',
                    'Where each repeater stands alone','Which repeater covers which slope?',
-                   'Where the named places sit','Where a single failure cuts service',
+                   'Angel Peak to the Las Vegas valley',
                    'Kyle Canyon terrain profiles','Lee Canyon terrain profiles'):
         assert any(phrase in page for page in pages),phrase
+    content=' '.join(pages).lower()
+    for stale in ('single-node','outage','survives','lucky strike','where the named places sit'):
+        assert stale not in content,stale
     for k in active:
         s=sites[k];lon,lat=s['ll'];coord=f'{lat:.5f}, {lon:.5f}'
         site_page=[p for p in pages if 'Navigation and mounting' in p and 'Selected WGS84' in p and coord in p and navigation_name(k) in p]
@@ -102,7 +108,7 @@ def verify(root):
             x=(idx%4)*250;y=(idx//4)*340
             sheet.paste(im,(x,y));ImageDraw.Draw(sheet).text((x+8,y+319),str(start+idx+1),fill='black')
         sheet.save(render/f'contact-{start//8+1}.png')
-    print(f'{len(doc)} pages rendered; 11 site sheets and all 22 GPX waypoints match GIS. Eleven independent network removals match every raster cell.')
+    print(f'{len(doc)} pages rendered. The 11 site sheets and {len(waypoints)} waypoints match the model. Both station masks and the scoped Angel Peak road pass independent checks.')
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('directory',type=Path)

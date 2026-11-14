@@ -58,7 +58,15 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
         s['bearing'],s['shift']=bearing(*s['nom_ll'],*s['ll'])
         if i not in active:continue
         flag='estimated'
-        if i in gateways:
+        if code=='SK':
+            start=next(p.coords[0] for p,tags in parking if tags['osm_id']==official[code])
+            stop='Upper Bristlecone trailhead lot'
+            status='Owner confirms easy agency access. Staging uses a point inside the mapped lot.'
+        elif code in cfg['drive_up_sites']:
+            start=(s['nx'],s['ny'])
+            stop='Owner drive-up at the supplied pin'
+            status='Owner-confirmed access. Distance covers only the nominal pin to the modeled mount.'
+        elif i in gateways:
             start=end
             stop='Station premises, host-guided stop; exact bay unknown'
             status='Owner station pin used as rendezvous; zero walking distance is a co-location assumption.'
@@ -74,7 +82,7 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
                 s['conditional_stop']=inverse.transform(near.x,near.y)
                 s['conditional_walk_m']=round(pt.distance(near))
         xy=[start,end]
-        if start!=end:
+        if start!=end and code not in cfg['drive_up_sites']:
             a,b=snap(start),snap(end)
             try:
                 path=nx.shortest_path(graph,a,b,weight='weight')
@@ -93,6 +101,12 @@ def finish_sites(root,sites,active,gateways,parking,driving,routes,dem,meta,cfg)
         waypoint(*start,navigation_name(code)+' - stage',stop+'; '+status)
         stops.append((Point(start),dict(id=code,name=stop,field_name=field_name(code),field_code=field_code(code),evidence=status)))
         if line.length:approaches.append((line,dict(id=code,field_name=field_name(code),field_code=field_code(code),method=flag)))
+    selected_ids={sites[i]['id'] for i in active}
+    for code in cfg['drive_up_sites']:
+        if code not in selected_ids:
+            s=next(s for s in sites if s['id']==code)
+            waypoint(s['nx'],s['ny'],navigation_name(code)+' - drive-up test',
+                     'Owner-supplied vehicle position for the Angel Peak radio comparison.')
     for s in sites:
         gsites.append((Point(s['x'],s['y']),{k:s[k] for k in ('id','name','z','h','shift','bearing','access')}|{'field_name':field_name(s['id']),'field_code':field_code(s['id']),'selected':sites.index(s) in active,'nom_lon':s['nom_ll'][0],'nom_lat':s['nom_ll'][1]}))
     save_features(root/'gis/sites.geojson',gsites);save_features(root/'gis/staging.geojson',stops)

@@ -57,8 +57,7 @@ def legend(b,items):
 
 
 STATIONS=[('Repeater',INK,'triangle'),('Fire-station gateway',INK,'diamond')]
-REACH=[('Blind or disconnected',BLANK,'fill'),('Lost in at least one outage',GOLD,'fill'),('Survives every single outage',TEAL,'fill')]
-ROADS=[('Blind stretch',RED,'line'),('Reachable, vulnerable',GOLD,'line'),('Survives all single outages',TEAL,'line')]
+ROADS=[('Reaches a station',TEAL,'line'),('Predicted blind stretch',RED,'line')]
 
 def flag(b,title,detail):
     b.c.setStrokeColor(HexColor('#bacac3'));b.c.line(36,b.y,576,b.y)
@@ -76,13 +75,13 @@ def field_log(b,columns):
 def tests(b,m):
     b.begin('Field sequence  /  Lee Canyon','Start at Lee Fire Station',
             'Bring the station receiver, a known-good member radio, two temporary relays and a way to read per-gateway packet IDs. Establish the direct link before testing the chain.')
-    keys=['LC','LF','GL'];edges=[('LC','LF',False),('LF','GL',False),('LC','GL',True)]
+    keys=['LC','SK','GL'];edges=[('LC','SK',False),('SK','GL',False),('LC','GL',True)]
     b.image(m.location_image(keys,edges),195)
     legend(b,[('Modeled clear link',TEAL,'line'),('Terrain blocks the direct path',RED,'dash')])
-    b.h('1   Lower Bristlecone (LB)  →  Lee Fire Station (LFS)')
-    b.p('Put the transmitter at the proposed Lower Bristlecone tree, 4 m above ground. Measure the station antenna and test the 1 m planning height. Send ten paced, numbered payloads. Expect matching IDs at Lee and corresponding gateway uploads. If RF arrives without an upload, check station Wi-Fi and MQTT first.')
-    b.h('2   Lee Junction (LJ)  →  Lower Bristlecone  →  Lee Fire Station')
-    b.p('At Lee Junction, send from the planned 4 m antenna. Compare a run with Lower Bristlecone relaying against a run with that relay silent. Keep other relays out of the controlled test. Expect Lee receipts with the relay active and fewer or none when silent. If the chain fails, repeat at 7 m or try an adjacent mount before relying on it.')
+    b.h('1   Upper Bristlecone Helipad (UB)  →  Lee Fire Station (LFS)')
+    b.p('Put the transmitter at the selected mount beside the Upper Bristlecone trailhead, 4 m above ground. Measure the station antenna and test the 1 m planning height. Send ten paced, numbered payloads. Expect matching IDs at Lee and corresponding gateway uploads. If RF arrives without an upload, check station Wi-Fi and MQTT first.')
+    b.h('2   Lee Junction (LJ)  →  Upper Bristlecone Helipad  →  Lee Fire Station')
+    b.p('At Lee Junction, send from the planned 4 m antenna. Compare a run with Upper Bristlecone Helipad relaying against a run with that relay silent. Keep other relays out of the controlled test. Expect Lee receipts with the relay active and fewer or none when silent. If the chain fails, repeat at 7 m or try an adjacent mount before relying on it.')
     b.p('At a safe off-road stop, repeat a member GPS packet on person, in the cabin and with the roof antenna. Record fix time, send time, ID, RF receipt and dispatch arrival separately. The project marks a GPS position stale at 15 minutes.',9.4)
     field_log(b,['Station antenna AGL','Test 1  /  station RF and uploads','Test 2  /  relay on and off'])
     b.end()
@@ -99,11 +98,10 @@ def tests(b,m):
     b.end()
 
 def cover_chart(b,m,r):
-    colors=[('#8b9e9a','Stations only','Direct'),('#648499','Starting seven','Starting / lower'),
-            (TEAL,'Recommended nine','Recommended'),('#ae7721','Survives any one loss','Survives every single loss')]
-    b.begin('Coverage comparison','What the repeaters add','Each bar shows the share of the same measured road network, trail network or land area that can send a GPS packet to a station. Each group has its own denominator.')
-    b.image(m.comparison_maps(),142)
-    legend(b,[('Member can reach a gateway',TEAL,'fill'),('Outside that reach',BLANK,'fill'),STATIONS[1]])
+    colors=[('#81978e','Stations only','Direct'),('#648499','Starting seven','Starting / lower'),(TEAL,'Recommended nine','Recommended')]
+    b.begin('Mountain coverage','What the repeaters add','The map traces the named trail network. Teal sections have a terrain path to dispatch through Lee or Kyle. The bars compare station-only service, the original seven placements and the recommended nine.')
+    b.image(m.operating_roads(trails=True),243)
+    legend(b,ROADS)
     for title,key,unit in [('Roads','road_km','km'),('Named trails','trail_km','km'),('Mountain land','land_km2','km²')]:
         total=r['total'][key];b.h(f'{title}   /   {total:.1f} {unit} scored')
         for color,name,scenario in colors:
@@ -114,64 +112,49 @@ def cover_chart(b,m,r):
             b.text(454,y,f'{val:.1f} {unit}  ·  {pct:.0%}',10,b.bold)
             b.y-=18
         b.y-=4
-    b.p('The nine-radio layout gives roughly three quarters of scored road length a path in the intact network. Most of those roads still depend on a particular relay or station. The outage maps show which terrain loses that path.',10.2)
     b.end()
 
-def road_pages(b,m,r):
-    b.begin('Field sequence  /  gap checks','Two road gaps to drive first','Both road traces are north-up. Red sections are predicted blind. A and B bracket the longest continuous blind stretch on each road. A mapped endpoint is a test reference; choose a safe stop nearby.')
-    b.image(m.corridors(['Macks Canyon','Lucky Strike']),234);legend(b,ROADS)
-    for title,name,instruction in [
-        ('4   Upper Macks Canyon','Macks Canyon','Enter from SR 156. Start on a reachable segment near the road mouth, check both sides of A and continue toward the upper terminus B only if passable.'),
-        ('5   Lucky Strike east branch','Lucky Strike','Work from authorized vehicle stops on the east branch. Check both ends and a mid-gap location. Record which gateway hears each packet before comparing the Lucky Strike and Angel placements.')]:
-        g=r['roads'][name][0];b.h(f"{title}   /   {g['km']:.2f} km")
-        b.p(instruction+' Send from the 1.2 m member baseline. Expect receipts to drop across the red stretch; repeated delivery inside it would change the placement score.',9.8,5)
-        b.p('A  '+coord(g['a'])+'     •     B  '+coord(g['b']),9,9)
+def road_page(b,m,r):
+    b.begin('Highways and access roads','Where the roads reach dispatch','Follow SR 156, SR 157 and SR 158 on one north-up map. The open circles mark the scored highway limits. The Angel Peak approach runs from SR 158 to the two drive-up pins.')
+    b.image(m.operating_roads(),398)
+    legend(b,ROADS+[('Highway limit',INK,'point'),('Drive-up site',INK,'triangle'),STATIONS[1]])
+    names=['SR 156','SR 157','SR 158','Angel Peak']
+    for i,n in enumerate(names):
+        x=36+i*136;v=r['scenarios']['Recommended'][n];g=r['roads'][n]
+        b.text(x,b.y-10,n,10,b.bold);b.text(x,b.y-29,f'{v:.0f}% reachable',12,b.bold,TEAL)
+        b.text(x,b.y-43,f"Longest gap {g[0]['km']:.2f} km" if g else 'No sampled gap',8.8)
+    b.y-=57
+    gap=r['roads']['Macks Canyon'][0]
+    b.h(f"First gap drive   /   Upper Macks Canyon   /   {gap['km']:.2f} km")
+    b.p('Enter from SR 156. Send a numbered GPS packet from a reachable stop near the road mouth, again on either side of A, and near B if the snow permits. Log the receiving station and upload ID. Teal-to-red marks the predicted transition.')
+    b.p('A  '+coord(gap['a'])+'     •     B  '+coord(gap['b']),9.2,4)
     b.end()
-    b.begin('Highway coverage','Where each highway loses the mesh','Follow each highway from A to B. The endpoints are the study limits. Each close-up uses its own scale and keeps north at the top.')
-    for name in ('SR 156','SR 157','SR 158'):
-        fig,(ax,info)=plt.subplots(1,2,figsize=(8.4,2),gridspec_kw={'width_ratios':[1.45,1]})
-        m.corridor(ax,name,ends=True)
-        info.axis('off')
-        desc={'SR 156':'Lee Canyon Road','SR 157':'Kyle Canyon Road','SR 158':'Deer Creek Road'}[name]
-        info.text(.02,.84,f'{name}   /   {desc}',fontsize=12,weight='bold',color=INK)
-        value=r['scenarios']['Recommended'][name];gap=r['roads'][name][0]
-        info.text(.02,.59,f'{value:.0f}% reachable',fontsize=14,weight='bold',color=TEAL)
-        info.text(.02,.40,f"Longest blind stretch   {gap['km']:.2f} km",fontsize=10,color=INK)
-        for i,p in enumerate(r['highways'][name]):
-            info.text(.02,.22-i*.15,f"{'AB'[i]}    {coord(p)}",fontsize=9.7,color=MUTE)
-        fig.tight_layout(pad=.2);b.image(finish(fig),133)
-    legend(b,ROADS);b.p('Gaps are measured along road centerlines using samples no farther than 40 m apart. Champion Road has no blind midpoint in the intact model; it can still lose its uplink during an outage.',9.4);b.end()
 
 def coord(ll):return f'{ll[1]:.5f}, {ll[0]:.5f}'
 
 def briefing_pages(b,m,r,cfg):
-    order=r['selected'];safe=r['scenarios']['Survives every single loss'];rec=r['scenarios']['Recommended']
-    b.begin('Deployment plan','Start on the Lee side','Survey both station antenna bases. Build Lower Bristlecone and Lee Junction first, then prove the Fletcher–Cathedral path before committing the other Kyle-side radios.')
-    b.image(m.overview('deployment'),361);legend(b,STATIONS+[('Modeled relay chain',TEAL,'line'),('Priority blind stretch',RED,'line')])
+    order=r['selected'];rec=r['scenarios']['Recommended']
+    b.begin('Deployment plan','Start at the Upper Bristlecone helipad','Place the first temporary relay at the authorized trailhead mount and receive at Lee Fire Station. Then add Lee Junction. The model links both sites to Lee before the Kyle branch is built.')
+    b.image(m.overview('deployment'),358);legend(b,STATIONS+[('Modeled relay chain',TEAL,'line'),('Upper Macks gap',RED,'line')])
     b.h('Deployment order')
     for i in range(0,len(order),3):
         for j,k in enumerate(order[i:i+3]):
-            x=36+180*j
-            b.text(x,b.y-10,str(i+j+1).zfill(2),10,b.bold,TEAL)
-            b.text(x+22,b.y-10,f'{field_name(k)} ({field_code(k)})',10.6,b.bold)
-        b.y-=20
-    b.p('The first two repeaters bring modeled SR 156 reach from 10% to 76%. Upper Macks Canyon remains a priority blind stretch. Read the three field-test pages next before carrying equipment to a permanent mount.',9.8)
+            x=36+180*j;b.text(x,b.y-10,str(i+j+1).zfill(2),9.4,b.bold,TEAL)
+            b.text(x+18,b.y-10,f'{field_name(k)} ({field_code(k)})',9.4,b.bold)
+        b.y-=21
+    b.p(f"UB and LJ together bring modeled SR 156 reach from {r['scenarios']['Direct']['SR 156']:.0f}% to {r['scenarios']['Order 2']['SR 156']:.0f}%. The long mapped gap on upper Macks Canyon is the first drive check.")
     b.end()
+    road_page(b,m,r)
     tests(b,m)
-    road_pages(b,m,r)
-    b.begin('Terrain visibility','Where a member can see a radio','Green land has a modeled clear terrain ray between a 1.2 m member antenna and at least one of the eleven infrastructure antennas. The next map checks whether that radio can forward the packet.')
+    b.begin('Terrain visibility','Where a member can see a radio','Green land has a modeled clear terrain ray between a 1.2 m member antenna and at least one of the eleven infrastructure antennas. The next map identifies the receiving station.')
     b.image(m.overview('union'),419);legend(b,[('Antenna visible','#72bca9','fill'),('Terrain blocks all eleven',BLANK,'fill')]+STATIONS)
     code_key(b,order,r['gateways']);b.end()
-    b.begin('Station reachability','Can the packet reach dispatch?','Read the land color at the member’s position. A route must reach an operating fire-station gateway within three forwarding repeaters. Station internet service is assumed available.')
-    b.image(m.overview('reach'),420);legend(b,REACH);legend(b,STATIONS)
-    b.p(f"With all radios working, {rec['road_km']:.1f} km of scored road can reach a station. Only {safe['road_km']:.1f} km keep a route through every single outage tested. Amber includes locations with two visible radios that share the same downstream relay.",10.1)
-    b.end()
-    b.begin('Station destinations','Which fire station gets the packet?','Each color names the station that a member can reach with all nine repeaters operating. A member can reach either station from the dark teal land. Routes to the two stations can share a repeater.')
+    b.begin('Station destinations','Which fire station gets the packet?','Each color names the station that a member can reach with all nine repeaters operating. Dark teal means the member has a modeled path to both stations.')
     station_image,mask=m.station_image(cfg['hop_limit']);b.image(station_image,410)
     legend(b,[('Neither',BLANK,'fill'),('Kyle only','#9e83b6','fill'),('Lee only','#77b6c9','fill'),('Either station',TEAL,'fill'),STATIONS[1]])
     area_per_cell=cfg['area_pixel_m']**2/1e6
     kms=[np.count_nonzero(mask==i)*area_per_cell for i in (1,2,3)]
-    b.p(f'Within the scored area, {kms[0]:.1f} km² reach Kyle alone, {kms[1]:.1f} km² reach Lee alone and {kms[2]:.1f} km² have a modeled path to both. The previous map tests whether a route remains after each individual failure.',10.3,6)
+    b.p(f'Within the scored area, {kms[0]:.1f} km² reach Kyle alone, {kms[1]:.1f} km² reach Lee alone and {kms[2]:.1f} km² have a modeled path to both.',10.3,6)
     b.end()
     b.begin('Repeater footprints','Where each repeater stands alone','Each site color identifies land visible to that repeater alone. Slate shows land visible to two or more repeaters. Use the individual footprints on the next page to see which radios overlap there.')
     b.image(m.overview('overlap'),403)
@@ -184,31 +167,10 @@ def briefing_pages(b,m,r,cfg):
         b.y-=17
     b.end()
     b.begin('Repeater footprints','Which repeater covers which slope?','All nine panels use the same north-up frame and scale. Green shows one repeater’s complete footprint. The triangle marks its mount. Road length below each panel counts individual visibility.')
-    b.image(m.mini_grid('foot',order),503)
+    b.image(m.mini_grid(order),503)
     legend(b,[('Visible to this repeater','#4a9f8f','fill'),('Outside its footprint',BLANK,'fill'),('Selected mount',INK,'triangle')])
-    b.p('Compare Lower Bristlecone with Lee Junction, then compare Fletcher with Upper Cathedral. The different canyon-facing footprints explain why these radios work in pairs.',10)
+    b.p('The helipad covers a small area around the resort. Its value is the clear relay path from Lee Junction down to Lee Fire Station. The individual footprints show only the first radio contact.',10)
     b.end();cover_chart(b,m,r)
-    b.begin('Route coverage','Which routes keep a gateway path?','The road and trail panels share the same extent. Follow the line color along a route. A member can have service at a trailhead and lose the gateway path after crossing the next ridge.')
-    b.image(m.road_trail_image(),278);legend(b,ROADS)
-    b.h('Follow a route from a known starting point')
-    b.p('Upper Macks Canyon and the east end of Lucky Strike are the two red road stretches to check first. On the trail map, short red breaks separate otherwise reachable sections. The stations are marked with diamonds in both panels.')
-    flag(b,'Read a gap at the scale of the measurement','Each short road or trail segment was scored at its midpoint, up to 40 m apart. The land maps score an 80 m grid. A segment can therefore differ from the land color behind it. Use the individual route results when planning a stop.')
-    b.end()
-    b.begin('Area guide','Where the named places sit','The numbered locations lead to the six detailed maps on the next page. The two red road stretches locate the priority drive tests in relation to the stations, highways and recreation areas.')
-    b.image(m.area_guide(),391)
-    legend(b,[('Campground boundary or ski run',TEAL,'line'),('Priority road gap',RED,'line'),STATIONS[1]])
-    for i,n in enumerate(m.facility_names()):
-        x=36+270*(i%2);y=b.y-12-22*(i//2)
-        b.text(x,y,str(i+1),10.5,b.bold,TEAL);b.text(x+20,y,n.replace('Lee ski terrain','Lee Canyon ski terrain'),10.5)
-    b.y-=74
-    b.p('KFS marks Kyle Fire Station. LFS marks Lee Fire Station. The faint perimeter is the area used for land scoring.',9.4)
-    b.end()
-    b.begin('Facility coverage','Campgrounds and ski terrain','Black outlines trace the mapped campground boundaries. Black lines at the resort trace the scored ski runs. Each place has its own north-up map and scale.')
-    b.image(m.facility_grid(),365);legend(b,REACH)
-    b.h('Reading the percentages')
-    b.p('Campground percentages count member-height samples inside the mapped footprint. Resort percentages use length along ski runs. The colors show the 80 m land grid, so a narrow campground can sample differently from its background cell.')
-    b.p('McWilliams includes the former Dolomite loops. The Kyle Canyon campground outline also covers a location listed for day use. Access and seasonal closures are on the site sheets.')
-    b.end();outages(b,m,r)
 
 def code_key(b,order,gw):
     for i,k in enumerate(order+gw):
@@ -243,25 +205,12 @@ def solar_windows(b,sites,active):
     b.y-=7
     b.p('¹ Face is the November–April azimuth measured clockwise from true north. Tilt is measured up from horizontal. The individual sheets give the exact clock times for all six dates.',9.2,7)
 
-def outages(b,m,r):
-    active=sorted(m.active,key=lambda k:-r['failures'][k]['road_km']);worst=active[0]
-    b.begin('Single-node failures','Where a single failure cuts service','Each panel removes one radio and searches again for a route. Red shows land that loses its last gateway path. Pale green land still reaches a station. Gray land was already outside the intact network.')
-    b.image(m.mini_grid('loss',active[:4]),370)
-    legend(b,[('Gateway path lost',RED,'fill'),('Still reachable','#a7cfc2','fill'),('Already unreachable',BLANK,'fill')])
-    flag(b,field_name(worst)+' is the largest dependency',f"Removing it costs {r['failures'][worst]['road_km']:.1f} road km and {r['failures'][worst]['trail_km']:.1f} trail km. Compare its red area with Upper Cathedral’s. The two failure footprints overlap because the Fletcher route uses both.")
-    b.p('Under the recorded receive-only gateway profile, a station backhaul outage has the same effect on remote dispatch as removing its radio. A powered station may still receive RF locally.',9.8)
-    b.end()
-    b.begin('Single-node failures','The other seven outage footprints','Read these panels at the same mountain extent. A small loss in the intact network can still matter because a repeater supplies an alternate route when another site fails.')
-    b.image(m.mini_grid('loss',active[4:]),485)
-    legend(b,[('Gateway path lost',RED,'fill'),('Still reachable','#a7cfc2','fill'),('Already unreachable',BLANK,'fill')])
-    v=r['scenarios']['Resilience alternative'];alt=r['scenarios']['Alternative survives all'];rec=r['scenarios']['Recommended'];surv=r['scenarios']['Survives every single loss']
-    b.p(f"The Lee Highway placement gives up {v['road_km']-rec['road_km']:.2f} km of intact road coverage to keep {surv['road_km']-alt['road_km']:.2f} km more road reachable through every single-node outage.",10.2);b.end()
-
 def profile_pages(b,m,root,cfg,r):
     dem,meta=load_dem(root/'cache/terrain-local.tif')
     native=Profiles((root/'source').glob('USGS_1M*.tif'),dem,meta,299.792458/cfg['frequency_mhz'],6371000*cfg['effective_earth_k'])
     dst=root/'tables/profiles';dst.mkdir(exist_ok=True)
-    sets=[('Kyle','FL','CH','CL','GK'),('Lee','LC','LF','GL',None)]
+    sets=[('Kyle','FL','CH','CL','GK'),('Lee','LC','SK','GL',None)]
+    current_files=set()
     for canyon,a,h,lo,g in sets:
         pairs=[(a,h),(a,lo),(h,g)] if g else [(a,h),(h,lo),(a,lo)]
         b.begin('Critical radio paths',canyon+' Canyon terrain profiles','Match the endpoint names to the locator. Each section runs from the first named site on the left to the second on the right. The horizontal axis measures distance along that link.')
@@ -274,7 +223,9 @@ def profile_pages(b,m,root,cfg,r):
         for u,v,blocked in paths:
             su,sv=m.sites[u],m.sites[v]
             dist,ground,line,f1=native.trace((su['x'],su['y'],su['h']),(sv['x'],sv['y'],sv['h']))
-            np.savetxt(dst/(u+'-'+v+'.csv'),np.column_stack([dist,ground,line,f1]),delimiter=',',fmt='%.3f',header='distance_m,terrain_plus_bulge_m,radio_ray_m,first_fresnel_radius_m',comments='')
+            filename=u+'-'+v+'.csv'
+            current_files.add(filename)
+            np.savetxt(dst/filename,np.column_stack([dist,ground,line,f1]),delimiter=',',fmt='%.3f',header='distance_m,terrain_plus_bulge_m,radio_ray_m,first_fresnel_radius_m',comments='')
             clearance=line-ground;ix=np.argmin(clearance[1:-1])+1
             p=next(p for p in r['pairs'] if {p['a'],p['b']}=={u,v})
             b.p(f"{field_name(u)} ({field_code(u)}, {su['h']:g} m)  →  {field_name(v)} ({field_code(v)}, {sv['h']:g} m)   •   {dist[-1]/1000:.2f} km",9.4,1)
@@ -290,3 +241,8 @@ def profile_pages(b,m,root,cfg,r):
         legend(b,[('Terrain','#bba582','fill'),('Terrain above ray',RED,'fill'),('Radio ray',TEAL,'line'),
                   ('Lower 60% Fresnel envelope','#bd772c','dash'),('Least clearance',INK,'point')])
         b.end()
+    for file in dst.glob('*.csv'):
+        if file.name not in current_files:
+            archive=root/'cache/archived-profiles'
+            archive.mkdir(exist_ok=True)
+            file.replace(archive/file.name)

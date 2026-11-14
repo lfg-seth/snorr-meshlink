@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-13 - Authorized drive-up sites and mountain road scope
+
+Reran the [winter siting study](../docs/research/winter-mesh-siting.md) with the corrected Angel Peak Vegas-side pin, agency-authorized mountain access and the SR 158 approach to both drive-up points. The revised layout starts at the Upper Bristlecone helipad and includes Angel Peak Mountain Side. The packet combines the highways on one map, maps the valley trials on the actual street network and focuses on normal packet delivery.
+
+Verified both station masks, the Angel Peak route endpoints and coverage fraction, eleven site sheets and twenty-three navigation waypoints, including both exact Angel Peak vehicle positions. Next, measure the station antennas and capture packet IDs on the helipad-to-Lee link, then repeat through the helipad from Lee Junction. Winter conditions, actual radio propagation and the optional home uplink remain field questions.
+
 ## 2026-11-13 - Map-first winter field packet
 
 Revised the [winter field atlas](../docs/research/winter-mesh-siting.md) with matching PDF and GPS site names, a presentation cover, north-up road-gap and recreation-area maps, separate routes to each station, individual viewsheds and all eleven outage footprints. The private packet pairs six terrain profiles with locators and makes the first Lee, Kyle and road-gap checks printable.
