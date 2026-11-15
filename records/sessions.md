@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-11-15 - G001 direct MQTT delivery confirmed; SD report not observed
+
+Owner asks whether SD telemetry/MQTT is working on the replacement Wi-Fi.
+G001 is no longer attached by USB; no fresh SSID/RSSI read is available.
+Read-only authenticated TLS subscription receives a fresh non-retained uplink
+at **14:58:27 Pacific**, gateway **!1bbf0638**, source **!849ad7a0**, SNGH,
+packet **2461322150**. This proves G001 is publishing forwarded traffic after
+the Wi-Fi change. Last verified saved SSID remains the replacement selected
+above; no configuration or firmware changes in this check.
+
+The **14:58:02–15:04:03** window receives no G001-origin SNSD packet, so current
+SD telemetry delivery remains unverified. Airtime/scheduling are possible
+constraints, not an established cause. Broker receipt does not prove portal
+ingestion. Subscriber closed; raw evidence remains ignored.
+[Evidence](../docs/operations/g001-wifi-test-20261115.md#broker-side-check-after-usb-removal--2026-11-15).
+Docs/whitespace pass. Next: longer SD-specific observation or local read when
+owner reattaches G001. Records branch `codex/g001-wifi-test-20261115`;
+commit/push result at handoff.
+
 ## 2026-11-15 - G001 owner-selected Wi-Fi saved and uplink recovered
 
 Owner supplies replacement Wi-Fi credentials and requests 2.4 GHz. Verified
