@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - Private node activity hosting
+
+The owner's Windows desktop serves the read-only activity checker to tailnet
+members allowed to reach TCP 9448. Tailscale Serve forwards HTTPS to the
+loopback dashboard on 5188. The desktop reads the existing telemetry server
+over SSH. Startup, operating conditions and verification are in the
+[dashboard handoff](../docs/operations/live-node-dashboard.md#private-web-page).
+
 ## 2026-11-15 - R011 selected for Angel Peak Vegas Side
 
 Owner assigns fresh **R011 / !8737c2c9**, **Case 6**, **eight cells** and

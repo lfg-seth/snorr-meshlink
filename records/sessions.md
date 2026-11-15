@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-15 - Private web activity checker
+
+Deployed one live card per physical node through Tailscale Serve on the
+Windows desktop. The CLI and browser share the sampler, measurement freshness
+and watchdog logic. A sign-in task runs the dashboard in the dedicated
+`codex/node-activity-web` worktree. The hosted view includes all 20 known
+nodes and showed 121 timers at verification.
+
+43 offline tests passed on Windows with one POSIX terminal test skipped.
+Edge verified the HTTPS page at desktop and phone widths, advancing live
+snapshots, and browser disconnect/recovery. The host's MagicDNS setting
+required explicit resolution for the HTTPS test. Next check from the owner's
+usual tailnet device. [Access and operations](../docs/operations/live-node-dashboard.md#private-web-page).
+
 ## 2026-11-15 - Node CLI combined overview and live identity audit
 
 Owner requests a full check after Legacy V3 appeared weeks old and W/A stopped

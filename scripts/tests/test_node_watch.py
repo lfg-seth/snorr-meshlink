@@ -35,6 +35,37 @@ def node():
 
 
 class FreshnessTests(unittest.TestCase):
+    def test_web_cards_age_independently_while_sampler_is_offline(self):
+        snapshot = watch.demo_snapshot(0)
+        now = watch.epoch(snapshot["at"])
+        dashboard = watch.Dashboard(False, grace=3, show_inactive=True)
+        dashboard.observe(snapshot, 0)
+        view = watch.card_snapshot(dashboard, snapshot, now + 30, False, False, 3)
+        self.assertEqual(view["status"], "No new snapshots")
+        active, waiting = view["nodes"]
+        self.assertEqual(active["readings"]["inaCurrent"]["value"], "-12.2")
+        self.assertEqual([t["state"] for t in active["timers"]], ["fresh", "aging", "fresh"])
+        self.assertEqual(waiting["readings"], {})
+        self.assertIsNone(waiting["timers"][0]["age"])
+        self.assertAlmostEqual(waiting["timers"][0]["due"], 153)
+
+    def test_web_cards_export_only_display_fields(self):
+        snapshot = watch.demo_snapshot(0)
+        node = snapshot["nodes"][0]
+        node["readings"]["gps"] = {**node["readings"]["voltage"], "measuredAt": None,
+                                   "value": {"satellites": 4, "latitude": 12, "longitude": 34}}
+        dashboard = watch.Dashboard(False)
+        dashboard.observe(snapshot, 0)
+        now = watch.epoch(snapshot["at"]) + 5
+        view = watch.card_snapshot(dashboard, snapshot, now, False, True, 3)
+        self.assertEqual(view["status"], "Live")
+        gps = view["nodes"][0]["readings"]["gps"]
+        self.assertIsNone(gps["age"])
+        self.assertEqual(gps["value"], {"satellites": 4, "altitude": None, "pdop": None})
+        self.assertTrue(all("sample" not in t for t in view["nodes"][0]["timers"]))
+        snapshot["feed"]["connected"] = False
+        self.assertEqual(watch.card_snapshot(dashboard, snapshot, now, False, True, 3)["status"], "MQTT feed offline")
+
     def test_delayed_telemetry_uses_measurement_not_arrival(self):
         item = sampler.reading(3.8, at(NOW), at(NOW - 1800))
         self.assertEqual(watch.freshness(item, NOW), ("stale", 1800))

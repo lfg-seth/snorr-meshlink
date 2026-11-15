@@ -460,6 +460,7 @@ class SSHStream:
             ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
              "-o", "ServerAliveInterval=10", "-o", "ServerAliveCountMax=2", args.host,
              args.remote_python, "-u", "-"],
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" and getattr(args, "web", None) else 0,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, encoding="utf-8", errors="replace", bufsize=1)
         self.events = queue.Queue(maxsize=2)
@@ -588,6 +589,49 @@ def demo_snapshot(tick):
                  "watchdogs": {"device": {"cadenceSeconds": 180, "lastReceivedAt": None}}}]}
 
 
+def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
+    """Build the browser view from the same freshness and cadence calculations as the CLI."""
+    data = {"at": None, "now": now, "status": "Waiting for first snapshot", "nodes": []}
+    if snapshot is None:
+        return data
+    data["at"] = snapshot["at"]
+    beat = epoch(snapshot.get("feed", {}).get("heartbeatAt"))
+    sampled = epoch(snapshot["at"])
+    if demo:
+        data["status"] = "Demo"
+    elif not connected or sampled is None or now - sampled > max(15, interval * 3):
+        data["status"] = "No new snapshots"
+    elif not snapshot.get("feed", {}).get("connected") or beat is None or not 0 <= now - beat < 20:
+        data["status"] = "MQTT feed offline"
+    elif snapshot.get("catchingUp"):
+        data["status"] = "Catching up"
+    else:
+        data["status"] = "Live"
+    fields = {"gateway": ("wifiConnected", "mqttConnected"), "wifi": ("rssiDbm",),
+              "sd": ("usedBytes", "totalBytes", "dropped"), "gps": ("satellites", "pdop", "altitude")}
+    for node in dashboard.display_nodes(snapshot, now):
+        readings = {}
+        for metric, item in node["readings"].items():
+            state, age = dashboard.metric_state(node, metric, item, now)
+            if metric in fields:
+                value = {k: item["value"].get(k) for k in fields[metric]} if isinstance(item["value"], dict) else {}
+            elif metric in METRIC_STREAM or metric in ("envVoltage", "envCurrent", "standardNeighbors"):
+                display_metric = {"envVoltage": "voltage", "envCurrent": "inaCurrent"}.get(metric, metric)
+                value = format_value(display_metric, item, age)
+            else:
+                continue
+            readings[metric] = {"value": value, "state": state, "age": age}
+        watches = dashboard.watchdogs(node, now)
+        timers = []
+        for stream in [s for s in STREAMS if s in watches] + sorted(watches.keys() - STREAMS.keys()):
+            item = watches[stream]
+            timers.append({"stream": stream, "state": item["state"], "period": item.get("cadenceSeconds"),
+                           "due": item["dueInSeconds"], "age": item["ageSeconds"], "missed": item["missedCycles"]})
+        data["nodes"].append({"label": node["label"], "radio": node["radio"], "seen": node.get("lastContactAt"),
+                              "readings": readings, "timers": timers})
+    return data
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="root@meshlink.int.spp.lol", help="Existing SSH host/alias")
@@ -602,6 +646,7 @@ def main(argv=None):
     parser.add_argument("--once", action="store_true", help="Read one snapshot and exit")
     parser.add_argument("--json", action="store_true", help="Sanitized newline-delimited JSON, no terminal control")
     parser.add_argument("--demo", action="store_true", help="Synthetic color/highlight preview; no SSH")
+    parser.add_argument("--web", type=int, metavar="PORT", help="Serve node cards on 127.0.0.1 at this port")
     parser.add_argument("--view", choices=("all", "power", "radio", "watchdogs"), default="all", help="Table columns (W/A/P/R switches live)")
     parser.add_argument("--packet", action="append", default=[], help="Watchdog stream to display; repeat to select types (e.g. device, power, snns)")
     parser.add_argument("--show-inactive", action="store_true", help="Include nodes inactive for 4h+ or never heard")
@@ -611,6 +656,8 @@ def main(argv=None):
     parser.add_argument("--config", default="/etc/meshlink/mqtt.json")
     parser.add_argument("--backend", default="/opt/meshlink/backend")
     args = parser.parse_args(argv)
+    if args.web is not None and (not 1 <= args.web <= 65535 or args.json or args.once):
+        parser.error("--web needs a port from 1 to 65535 and continuous output")
     if args.grace is None:
         args.grace = args.interval
     if not all(math.isfinite(v) for v in (args.interval, args.hours, args.grace)) or not (
@@ -630,18 +677,23 @@ def main(argv=None):
         parser.error(str(error))
     if not args.demo and not shutil.which("ssh"):
         parser.error("OpenSSH ssh must be on PATH")
-    tty = sys.stdout.isatty()
+    tty = sys.stdout is not None and sys.stdout.isatty()
     # Windows console capabilities are authoritative: shells can inherit
     # TERM=dumb even when the console supports virtual-terminal sequences.
     ansi = tty and enable_ansi() and (os.name == "nt" or os.environ.get("TERM") != "dumb")
-    interactive = ansi and not (args.once or args.plain or args.json)
+    interactive = ansi and not (args.once or args.plain or args.json or args.web)
     color = not args.json and (args.color == "always" or args.color == "auto" and ansi and "NO_COLOR" not in os.environ)
     dashboard = Dashboard(color, grace=args.grace, show_inactive=args.show_inactive, include=args.include)
     stream, snapshot = None, None
     next_connect, backoff, last_data = 0, 2, None
     error = "Connecting..."
     start = time.monotonic()
+    web = None
+    next_web_update = 0
     try:
+        if args.web:
+            from node_web import WebDashboard
+            web = WebDashboard(args.web)
         with screen(interactive), keyboard(interactive) as get_key:
             while True:
                 tick = time.monotonic()
@@ -688,7 +740,12 @@ def main(argv=None):
                 if new:
                     snapshot = new
                     dashboard.observe(snapshot, tick)
-                if args.json:
+                if web:
+                    if new or tick >= next_web_update:
+                        web.publish(card_snapshot(dashboard, snapshot, time.time(), args.demo,
+                                                  error == "Connected over SSH", args.interval))
+                        next_web_update = tick + 1
+                elif args.json:
                     if new:
                         exported = {**new, "nodes": [{**n, "watchdogs": dashboard.watchdogs(n, time.time())} for n in new["nodes"]]}
                         print(json.dumps(exported, allow_nan=False), flush=True)
@@ -716,6 +773,8 @@ def main(argv=None):
         print("Dashboard failed: " + type(exc).__name__, file=sys.stderr)
         return 1
     finally:
+        if web:
+            web.close()
         if stream:
             stream.close()
 

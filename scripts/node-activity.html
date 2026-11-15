@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Node activity · SNORR MeshLink</title>
+<style>
+:root { color-scheme: light dark; --bg: #f4f5f2; --card: #fff; --ink: #18241f; --muted: #52605a;
+  --line: #d8ded8; --green: #136745; --amber: #87540b; --red: #aa352a; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111714; --card: #19221d; --ink: #f0f3ed; --muted: #b2bfb6; --line: #37443c;
+    --green: #8ed4ad; --amber: #f1c175; --red: #ffa59a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--bg); font: 15px/1.4 Inter, "Segoe UI", sans-serif; }
+main { max-width: 94rem; margin: auto; padding: clamp(16px, 3vw, 42px); }
+header, .node-heading, .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+header { flex-wrap: wrap; margin-bottom: 20px; }
+h1, h2, h3, p, dl, dd { margin: 0; }
+h1 { font-size: clamp(26px, 3vw, 36px); letter-spacing: -.045em; }
+.seen, .radio, .empty, dt { color: var(--muted); }
+#cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); gap: 14px; align-items: start; }
+article { padding: 18px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+h2 { font-size: 22px; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.radio { font: 12px/1.4 ui-monospace, Consolas, monospace; }
+.seen { font-size: 13px; }
+h3 { border-top: 1px solid var(--line); padding-top: 12px; margin: 14px 0 6px; font-size: 13px; }
+.row { padding: 2px 0; font-size: 14px; }
+dt { overflow-wrap: anywhere; min-width: 0; }
+dd { text-align: right; font-variant-numeric: tabular-nums; }
+small { font-size: 12px; color: var(--muted); }
+.fresh { color: var(--green); } .aging { color: var(--amber); } .stale { color: var(--red); }
+.unknown, .event { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Node activity</h1><p id="status">Connecting…</p></header>
+  <section id="cards" aria-label="Nodes"></section>
+  <noscript>Enable JavaScript to see live node activity.</noscript>
+</main>
+<script>
+const cards = document.querySelector("#cards");
+const statusLine = document.querySelector("#status");
+const metrics = {
+  voltage: ["Device voltage", " V"], charge: ["Battery", ""], inaVoltage: ["INA219 voltage", " V"],
+  inaCurrent: ["INA219 current", " mA"], envVoltage: ["Sensor voltage", " V"], envCurrent: ["Sensor current", " mA"],
+  temperature: ["Temperature", " °C"], humidity: ["Humidity", "%"], busy: ["Channel use", "%"],
+  tx: ["Transmit airtime", "%"], uptime: ["Uptime", ""], neighbors: ["SNNS neighbors", ""],
+  standardNeighbors: ["Standard neighbors", ""]
+};
+const streams = {device: "Device", environment: "Environment", power: "Power", snns: "SNNS",
+  position: "GPS packet", gateway: "Backhaul", wifi: "Wi-Fi", sd: "SD", neighbor_info: "NeighborInfo", nodeinfo: "NodeInfo"};
+
+function element(tag, text, cls) {
+  const el = document.createElement(tag);
+  if (text != null) el.textContent = text;
+  if (cls) el.className = cls;
+  return el;
+}
+function duration(seconds) {
+  if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return "Unknown";
+  const s = Math.floor(seconds);
+  if (s >= 86400) return Math.floor(s / 86400) + "d " + Math.floor(s % 86400 / 3600) + "h";
+  if (s >= 3600) return Math.floor(s / 3600) + "h " + Math.floor(s % 3600 / 60) + "m";
+  if (s >= 60) return Math.floor(s / 60) + "m " + String(s % 60).padStart(2, "0") + "s";
+  return s + "s";
+}
+function row(list, label, value, state, hint) {
+  const pair = element("div", null, "row");
+  const reading = element("dd", value, state);
+  if (hint) reading.title = hint;
+  pair.append(element("dt", label), reading);
+  list.append(pair);
+}
+function telemetry(list, readings) {
+  for (const [key, [label, unit]] of Object.entries(metrics)) {
+    const item = readings[key];
+    if (item) row(list, label, item.value === "USB*" ? "Charging / no battery" : item.value + unit, item.state,
+      item.value === "USB*" ? "Charging or no battery detected" : "Reading age · " + duration(item.age));
+  }
+  for (const key of ["gps", "gateway", "wifi", "sd"]) {
+    const item = readings[key];
+    if (!item) continue;
+    const v = item.value;
+    const add = (name, value) => row(list, name, value, item.state, "Reading age · " + duration(item.age));
+    if (key === "gps") {
+      add("GPS fix age", duration(item.age));
+      if (v.satellites != null) add("Satellites", v.satellites);
+      if (v.pdop != null) add("GPS PDOP", v.pdop);
+      if (v.altitude != null) add("Altitude", v.altitude + " m");
+    } else if (key === "gateway") {
+      const link = value => value == null ? "Unknown" : value ? "Up" : "Down";
+      add("Wi-Fi / MQTT", link(v.wifiConnected) + " / " + link(v.mqttConnected));
+    } else if (key === "wifi") {
+      add("Wi-Fi signal", v.rssiDbm == null ? "Unknown" : v.rssiDbm + " dBm");
+    } else {
+      add("SD used", v.usedBytes != null && Number(v.totalBytes) > 0
+        ? (100 * Number(v.usedBytes) / Number(v.totalBytes)).toFixed(1) + "%" : "Unknown");
+      if (v.dropped != null) add("SD drops", v.dropped);
+    }
+  }
+}
+function watchdog(list, timer) {
+  let value = "Unknown";
+  if (!timer.period && timer.age != null) value = "Event · " + duration(timer.age) + " ago";
+  if (timer.period && timer.due != null) {
+    const overdue = timer.missed > 0;
+    value = (timer.age == null ? "Waiting · " : "") + duration(Math.abs(timer.due))
+      + (overdue ? " late" : " left") + (timer.missed > 1 ? " · 2+ missed" : "");
+  }
+  const name = streams[timer.stream] ?? timer.stream.replace(/^(packet|telemetry):/, "").replace(/_/g, " ");
+  row(list, name, value, timer.state, timer.period ? "Expected every " + duration(timer.period) : "Event-driven");
+}
+function card(node, now) {
+  const article = element("article");
+  const heading = element("div", null, "node-heading");
+  heading.append(element("h2", node.label), element("span", node.radio, "radio"));
+  const age = node.seen ? now - Date.parse(node.seen) / 1000 : null;
+  const seen = age == null ? "Never heard" : age < 0 ? "Last heard time unknown" : "Last heard " + duration(age) + " ago";
+  const values = element("dl"), timers = element("dl");
+  telemetry(values, node.readings);
+  for (const timer of node.timers) watchdog(timers, timer);
+  article.append(heading, element("p", seen, "seen"), element("h3", "Telemetry"),
+    values.childElementCount ? values : element("p", "No readings yet", "empty"), element("h3", "Watchdogs"),
+    timers.childElementCount ? timers : element("p", "No timers yet", "empty"));
+  return article;
+}
+async function refresh() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000);
+  try {
+    const response = await fetch("/snapshot", {cache: "no-store", signal: controller.signal});
+    if (!response.ok) throw Error();
+    const data = await response.json();
+    const stamp = data.at ? " · " + new Date(data.at).toLocaleTimeString() : "";
+    statusLine.textContent = data.status + stamp;
+    statusLine.className = data.status === "Live" ? "fresh" : "aging";
+    const nodes = data.nodes.map(node => card(node, data.now));
+    if (!nodes.length && data.at) nodes.push(element("p", "No active nodes", "empty"));
+    cards.replaceChildren(...nodes);
+  } catch {
+    statusLine.textContent = "Disconnected · retrying";
+    statusLine.className = "stale";
+  } finally {
+    clearTimeout(timeout);
+    setTimeout(refresh, 3000);
+  }
+}
+refresh();
+</script>
+</body>
+</html>

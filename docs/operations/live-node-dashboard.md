@@ -1,4 +1,39 @@
-# Live node terminal dashboard
+# Live node dashboard
+
+## Private web page
+
+Open the desktop's Tailscale HTTPS address on port **9448**. On the hosting
+desktop, the same page is available at `http://127.0.0.1:5188/`. Each card
+shows one radio's latest reported telemetry, last contact and independent
+watchdogs. The page refreshes every three seconds. Waiting and event-driven
+streams have separate labels. The header gives the sampler timestamp in the
+viewer's local time and indicates a delayed snapshot or offline MQTT feed.
+If the browser loses the server it retains the cards and retries automatically.
+
+The Windows task **MeshLink Node Activity** starts at owner sign-in and runs
+the following command in the dedicated `local-data/node-activity-web` checkout.
+The desktop must be awake and connected. All browsers share its single
+read-only SSH sampler. The hosted view includes inactive and never-heard nodes.
+
+```sh
+python scripts/watch-nodes.py --web 5188 --show-inactive
+tailscale serve --bg --https=9448 http://127.0.0.1:5188
+```
+
+Inspect the private URL with `tailscale serve status`. To take the page down,
+stop the Windows task and run `tailscale serve --https=9448 off`. Disable the
+task to keep it stopped after the next sign-in. For an offline preview use
+`--demo --web 5189 --show-inactive` on a spare loopback port.
+
+On 2026-11-15 the live page rendered 20 physical nodes and 121 timers in
+Edge. Desktop and phone-width layouts, automatic refresh, retained cards
+during a simulated browser disconnect, and automatic recovery passed.
+The host has Tailscale DNS disabled. The HTTPS check used its known tailnet IP
+for name resolution and validated the certificate. A separate peer was not
+tested. The monitoring baseline includes the [six-hour R005 position
+interval](https://github.com/lfg-seth/snorr-meshlink/blob/7233836/docs/operations/r005-angel-vegas-deployment.md).
+
+## Terminal
 
 From the repository root on Windows or Linux:
 
