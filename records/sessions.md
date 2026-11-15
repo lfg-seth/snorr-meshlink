@@ -1,5 +1,37 @@
 # Session log
 
+## 2026-11-15 - R010 configured for Upper Bristle
+
+Owner selects **R010 / Case 4 / eight cells / Muzi** and supplies an exact
+Upper Bristle pin. USB **820C9B4F0C2D7675**, radio **!77fdb9f1**, hardware
+**75762d0c4f9b0c82f1b9fd774661875b**, retained **2.7.26.bcb22e0** independently
+match. [Configuration and limits](../docs/operations/r010-upper-bristle-deployment.md).
+Save **ROUTER** and exact integer fixed coordinates. Preserve own keys/admin,
+channel bytes/names, LOCAL_ONLY/hop 3/US/LongFast35/10 dBm, already-enabled
+MQTT permission, ignore-MQTT/RX boost/FEM, network/Bluetooth, disabled power
+saving, timezone/triple-click and Fahrenheit settings. Enabled device/
+environment/power **180 seconds**, saved-baseline SNNS, NeighborInfo and own
+smart-position **21,600 seconds** retained. Reassert role-affected sections;
+accept ROUTER owner flag/API sleep default without enabling power saving.
+
+Station lease and full initial-profile guard used. Explicit DTR/RTS serial
+settings work for all sessions without retry. Complete intended local/module/
+channel bytes, owner/identity, firmware metadata and exact coordinates pass
+before and after one explicit reboot; serial closes, ready to unplug. No flash,
+factory reset or key replacement. Existing repaired INA219/AHT21/RF evidence
+is historical; no new sensor, ping, CLI/portal, relay or runtime claim. Prior
+trusted monitoring route remains unavailable; B003 is absent.
+
+Update inventory/sites/roster/project/tracker, add saved position cadence to
+the CLI baseline, verify complete intended profile/key/channel/coordinates and
+cadence loader, run docs/whitespace checks. Raw coordinates, full profiles and
+logs remain ignored under `private/bench/R010-upper-bristle-20261115/`.
+Next: restore trusted monitoring access for new receipts, confirm installation
+and field/relay/runtime gates. R011 records remain in parent commit e64232e;
+its earlier push result could not be recovered after the tool session changed,
+and a bounded remote read times out. Publish both task branches at handoff;
+report actual result. Branch `codex/r010-upper-bristle-20261115`.
+
 ## 2026-11-15 - R011 reused for Angel Peak Mountain Side
 
 Owner reselects **R011 / Case 6 / eight cells / Muzi**, supplies a new exact

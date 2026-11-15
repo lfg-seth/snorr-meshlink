@@ -1,5 +1,19 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R010 Upper Bristle configuration verified
+
+Owner selects **R010 / !77fdb9f1 / Case 4 / eight cells / Muzi** and supplies
+an exact Upper Bristle location. Live backup confirms **2.7.26.bcb22e0**;
+retain firmware without flashing. **ROUTER**, exact fixed coordinates,
+already-enabled MQTT upload permission and complete intended profile pass
+independent readback before and after one explicit reboot. Keys/channels and
+180-second device/environment/power plus SNNS retained; own smart position
+and NeighborInfo remain 21,600 seconds. All sessions succeed, serial closed.
+No ping or new RF/CLI/portal/sensor measurement in this configuration session;
+server access remains unavailable. Prior repaired INA219/AHT21/RF passes do
+not establish field delivery, coverage, installation or runtime.
+[Evidence](../docs/operations/r010-upper-bristle-deployment.md).
+
 ## 2026-11-15 - R011 Mountain Side configuration and MQTT permission verified
 
 Owner reuses **R011 / Case 6 / eight cells / Muzi** at Angel Peak Mountain Side.

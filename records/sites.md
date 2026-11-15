@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R010 selected for Upper Bristle
+
+Owner supplies an exact Upper Bristle pin and selects **R010 / !77fdb9f1**,
+**Case 4 / eight cells / Muzi**. Save that pin privately in mesh configuration,
+independently verified through reboot without flashing. Do not substitute a
+modeled micro-site or infer completed physical mounting. Existing mountain
+access authority remains the basis; installation, coverage and runtime are
+unverified. [Configuration](../docs/operations/r010-upper-bristle-deployment.md).
+
 ## 2026-11-15 - R011 selected for Angel Peak Mountain Side
 
 Owner reuses **R011 / !8737c2c9 / Case 6 / eight cells / Muzi** at a new exact

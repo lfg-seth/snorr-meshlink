@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-11-15 - R010 / Case 4 allocated to Upper Bristle
+
+Owner selects **R010 / !77fdb9f1 / Case 4 / eight cells / Muzi antenna** for
+Upper Bristle. Case 4 historical intake is **v4 ASA, two SMA ports, two 200 mA
+panels, two four-cell parallel holders**. Existing equipment allocation; no
+purchase, stock recount, cell-capacity, wiring, antenna-gain or panel-output
+inference. INA219/AHT21 were measured after owner solder rework; fresh field
+readings remain separate. [Configuration](../docs/operations/r010-upper-bristle-deployment.md).
+
 ## 2026-11-15 - R011 / Case 6 reused at Angel Peak Mountain Side
 
 Owner reselects **R011 / !8737c2c9**, **Case 6**, same **eight cells / Muzi**

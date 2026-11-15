@@ -23,6 +23,9 @@ reuses R011 / Case 6 / eight cells / Muzi at Angel Peak Mountain Side;
 [configuration](docs/operations/r011-angel-mountain-deployment.md) preserves
 firmware, saves the new fixed pin and enables MQTT permission through reboot.
 New R011 CLI delivery remains unverified while server access is unavailable.
+R010 / Case 4 / eight cells / Muzi is selected for Upper Bristle;
+[ROUTER/fixed-location verification](docs/operations/r010-upper-bristle-deployment.md)
+retains survey firmware, enabled MQTT permission and 180-second reporting.
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.
