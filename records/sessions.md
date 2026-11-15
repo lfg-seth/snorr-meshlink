@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-14 - G003 mobile V3 wiped and provisioned
+
+Owner-authorized full erase without backup of Heltec V3 **!849ad7a0** on
+COM6; former G002 V3 is now **SNORR Gateway G003 / G003**. Verified existing
+**heltec-v3-gateway / 2.7.26.6fea6aa** factory/filesystem images and independent
+written digests. Complete CLIENT/private pilot profile, newly generated own
+keys, supplied vehicle Wi-Fi and encrypted MQTT uplink pass explicit-reboot
+readback; key-pair consistency and separation from template keys pass.
+No fixed position; external sensor reporting disabled. Serial closed.
+[Image, settings and limits](../docs/operations/g003-mobile-gateway.md).
+
+No Wi-Fi association test or portal change, as requested. Vehicle power,
+runtime, RF and direct uplink remain unmeasured. Next: owner connects the
+vehicle network and selects uplink testing when useful. Records use
+`codex/g003-mobile-20261114`; documentation checks and publication reported
+at handoff. Unrelated shared-checkout work is preserved.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware

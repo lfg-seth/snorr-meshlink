@@ -1,5 +1,17 @@
 # Hardware inventory
 
+## 2026-11-14 - G003 mobile V3 backhaul
+
+Existing Heltec V3 **!849ad7a0**, hardware
+**47af7bdcb7950e6e07f8ef108ef19fab**, CP210x USB **0001** / COM6, independently
+confirmed ESP32-S3/8 MB, is now **G003 / SNORR Gateway G003** after the owner's
+full no-backup wipe. Retains verified **heltec-v3-gateway / 2.7.26.6fea6aa**
+image family with newly generated keys and vehicle Wi-Fi/private pilot uplink.
+Complete profile/reboot and flash digests pass. Mobile use; no fixed position
+or confirmed external sensors. This is the former G002 V3, not the fresh
+screenless G002; no inventory quantity or purchase change. Portal unchanged.
+[Provisioning and remaining gates](../docs/operations/g003-mobile-gateway.md).
+
 ## 2026-11-13 - G001 SD cadence firmware
 
 Screenless **G001 `!1bbf0638`**, USB **F8:5B:1B:BF:06:38**, now runs

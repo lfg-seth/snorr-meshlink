@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-14 - G003 mobile gateway bench provisioning
+
+Heltec V3 **!849ad7a0 / G003** passes authorized full erase without backup,
+factory/filesystem digest verification, complete intended profile through
+reboot, stored vehicle Wi-Fi comparison and fresh PKI pair verification.
+No association, direct MQTT, paired RF, portal or vehicle field test was run;
+the owner explicitly excludes unavailable-network testing and portal changes.
+[Bench evidence and limits](../docs/operations/g003-mobile-gateway.md).
+
 ## 2026-11-13 - G001 SD shares telemetry cadence
 
 Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports

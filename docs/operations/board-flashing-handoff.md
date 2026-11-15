@@ -1,5 +1,12 @@
 # Board flashing and configuration handoff
 
+2026-11-14 **fresh G003 vehicle gateway** is Heltec V3 **!849ad7a0**,
+formerly G002 V3. Owner-authorized full wipe without backup; verified existing
+**heltec-v3-gateway / 2.7.26.6fea6aa**, new own keys, CLIENT/private pilot
+uplink and supplied vehicle Wi-Fi pass complete reboot readback. No fixed
+position or external sensor reporting; no network association test or portal
+change requested. [Current physical assignment and evidence](g003-mobile-gateway.md).
+
 **G001 SD cadence update, 2026-11-13.** Current installed app is
 `heltec-v4-sd-gateway / 2.7.26.5bd4923`. SD-health timing follows
 `telemetry.device_update_interval`, currently 300 seconds; MeshLink 0.3.1

@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-14 - G003 vehicle backhaul
+
+Owner assigns **G003 / !849ad7a0** to mobile vehicle backhaul with supplied
+private Wi-Fi. The network is absent at the bench; stored credentials pass
+reboot readback, association/direct uplink are untested. No fixed location or
+site is configured and no portal registration is requested. Vehicle power,
+runtime and coverage remain unmeasured.
+[Provisioning](../docs/operations/g003-mobile-gateway.md).
+
 2026-10-23 R006 map point request - Owner supplies a point for **R006** and
 authorizes placing its portal marker there. Exact coordinates and the
 requested change remain private under `private/bench/repeater-location-20261023/`.
