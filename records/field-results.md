@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-15 - Overnight fleet bench continuity and remaining gaps
+
+Midnight–06:04 Pacific: 4,446 of 4,462 observed unique packets reach all three
+gateways; B002's 143 GPS fixes never cross 15-minute stale. No observed node
+reboots in that window; G003 goes silent after 3.077 V / 0% at 00:37:52.
+R009 has no positions and 269 unclocked telemetry packets. B003 is the survey
+tester and intentionally suppresses position RF. Device reporting gaps reach
+38.6 minutes while power mostly holds cadence; three fresh IDs remain portal
+rejects. Both SD gateways report healthy flags/zero drops. Scheduled backup
+causes a collector interruption. Charging RAK readings do not measure operating
+draw. [Analysis, identity table and limits](bench-overnight-20261115.md).
+
 ## 2026-11-13 - G001 SD shares telemetry cadence
 
 Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports

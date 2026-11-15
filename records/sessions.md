@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-15 - Overnight fleet performance analysis
+
+Read-only archive/journal analysis covers 18:00 November 14–06:04 November 15
+Pacific, with the main midnight–06:04 window. Of 4,462 unique overnight packets,
+4,446 reach all three receiving gateways. No observed overnight uptime decrease
+or boot-ID change; fourteen radios remain reporting at the end. G003 stops at
+00:37:52 after 3.077 V / 0%. B002's 143 fixes remain below 15-minute stale
+throughout; B003 is the survey tester with intentionally suppressed position RF.
+R009 has no position and 269 telemetry packets without UTC. R004/R006/R008
+remain unknown-source rejects. Device/environment gaps exceed saved cadence;
+G001 averages 133 mA battery draw while RAKs/G002 report charging current.
+Both SD gateways retain healthy flags/zero drops. Scheduled 02:30 backup
+completes at 02:32; queue empty at inspection. [Full evidence and trends](bench-overnight-20261115.md).
+
+Sanitized count/identity/timestamp/location-exclusion assertions pass; zero
+decode exceptions. Chart rendered and visually checked; changed-document
+checks recorded at handoff. No hardware, service, portal or configuration
+mutation. Next: owner-selected G003 power check, R009 GNSS/clock readback,
+fresh-ID enrollment and sender scheduling capture; battery-only, copied-card,
+forced-relay and field acceptance remain separate. Records branch
+`codex/overnight-bench-20261115`; completed commit/push reported at handoff.
+Unrelated root edits are preserved in the original checkout.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
