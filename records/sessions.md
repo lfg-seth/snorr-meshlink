@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-14 - Two-column Excel device roster
+
+Created [Excel roster](../outputs/01a1de07-717e-7bd1-a213-ff6e7c2cda13/SNORR-Nodes.xlsx)
+with exactly `id` and `short` headers and 17 unique physical device/label pairs:
+B002/B003, fresh G001/G002/G003, MC00 and R001-R011 (including held R003).
+Sources: [fresh deployment roster](deployment-nodes.md),
+[G001 rollout](../docs/operations/g001-screenless-rollout.md),
+[member assignments](../PROJECT.md) and
+[MC00 identity](../docs/operations/airtime-sniffer.md).
+Old gateway/repeater labels are not additional fresh assignments; no labels or
+hardware were changed. The export follows the current fresh numbering rather
+than duplicating historical G001/G002/G003 assignments or carrying forward
+unreassigned historical gateways G005/G006.
+
+Verified two-column shape, exact source values, unique IDs/short labels and
+four-character names. Artifact Tool export and full-sheet visual review pass.
+Next: open the workbook in Excel; any additional fresh assignments require an
+updated source roster. Publication uses `codex/node-roster-xlsx-20261114`;
+unrelated shared-checkout edits are preserved.
+
 ## 2026-11-13 - G001 sleep and periodic-upload power estimates
 
 Owner reports about 160 mA from the portal/INA219 with an uncertain measurement
