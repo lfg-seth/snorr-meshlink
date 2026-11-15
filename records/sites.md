@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R011 selected for Angel Peak Mountain Side
+
+Owner reuses **R011 / !8737c2c9 / Case 6 / eight cells / Muzi** at a new exact
+Mountain Side pin, saved privately in mesh configuration and independently
+verified through reboot. **R005 remains Angel Peak Vegas Side.** Existing
+mountain-access authority applies; actual mount/completed installation,
+coverage and runtime remain unverified.
+[Configuration](../docs/operations/r011-angel-mountain-deployment.md).
+
 ## 2026-11-15 - Angel Peak Vegas Side reassigned to R005
 
 Owner replaces R011 with **R005 / !a65601b3** at the same supplied deployment

@@ -18,9 +18,11 @@ retains its survey firmware and 180-second telemetry.
 R005 replaces R011 at Angel Peak Vegas Side: unnumbered ASA case, eight cells,
 one SMA Muzi antenna and two 160 mA panels.
 [Replacement configuration](docs/operations/r005-angel-vegas-deployment.md)
-retains its survey firmware and enabled MQTT upload permission. R011 is
-withdrawn from the site assignment; its old saved role/location remain until
-selected for reuse.
+retains its survey firmware and enabled MQTT upload permission. Owner then
+reuses R011 / Case 6 / eight cells / Muzi at Angel Peak Mountain Side;
+[configuration](docs/operations/r011-angel-mountain-deployment.md) preserves
+firmware, saves the new fixed pin and enables MQTT permission through reboot.
+New R011 CLI delivery remains unverified while server access is unavailable.
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.

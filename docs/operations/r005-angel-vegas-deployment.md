@@ -1,5 +1,10 @@
 # R005 replaces R011 at Angel Peak Vegas Side - 2026-11-15
 
+**Later same-day update:** owner reuses R011 / Case 6 at
+[Angel Peak Mountain Side](r011-angel-mountain-deployment.md), with a new
+fixed pin and reboot-verified MQTT permission enabled. R005 remains Vegas Side.
+The swap-time R011 state below is historical.
+
 After [R011's missing-telemetry diagnosis](r011-telemetry-diagnosis.md), owner
 explicitly swaps that deployment assignment to connected **R005** at the same
 supplied Angel Peak Vegas-side coordinates. Keep the enclosure **unnumbered**

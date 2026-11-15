@@ -1,5 +1,20 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R011 Mountain Side configuration and MQTT permission verified
+
+Owner reuses **R011 / Case 6 / eight cells / Muzi** at Angel Peak Mountain Side.
+**ROUTER / retained 2.7.26.bcb22e0**, exact new fixed coordinates, enabled
+MQTT permission and the complete intended profile/identity pass before and
+after explicit reboot; no flash. Own keys/channels, 180-second telemetry,
+SNNS and own 900-second smart position settings retained. Initial USB mode is
+the UF2 bootloader; owner single RESET starts existing firmware. One API retry
+uses explicit DTR/RTS settings, without resending configuration. Serial closed.
+New ordinary CLI telemetry remains unverified: current direct server SSH times
+out, previous temporary route is absent and router host-key check fails.
+No ping, sensor, field coverage/relay/runtime result is inferred from saved
+settings or earlier Vegas-side evidence.
+[Evidence](../docs/operations/r011-angel-mountain-deployment.md).
+
 ## 2026-11-15 - R011 diagnosed; R005 replacement reaches CLI
 
 Owner reports no R011 data in the CLI. B003 survey ping to **!8737c2c9** passes

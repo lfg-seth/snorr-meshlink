@@ -72,3 +72,15 @@ Raw location, packet payloads, channel material and controller credentials stay
 private. No production-service, portal, gateway or firmware change is made by
 the diagnostic reads. B003's survey service is restored after each temporary
 handoff; normal device binding stops it when B003 is physically unplugged.
+
+## Later owner-selected reuse: saved defect corrected
+
+Owner reselects R011 / Case 6 for **Angel Peak Mountain Side**, a new supplied
+pin, keeping R005 Vegas Side. Full before/after reboot readback now confirms
+**`lora.config_ok_to_mqtt=true`**, new exact coordinates and unchanged firmware,
+keys/channels and reporting profile. [Configuration](r011-angel-mountain-deployment.md).
+This closes the saved-setting defect. New ordinary R011 delivery is still
+unverified: current server SSH times out and the earlier trusted temporary
+route is unavailable. No prior PKI/history is counted as a pass; restore the
+trusted monitoring path, then check post-configuration device/environment/
+power/SNNS. No further ping is run.

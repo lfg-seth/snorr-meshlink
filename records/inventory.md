@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-11-15 - R011 / Case 6 reused at Angel Peak Mountain Side
+
+Owner reselects **R011 / !8737c2c9**, **Case 6**, same **eight cells / Muzi**
+for Angel Peak Mountain Side. Case 6 recorded assembly remains v4 ASA, one SMA,
+two 200 mA panels, two four-cell parallel holders; do not copy R005's 160 mA
+panels or unnumbered enclosure. R005 remains Vegas Side. No acquisition, stock
+recount, cell-capacity or wiring inference. Actual R011 INA219/AHT21 readings
+remain unverified. [Configuration](../docs/operations/r011-angel-mountain-deployment.md).
+
 ## 2026-11-15 - R005 replaces R011; enclosure number unknown
 
 Owner explicitly replaces R011 with existing **R005 / !a65601b3** for Angel
@@ -10,7 +19,8 @@ number (its recorded panels are 200 mA). No purchase, expense, acquisition,
 cell capacity or inter-holder wiring is inferred. R005's INA219 fit was
 owner-confirmed, AHT21 previously not detected/unverified; new sensor readings
 remain separate. R011/Case 6 entry below is historical, no longer the current
-site assignment; current Case 6 disposition is unknown. [Configuration](../docs/operations/r005-angel-vegas-deployment.md).
+site assignment at the time of the swap; Case 6 is subsequently reselected
+for Mountain Side in the newer entry above. [Configuration](../docs/operations/r005-angel-vegas-deployment.md).
 
 ## 2026-11-15 - R011 / Case 6 deployment allocation
 

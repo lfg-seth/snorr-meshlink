@@ -1,5 +1,39 @@
 # Session log
 
+## 2026-11-15 - R011 reused for Angel Peak Mountain Side
+
+Owner reselects **R011 / Case 6 / eight cells / Muzi**, supplies a new exact
+Mountain Side pin and keeps R005 Vegas Side. USB **70DF102F58D2A034**, radio
+**!8737c2c9**, hardware **34a0d2582f10df70c9c237879e77e47a**, retained
+**2.7.26.bcb22e0** independently match. [Evidence](../docs/operations/r011-angel-mountain-deployment.md).
+Save new exact fixed coordinates and **OK to MQTT=true**, correcting the
+former-reference restriction. Preserve ROUTER/LOCAL_ONLY/hop 3, own keys/admin,
+channels, radio/network/Bluetooth, disabled power saving, enabled 180-second
+telemetry/SNNS, 21,600-second NeighborInfo and own 900-second smart position.
+Complete intended local/module/channel bytes, owner/identity, firmware metadata
+and exact coordinates pass independent reads before and after explicit reboot.
+No flash/factory reset/rebuild. Serial closes; owner can unplug.
+
+Temporary local serial ACL is granted by owner. Initial USB **239a:0029 / nRF
+UF2** is bootloader, so reads time out without any writes. Owner single RESET
+starts installed application **239a:8029**. First post-write read times out;
+explicit asserted DTR/deasserted RTS succeeds, without repeating settings.
+One explicit reboot then complete persistence readback passes.
+
+New ordinary CLI delivery and actual sensors remain unverified: direct server
+SSH times out, prior temporary wrapper/active monitor is absent, tailnet router
+host-key check fails. No trust check bypass, service/gateway/portal change,
+ping or fresh receipt claim. Earlier B003 ping/PKI history does not qualify.
+Next: restore trusted monitoring access, obtain new post-write R011 device/
+environment/power/SNNS and then sustained/field/relay/runtime acceptance.
+
+Update inventory/site/roster/project/tracker and historic pointers. Exact pins,
+raw profiles/logs and keys remain ignored. Complete profile/coordinates and
+saved cadence assertions plus docs/whitespace checks are recorded at handoff.
+Initial branch pull failed due SSH-agent signing/authentication; no remote
+changes applied. Branch `codex/r011-angel-mountain-20261115`; commit and push
+result reported at handoff.
+
 ## 2026-11-15 - R011 telemetry diagnosed; owner substitutes R005
 
 Owner reports no telemetry in the CLI activity software and selects B003
