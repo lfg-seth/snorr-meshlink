@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-15 - G001 Wi-Fi status and laptop network scan
+
+Owner-requested read-only test identifies screenless G001 **!1bbf0638** /
+USB **F8:5B:1B:BF:06:38**, retained **2.7.26.5bd4923**. Three USB admin
+responses show Wi-Fi disconnected; saved Wi-Fi/MQTT enabled. No valid AP
+RSSI/IP or direct MQTT connection. Laptop fallback sees an available local
+SSID at **−28 dBm on 2.4 GHz / −35 dBm on 5 GHz**; saved G001 SSID absent.
+These are laptop measurements; G001's HTTP scan requires association.
+[Evidence and limits](../docs/operations/g001-wifi-test-20261115.md).
+No settings/firmware write, reboot or network switch; serial closed.
+Private profiles/logs/SSID names remain ignored. Next: owner-selected available
+network or restoration of the saved network, then board RSSI/MQTT recovery.
+Documentation links/whitespace checked. Initial clean-branch pull fails on a
+broken local Codex checkpoint object reference; no history repair attempted.
+Records branch `codex/g001-wifi-test-20261115`; commit/push result at handoff.
+
 ## 2026-11-15 - R010 configured for Upper Bristle
 
 Owner selects **R010 / Case 4 / eight cells / Muzi** and supplies an exact

@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-15 - G001 Wi-Fi disconnected; nearby networks checked on laptop
+
+Three local USB status reads on verified **!1bbf0638 / 2.7.26.5bd4923** show
+Wi-Fi disconnected despite enabled Wi-Fi/MQTT. Saved network absent in laptop
+scan; another SSID is **−28 dBm / 2.4 GHz** and **−35 dBm / 5 GHz** on the
+laptop. G001 RSSI and direct MQTT recovery remain unverified. No configuration,
+firmware or network changes; serial closed. This is a bench observation,
+not field coverage or runtime acceptance.
+[Evidence](../docs/operations/g001-wifi-test-20261115.md).
+
 ## 2026-11-15 - R010 Upper Bristle configuration verified
 
 Owner selects **R010 / !77fdb9f1 / Case 4 / eight cells / Muzi** and supplies
