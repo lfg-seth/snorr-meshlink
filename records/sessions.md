@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-15 - Visual node health and packet updates
+
+Updated the existing private node dashboard with fleet status filters,
+color-coded cards, leading telemetry values, watchdog countdown bars and a
+receive pulse. Current traffic is visible first. A repeated reading flashes
+when a new sample arrives. The six-hour R010 position watchdog follows its
+deployment readback.
+
+45 offline tests passed on Windows, with one POSIX-only check skipped. Edge
+verified that an identical new reading flashes once, a ticking timer stays
+quiet, and expanded details persist. Live HTTPS showed 20 cards, matching
+filter counts and a real incoming report highlight. Desktop and phone-width
+layout and browser disconnect/recovery passed. The remaining owner-device
+DNS/access check is in the [dashboard handoff](../docs/operations/live-node-dashboard.md#private-web-page).
+
 ## 2026-11-15 - Private web activity checker
 
 Deployed one live card per physical node through Tailscale Serve on the

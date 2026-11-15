@@ -2,6 +2,7 @@
 """Live node readings over read-only SSH; local Python and OpenSSH are enough."""
 
 import argparse
+import hashlib
 from collections import deque
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -620,15 +621,27 @@ def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
                 value = format_value(display_metric, item, age)
             else:
                 continue
-            readings[metric] = {"value": value, "state": state, "age": age}
+            signature = item.get("sample") or item.get("receivedAt")
+            revision = hashlib.sha256(str(signature).encode()).hexdigest()[:16]
+            readings[metric] = {"value": value, "state": state, "age": age, "revision": revision}
         watches = dashboard.watchdogs(node, now)
         timers = []
         for stream in [s for s in STREAMS if s in watches] + sorted(watches.keys() - STREAMS.keys()):
             item = watches[stream]
             timers.append({"stream": stream, "state": item["state"], "period": item.get("cadenceSeconds"),
-                           "due": item["dueInSeconds"], "age": item["ageSeconds"], "missed": item["missedCycles"]})
+                           "due": item["dueInSeconds"], "age": item["ageSeconds"], "missed": item["missedCycles"],
+                           "received": item.get("lastReceivedAt")})
+        seen = node.get("lastContactAt")
+        contact, _ = dashboard.metric_state(node, "contact", {"receivedAt": seen}, now)
+        state = {"fresh": "reporting", "aging": "attention", "stale": "silent", "unknown": "unknown"}[contact]
+        gateway = readings.get("gateway")
+        link_down = gateway and gateway["state"] == "fresh" and False in gateway["value"].values()
+        late = sum(t["missed"] > 0 for t in timers)
+        if state == "reporting" and (late or link_down):
+            state = "attention"
         data["nodes"].append({"label": node["label"], "radio": node["radio"], "seen": node.get("lastContactAt"),
-                              "readings": readings, "timers": timers})
+                              "health": state, "contact": contact, "kind": node.get("kind"),
+                              "linkDown": bool(link_down), "readings": readings, "timers": timers})
     return data
 
 

@@ -35,6 +35,35 @@ def node():
 
 
 class FreshnessTests(unittest.TestCase):
+    def test_web_health_distinguishes_missing_reports_from_silence(self):
+        snapshot = watch.demo_snapshot(0)
+        now = watch.epoch(snapshot["at"])
+        active, waiting = snapshot["nodes"]
+        dashboard = watch.Dashboard(False, grace=3, show_inactive=True)
+        def cards():
+            dashboard.observe(snapshot, 0)
+            return watch.card_snapshot(dashboard, snapshot, now, False, True, 3)["nodes"]
+        self.assertEqual([n["health"] for n in cards()], ["attention", "unknown"])
+        active["watchdogs"]["environment"]["lastReceivedAt"] = at(now - 10)
+        self.assertEqual(cards()[0]["health"], "reporting")
+        active["lastContactAt"] = at(now - 184)
+        self.assertEqual(cards()[0]["health"], "attention")
+        active["lastContactAt"] = at(now - 364)
+        self.assertEqual(cards()[0]["health"], "silent")
+
+    def test_web_reading_revision_changes_only_for_a_new_sample(self):
+        snapshot = watch.demo_snapshot(0)
+        dashboard = watch.Dashboard(False)
+        dashboard.observe(snapshot, 0)
+        now = watch.epoch(snapshot["at"])
+        def revision(clock):
+            result = watch.card_snapshot(dashboard, snapshot, clock, False, True, 3)
+            return result["nodes"][0]["readings"]["voltage"]["revision"]
+        original = revision(now)
+        self.assertEqual(revision(now + 30), original)
+        snapshot["nodes"][0]["readings"]["voltage"]["sample"] = "same-voltage-new-report"
+        self.assertNotEqual(revision(now + 30), original)
+
     def test_web_cards_age_independently_while_sampler_is_offline(self):
         snapshot = watch.demo_snapshot(0)
         now = watch.epoch(snapshot["at"])

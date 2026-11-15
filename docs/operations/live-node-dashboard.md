@@ -10,6 +10,24 @@ streams have separate labels. The header gives the sampler timestamp in the
 viewer's local time and indicates a delayed snapshot or offline MQTT feed.
 If the browser loses the server it retains the cards and retries automatically.
 
+The four card colors summarize reporting health. Green means recent contact
+with no overdue scheduled streams or fresh gateway link-down report. Amber
+means contact is one cycle late, a scheduled stream is overdue, or the latest
+fresh gateway report shows Wi-Fi or MQTT down. Red means contact has missed
+two cycles of the node's shortest expected cadence, including the CLI grace
+period. Gray means contact timing is unknown. Silence describes what the
+sampler has heard. The header separately shows the upstream feed status.
+
+Select a count to filter the fleet. Reporting and attention cards appear
+first, in roster order. Each scheduled stream has a countdown and a bar
+showing its remaining time, turning amber or red when overdue. Measurement
+colors show reading freshness. Expand **Telemetry & timer details** for all
+measurements and event timers. A new receipt briefly outlines the card and
+highlights updated fields, including repeated values from a new sample.
+Reduced-motion browsers show the **Received** marker without animation.
+The [R010 position baseline](https://github.com/lfg-seth/snorr-meshlink/blob/f2f38f43f12cb8d94be7f2d4ce2d61956ffda02a/docs/operations/r010-upper-bristle-deployment.md)
+is six hours.
+
 The Windows task **MeshLink Node Activity** starts at owner sign-in and runs
 the following command in the dedicated `local-data/node-activity-web` checkout.
 The desktop must be awake and connected. All browsers share its single
