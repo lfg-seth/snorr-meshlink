@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-14 - Member battery/GPS archive evidence
+
+B002's observed discharge span is 24 h 36 min before its first silence at
+16:48:48, with the preceding battery report 3.089 V / 0%. B003 runs at least
+19 h 44 min to 3.586 V / 35%, then owner-confirmed reassignment ends its trial
+around 12:55. Longest in-run GPS gaps are 5 min 21 s / 5 min 10 s; all received
+fixes have known measurement time and age under 15 minutes. B002 later returns
+intermittently after restarts; B003's subsequent interruptions are outside its
+battery trial. Full retained history and the 18:03 Pacific snapshot are in the
+[dated analysis](client-battery-history-20261114.md). No physical cutoff,
+calibrated capacity, forced-relay or formal field acceptance is established.
+
 ## 2026-11-13 - G001 SD shares telemetry cadence
 
 Screenless G001 `!1bbf0638` runs `5bd492399`. Three automatic SD reports

@@ -1,5 +1,27 @@
 # Session log
 
+## 2026-11-14 - B002/B003 full retained battery and GPS history
+
+Read-only production snapshot at 18:03 Pacific covers 117,583 archive receipts
+and older normalized positions back to October 14. B002 sustains a 24 h 36 min
+observed discharge span before its first silence at 16:48:48 today, with the
+last battery report 3.089 V / 0%. It returns after restarts, with GPS gaps of
+40 min 55 s and 28 min 41 s; last snapshot GPS is 18:02:35. B003 sustains at
+least 19 h 44 min to 3.586 V / 35%, then the owner confirms reassignment around
+12:55. Its later interruptions are outside the endurance run. Neither discharge
+interval has a 15-minute GPS gap or stale received fix. [Measurements, full
+history coverage and limits](client-battery-history-20261114.md).
+
+Sanitized complete history, per-packet measurements and gap CSV stay ignored
+under `private/client-history-20261114/`. No coordinates, member identities or
+secrets exported; no service, radio or portal change. Arithmetic, count/privacy
+checks and documentation checks recorded at handoff. Branch
+`codex/client-battery-history-20261114`; commit and push reported at handoff.
+Existing checkout edits are preserved in an isolated worktree.
+
+Next: confirm B002's later power/handling and run a controlled, known-pack
+phone-free discharge trial for formal acceptance. B003 did not run to empty.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
