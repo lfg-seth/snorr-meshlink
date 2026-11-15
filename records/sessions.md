@@ -1,5 +1,79 @@
 # Session log
 
+## 2026-11-15 - Publish all pending project updates
+
+Owner requests publication of all project updates. Consolidated the original
+checkout's pending bench scripts, dashboard, hardware/CAD assets, winter-siting
+tools and sanitized project records on `codex/publish-all-updates-20261115`.
+The firmware pin records already-published `5bd492399`; firmware source and
+project release tags have no unpublished commits/tags. Restored the already
+published G001 SD-cadence document needed by the G002 record's local link.
+Pushed the outstanding `codex/add-member-form` and `codex/repeater-role-cli`
+branch ref updates; other existing commits are already present on origin.
+
+Documentation links/whitespace, 107 offline bench tests, 10 firmware-release
+tests and 37 dashboard tests pass. The initial system-Python bench attempt
+lacked Meshtastic/serial dependencies; the documented `.venv` run passes.
+High-confidence credential-marker inspection reports no findings in pending
+text. Private data, linked checkout directories, generated inspection output
+and the downloaded SD formatter installer remain local.
+CAD files use binary Git attributes to preserve their native bytes and avoid
+source-whitespace checks on generated STEP content. Seven other accessible
+worktrees have inventory line-ending differences only; preserve them without
+creating duplicate content commits. Old moved/missing worktree registrations
+remain untouched; their branch commits are present on origin.
+
+Publication commit/push is reported at handoff. No main merge, deployment,
+radio access or hardware acceptance is part of this publication. Next: review
+and integrate the publication branch with current main when selected; all
+existing live/field verification gates retain their tracker status.
+
+## 2026-11-15 - Fresh portal roster reconciled with per-radio history
+
+Owner-authorized live migration aligns all 16 current transmitting-device
+identities with the fresh roster, retaining four explicitly named legacy V3
+records. Six old repeater histories follow their physical radios to fresh
+labels; mobile former G002 history moves to G003 and displaced old gateways
+receive legacy keys. Empty planned-site placeholders are privately archived
+before reuse; R003/R011 are registered without changing hardware or holds.
+All original history counts/content, record IDs, timestamps, accounts and raw
+archive are preserved. [Mapping, recovery and verification](../docs/operations/portal-roster-reconcile-20261115.md).
+
+Independent review, real-data rehearsal, three failure injections, full pre/post
+backup hashes/integrity, isolated live API recovery and authenticated public
+identities pass. Fresh accepted receipts verify 5/16 sources at
+2026-11-15 07:06:16 Pacific; remaining live evidence: R002, R003, R004, R005, R006, R007, R008, R009, R010, R011, G003.
+Historical recovery preserves original timestamps and is excluded from live
+counts. Separate installed demo restore timed out; not claimed passing.
+Application source, radio firmware/profiles, keys and API limits unchanged.
+Next: owner confirms power/survey quiet for silent sources, then obtain fresh
+receipts; existing GNSS/runtime/field gates remain. Records branch
+`codex/portal-roster-reconcile-20261115`; commit/push reported at handoff.
+Unrelated original-checkout changes are preserved.
+
+## 2026-11-15 - Overnight fleet performance analysis
+
+Read-only archive/journal analysis covers 18:00 November 14–06:04 November 15
+Pacific, with the main midnight–06:04 window. Of 4,462 unique overnight packets,
+4,446 reach all three receiving gateways. No observed overnight uptime decrease
+or boot-ID change; fourteen radios remain reporting at the end. G003 stops at
+00:37:52 after 3.077 V / 0%. B002's 143 fixes remain below 15-minute stale
+throughout; B003 is the survey tester with intentionally suppressed position RF.
+R009 has no position and 269 telemetry packets without UTC. R004/R006/R008
+remain unknown-source rejects. Device/environment gaps exceed saved cadence;
+G001 averages 133 mA battery draw while RAKs/G002 report charging current.
+Both SD gateways retain healthy flags/zero drops. Scheduled 02:30 backup
+completes at 02:32; queue empty at inspection. [Full evidence and trends](bench-overnight-20261115.md).
+
+Sanitized count/identity/timestamp/location-exclusion assertions pass; zero
+decode exceptions. Chart rendered and visually checked; changed-document
+checks recorded at handoff. No hardware, service, portal or configuration
+mutation. Next: owner-selected G003 power check, R009 GNSS/clock readback,
+fresh-ID enrollment and sender scheduling capture; battery-only, copied-card,
+forced-relay and field acceptance remain separate. Records branch
+`codex/overnight-bench-20261115`; completed commit/push reported at handoff.
+Unrelated root edits are preserved in the original checkout.
+
 ## 2026-11-14 - Two-column Excel device roster
 
 Created [Excel roster](../outputs/01a1de07-717e-7bd1-a213-ff6e7c2cda13/SNORR-Nodes.xlsx)
@@ -20,6 +94,174 @@ Next: open the workbook in Excel; any additional fresh assignments require an
 updated source roster. Publication uses `codex/node-roster-xlsx-20261114`;
 unrelated shared-checkout edits are preserved.
 
+## 2026-11-14 - G003 mobile V3 wiped and provisioned
+
+Owner-authorized full erase without backup of Heltec V3 **!849ad7a0** on
+COM6; former G002 V3 is now **SNORR Gateway G003 / G003**. Verified existing
+**heltec-v3-gateway / 2.7.26.6fea6aa** factory/filesystem images and independent
+written digests. Complete CLIENT/private pilot profile, newly generated own
+keys, supplied vehicle Wi-Fi and encrypted MQTT uplink pass explicit-reboot
+readback; key-pair consistency and separation from template keys pass.
+No fixed position; external sensor reporting disabled. Serial closed.
+[Image, settings and limits](../docs/operations/g003-mobile-gateway.md).
+
+No Wi-Fi association test or portal change, as requested. Vehicle power,
+runtime, RF and direct uplink remain unmeasured. Next: owner connects the
+vehicle network and selects uplink testing when useful. Records use
+`codex/g003-mobile-20261114`; documentation checks and publication reported
+at handoff. Unrelated shared-checkout work is preserved.
+
+## 2026-11-14 - B002 authenticated over-the-air admin reads
+
+B002 !699ca878 on COM4 retains its enrolled key pair and 2.7.26.a56466d.
+Six PKI-encrypted admin reads pass: device role and telemetry settings on
+fresh R004 !49ac6d7f, R005 !a65601b3 and R007 !b456f760. Each returns CLIENT
+and 180-second device/environment/power intervals; exact source/request IDs
+and response types match. Requests use zero outgoing hops. B002's complete
+profile/keys are unchanged, and serial/lease handles are closed.
+[Measured evidence](../docs/operations/b002-ota-admin-20261114.md).
+
+No configuration write, reboot, flash or portal change. The ordinary sandbox
+COM4 denial is resolved by the approved serial-access run. Next: selected
+reversible write/readback/restoration and forced-relay/lost-command acceptance;
+the other seven repeaters remain untested here. Historical rebooting-write
+ACK ambiguity stays open. Changed-document link/whitespace checks and six
+independent packet/source/request-ID evidence assertions pass. Records branch
+codex/b002-ota-admin-20261114; unrelated root work is preserved.
+
+## 2026-11-14 - G002 SD gateway with authenticated ping/pong
+
+Provisioned new Heltec V4 **G002 !1bbf0ab8**, USB F8:5B:1B:BF:0A:B8, with
+the G001-style private profile and its own keys. Published and flashed
+**heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**; full recovery backup, chip
+digests, complete profile/reboot, INA219 and 16 KB SD remount/read checks pass.
+Native survey, SD and SNNS/SNGH fixtures and the clean target build pass.
+Firmware source and checksum-verified prerelease assets are published.
+
+The live registration preserves the old G002 V3 under legacy-v3-849ad7a0,
+including 5,412 source and 18,626 transport receipts. Authenticated public G002
+sensor/SD state, isolated post-backup database restore, private mappings and six
+services pass. System Python's missing paho initially stopped registration before
+any registry/mapping change; services recovered and the installed worker runtime
+completed it. No application deployment or G001 flash.
+
+Automatic report cycles and paired RF results are in the
+[G002 evidence](../docs/operations/g002-screenless-gateway.md). Serial/MQTT handles
+are closed at handoff. Next: copied-card and sustained/field/power acceptance;
+peer-gateway delivery and Wi-Fi outage recovery remain unverified. Survey quiet
+suppresses autonomous RF for 900 seconds from the latest authenticated PING.
+Records use codex/g002-sd-gateway-20261114; unrelated root edits are preserved.
+
+## 2026-11-13 - Sisters and the 10–12 repeater winter comparison
+
+Added the supplied Sisters pin as repeater ten. Modeled the previous nine and current ten on the same terrain and roads, screened 3,923 grid points along the Lee corridors and compared 23 connected singleton expansions and 265 connected pairs. Sisters alone adds no station-reachable road. Lee Junction South gives Sisters a path to Lee and raises SR 156 to 98.8%. With Macks Mouth North, Macks reaches 38.3% under the shorter-carry and new-link clearance screen. A longer-carry pair reaches 59.4% on Macks with a marginal radio path. The private atlas, trial GPX and GIS layers show where each change occurs. [Study and reproducible workflow](../docs/research/winter-mesh-siting.md).
+
+Verified per-station coverage rasters, stage routes, road lengths and gaps, twelve site sheets, both GPX files and the rendered 38-page packet. The next field actions are to measure Lee's antenna and run the marked GPS laps with ten, eleven and twelve sites in sequence. Activation of either extra relay depends on repeatable gap recovery and delivery/freshness under representative traffic.
+
+## 2026-11-13 - Authorized drive-up sites and mountain road scope
+
+Reran the [winter siting study](../docs/research/winter-mesh-siting.md) with the corrected Angel Peak Vegas-side pin, agency-authorized mountain access and the SR 158 approach to both drive-up points. The revised layout starts at the Upper Bristlecone helipad and includes Angel Peak Mountain Side. The packet combines the highways on one map, maps the valley trials on the actual street network and focuses on normal packet delivery.
+
+Verified both station masks, the Angel Peak route endpoints and coverage fraction, eleven site sheets and twenty-three navigation waypoints, including both exact Angel Peak vehicle positions. Next, measure the station antennas and capture packet IDs on the helipad-to-Lee link, then repeat through the helipad from Lee Junction. Winter conditions, actual radio propagation and the optional home uplink remain field questions.
+
+## 2026-11-13 - Map-first winter field packet
+
+Revised the [winter field atlas](../docs/research/winter-mesh-siting.md) with matching PDF and GPS site names, a presentation cover, north-up road-gap and recreation-area maps, separate routes to each station, individual viewsheds and all eleven outage footprints. The private packet pairs six terrain profiles with locators and makes the first Lee, Kyle and road-gap checks printable.
+
+The [verification](../scripts/winter-siting/README.md) compares the exported sites, staging waypoints, road-gap endpoints and network-removal masks against the model. Next, measure both station antennas and record packet IDs on the controlled Lee chain. Upper Cathedral access and repeatable end-to-end receipt still determine whether to retain the Kyle branch.
+
+## 2026-11-13 - Winter mountain mesh siting
+
+Completed the [terrain, routing and winter solar study](../docs/research/winter-mesh-siting.md) with an offline field atlas, GIS layers, eleven site sheets and a navigation export in ignored private storage. The [workflow](../scripts/winter-siting/README.md) regenerates from locally cached public source data. Inspected the rendered report and cross-checked all sites, staging waypoints and eleven node-removal rasters.
+
+Next: survey the station antennas, confirm the winter approaches and run the private field sequence. The recommended layout has substantial single-failure exposure. Member reception, access, solar endurance and the optional home gateway remain unverified. No radio or portal change.
+
+## 2026-11-13 - Cases 12–16 extend the enclosure inventory
+
+Add owner-reported Case 12 (v4/PETG), Cases 13/14 (v3/ASA) and Cases 15/16
+(v1/ASA) to the [case inventory](inventory.md#case-enclosure-inventory---2026-11-13).
+All 16 cases together have 27 empty four-cell parallel holders (108 cell slots),
+15 SMA ports/connectors, 6 Type N connectors and 28 fitted panels (18 × 160 mA,
+10 × 200 mA). Design totals are 12 v4, 2 v3 and 2 v1; material totals are
+4 PETG and 12 ASA. No batteries or boards are installed.
+
+HW-007 accounts for at least 27 holders; retain the historical source quantity
+of 18 and record the nine-holder difference without inferring purchases or
+uncounted loose stock. Cases 10/11 retain zero fitted panels and their external
+5 W panel pass-through provision. Update the design notes for the reported v3
+and v1 cases; no v1 image has been supplied.
+
+Validation: case-row arithmetic and transcription checked; changed-document
+whitespace/local-link checks pass. Branch `codex/case-inventory`; commit/push
+reported at handoff. Unrelated checkout work remains preserved.
+
+Next: record additional cases or revised allocations when supplied; use the
+inventory for owner-selected assembly. Panel output and assembled operation
+remain unmeasured; cell and board stock counts are unchanged.
+
+## 2026-11-13 - Cases 2–11 added to v4 enclosure inventory
+
+Extend the owner-reported [case inventory](inventory.md#case-enclosure-inventory---2026-11-13)
+through Case 11; all eleven are v4 designs. Totals are 3 PETG/8 ASA enclosures,
+19 empty four-cell parallel holders (76 cell slots), 13 SMA ports/connectors,
+3 Type N connectors and 18 fitted solar panels (8 × 160 mA, 10 × 200 mA).
+All cases remain without batteries or boards. Cases 10/11 have zero fitted
+panels and a pass-through for larger 5 W panels; external panel ownership or
+quantity is not inferred.
+
+HW-007 now accounts for at least 19 holders, one more than the retained
+historical source quantity of 18; loose stock remains uncounted. No purchase,
+cell-stock or board-stock change. Update the v4 design note to cover the full
+reported batch, retaining the separate v3 design reference.
+
+Validation: row-derived totals and per-case transcription checked; changed
+Markdown whitespace and local-link checks pass. Branch `codex/case-inventory`;
+commit/push reported at handoff. Unrelated checkout edits are preserved.
+
+The supplied intake is recorded and its completed tracker entry is removed.
+Next: use this inventory when the owner selects case/board/power allocations;
+record any further case details when supplied. Assembly and output measurements
+remain separate from this owner-reported parts inventory.
+
+## 2026-11-13 - Case 1 inventory and enclosure design images
+
+Record owner-reported Case 1 as one v4 PETG enclosure with one SMA antenna
+port, two 160 mA solar panels and two empty four-cell parallel 18650 holders
+(eight empty cell slots). No installed batteries or boards; existing cell/board
+stock totals are unchanged. HW-007 now accounts for at least two holders while
+its full stock count remains unknown. [Case inventory](inventory.md#case-enclosure-inventory---2026-11-13).
+
+Save the supplied v4 render and v3 screenshot in the
+[hardware design notes](../docs/hardware/enclosures.md). The v3 image establishes
+a design reference only, without a physical-case count or parts allocation.
+Panel output, holder interconnection and assembled operation are unverified.
+
+Validation: changed-document whitespace/local-link checks pass for all five
+Markdown files; both copied PNGs match their supplied originals by SHA-256.
+Branch `codex/case-inventory`; commit/push reported at handoff. Unrelated
+checkout changes are preserved in place.
+
+Next: owner describes the next physical case. Overall case, panel and holder
+totals remain open until intake is complete.
+
+## 2026-11-13 - Stable dashboard order and inactive-node hiding
+
+- All A/W/P/R views share the readings order: repeaters, gateways, legacy
+  gateway, then member labels. Hide nodes at four hours without receipt
+  activity, including never-heard nodes, from tables/summaries/details.
+  New activity restores the row; `--show-inactive` includes hidden nodes.
+  Watchdog history remains intact; stale source/GPS time does not hide a node
+  that has fresh packet receipts. [Usage](../docs/operations/live-node-dashboard.md).
+- All 37 offline regressions and document checks pass, including cross-view
+  ordering, the four-hour boundary and receipt-based reappearance. Live 00:18
+  Pacific verification shows 13 active rows in the shared order and five hidden
+  inactive/never-heard nodes. No sampler,
+  radio, service or portal changes. Branch `codex/live-node-dashboard`;
+  commit/push reported at handoff.
+
+Next: restart the CLI, switch A/W, and use `--show-inactive` when diagnosing a
+hidden board. Existing cadence/field acceptance gates remain separate.
+
 ## 2026-11-13 - G001 sleep and periodic-upload power estimates
 
 Owner reports about 160 mA from the portal/INA219 with an uncertain measurement
@@ -35,6 +277,213 @@ upload work and truthful historical freshness. No radio/service changes.
 Next: verify whole-input current and compare a selected live Wi-Fi modem-sleep
 trial before choosing delayed uploads. Changed-document checks pass; no bench power measurement was performed.
 Branch codex/g001-power-estimates; publication reported at handoff.
+
+## 2026-11-12 - Cadence-based colors and independent packet watchdogs
+
+- Replace fixed dashboard age bands with per-radio/per-stream saved cadences:
+  on-time green, one missed deadline yellow, two missed deadlines red, plus one
+  refresh interval of polling grace. Add the editable sanitized cadence file;
+  honor reported gateway/Wi-Fi/SD intervals and retain original value clocks.
+- W/A/P/R switch views; W shows a countdown for each packet/telemetry type.
+  Separate device, environment, power, SNNS, standard NeighborInfo, position,
+  backhaul, Wi-Fi, SD and NodeInfo. Other observed types have event-age timers.
+  Duplicate generations do not renew timers; reconnects preserve initial and
+  known-receipt deadlines. GPS receipt and measurement freshness remain separate.
+- All 34 offline tests and document checks pass. Eight live snapshots from
+  23:49:45 to 23:49:59 Pacific capture new B002/R007/R009 samples with zero skipped
+  decodes, then a second SSH session succeeds. Live per-type overdue states and
+  green daily SD countdown are verified. Windows W view switching, Q exit 0,
+  colors/countdowns and cursor restoration pass. [Usage and cadence evidence](../docs/operations/live-node-dashboard.md).
+- Branch `codex/live-node-dashboard`; commit/push reported at handoff. No
+  radio, serial, service or portal-configuration writes.
+
+Next: restart the CLI and use W for timers. Reapply/read back radio intervals
+after Sunday role changes, then update the monitoring cadence file. Prolonged
+network outages, Linux native UI and radio/field acceptance remain separate.
+
+## 2026-11-12 - Live 13-node timestamp audit
+
+Read-only last-hour archive review finds 393 clocked and 17 unknown-time
+telemetry packets across 13 active radios; no future times or per-stream
+clock regressions. Both active uplinks receive the traffic. R006 still lacks
+UTC at 21 minutes uptime after a reboot, but is clocked by 29 minutes.
+Documentation links and whitespace checks pass in the isolated record branch.
+R009 carries valid position clock-sharing time while omitting the separate GPS
+measurement timestamp. [Measured results and limits](clock-audit-20261112.md).
+
+Next: selected cold-start/forced-relay clock acquisition without competing
+USB/phone/NTP, and source-loss/recovery. GPS-only provenance, R009 measurement-age
+configuration and physical SD-file/sustained-run acceptance remain open.
+Evidence records published on `codex/mesh-clock-audit`; existing unrelated edits
+preserved. No radios, serial ports or services changed.
+
+## 2026-11-12 - Telemetry cadence and remote configuration review
+
+- Read-only source/profile review: fresh RAK batch saves 180-second device,
+  environment and power intervals; radio SNNS shares the device interval with
+  a 180-second floor. Standard NeighborInfo remains separately configured.
+- Existing admin bench proves same-boot interval changes and saved/rebooted
+  persistence; reboot ACK ambiguity and forced-relay acceptance remain open.
+  Current batch records B002 admin enrollment. Portal cadence metadata controls
+  freshness expectations and does not write radio configuration.
+- No radio, serial-port, service or application changes. Existing unrelated
+  working-tree edits preserved. [Bench evidence](../docs/operations/repeater-update.md#r006-and-gateway-admin-bench---2026-10-24).
+
+Next: reapply/read back telemetry intervals after Sunday role changes; verify
+remote writes through a forced relay before relying on inaccessible deployment.
+
+## 2026-11-12 - Live node terminal dashboard
+
+- Add `python scripts/watch-nodes.py`: three-second read-only SSH snapshots,
+  independent per-cell freshness colors, new-sample highlights, monochrome
+  markers, narrow-terminal views, JSON/one-shot modes and reconnection.
+- Resolve fresh repeater labels from the physical roster; decode archive-only
+  radios in memory without changing registration. Preserve measurement/receipt
+  distinctions, old member battery ages, unknown GPS time and current polarity.
+  Credentials, member names, packet bytes and coordinates stay off the output.
+- All 18 offline regressions and changed-document checks pass. Live validation
+  reads eight distinct snapshots over 14 seconds, observes changed gateway/R009
+  cells and zero skipped decode rows, then verifies a second SSH connection.
+  Windows ANSI redraw and cursor restoration pass in the terminal preview.
+  [Usage, data contract and checks](../docs/operations/live-node-dashboard.md).
+- Branch `codex/live-node-dashboard`; commit/push reported at handoff. No
+  service, portal assignment, radio setting or serial-port changes.
+
+Next: run the dashboard during bench/deployment work. Portal registry
+reconciliation remains separate; Linux native terminal presentation, prolonged
+network-outage recovery and field/sensor acceptance are not established by this
+short Windows/live-stream check.
+
+## 2026-11-12 - R009 RAK12501 GPS compatibility readback
+
+- Owner identifies RAK12501 on fresh R009 / !da581e5f. Exact ordinary4c source
+  includes L76K UART probe/initialization; manufacturer confirms Meshtastic
+  compatibility. No special image or rebuild is required.
+- Live read-only USB check confirms CLIENT / 2.7.26.4c96b9b, GPS ENABLED,
+  120 s receiver update, 3,600 s smart position report, no GPIO overrides and
+  disabled fixed position. Preserve identity/keys, sensor/report and radio
+  settings; no hardware write/flash or gateway access. Serial closed.
+- Record the owner-confirmed module and [GPS evidence](../docs/operations/r009-gps-20261112.md).
+  Eight seconds without a new local position packet is not a fix verdict.
+  Nine prior board passes remain distinct from GPS acceptance.
+  Branch `codex/r009-gps-check`; commit/push reported at handoff.
+
+Next: connected GPS antenna/compatible UART slot and sky-view fix check.
+R009 may serve as a GPS source for the end-to-end test after a fresh fix;
+select any temporary faster position cadence explicitly. All bench units
+remain CLIENT and Sunday site/power/ROUTER setup remains deferred.
+
+## 2026-11-12 - R003/R008/R010 repair retest
+
+- Owner reconnects all three and confirms R010 solder rework. Repaired R010
+  passes complete profile/keys after power cycle, INA219 CH1, AHT21 and paced
+  RF 3/3 each. Clear its earlier solder hold.
+- Identify R008 / !120b04fd / USB F4D0968336047CA0; capture its previously
+  unavailable complete original, change ROUTER to CLIENT before updating,
+  verify pinned application-only 4c96b9b, own keys and full explicit reboot.
+  Both sensors and RF 3/3 each pass; fresh R008 name applied.
+- R003 still needs a hold. Its reader/stream die before RX on the first
+  retest; after owner cable-only swap both interfaces stay alive but yield
+  0/3 TX and 0/3 RX. USB-closed device/power queries give no matched reply.
+  INA219 responds over USB. Read-only comparison finds no radio/channel
+  discrepancy against passing R004/R006; no speculative firmware rewrite.
+  Owner explicitly sets R003 aside; further diagnosis is parked.
+- Eleven distinct X25519 key pairs pass offline checks. Worker ports close;
+  reference and gateway settings remain unchanged. Record [retest evidence](../docs/operations/rak-repair-retest-20261112.md)
+  and update the [current roster](deployment-nodes.md) to nine board passes,
+  R003 held. Preserve old failures and unrelated V4 work.
+  Branch `codex/rak-repair-retest`; commit/push reported at handoff.
+
+Next: keep R003 aside, label R008 and keep every staged board CLIENT. The next
+firmware gate is forced-relay member GPS through a RAK and the screenless V4
+to the portal, followed by gateway outage/recovery and sustained-run evidence.
+The owner supplies physical RF separation and hardware access; agent can handle
+capture/readback/analysis. Sunday case/power/location and ROUTER plus cadence
+readback remain; R003 is not a prerequisite for the nine passing boards.
+
+## 2026-11-12 - Fresh RAK batch, USB station correction and holds
+
+- Supersede mixed/per-ID sensor intake: owner confirms all deployment RAKs
+  have INA219; AHT21 is detected from temperature and RH. Keep CLIENT until
+  Sunday. Preserve private original profiles and generate only missing own
+  keys. All eight fresh R002-R010 selections except owner-held R008 pass
+  4c96b9b/full settings through explicit reboot; only R003/R004/R006 flash.
+- Batch board passes: **R002, R004, R005, R006, R007, R009**, plus earlier R001 separately. R003 is held
+  after USB timeouts and completed 0/3 each RF; R010 is owner-held for solder
+  rework after INA power is absent, despite passing RF/AHT. R008 remains
+  unmodified. R004: quiet RF 3/3 each passes. Preserve every failed/passing RF comparison.
+- Correct the ID watcher that hid REF1 and trusted a stopped process's status.
+  Reference stays visible, disconnects are shown, heartbeat/process creation
+  identity validates handoff, and stop requests target one instance. **107
+  offline bench tests pass**; root alone owns hardware, with source/SDK review
+  delegated read-only. Windows failed-port errors improve after owner USB
+  changes, but a nine-open-interface run fails on R003. Use sequential board
+  access and paired RF; no general Windows stability guarantee or driver tweak.
+  Corrected live console shows R004/R006/REF1; validated pause passes and
+  identification resumes for subsequent plug-in labels.
+- Verify ten distinct X25519 key pairs from private saved evidence. Publish
+  sanitized [batch evidence](../docs/operations/rak-batch-20261112.md) and the
+  [fresh roster](deployment-nodes.md); preserve unrelated V4/SD and portal work.
+  Branch `codex/rak-station-audit`; commit/push reported at handoff.
+
+Next: physical labels and held-board repairs/inspection are the owner's work;
+agent can verify the next selected batch and retest repaired units. Actual
+case/power/site, final ROUTER plus cadence readback, fresh portal assignments
+and forced-relay/end-to-end acceptance remain. The corrected visible station
+handles subsequent !ID labels and never changes board settings.
+
+## 2026-11-12 - CLIENT-mode R001 and batch label station
+
+- Owner explicitly restarts all repeater/gateway labels and defers case,
+  battery/solar/location until Sunday. Establish the [fresh physical roster](deployment-nodes.md);
+  prior number-based assignments/profiles are historical. Supersede the old
+  R006 map-placement Current entry rather than applying that location to a
+  freshly numbered assembly. Member labels and private radio identities stay.
+- Identify owner-confirmed RAK19007/INA219/AHT21 as **!f95b5501**, USB
+  **E93C5FF0F97DD76B / COM19**. Full private backup precedes writes. Retain
+  ordinary `2.7.26.4c96b9b` and initially retain its private radio; set **SNORR
+  Repeater 001 / R001**, enable INA219 power at 180 s and clear the old fixed
+  position. Complete profile/keys/channels/owner and absent coordinates pass
+  saved and explicit-reboot readback. Two existing admins, including B002,
+  preserved. No firmware flash or battery/solar/case work.
+- Both sensor types return current-connection data; [measurements and limits](../docs/operations/r001-commissioning-20261112.md).
+  Clock remains uptime-like/unknown UTC. An existing-peer telemetry query gives
+  no reply and remains inconclusive.
+- Owner supplies reference RAK and explicitly authorizes wipe without backup.
+  Full-reset **only USB 70DF102F58D2A034 / COM27**, retain `2.7.15.567b8ea`,
+  generate its own distinct keys and verify fresh **REF1** private reference
+  profile through reboot. No V4/COM31 access; the other chat retains ownership.
+- Paired version-2 broadcasts give **2/3 TX and 2/3 RX** at the original
+  0.3-second pause, with the second attempt missed both ways. Use the
+  diagnosing-bugs comparison: change only pause to **5 seconds**, retain
+  matcher/four-second deadline, and obtain **3/3 TX and 3/3 RX** in 43.7 s.
+  Cause of initial burst losses remains unisolated; no radio/firmware policy
+  patch or hardware fault claim. Preserve failed and passing evidence.
+- Owner requires all bench units stay CLIENT until Sunday. R001 changes to
+  CLIENT; preserve intended settings and accept its normal 300-second ls_secs
+  field with power saving disabled. Full explicit-reboot/profile verification
+  and another paced **3/3 TX + 3/3 RX** pass in **44.4 s**. Sunday role changes
+  must reverify cadence because firmware installs role defaults.
+- Add the read-only [RAK label CLI](../docs/operations/rak-batch-station.md) for
+  4-8-unit batches with mixed per-board sensor fit. It prints !ID/name/role/USB/
+  firmware on hot plug, excludes Heltec and selected REF1, closes each read,
+  and pauses/resumes for serial handoff and post-preparation label refresh.
+  A visible console is opened; live R001 identity and pause/resume pass.
+- Fix the observed host SDK reboot-close race: an already-null stream must not
+  be flushed again. Original-source regression reproduces; **95 offline bench
+  tests** pass using the clean pinned verifier. No firmware patch.
+- R001/REF1 direct-test serial handles close after profile verification; the
+  read-only label station owns intake afterward. Docs/links/whitespace checked.
+  Publication branch
+  `codex/sunday-rak001`; commit/push reported in handoff. Unrelated gateway work,
+  historical evidence and GitHub issue/board state are preserved.
+
+Next: owner labels USB suffix **D76B** as **R001**, leaves REF1 connected and
+plugs a batch of 4-8 RAKs into the label station, supplying INA219/AHT21 fit by
+!ID. Pause the watcher before worker writes; leave every prepared unit CLIENT.
+Fresh R002 onward requires independent USB/identity mapping.
+Actual case/power/site selection, fresh portal enrollment and forced-relay/
+end-to-end field acceptance remain separate from this board-level result.
 
 ## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
 
@@ -53,6 +502,42 @@ application step is a separately selected production rollout with G007
 registration and authenticated card verification. Physical card retrieval,
 sustained retention and solar runtime remain open.
 [Installation, checks and measured results](../docs/operations/g007-screenless-gateway.md).
+
+## 2026-11-12 - Weekend RAK firmware kit and INA219 resolution
+
+- Owner confirms replacement INA219 boards fixed the discrepancy, with none
+  observed since. Resolve GH-4 locally on that owner-observed basis; update
+  audit, inventory and results while preserving historical measurements. No
+  replacement quantity/cost or new calibration measurement is invented.
+- Owner selects RAK repeaters and screenless V4 gateways, bench today/tomorrow
+  and Sunday deployment. Another chat owns V4/SD implementation and its board;
+  preserve its unfinished shared firmware. Prepare the isolated RAK artifact
+  outcome and [firmware runbook](../docs/operations/weekend-firmware.md).
+- Recover the exact previously bench-proven ordinary `2.7.26.4c96b9b` UF2 and
+  OTA ZIP from published source `4c96b9ba0`; both recorded SHA256/size checks,
+  all 2,967 application-only UF2 blocks, ZIP integrity and matching UF2/OTA
+  application bytes pass. Create the four-file private local bundle and
+  offline kit; no firmware rebuild, source edit, serial access or flash.
+- Fix the updater's stale explicit-local selection from `0634b77` to this
+  exact image using a new fixed manifest. Preserve the historical manifest/
+  assets; public release pin remains unset with no implicit fallback. Existing
+  identity/key/profile/UF2 guards remain. The updater still saves CLIENT, so
+  role/location/admin configuration follows any updater write.
+- Regression fails twice before the pin fix and passes after. All **81 bench
+  tests**, **10 release tests**, docs/whitespace and real-bundle verification
+  pass using a clean local copy of pinned firmware, isolated from the V4 work.
+  Bundle copies are under ignored `private/bench/releases/weekend-rak-4c96b9b/`
+  in the original and prepared checkouts. Offline-kit SHA256:
+  `f7c4ab1d6c3aa3924df9bccd952b305bc07ce9734ce9b8931dc60fe721f83eb1`.
+- Publication branch: `codex/weekend-firmware-scope`; commit/push reported at
+  handoff. No GitHub issue/board synchronization, new firmware release or
+  production service mutation. Shared unrelated edits remain preserved.
+
+Next: owner connects one selected RAK for private identity/profile readback
+and chosen role/location/admin commissioning; test fresh reports and a forced
+relay path. Per-board rollout, ambiguous remote-write handling, gateway TLS/
+clock/reconnect/SD failure checks and overall deployment acceptance remain
+unverified. Full operational history/runtime is not established by this kit.
 
 ## 2026-11-12 - Screenless gateway requirements and build prompt
 
@@ -149,6 +634,20 @@ sustained retention and solar runtime remain open.
 - Validation: 70 offline bench tests pass (19 new triage tests), CLI help/list-ports and documentation/whitespace checks pass; no hardware timing, RF, charging, calibration or restoration acceptance claimed. Only COM1 enumerates; no serial handles opened.
 - Publication: `codex/rak-quick-check`; coherent source/records commit and push at handoff. Existing unrelated edits preserved.
 - Next: connect the new reference RAK already running compatible Meshtastic and one apparently healthy RAK, both with included 915 MHz antennas; verify the complete fixture and actual per-board timing before the suspect batch. Burn-in, wiping/reflashing and new enclosures remain later work.
+
+## 2026-11-01 - Gateway solar-bank architecture discussion
+
+- Captured proposed 8-12-cell gateway expansion and one 5 V USB panel per
+  four-cell group; inventory quantities and installed allocations unchanged.
+- [Technical note](../docs/research/gateway-solar-banks.md) distinguishes shared
+  parallel packs from independently charged, output-isolated modules and
+  records TP4056/load-sharing, protection and cold-charge constraints.
+- Follow-up clarifies three 5-6 W panels and twelve parallel cells; TP4056
+  excluded. Recorded per-panel switching charger/shared-pack design direction,
+  power calculations and input-current limits; no ready-made assembly verified.
+- Next: identify exact panels, gateway variants, cells/holders and modules
+  before selecting topology or wiring. No hardware changes or bench validation.
+  Existing unrelated working-tree changes preserved; no commit requested.
 
 ## 2026-10-31 - SD recorder role and time requirements
 

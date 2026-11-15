@@ -1,5 +1,144 @@
 # Hardware inventory
 
+## 2026-11-14 - G003 mobile V3 backhaul
+
+Existing Heltec V3 **!849ad7a0**, hardware
+**47af7bdcb7950e6e07f8ef108ef19fab**, CP210x USB **0001** / COM6, independently
+confirmed ESP32-S3/8 MB, is now **G003 / SNORR Gateway G003** after the owner's
+full no-backup wipe. Retains verified **heltec-v3-gateway / 2.7.26.6fea6aa**
+image family with newly generated keys and vehicle Wi-Fi/private pilot uplink.
+Complete profile/reboot and flash digests pass. Mobile use; no fixed position
+or confirmed external sensors. This is the former G002 V3, not the fresh
+screenless G002; no inventory quantity or purchase change. Portal unchanged.
+[Provisioning and remaining gates](../docs/operations/g003-mobile-gateway.md).
+
+## 2026-11-14 - Fresh G002 screenless SD gateway
+
+Owner selects newly connected Heltec V4 **G002 / !1bbf0ab8**, USB
+**F8:5B:1B:BF:0A:B8**, with SD and INA219. ESP32-S3, embedded 2 MB PSRAM,
+16 MB flash and both attached antennas confirmed. Installed published
+**heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**; own keys and G001-style
+300-second private gateway profile pass explicit-reboot readback. INA219 at
+0x40 and the 16 KB SD remount/read test pass; live logging/SD reports are healthy
+with zero dropped records. Authenticated portal registration preserves old V3
+**!849ad7a0** as **legacy-v3-849ad7a0** and retains its history.
+Stock relationship, PCB subrevision, battery/case/solar/site and current
+calibration remain unknown; no purchase, price or aggregate-stock change inferred.
+[Recovery, RF acceptance and remaining gates](../docs/operations/g002-screenless-gateway.md).
+
+## Case enclosure inventory - 2026-11-13
+
+Owner-reported physical inventory: **16 cases — 12 v4, 2 v3 and 2 v1**.
+Cases 1–12 are v4; Cases 13–14 are v3; Cases 15–16 are v1.
+This intake counts enclosures, solar panels and empty battery holders; no
+batteries or boards are installed in these cases. Case numbers identify
+enclosures and do not assign a repeater or gateway. Design v1/v3/v4 refers to the
+enclosure revision.
+
+Each battery holder in this intake is a **four-cell 18650 parallel holder
+(1S4P)**. Holder slots are capacity for cells, not battery stock.
+
+| Case | Design | Material | Antenna ports / connectors | Fitted solar panels | Empty holders | Empty cell slots | Installed cells | Installed boards | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Case 1 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 2 | v4 | PETG | 1 × SMA | 2 × 200 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 3 | v4 | ASA | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 4 | v4 | ASA | 2 × SMA | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 5 | v4 | ASA | 1 × SMA | 2 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 6 | v4 | ASA | 1 × SMA | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 7 | v4 | PETG | 1 × SMA | 2 × 200 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 8 | v4 | ASA | 2 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 9 | v4 | ASA | 1 × SMA; 1 × Type N | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 10 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
+| Case 11 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
+| Case 12 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 13 | v3 | ASA | 1 × SMA | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 14 | v3 | ASA | 1 × Type N | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
+| Case 15 | v1 | ASA | 1 × Type N | 3 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 16 | v1 | ASA | 1 × Type N | 3 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+
+Totals for these 16 cases:
+
+| Item | Owner-confirmed count |
+| --- | --- |
+| Enclosures | 16: 12 v4, 2 v3, 2 v1 |
+| Enclosure materials | 4 PETG, 12 ASA |
+| Empty four-cell parallel 18650 holders | 27, providing 108 empty cell slots |
+| SMA ports / connectors | 15 |
+| Type N connectors | 6 |
+| Fitted 160 mA solar panels | 18 |
+| Fitted 200 mA solar panels | 10 |
+| All fitted solar panels | 28 |
+| Cases with external-panel pass-through | 2: Cases 10 and 11, for larger 5 W panels |
+| Installed batteries / boards | 0 / 0 |
+
+Cases 10 and 11 have no fitted solar panels. Their pass-through provision does
+not establish ownership, quantity or installation of external 5 W panels.
+The 27 holders accounted for here exceed HW-007's historical source quantity
+of 18 by nine; retain that source quantity unchanged. Remaining loose parts and
+any additional cases are not counted here. Panel source-row matching remains
+unknown; existing battery-cell and board stock totals are unchanged. No new
+purchase or expense is inferred.
+
+Panel current ratings and enclosure materials are supplied by the owner. Panel
+model, voltage, wattage of the fitted panels, interconnection and the connection
+between holders are not recorded; output and assembled operation have not been
+measured. [Owner-supplied v3 and v4 design images](../docs/hardware/enclosures.md)
+document the designs. Physical quantities come from the owner's case-by-case
+reports; no v1 design image has been supplied.
+
+## 2026-11-12 - R009 RAK12501 GNSS identified
+
+Owner confirms one RAK12501 on R009 / !da581e5f / USB E9B12C5CA98FBCB8.
+The pinned ordinary 4c96b9b image supports its L76K; live GPS mode is already
+ENABLED, default UART, 120 s receiver update and 3,600 s smart position report.
+No new image/settings/location write. Exact slot/antenna and fresh fix remain
+unverified; no purchase, cost or battery allocation inferred. Other boards'
+GPS fit is not inferred. [Compatibility/readback](../docs/operations/r009-gps-20261112.md).
+
+## 2026-11-12 - R010 solder repair and R008 commissioning
+
+Owner confirms R010 / !77fdb9f1 solder rework is complete. Its INA219 CH1
+voltage/current now return alongside AHT21; full profile and RF 3/3 each pass.
+Reconnected R008 / !120b04fd is backed up and updated from 2.7.17.36133d29d
+to 4c96b9b; CLIENT/full explicit reboot, both sensors and RF 3/3 each pass.
+R003 remains held after a cable-only comparison: USB stays connected but RF
+0/3 each and independent remote queries do not pass. It still returns INA
+power over USB; no permanent damage conclusion. Nine boards pass the bounded
+checks, one is held; ten physical labels are assigned. No stock, cost or
+battery allocation change. [Retest](../docs/operations/rak-repair-retest-20261112.md),
+[roster](deployment-nodes.md).
+
+## 2026-11-12 - Fresh RAK batch and hardware holds
+
+Identify nine additional deployment candidates independently by USB/!ID. Eight
+are firmware/profile-staged CLIENT on ordinary 4c96b9b; R008 is owner-held
+without a write. Together with the earlier R001, nine deployment units are
+staged; that is not nine accepted assemblies. In this batch, R002, R004, R005, R006, R007, R009 pass the
+bounded board checks. R003 remains a radio/connection hold; R010 is unplugged
+for owner-confirmed solder rework after missing INA power. No stock purchase,
+carrier-model inference, battery allocation or cost change. All deployment
+RAKs have INA219 per owner; use actual temperature/RH to identify AHT21.
+[Fresh physical roster](deployment-nodes.md), [measurements/limits](../docs/operations/rak-batch-20261112.md).
+
+## 2026-11-12 - Fresh R001 and reset bench reference
+
+Owner starts new repeater/gateway numbering and identifies the first assembly
+as **RAK19007 with INA219/AHT21**. Fresh **R001 / SNORR Repeater 001** is
+RAK4631 **!f95b5501**, USB **E93C5FF0F97DD76B**, hardware
+**6bd77df9f05f3ce901555bf96d5ed7fc**. Firmware `2.7.26.4c96b9b` retained;
+CLIENT bench role, names, enabled INA219 power and cleared historical location pass
+full explicit-reboot readback. Both sensor types return data; paced RF passes
+TX/RX 3/3 each, with initial 2/3 burst runs preserved. Case/power/site are
+unassigned until Sunday at owner direction; no stock/cost change inferred.
+
+The separately attached **REF1**, USB **70DF102F58D2A034 / !8737c2c9**, receives
+an owner-authorized full factory reset without an old-settings backup and a
+reboot-verified private reference profile with its own new keys. Compatible
+`2.7.15.567b8ea` retained. It is excluded from deployment numbering. Both serial
+handles closed. [Current roster](deployment-nodes.md),
+[measured evidence](../docs/operations/r001-commissioning-20261112.md).
+
 ## 2026-11-12 - Rollout G001 supersedes the G007 bench label
 
 The screenless Heltec V4.3 `!1bbf0638` is rollout **G001**. The historical
@@ -13,6 +152,14 @@ is now gateway **G007 `!1bbf0638`**. It has 16 MB flash, 2 MB PSRAM, two
 attached antennas, INA219 on SDA17/SCL18 at 0x40 and a 32 GB nominal FAT32
 card on SCK47/MOSI48/MISO6/CS4. Mounted capacity measured 31,902,400,512 bytes.
 [Image, recovery and profile](../docs/operations/g007-screenless-gateway.md).
+
+## 2026-11-12 - INA219 discrepancy resolved by replacement
+
+Owner confirms that new INA219 boards replaced the problematic boards and that
+no discrepancies have been observed since. Record the hardware-replacement
+resolution of GH-4; replacement quantity, physical device mapping, date and
+cost were not supplied, so stock and spending totals are unchanged.
+[Current disposition and retained diagnosis](../docs/operations/ina219-audit.md#current-disposition---2026-11-12).
 
 ## 2026-11-12 - Screenless gateway power plan clarified
 
@@ -268,6 +415,20 @@ Independent authenticated portal snapshot confirms updated profiles and
 absence of B001/R005; history-table counts do not decrease. No firmware,
 radio settings, source deployment or demo-state change.
 
+2026-10-24 G004 V4 replacement - Owner reports former V3 G004
+**`!849ae664`** failed hardware and selects the connected Heltec V4 with its
+default GPS and INA219 on **SDA17/SCL18** as G004. Independent API/USB
+identification matches former **B001 `!699c2ed8`**, hardware device ID
+**`d4d91213c6f862de7a81383bc8843e59`**, USB **`90:70:69:9C:2E:D8`**, COM5,
+original **heltec-v4 / 2.7.26.54e0d8d**; chip confirms 16 MB flash.
+Reassignment preserves the V4's own identity/keys, rather than copying those
+of the failed V3. B001 is no longer a separate available member tracker;
+B002 retains its own identity/allocation. Ownership totals remain nine V3s
+(including this owner-reported failed V3) and two V4s; no purchase, additional
+board, GPS or INA219 stock total is inferred. Exact sensor measurement path,
+calibration, battery/capacity, GPS model label and field operation remain
+unverified. [Replacement firmware/profile and acceptance](../docs/operations/g004-v4-gateway.md).
+
 2026-10-24 R002 ordinary firmware / confirmed INA219 - Owner confirms existing
 R002 **`!b456f760`**, USB **`BADB1E79E9739FC4`**, COM9, also has an **INA219**.
 This supersedes its earlier no-INA219 bench sensor selection, without adding
@@ -466,7 +627,7 @@ Source row numbers count the header as row 1. Stable IDs below link to the origi
 | HW-004 | 5 | Repeater | Solar panel; 1W | 40 | Unknown | Source note estimates closer to 0.25W each; not a measured project result |
 | HW-005 | 6 | Repeater | Fiberglass antenna; labelled 5.8dBi LoRa 915MHz | 10 | 10 | Owner-confirmed count matches listed quantity; condition and actual connectors/variant unverified |
 | HW-006 | 7 | Repeater | INA219 current/power sensor | 10 | Unknown | Verify boards and interfaces |
-| HW-007 | 8 | Repeater | Four-slot 18650 holder | 18 | Unknown | Verify wiring/layout; source quantity is holders, not cells |
+| HW-007 | 8 | Repeater | Four-slot 18650 holder | 18 | At least 27 accounted for; total unknown | Cases 1–16 have 27 empty four-cell parallel holders (1S4P each), per owner 2026-11-13. Exceeds historical source quantity by 9; remaining loose stock unknown. Holders, not cells |
 | HW-008 | 9 | Repeater | Coax; Type N to U.F.L1 | 10 | Unknown | Source associates these with fiberglass antennas |
 | HW-009 | 10 | Client | Battery; source 1000mAh, earlier owner report 1100mAh | 4 | 6 | Owner previously reported six small V3 LiPo packs; on 2026-10-21 confirms G001/G002 each have an installed 1000mAh pack. Retain total without adding stock; remaining capacity labels, connectors and condition unverified |
 | HW-010 | 11 | Client | Battery; 3000mAh | 2 | 2 | Owner confirms 2 × 3000mAh batteries for V4 units; LiPo per owner; exact pack label, connector and condition unverified. Owner suspects larger batteries are needed; capacity choice awaits runtime testing |
@@ -585,3 +746,12 @@ network profile. G001's original network is restored through reboot after the
 controlled outage test. [Image hashes, full backups and live outage/recovery](../docs/operations/gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24).
 This supersedes earlier receive-only/local-only gateway profiles. Sensor
 calibration, battery/runtime and field installation remain unverified.
+
+## 2026-11-01 - Proposed gateway solar expansion
+
+Owner is considering larger 5 V USB solar panels and two or three four-cell
+parallel 18650 banks per Heltec gateway (8-12 cells), one panel per bank.
+This is a proposed configuration, not confirmed purchases, stock quantities
+or installed allocations. Panel models, board variants, cell/holder details
+and charging/protection topology remain unverified.
+[Architecture discussion](../docs/research/gateway-solar-banks.md).

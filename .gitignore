@@ -22,3 +22,8 @@ Thumbs.db
 backend/demo/*.db-journal
 
 # .scratch/ is the tracked decision archive. Do not ignore it.
+
+# Local linked checkouts, generated inspection output and downloaded tooling.
+/.scratch/worktrees/
+*.inspect.ndjson
+/3DModels/SD Card Formatter 5.0.4 Setup EN.exe

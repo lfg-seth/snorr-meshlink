@@ -214,7 +214,10 @@ class Radio:
     def close(self):
         if self.interface:
             try:
-                self.interface.close()
+                # The SDK reader can already close/null the stream on reboot.
+                # Its SerialInterface.close() otherwise flushes None again.
+                if getattr(self.interface, "stream", object()) is not None:
+                    self.interface.close()
             finally:
                 self.interface = None
 

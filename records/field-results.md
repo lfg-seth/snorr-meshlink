@@ -1,5 +1,86 @@
 # Field testing and tangible results
 
+## 2026-11-15 - Fresh physical portal identities and history verified
+
+All 16 current transmitting-device mappings pass registry/worker/public checks;
+per-radio histories and raw archive are preserved through atomic relabeling.
+At 2026-11-15 07:06:16 Pacific, 5 sources have actual new accepted
+receipts; R002, R003, R004, R005, R006, R007, R008, R009, R010, R011, G003 still lack fresh live evidence. Historic unknown-source
+telemetry is replayed with original times and excluded from that live count.
+No radio, power, position or site change; R003 hold and MC00 receive-only role
+remain. [Preservation, backups and limits](../docs/operations/portal-roster-reconcile-20261115.md).
+
+## 2026-11-15 - Overnight fleet bench continuity and remaining gaps
+
+Midnight–06:04 Pacific: 4,446 of 4,462 observed unique packets reach all three
+gateways; B002's 143 GPS fixes never cross 15-minute stale. No observed node
+reboots in that window; G003 goes silent after 3.077 V / 0% at 00:37:52.
+R009 has no positions and 269 unclocked telemetry packets. B003 is the survey
+tester and intentionally suppresses position RF. Device reporting gaps reach
+38.6 minutes while power mostly holds cadence; three fresh IDs remain portal
+rejects. Both SD gateways report healthy flags/zero drops. Scheduled backup
+causes a collector interruption. Charging RAK readings do not measure operating
+draw. [Analysis, identity table and limits](bench-overnight-20261115.md).
+
+## 2026-11-14 - G003 mobile gateway bench provisioning
+
+Heltec V3 **!849ad7a0 / G003** passes authorized full erase without backup,
+factory/filesystem digest verification, complete intended profile through
+reboot, stored vehicle Wi-Fi comparison and fresh PKI pair verification.
+No association, direct MQTT, paired RF, portal or vehicle field test was run;
+the owner explicitly excludes unavailable-network testing and portal changes.
+[Bench evidence and limits](../docs/operations/g003-mobile-gateway.md).
+
+## 2026-11-13 - Winter siting validation planned
+
+The [terrain study](../docs/research/winter-mesh-siting.md) supplies an attended validation sequence. Start at Upper Bristlecone Helipad with Lee Fire Station receiving. Repeat through that relay from Lee Junction. Compare the upper Macks gap, the high and low Kyle alternatives and the two drive-up Angel Peak positions for a possible valley uplink. Record dated packet attempts, per-gateway receipts, GPS fix age, antenna heights and access evidence. The study produced modeled results only. For the Sisters revision, measure Lee Fire Station antenna AGL, then test the temporary Lee Junction South link to Lee and Sisters. Check served-control and newly reached stops with matched 10/11/10 runs. If those pass, add Macks Mouth North and repeat 11/12/11. Record attempted unique member GPS IDs, paired station/dispatch receipts, stale fixes, age, channel utilization, forwarding copies and queue drops. Actual winter access and busy-hour load remain unmeasured.
+
+## 2026-11-12 - Repaired R010 and newly prepared R008 pass
+
+Owner-reworked R010 now supplies INA219 CH1 4.2 V / -0.3 mA and AHT21;
+R008 supplies 4.236 V / -0.2 mA and AHT21 after its verified firmware update.
+Both preserve their own keys and complete CLIENT profiles and pass strict
+3/3 TX / 3/3 RX at 5 s spacing, 4 s deadline. R003 loses USB on one retest;
+with a known-good cable its USB session stays alive but RF returns 0/3 both
+ways. Two fresh remote telemetry queries with its USB closed also yield no
+matched reply. Retain earlier received packets as historical reception only.
+R003 stays held; nine total board-level passes do not accept final power,
+coverage, relay or site setup. [Measurements and limits](../docs/operations/rak-repair-retest-20261112.md).
+
+## 2026-11-12 - Batched RAK firmware and direct radio checks
+
+All eight selected boards pass own-profile/key comparison through explicit
+reboot, fresh names and CLIENT / 4c96b9b. Three require application upgrades;
+two generate their own initially absent keys. Ten staged/reference key pairs
+are distinct and mathematically valid. Batch board passes: R002, R004, R005, R006, R007, R009.
+R003 is held after USB timeouts and a completed 0/3 TX / 0/3 RX test;
+R010 passes RF/AHT but is held for owner-confirmed INA solder rework. R008 is
+set aside unmodified. R004: quiet RF 3/3 each passes. R006's 10 s comparison passes 3/3 each;
+earlier packet losses remain recorded, with approximately 19-44% measured
+channel utilization during the run. Firmware cadence settings, direct RF and
+USB connection results do not establish field relay/coverage or power runtime.
+[Per-board results and raw-evidence references](../docs/operations/rak-batch-20261112.md).
+
+## 2026-11-12 - Fresh R001 board commissioning and paced RF check
+
+- Owner-confirmed RAK19007 with INA219/AHT21, USB **E93C5FF0F97DD76B** /
+  **!f95b5501**, starts the fresh **R001** series. Retain `2.7.26.4c96b9b`;
+  final CLIENT name/config/key/channel readback after explicit reboot passes. Enable
+  power at 180 s; device/environment/SNNS baseline 180 s retained. Historical
+  location cleared; case/battery/solar/site deliberately unassigned.
+- Current-connection USB returns AHT21/environment **27.700424 C / 25.928116%
+  RH** and INA219 power channel 1 **3.492 V / -326.7 mA**. Source times 91/106 s
+  are uptime-like, not verified UTC. Initial device-only capture retained.
+- Existing-peer request inconclusive. Owner-authorized reset reference **REF1**
+  supplies matched zero-hop/no-ACK broadcasts. Original burst **TX 2/3, RX 2/3**
+  (second attempt missed each way); change only pause from 0.3 to **5 seconds**:
+  **TX 3/3, RX 3/3**, SNR 6.5-7 / 6.5-6.75 dB. Final CLIENT repeat also passes
+  **3/3 each** in 44.4 s (TX 5.75-6.25 / RX 5.5-7 dB). Both profiles preserved,
+  serial closed. Pace comparison does not isolate the burst-loss cause or
+  establish range, sustained delivery, forced relay or field coverage.
+- [Full method, per-direction measurements and private evidence reference](../docs/operations/r001-commissioning-20261112.md).
+  No battery/solar/enclosure/location acceptance or V4 operation in this run.
+
 ## 2026-11-12 - G007 bench and G001 radio receipts
 
 G007's automatic daily report reached its own MQTT uplink with 393,216 bytes
@@ -8,6 +89,14 @@ automatic device, INA219 power, passive-neighbor and backhaul reports by radio.
 The bench covered the installed configuration. Field coverage, card endurance
 and battery/solar autonomy require separate measurements.
 [Bench methods and results](../docs/operations/g007-screenless-gateway.md#live-bench-evidence).
+
+## 2026-11-12 - Owner confirms INA219 replacement resolution
+
+Owner reports replacing the INA219 boards with new ones fixed the observed
+discrepancy, with no discrepancies seen since. GH-4 is resolved on that
+owner-observed basis. This entry records the supplied outcome, not a new
+agent-run meter, calibration or runtime test. Earlier measurements remain
+historical evidence. [Current audit disposition](../docs/operations/ina219-audit.md#current-disposition---2026-11-12).
 
 ## 2026-11-12 - Screenless V4 INA219 and SD bench connection check
 
@@ -874,5 +963,15 @@ Independent gateway reboot follow-up — Both saved profiles, including exact pr
 - Follow-up decision or corrective action:
 
 ## Reporting measures
+
+### 2026-11-12 - Live 13-node clock observation
+
+Read-only production archive: all 13 active radios currently clocked; 393 valid
+UTC and 17 unknown-time telemetry reports in the sampled hour, with no observed
+future or backward source timestamps. R006's latest boot remained unknown at
+21 minutes uptime and was clocked by 29 minutes. R009 supplies mesh clock time
+but omits GPS measurement time. GPS-only provenance, cold-start/forced-relay
+acceptance and physical SD-file integrity remain unverified.
+[Measurements, identities, method and evidence](clock-audit-20261112.md).
 
 Track member-device participation, coverage along tested routes, position age, delivery completeness, message delivery, mission runtime, repeater uptime during observed periods, and supported expenses. State the sample size and test conditions with each claim. An untested route or unobserved period has no measured result.

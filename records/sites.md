@@ -1,5 +1,26 @@
 # Candidate sites and backhaul
 
+## 2026-11-14 - G003 vehicle backhaul
+
+Owner assigns **G003 / !849ad7a0** to mobile vehicle backhaul with supplied
+private Wi-Fi. The network is absent at the bench; stored credentials pass
+reboot readback, association/direct uplink are untested. No fixed location or
+site is configured and no portal registration is requested. Vehicle power,
+runtime and coverage remain unmeasured.
+[Provisioning](../docs/operations/g003-mobile-gateway.md).
+
+## 2026-11-13 - Sisters and two temporary expansion slots
+
+Sisters is the tenth planning site at the owner's replacement pin. At the assumed 1 m Lee antenna height it requires a shorter path into the station. First measure Lee's actual antenna height. Lee Junction South is the first winter expansion trial. Add Macks Mouth North as a twelfth trial only after the relay and channel-load checks pass. The longer-carry Lee Meadows East and Macks North Ridge pair offers greater terrain coverage and a marginal inter-ridge path. No physical boards were assigned or placed. [Private packet workflow and modeled comparisons](../docs/research/winter-mesh-siting.md).
+
+## 2026-11-13 - Owner-confirmed mountain access
+
+The owner confirms agency authority to access the entire mountain and place equipment, including the helipad beside the Upper Bristlecone trailhead. Both supplied Angel Peak positions are reachable directly by vehicle. The corrected Vegas-side point and the mountain-side point are in the private study inputs. Snow conditions, exact mount, radio assignment and on-site validation remain open. The [revised siting study](../docs/research/winter-mesh-siting.md) selects the helipad and the mountain-side Angel Peak site.
+
+## 2026-11-13 - Winter station and relay siting
+
+The [winter siting study](../docs/research/winter-mesh-siting.md) compares the two primary stations, nine placement slots and an optional home gateway. The private field atlas includes survey circles, staging, winter solar and conditional alternatives. Installation, owner-selected hardware assignments, station permission and winter access remain pending.
+
 ## 2026-10-31 - Primary fire-department gateways
 
 Owner plans one of two newly purchased screenless/external-Wi-Fi Heltec V4s as

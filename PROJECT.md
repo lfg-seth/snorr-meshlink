@@ -2,6 +2,22 @@
 
 SNORR MeshLink supports Search and Rescue on Mount Charleston, Nevada.
 
+## Current repeater and gateway numbering - 2026-11-12
+
+The owner restarts all repeater/gateway labels for Sunday deployment. Use the
+[current physical-device roster](records/deployment-nodes.md); earlier R/G
+labels, saved sites and number-based profiles are historical, not commissioning
+inputs. The first fresh **R001** is RAK19007/4631 **!f95b5501**, USB
+**E93C5FF0F97DD76B**, with INA219/AHT21 and retained `2.7.26.4c96b9b`.
+Case, battery/solar and location will be selected at deployment; the old fixed
+location is cleared. Member-node labels/identities are not reset.
+All prepared boards stay **CLIENT on the bench**; switch selected repeaters to
+ROUTER during final placement and verify their report cadence/profile again.
+The owner plans batches of 4-8; all deployment RAKs have INA219. Use the
+[plug-in label station](docs/operations/rak-batch-station.md), automatically
+detect AHT21 from measured temperature and relative humidity, and record each
+unit's sensor results.
+
 ## Mission and priorities
 
 1. Passive member GPS tracking for dispatch.
@@ -21,7 +37,9 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   target**. These are requirements, not accepted field results.
 - Initial scale is roughly 20 members. The planned first trial uses six
   GPS-equipped Heltec V4 member trackers, two selected RAK relays and two Heltec
-  V3 backhauls. Only B001/B002 are the established member bench pair; planned
+  V3 backhauls. B001/B002 were the established member bench pair; on 2026-10-24
+  the owner reassigns B001 to [replacement gateway G004](docs/operations/g004-v4-gateway.md),
+  leaving B002 in the member role. Planned
   purchases/recoveries and 3000 mAh allocations require confirmation in
   [inventory](records/inventory.md). T-Decks are outside the first trial.
 - Active original OLED V4 clients are **B002 and B003**. On 2026-10-25 the

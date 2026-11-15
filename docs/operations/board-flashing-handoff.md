@@ -1,9 +1,33 @@
 # Board flashing and configuration handoff
 
+2026-11-14 **fresh G003 vehicle gateway** is Heltec V3 **!849ad7a0**,
+formerly G002 V3. Owner-authorized full wipe without backup; verified existing
+**heltec-v3-gateway / 2.7.26.6fea6aa**, new own keys, CLIENT/private pilot
+uplink and supplied vehicle Wi-Fi pass complete reboot readback. No fixed
+position or external sensor reporting; no network association test or portal
+change requested. [Current physical assignment and evidence](g003-mobile-gateway.md).
+
+**Fresh G002, 2026-11-14.** New screenless V4 **!1bbf0ab8**, USB
+**F8:5B:1B:BF:0A:B8**, runs **heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**.
+G001-style 300-second profile, own PKI, INA219, SD and authenticated responder
+enrollment are saved and reboot-verified. The new inherited target keeps the
+SD gateway and adds direct-hop PING/PONG. Larger app0 layout; use this board's
+complete recovery backup to recover its factory layout. Old G002 V3 history
+is preserved under legacy-v3-849ad7a0. [Exact image, acceptance and recovery](g002-screenless-gateway.md).
+
 **Rollout G001 (bench G007), 2026-11-12.** [Production identity and live card](g001-screenless-rollout.md). The screenless V4.3 `!1bbf0638` uses
 `heltec-v4-sd-gateway` at `898c113b5`. The 16 MB partition layout changed.
 Use this board's full verified backup to return to the original diagnostic.
 [Image hashes, pinout and installed profile](g007-screenless-gateway.md).
+
+2026-11-12 **weekend RAK preparation**: reuse the exact bench-proven ordinary
+**2.7.26.4c96b9b** images through the explicitly selected
+[deployment manifest](repeater-deployment-image.json) and private offline kit.
+The updater's local-bundle path now selects this build, not historical
+`0634b77`; public pin remains unset. Read the [weekend runbook](weekend-firmware.md)
+for identity/backup, optional update and subsequent role/location/admin order.
+No board was flashed during kit preparation. The other chat owns screenless
+V4/SD implementation. GH-4 is [owner-resolved by INA219 replacement](ina219-audit.md#current-disposition---2026-11-12).
 
 2026-10-25 **former G004 V4 `!699c2ed8` is reassigned as client B003** at
 owner request. Reinstall checked **heltec-v4-gateway / 2.7.26.6fea6aa** with
@@ -65,6 +89,17 @@ Device telemetry enabled at **180 seconds** and over-LoRa SNNS using the same
 saved baseline pass complete intended-profile comparison through explicit
 reboot; environment/power telemetry remain disabled. This supersedes all
 historical B002 stock-image entries below. [Exact image, preserved profile and delivery evidence](b002-three-minute.md).
+
+2026-10-24 **G004 replacement**: owner retires failed V3 **`!849ae664`** and
+reassigns existing OLED Heltec V4 **`!699c2ed8`**, formerly **B001**, with default
+GPS and INA219 on **SDA17/SCL18**. Selected target **`heltec-v4-gateway`**,
+published source **`a56466d8c`**, enables existing SNNS with 180-second fallback.
+Use [current image/profile/acceptance evidence](g004-v4-gateway.md); retain this
+V4's keys, configured RF power/FEM and default GPS RX39/TX38/enable34. Do not
+use the retired V3 target or its GPS45/46 overrides. Requested device/power
+telemetry and over-LoRa SNNS baseline are **180 seconds**, GPS position 300
+seconds, RF TX enabled. This assignment supersedes B001's former member role;
+B002 and other gateways retain their individual profiles.
 
 2026-10-24 **R002 `!b456f760`** now runs ordinary **rak4631 /
 2.7.26.4c96b9b**, with complete original-profile preservation and intended
@@ -216,7 +251,7 @@ For firmware tooling, read [firmware agent instructions](../../firmware/AGENTS.m
 | Board/function | Source and last verified hardware state | Configuration reference |
 | --- | --- | --- |
 | RAK4631 repeater, including R001/R002/R003/R004 | Download **2.7.26.0b65f2e** from the [pinned prerelease](https://github.com/lfg-seth/firmware/releases/tag/snorr-rak4631-2.7.26.0b65f2e-pre.1). Includes AHT detection fix, INA219 driver and passive neighbor reporting. **R002/R004 flashed/verified**; R001 remains stock 2.7.26.54e0d8d; R003 remains AHT build 2.7.26.cc5907b. | [Build/checksums](rak-neighbor-signals.md); [saved profile](rak-pilot-setup.md); [R002 update](r002-release-update.md); [R004 preparation](r004-preparation.md); [R003 evidence](r003-aht-build.md). |
-| Original Heltec V4 member trackers B001/B002 | Last verified stock 2.7.26.54e0d8d. Identify original V4 versus V4-R8/display variants; a RAK UF2 is never a Heltec image. | [Heltec bench evidence](heltec-bench-checklist.md), [field results](../../records/field-results.md), [live GPS behavior](live-mqtt.md). |
+| Original Heltec V4 B002; former B001 now G004 | B002 retains stock 2.7.26.54e0d8d. Owner reassigns B001 `!699c2ed8` to G004 on 2026-10-24; use its dedicated V4 gateway record. Identify original V4 versus V4-R8/display variants. | [G004 replacement](g004-v4-gateway.md), [historical Heltec bench evidence](heltec-bench-checklist.md), [live GPS behavior](live-mqtt.md). |
 | R006 selected interval bench | Ordinary `rak4631` 2.7.26.4c96b9b; intended device/power 180 seconds, INA219-only, saved-interval radio SNNS. | [Exact images, admin/cadence and limits](repeater-update.md#r006-and-gateway-admin-bench---2026-10-24). |
 | Heltec gateways G001–G004 | G001–G003: `heltec-v3-gateway`; replacement G004: `heltec-v4-gateway`; all `2.7.26.6fea6aa`, CLIENT/private TX and over-LoRa SNNS, 180-second device/active power telemetry. Preserve individual profiles; no MQTT downlink. | [Current four-board evidence](gateway-backhaul-health.md#completed-bench-and-deployment---2026-10-24). |
 

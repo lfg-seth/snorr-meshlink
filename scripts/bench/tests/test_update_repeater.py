@@ -226,7 +226,17 @@ class LocalBundleChecks(unittest.TestCase):
         manifest, _, image = updater.local_bundle_image(self.bundle)
         self.assertIs(manifest["publishedArtifact"], False)
         self.assertIs(manifest["hardwareVerified"], False)
-        self.assertEqual(image.name, "firmware-rak4631-2.7.26.0634b77.uf2")
+        self.assertEqual(image.name, "firmware-rak4631-2.7.26.4c96b9b.uf2")
+
+    def test_historical_compiled_interval_bundle_is_not_current_candidate(self):
+        self.manifest.update(
+            source="0634b775f65804968f5a18a7e8824db415556db2",
+            version="2.7.26.0634b77",
+            tag="snorr-rak4631-2.7.26.0634b77-pre.1",
+        )
+        self.write_manifests()
+        with self.assertRaises(updater.UpdateError):
+            updater.local_bundle_image(self.bundle)
 
     def test_fixed_contract_rejects_published_claim_or_different_source(self):
         for key, value in (("publishedArtifact", True), ("hardwareVerified", True), ("source", "0" * 40), ("snorrNeighborLoraIntervalSeconds", 300)):
