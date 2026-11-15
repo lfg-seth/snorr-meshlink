@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-14 - G002 SD gateway with authenticated ping/pong
+
+Provisioned new Heltec V4 **G002 !1bbf0ab8**, USB F8:5B:1B:BF:0A:B8, with
+the G001-style private profile and its own keys. Published and flashed
+**heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**; full recovery backup, chip
+digests, complete profile/reboot, INA219 and 16 KB SD remount/read checks pass.
+Native survey, SD and SNNS/SNGH fixtures and the clean target build pass.
+Firmware source and checksum-verified prerelease assets are published.
+
+The live registration preserves the old G002 V3 under legacy-v3-849ad7a0,
+including 5,412 source and 18,626 transport receipts. Authenticated public G002
+sensor/SD state, isolated post-backup database restore, private mappings and six
+services pass. System Python's missing paho initially stopped registration before
+any registry/mapping change; services recovered and the installed worker runtime
+completed it. No application deployment or G001 flash.
+
+Automatic report cycles and paired RF results are in the
+[G002 evidence](../docs/operations/g002-screenless-gateway.md). Serial/MQTT handles
+are closed at handoff. Next: copied-card and sustained/field/power acceptance;
+peer-gateway delivery and Wi-Fi outage recovery remain unverified. Survey quiet
+suppresses autonomous RF for 900 seconds from the latest authenticated PING.
+Records use codex/g002-sd-gateway-20261114; unrelated root edits are preserved.
+
 ## 2026-11-13 - G001 SD health follows saved telemetry cadence
 
 Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
