@@ -121,7 +121,8 @@ class SurveyHandler(BaseHTTPRequestHandler):
                 else:
                     self.reply({"error": "Offline area is not installed"}, 404)
             elif path.path == "/api/state":
-                self.reply(self.host.snapshot(self.headers.get("X-Survey-Controller")))
+                snapshot = self.host.snapshot(self.headers.get("X-Survey-Controller"))
+                self.reply(snapshot | {"known_targets": self.server.known_targets})
             elif path.path == "/api/ack":
                 with self.host.lock:
                     row = self.host.db.execute(
@@ -325,15 +326,33 @@ def main():
     parser.add_argument("--adapter", type=Path)
     parser.add_argument("--device", help="Explicit firmware client serial device")
     parser.add_argument("--expected-id", help="Expected firmware client node ID")
+    parser.add_argument(
+        "--known-target",
+        action="append",
+        default=[],
+        metavar="NODE_ID",
+        help="Offer this repeater in the live target selector (repeatable)",
+    )
     parser.add_argument("--port", type=int, default=5187)
     parser.add_argument("--data-dir", type=Path, default=DATA)
     args = parser.parse_args()
+    if args.known_target and args.source != "live":
+        parser.error("--known-target requires --source live")
+    if any(
+        not re.fullmatch(r"![0-9a-fA-F]{8}", node)
+        or not 1 < int(node[1:], 16) < 0xFFFFFFFF
+        for node in args.known_target
+    ):
+        parser.error("--known-target requires a non-reserved !xxxxxxxx node ID")
     with source_lease(args.data_dir / args.source):
         serve(args)
 
 
 def serve(args):
     server = ThreadingHTTPServer(("127.0.0.1", args.port), SurveyHandler)
+    server.known_targets = list(
+        dict.fromkeys(node.lower() for node in args.known_target)
+    )
     adapter = load_adapter(
         args.source, args.adapter, args.device, args.expected_id, args.data_dir
     )

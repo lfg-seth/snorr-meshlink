@@ -314,7 +314,11 @@ function render() {
   $("recording").className = connected && host.recording ? "good" : "bad";
   $("run").textContent = s.run_state || "Awaiting state";
   const targets = [
-    ...new Set([...Object.keys(caps.targets || {}), ...(s.target_ids || [])]),
+    ...new Set([
+      ...Object.keys(caps.targets || {}),
+      ...(s.target_ids || []),
+      ...(host.known_targets || []),
+    ]),
   ];
   if (s.target_id && !targets.includes(s.target_id)) targets.push(s.target_id);
   options($("target"), targets, s.target_id);
