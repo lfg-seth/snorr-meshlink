@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-11-14 - Printable Lee Canyon winter trial card
+
+Built a one-page landscape Letter prototype from the existing winter road classifications, selected mounts and private GPX. One north-up map places the two expansion sites, Sisters, Lee Fire Station and the three driver stops beside the dispatch acceptance criteria. Verified the exported stop coordinates, both gains and remaining longest gaps against the GIS, and rendered the page in color and grayscale. The printable file is `Lee-Canyon-winter-trial-field-card.pdf` in the private winter study directory. Rebuild with `python scripts/winter-siting/prototype_field_card.py private/winter-siting` on `codex/prototype-lee-field-card`.
+
+Field usability and radio performance await a crew run. Measure the station antenna height, pair driver IDs with Lee radio and dispatch receipts, then compare the two trials with the already-served control.
+
 ## 2026-11-13 - Sisters and the 10–12 repeater winter comparison
 
 Added the supplied Sisters pin as repeater ten. Modeled the previous nine and current ten on the same terrain and roads, screened 3,923 grid points along the Lee corridors and compared 23 connected singleton expansions and 265 connected pairs. Sisters alone adds no station-reachable road. Lee Junction South gives Sisters a path to Lee and raises SR 156 to 98.8%. With Macks Mouth North, Macks reaches 38.3% under the shorter-carry and new-link clearance screen. A longer-carry pair reaches 59.4% on Macks with a marginal radio path. The private atlas, trial GPX and GIS layers show where each change occurs. [Study and reproducible workflow](../docs/research/winter-mesh-siting.md).
