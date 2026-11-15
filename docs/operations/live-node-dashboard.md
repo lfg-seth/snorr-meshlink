@@ -8,7 +8,8 @@ python scripts/watch-nodes.py
 
 Requires Python 3.10+ and OpenSSH on the local computer, plus the existing
 key-based access to `root@meshlink.int.spp.lol`. Use Windows Terminal or another
-ANSI terminal, ideally at least 100 columns and 40 rows. No local Python packages
+ANSI terminal, ideally 160 columns and 50 rows for the whole roster. Maximize the
+terminal; reduce its font size if necessary. No local Python packages
 need installing. Stop with **Q** or **Ctrl+C**; the cursor and original screen return.
 
 The table updates in place every three seconds. Each cell is colored by its
@@ -19,9 +20,10 @@ aging while the connection is interrupted; SSH reconnects automatically with
 a bounded backoff. The header distinguishes SSH snapshot age from the MQTT
 worker's connected state and twenty-second heartbeat timeout.
 
-Press **W** for the packet/telemetry watchdog matrix, **A** for all readings,
-**P** for power/environment or **R** for radio/GPS. Each watchdog has its own
-timer; SNNS cannot reset device, environment or power deadlines. Standard
+The default overview puts each node's readings on its first row and every
+packet/telemetry watchdog on the following **WD** row. No W/A view switching
+is needed. Watchdogs wrap on narrower terminals rather than dropping packet
+types. Each watchdog has its own timer; SNNS cannot reset device, environment or power deadlines. Standard
 NeighborInfo is tracked separately from passive SNNS. The header summarizes
 on-time, late, two-or-more-missed, waiting and event-driven streams.
 
@@ -30,8 +32,19 @@ member nodes, with labels ordered within each group. Nodes with no packet
 activity in the last four hours, including never-heard nodes, are hidden from
 the tables, summaries and details. Activity uses receipt time rather than GPS
 or sensor measurement time. The exact four-hour boundary is hidden; a new
-report makes the node reappear automatically. `--show-inactive` includes all
-nodes for troubleshooting. Filtering does not reset watchdog history.
+report makes the node reappear automatically. `--include R011` keeps that
+selected node visible while waiting for its first report; repeat the option
+for other labels or physical `!radio` IDs. `--show-inactive` includes all
+nodes for troubleshooting. Filtering does not reset watchdog history. Legacy
+V3 gateways use distinct `V3-<eight-digit-radio-ID>` labels; old and active
+physical radios cannot share an ambiguous Legacy V3 row.
+
+On this KDE laptop, run through `kde-inhibit --power --screenSaver` to prevent
+automatic sleep and screen blanking while monitoring. The CLI reads its
+controlling terminal even when the inhibitor pipes stdin, so **Q** still
+works. Intentional P1 display-off remains available. P1 is a local KDE shortcut
+to `kscreen-doctor --dpms off`; the next key press wakes the display. It does
+not suspend or stop the CLI. This launcher does not itself configure locking.
 
 ## Reporting cadence
 
@@ -115,6 +128,7 @@ python scripts/watch-nodes.py --interval 5
 python scripts/watch-nodes.py --host my-meshlink-ssh-alias
 python scripts/watch-nodes.py --no-color
 python scripts/watch-nodes.py --show-inactive
+python scripts/watch-nodes.py --include R011
 python scripts/watch-nodes.py --json
 python scripts/watch-nodes.py --demo
 ```
@@ -126,10 +140,11 @@ Windows, native console capabilities determine cursor support. `NO_COLOR`
 disables automatic colors; monochrome values use `~` for aging, `!` for stale
 and `?` for unknown. `--color always` forces ANSI colors when desired.
 
-Below 100 columns the default table shows power/environment; choose
-`--view radio` for the radio columns. Short terminals clip supplementary details
-and indicate that they are hidden; enlarge the terminal or use `--once` to see
-everything. The watchdog matrix fits as many stream columns as the terminal
+Use `--view radio` for a separate radio-only export if needed. For the combined
+overview use at least 120 columns; narrower screens show a width notice and
+wrap watchdogs. A height notice states the required rows instead of silently
+discarding lower nodes. Enlarge the terminal to fit every node on one screen.
+The optional `--view watchdogs` matrix fits as many stream columns as the terminal
 allows and lists hidden types; use repeatable `--packet` filters to inspect
 them. `--json` includes per-type cadence, last receipt, remaining time, missed
 cycle count and state. `--demo` previews colors and changing cells with synthetic data and
@@ -189,3 +204,32 @@ across A/W/P/R, the exact four-hour cutoff, never-heard nodes, optional inactive
 display and reappearance based on a new receipt despite an old GPS fix.
 A live 00:18 Pacific snapshot shows 13 active nodes in the same grouped order
 and hides five inactive/never-heard nodes.
+
+## Combined-view audit - 2026-11-15
+
+The prior keep-awake launch left the CLI's stdin as a pipe even though stdout
+was a terminal. That disabled W/A/Q input. The POSIX keyboard reader now opens
+its controlling terminal when necessary, restores terminal attributes on exit,
+and is covered by a pseudo-terminal regression. A real `kde-inhibit` demo run
+accepts Q, exits zero and restores the alternate screen. The default overview
+needs no view-switching keys.
+
+The prior `--show-inactive` launch also exposed four radios labeled identically
+as Legacy V3 in an 80-column, 24-row terminal; lower rows were clipped. The
+active **!9ea13cc0** was not replaced by old data. Independent read-only SQL and
+raw-envelope checks agree on its **12:10:48 Pacific** latest receipt. The other
+three physical V3s last reported on October 25/29. Distinct full radio-ID
+labels now disambiguate them. The normal active view plus `--include R011`
+keeps the requested waiting node without showing those inactive historical
+rows; `--show-inactive` remains available explicitly.
+
+The combined overview retains source/receipt timestamps, per-stream deadlines,
+GPS fix-age handling, current polarity, SD's daily cadence and unknown values.
+It does not register radios, change MQTT/portal data or send radio commands.
+Missing ordinary R011 reports remain a separate hardware/profile/delivery gate.
+The local `~/.local/bin/meshlink-nodes` launcher runs this reviewed source from
+the isolated `local-data/node-dashboard-overview` checkout, reads the latest
+main-checkout roster/cadences, keeps R011 visible and uses the existing
+internal-interface SSH relay. Local relay files are under
+`~/.local/state/meshlink/`, outside Git. The subnet router's saved routing
+configuration was not changed.

@@ -3,10 +3,12 @@
 from datetime import datetime, timezone
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import sqlite3
 import unittest
+import time
 from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -53,6 +55,13 @@ class FreshnessTests(unittest.TestCase):
 
 
 class ArchiveTests(unittest.TestCase):
+    def test_legacy_gateways_have_distinct_physical_labels(self):
+        cfg = {"members": {}, "gateways": {}, "infrastructure": {
+            "!9ea13cc0": "legacy-v3-9ea13cc0", "!9e9f167c": "legacy-v3-9e9f167c"}}
+        nodes = sampler.configured_nodes(cfg, {})
+        self.assertEqual(len({n["label"] for n in nodes}), 2)
+        self.assertTrue(all(n["radio"][1:] in n["label"] for n in nodes))
+
     def test_duplicate_transport_copy_cannot_renew_a_sample(self):
         state = sampler.Measurements([node()])
         state.put("!12345678", "voltage", 3.8, at(NOW - 100), sample="packet-a")
@@ -237,6 +246,87 @@ class WatchdogTests(unittest.TestCase):
 
 
 class TerminalTests(unittest.TestCase):
+    def test_overview_shows_readings_and_each_watchdog_together(self):
+        text = watch.Dashboard(False).render(self.snapshot(), NOW, 0)
+        self.assertIn("3.800~", text)
+        self.assertIn("Dev=3m:+1:00~", text)
+        self.assertIn("Pwr=3m:3:00", text)
+        self.assertIn("GPS=2m:2:00", text)
+        self.assertNotIn("W timers", text)
+
+    def test_include_keeps_only_selected_inactive_radio_visible(self):
+        nodes = []
+        for i, label in enumerate(("R003", "R011")):
+            n = node()
+            n.update(label=label, radio=f"!{i:08x}", readings={}, watchdogs={})
+            nodes.append(n)
+        d = watch.Dashboard(False, include=["R011"])
+        self.assertEqual([n["label"] for n in d.display_nodes({"nodes": nodes}, NOW)], ["R011"])
+
+    def test_twenty_nodes_and_their_watchdogs_fit_a_tall_terminal(self):
+        nodes = []
+        for i in range(20):
+            n = node()
+            n.update(label=f"R{i + 1:03}", radio=f"!{i:08x}", readings={}, lastContactAt=at(NOW),
+                     watchdogs={s: {"cadenceSeconds": 180, "lastReceivedAt": at(NOW)}
+                                for s in ("device", "environment", "power", "snns", "position", "neighbor_info", "nodeinfo")})
+            nodes.append(n)
+        text = watch.Dashboard(False).render({"at": at(NOW), "nodes": nodes}, NOW, 0, width=165, height=52)
+        self.assertLess(len(text.splitlines()), 52)
+        for n in nodes:
+            self.assertIn(n["label"], text)
+        self.assertEqual(text.count("  WD "), 20)
+        self.assertEqual(text.count("StdNbr=3m:3:00"), 20)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX controlling-terminal regression")
+    def test_keyboard_reads_controlling_terminal_when_wrapper_pipes_stdin(self):
+        import pty
+        import signal
+        import termios
+        pid, master = pty.fork()
+        if pid == 0:
+            try:
+                terminal = os.open("/dev/tty", os.O_RDONLY)
+                saved = termios.tcgetattr(terminal)
+                reader, writer = os.pipe()
+                os.dup2(reader, 0)
+                os.close(reader)
+                os.close(writer)
+                received = False
+                with watch.keyboard(True) as get_key:
+                    os.write(1, b"READY\n")
+                    deadline = time.monotonic() + 2
+                    while time.monotonic() < deadline:
+                        if get_key() == "q":
+                            received = True
+                            break
+                        time.sleep(.01)
+                restored = termios.tcgetattr(terminal) == saved
+                os.close(terminal)
+                os._exit(0 if received and restored else 1)
+            except BaseException:
+                os._exit(2)
+        try:
+            import select
+            self.assertTrue(select.select([master], [], [], 2)[0], "child did not start")
+            os.read(master, 1024)
+            os.write(master, b"q")
+            deadline = time.monotonic() + 3
+            while time.monotonic() < deadline:
+                result, status = os.waitpid(pid, os.WNOHANG)
+                if result:
+                    pid = None
+                    self.assertEqual(os.waitstatus_to_exitcode(status), 0,
+                                     "keyboard ignored Q when stdin was a pipe")
+                    break
+                time.sleep(.02)
+            self.assertIsNone(pid, "keyboard test timed out")
+        finally:
+            if pid:
+                os.kill(pid, signal.SIGKILL)
+                os.waitpid(pid, 0)
+            os.close(master)
+
     def snapshot(self):
         n = node()
         n.update(watchdogs={"device": {"cadenceSeconds": 180, "lastReceivedAt": at(NOW - 240)},
@@ -270,12 +360,14 @@ class TerminalTests(unittest.TestCase):
         self.assertIn("3.800!", text)
         self.assertIn("SSH disconnected", text)
 
-    def test_narrow_terminal_keeps_primary_table_and_offers_radio_view(self):
+    def test_narrow_terminal_wraps_watchdogs_and_advises_widening(self):
         text = watch.Dashboard(True).render(self.snapshot(), NOW, 0, width=80, height=20)
         ansi = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
         self.assertTrue(all(len(ansi.sub("", line)) < 80 for line in text.splitlines()))
         self.assertLess(len(text.splitlines()), 20)
-        self.assertIn("--view radio", text)
+        self.assertIn("120+ columns", text)
+        for stream in ("Dev=", "Pwr=", "GPS="):
+            self.assertIn(stream, text)
 
     def test_feed_boolean_does_not_hide_dead_heartbeat(self):
         text = watch.Dashboard(False).render(self.snapshot(), NOW + 21, 0)

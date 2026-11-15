@@ -259,8 +259,9 @@ def configured_nodes(cfg, roster):
     for group, kind in (("members", "member"), ("infrastructure", "infrastructure")):
         for radio, key in cfg.get(group, {}).items():
             if radio not in nodes:
-                nodes[radio] = {"radio": radio, "label": "Legacy V3" if key.startswith("legacy-v3-") else key.upper(),
-                                "kind": "gateway" if radio in cfg["gateways"] else kind}
+                legacy = key.startswith("legacy-v3-")
+                nodes[radio] = {"radio": radio, "label": f"V3-{radio[1:]}" if legacy else key.upper(),
+                                "kind": "legacy" if legacy else "gateway" if radio in cfg["gateways"] else kind}
     registered = {**cfg.get("members", {}), **cfg.get("infrastructure", {})}
     for radio, node in nodes.items():
         node["registered"] = radio in registered
