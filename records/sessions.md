@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-14 - B002 authenticated over-the-air admin reads
+
+B002 !699ca878 on COM4 retains its enrolled key pair and 2.7.26.a56466d.
+Six PKI-encrypted admin reads pass: device role and telemetry settings on
+fresh R004 !49ac6d7f, R005 !a65601b3 and R007 !b456f760. Each returns CLIENT
+and 180-second device/environment/power intervals; exact source/request IDs
+and response types match. Requests use zero outgoing hops. B002's complete
+profile/keys are unchanged, and serial/lease handles are closed.
+[Measured evidence](../docs/operations/b002-ota-admin-20261114.md).
+
+No configuration write, reboot, flash or portal change. The ordinary sandbox
+COM4 denial is resolved by the approved serial-access run. Next: selected
+reversible write/readback/restoration and forced-relay/lost-command acceptance;
+the other seven repeaters remain untested here. Historical rebooting-write
+ACK ambiguity stays open. Changed-document link/whitespace checks and six
+independent packet/source/request-ID evidence assertions pass. Records branch
+codex/b002-ota-admin-20261114; unrelated root work is preserved.
+
 ## 2026-11-13 - G001 sleep and periodic-upload power estimates
 
 Owner reports about 160 mA from the portal/INA219 with an uncertain measurement
