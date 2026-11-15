@@ -1,5 +1,25 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R011 diagnosed; R005 replacement reaches CLI
+
+Owner reports no R011 data in the CLI. B003 survey ping to **!8737c2c9** passes
+**1/1 / 2.485 s**, uplink **-94 dBm / 3 dB**, downlink **-76 dBm / 5.5 dB**.
+CLI feed/registry/channel match, but no ordinary R011 reports; one PKI reply
+reaches G003 at **19:46:49Z**. Saved OK-to-MQTT is false, unlike other deployed
+units, explaining withholding with a public-address broker. [Diagnosis](../docs/operations/r011-telemetry-diagnosis.md).
+
+Owner replaces R011 with **R005 / !a65601b3** at the same supplied Angel Peak
+Vegas-side coordinates: **unnumbered ASA case, eight cells, one SMA Muzi,
+two 160 mA panels**. No case-number deduction. Retained bcb22e0, ROUTER,
+fixed location, keys/channel and 180-second reporting pass full reboot readback;
+R005's OK-to-MQTT is already true. No flash or R011 mutation. New **device,
+environment, SNNS and position** reach the CLI after configuration at
+**20:01:36-42Z**. Device **3.907 V**, environment INA **3.912 V / -268.2 mA**;
+no temperature/humidity observed. Local quiet is zero; no replacement ping.
+Separate PowerMetrics arrives at **20:01:53.689Z**, channel 1
+**3.912 V / -270.8 mA**. All four streams are fresh after configuration;
+sustained cadence, calibration, relay/coverage and runtime remain distinct. [Replacement evidence](../docs/operations/r005-angel-vegas-deployment.md).
+
 ## 2026-11-15 - R011 Angel Peak Vegas-side configuration verified
 
 Fresh **R011 / !8737c2c9** retains **2.7.26.bcb22e0**; owner selects Angel Peak

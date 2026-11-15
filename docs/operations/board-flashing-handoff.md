@@ -1,5 +1,13 @@
 # Board flashing and configuration handoff
 
+2026-11-15 **deployment configuration check:** explicitly verify
+`lora.config_ok_to_mqtt=true` for project reports expected in the CLI/portal.
+R011 retained its former reference restriction and is now replaced at Angel
+Peak Vegas Side by [R005](r005-angel-vegas-deployment.md), which already has
+that permission enabled. [Diagnosis](r011-telemetry-diagnosis.md). Preserve
+identity/keys and verify the complete intended profile through reboot; private
+network ownership alone does not bypass the gateway's public-address MQTT gate.
+
 2026-11-14 **fresh G003 vehicle gateway** is Heltec V3 **!849ad7a0**,
 formerly G002 V3. Owner-authorized full wipe without backup; verified existing
 **heltec-v3-gateway / 2.7.26.6fea6aa**, new own keys, CLIENT/private pilot

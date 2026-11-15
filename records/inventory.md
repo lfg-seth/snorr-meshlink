@@ -1,5 +1,17 @@
 # Hardware inventory
 
+## 2026-11-15 - R005 replaces R011; enclosure number unknown
+
+Owner explicitly replaces R011 with existing **R005 / !a65601b3** for Angel
+Peak Vegas Side: **eight cells**, **one SMA Muzi antenna**, **ASA enclosure**,
+**two 160 mA panels**. Case number is unknown and will be deduced later.
+Do not assign a matching case by resemblance or reuse the earlier Case 6
+number (its recorded panels are 200 mA). No purchase, expense, acquisition,
+cell capacity or inter-holder wiring is inferred. R005's INA219 fit was
+owner-confirmed, AHT21 previously not detected/unverified; new sensor readings
+remain separate. R011/Case 6 entry below is historical, no longer the current
+site assignment; current Case 6 disposition is unknown. [Configuration](../docs/operations/r005-angel-vegas-deployment.md).
+
 ## 2026-11-15 - R011 / Case 6 deployment allocation
 
 Owner assigns former REF1, fresh **R011 / !8737c2c9**, RAK4631, to

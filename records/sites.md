@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - Angel Peak Vegas Side reassigned to R005
+
+Owner replaces R011 with **R005 / !a65601b3** at the same supplied deployment
+coordinates. Replacement assembly: **unnumbered ASA case, eight cells, one
+SMA Muzi antenna, two 160 mA panels**. Case number will be deduced later;
+do not carry Case 6 onto this assignment. R011's earlier assignment is
+withdrawn; its saved old configuration is not changed during the swap.
+[Replacement](../docs/operations/r005-angel-vegas-deployment.md),
+[telemetry diagnosis](../docs/operations/r011-telemetry-diagnosis.md).
+
 ## 2026-11-15 - R011 selected for Angel Peak Vegas Side
 
 Owner assigns fresh **R011 / !8737c2c9**, **Case 6**, **eight cells** and

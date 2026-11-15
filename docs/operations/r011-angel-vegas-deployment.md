@@ -1,5 +1,10 @@
 # R011 Angel Peak Vegas-side deployment
 
+**Superseded later 2026-11-15:** owner replaces this assignment with
+[R005](r005-angel-vegas-deployment.md) after the
+[MQTT-permission diagnosis](r011-telemetry-diagnosis.md). R011 is not repaired
+or reset by that swap; the original configuration evidence below is historical.
+
 Owner selects **Angel Peak Vegas Side**, **R011**, **Case 6**, **eight cells**
 and **Muzi antenna** on 2026-11-15, then supplies the exact fixed coordinates.
 Exact coordinates and raw profiles remain private.

@@ -1,5 +1,59 @@
 # Session log
 
+## 2026-11-15 - R011 telemetry diagnosed; owner substitutes R005
+
+Owner reports no telemetry in the CLI activity software and selects B003
+for diagnosis. [Evidence](../docs/operations/r011-telemetry-diagnosis.md).
+Same existing tailnet SSH path reproduces no ordinary R011 receipt despite
+healthy worker/feed, registered ID and matching private channel. Direct SSH
+fails; the active CLI's existing router wrapper works. B003 cached device
+metrics do not prove sample freshness. Temporary standard receiver sessions
+restore its idle survey service; no complete-profile change. The first capture
+has a JSON bytes error; corrected capture/three telemetry requests find no
+matched R011 replies at B003. One authenticated zero-hop survey ping passes
+**1/1 / 2.485 s**, **-94 dBm / 3 dB** up and **-76 dBm / 5.5 dB** down;
+stop and restore prior R001 target/timing. Ping renews 900-second quiet.
+Raw archive shows one G003-received PKI R011-to-B003 reply, correctly excluded
+from ordinary CLI telemetry. R011 saved **OK to MQTT=false**, missed while
+converting former REF1; gateway source withholds ordinary non-consenting
+traffic with a public broker address. No repair on R011 is claimed.
+
+When R005 USB appears, leave it unchanged until the owner explicitly swaps
+R011 out for **R005 / !a65601b3**, same supplied Angel Peak Vegas-side coordinates.
+Replacement enclosure is **unnumbered ASA, eight cells, one SMA Muzi, two
+160 mA panels**; case deduction deferred, no Case 6 inference. R011 is
+withdrawn with its old saved ROUTER/location/false permission unchanged.
+[Replacement evidence](../docs/operations/r005-angel-vegas-deployment.md).
+
+R005 USB **AA474A4710B85C2C**, hardware **2c5cb810474a47aab30156a671567827**,
+retains **bcb22e0**; upload permission already true. Set ROUTER/exact fixed
+coordinates and preserve own keys/channel/radio plus enabled 180-second
+telemetry and SNNS. Complete intended profile/metadata/owner/location passes
+before and after explicit reboot. Initial USB I/O error and one unexpected
+final-read process exit recover by read-only retries; no mutation repeated.
+No flash/reset, gateway/server/portal mutation or R011 write. Serial closed;
+owner asks whether unplugging is safe and is told yes after verification.
+
+New ordinary R005 **position 20:01:36Z, SNNS 20:01:39Z, device/environment
+20:01:42Z, power 20:01:53.689Z** reach the same CLI. Device **3.907 V**;
+INA CH1 **3.912 V / -270.8 mA** in CLI representation; no temperature/humidity.
+Source/receipt clocks retained. No old history or PKI counted. Read-only local
+state has quiet zero/suppressed zero; first raw handshake needs normal nRF52
+DTR, second passes without RF/config writes. Survey event-ring drops are 33,
+not a LoRa-loss measurement. No replacement ping; actual all-gateway receipt,
+calibration, sustained cadence/relay/coverage/runtime remain separate.
+
+Update current site/assembly/roster/project/tracker, preserve historical R011
+and Case 6 records, add R005 fixed-position baseline and MQTT consent check
+to commissioning handoff. Exact full-profile/key/channel/location assertions,
+new-receipt cutoff checks, dashboard baseline loader and docs/whitespace pass.
+No artificial unit regression is added for a hardware/configuration defect;
+private live readback and receipt harnesses provide the actual pass/fail seam.
+Private payloads/locations/keys remain ignored; no debug instrumentation is
+installed. Next: deduce enclosure number when selected, sustained/field gates;
+R011 correction/role/location reassignment only if owner selects reuse.
+Branch `codex/r005-angel-vegas-20261115`; completed commit/push at handoff.
+
 ## 2026-11-15 - R011 Angel Peak Vegas-side deployment configuration
 
 Owner selects **R011 / !8737c2c9**, **Case 6**, **eight cells**, **Muzi antenna**

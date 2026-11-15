@@ -12,7 +12,7 @@
     "!05237743": {"profile": "rak-client"},
     "!b4d6bc9f": {"profile": "rak-client"},
     "!49ac6d7f": {"profile": "rak-client"},
-    "!a65601b3": {"profile": "rak-client"},
+    "!a65601b3": {"profile": "rak-client", "streams": {"position": 21600}},
     "!638b9515": {"profile": "rak-client"},
     "!b456f760": {"profile": "rak-client"},
     "!120b04fd": {"profile": "rak-client"},
