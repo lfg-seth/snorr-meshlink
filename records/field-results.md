@@ -1,5 +1,18 @@
 # Field testing and tangible results
 
+## 2026-11-15 - G001 SD recording and own-uplink SD-health pass
+
+USB **!1bbf0638 / 2.7.26.5bd4923** confirms selected Wi-Fi/direct MQTT at
+**−67 to −65 dBm**. Healthy SD sync frames rise **344 → 393** with zero drops.
+New **SNSD sequence 413**, interval **300 seconds**, reaches G001's own broker
+uplink at **15:17:09 Pacific**, reporting **13,631,488 / 31,902,400,512 bytes**
+and zero dropped records. Actual collector >25% channel-utilization skip
+confirms intermittent radio admission deferral; exact cause of earlier missing
+reports remains unisolated. Temporary structured logging restored; original
+complete profile unchanged, serial/subscriber closed. Sustained cadence,
+portal presentation, copied-file integrity and runtime remain separate.
+[Evidence](../docs/operations/g001-usb-diagnosis-20261115.md).
+
 ## 2026-11-15 - G001 replacement Wi-Fi and direct MQTT connect
 
 Owner-selected SSID/password persist on **!1bbf0638 / 2.7.26.5bd4923** after

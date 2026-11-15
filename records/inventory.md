@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-11-15 - G001 existing SD card recording verified
+
+Owner confirms the existing G001 card is inserted and unchanged. USB diagnostics
+on **!1bbf0638 / F8:5B:1B:BF:06:38 / 2.7.26.5bd4923** show healthy SD sync,
+increasing frame count and zero drops. Fresh own-uplink SD telemetry reports
+**13,631,488 / 31,902,400,512 filesystem bytes**. No card purchase, replacement,
+format, quantity or nominal-capacity change. Copied-file verification and
+endurance remain open. [Diagnosis](../docs/operations/g001-usb-diagnosis-20261115.md).
+
 ## 2026-11-15 - R010 / Case 4 allocated to Upper Bristle
 
 Owner selects **R010 / !77fdb9f1 / Case 4 / eight cells / Muzi antenna** for

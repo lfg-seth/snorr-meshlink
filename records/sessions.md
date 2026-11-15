@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-15 - G001 USB diagnosis verifies SD recording and own MQTT report
+
+Owner reconnects G001 and confirms its SD card is inserted/unchanged. Exact
+**!1bbf0638 / F8:5B:1B:BF:06:38 / 2.7.26.5bd4923** and full saved profile
+match prior Wi-Fi verification. Repeated USB reads confirm selected Wi-Fi and
+direct MQTT at **−67 to −65 dBm**; interval stays **300 seconds**.
+Structured recorder diagnostics show frames **344 → 393**, healthy sync and
+zero drops. Fresh own-uplink **SNSD sequence 413** arrives **15:17:09 Pacific**,
+source/gateway both G001, **13,631,488 / 31,902,400,512 bytes**, zero drops.
+Own telemetry/SNGH/SNNS/SNWF and forwarded traffic also reach the broker.
+[Diagnosis and evidence](../docs/operations/g001-usb-diagnosis-20261115.md).
+
+Actual collector **>25% channel-utilization skip** is observed; this can defer
+SD telemetry, but the earlier gap's sole cause is not established. One new
+report does not verify inter-report cadence or portal ingestion. No firmware
+fix, flash or reset; temporary structured logging is restored false and full
+original profile passes independent readback. Serial/subscriber closed.
+Docs/whitespace pass. Next: sustained report/portal acceptance and copied-card
+inspection. Records branch `codex/g001-wifi-test-20261115`; commit/push at handoff.
+
 ## 2026-11-15 - G001 direct MQTT delivery confirmed; SD report not observed
 
 Owner asks whether SD telemetry/MQTT is working on the replacement Wi-Fi.
