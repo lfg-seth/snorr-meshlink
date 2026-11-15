@@ -1,5 +1,19 @@
 # Hardware inventory
 
+## 2026-11-14 - Fresh G002 screenless SD gateway
+
+Owner selects newly connected Heltec V4 **G002 / !1bbf0ab8**, USB
+**F8:5B:1B:BF:0A:B8**, with SD and INA219. ESP32-S3, embedded 2 MB PSRAM,
+16 MB flash and both attached antennas confirmed. Installed published
+**heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**; own keys and G001-style
+300-second private gateway profile pass explicit-reboot readback. INA219 at
+0x40 and the 16 KB SD remount/read test pass; live logging/SD reports are healthy
+with zero dropped records. Authenticated portal registration preserves old V3
+**!849ad7a0** as **legacy-v3-849ad7a0** and retains its history.
+Stock relationship, PCB subrevision, battery/case/solar/site and current
+calibration remain unknown; no purchase, price or aggregate-stock change inferred.
+[Recovery, RF acceptance and remaining gates](../docs/operations/g002-screenless-gateway.md).
+
 ## 2026-11-13 - G001 SD cadence firmware
 
 Screenless **G001 `!1bbf0638`**, USB **F8:5B:1B:BF:06:38**, now runs

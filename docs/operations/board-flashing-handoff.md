@@ -1,5 +1,13 @@
 # Board flashing and configuration handoff
 
+**Fresh G002, 2026-11-14.** New screenless V4 **!1bbf0ab8**, USB
+**F8:5B:1B:BF:0A:B8**, runs **heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb**.
+G001-style 300-second profile, own PKI, INA219, SD and authenticated responder
+enrollment are saved and reboot-verified. The new inherited target keeps the
+SD gateway and adds direct-hop PING/PONG. Larger app0 layout; use this board's
+complete recovery backup to recover its factory layout. Old G002 V3 history
+is preserved under legacy-v3-849ad7a0. [Exact image, acceptance and recovery](g002-screenless-gateway.md).
+
 **G001 SD cadence update, 2026-11-13.** Current installed app is
 `heltec-v4-sd-gateway / 2.7.26.5bd4923`. SD-health timing follows
 `telemetry.device_update_interval`, currently 300 seconds; MeshLink 0.3.1
