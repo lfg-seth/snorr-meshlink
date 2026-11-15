@@ -16,6 +16,8 @@ These are individual exchanges at the bench. Private run evidence is in `private
 
 ## Additional RAKs flashed over USB
 
+After the flash batches below, R006, R009 and R010, then R001, R002, R008 and R011 each received the original tester's pairing over USB. All seven independently rebooted, reported enrollment and matched their own saved profile and keys. Before the tester update, its existing R004, R005, R007 and G002 selections were checked and its live filesystem and NVS backed up. [Expanded tester application and checksums](https://github.com/lfg-seth/firmware/releases/tag/snorr-survey-tester-2.7.26.7b766e6-pre.1).
+
 The owner deferred RF tests and survey enrollment for this batch. Each USB identity, hardware ID and radio ID matched the roster. The application-only UF2 matched the published SHA-256 in the table below. Each board had a private configuration backup before the write. A new boot ID and a native USB readback confirmed the installed image, owner settings, local and module configuration, channel settings and keys.
 
 | Repeater | Radio ID | USB port | Previous build | Post-reboot readback |

@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Seven RAK responder enrollments
+
+R001, R002, R006, R008, R009, R010 and R011 each retained the original Heltec tester pairing and their saved profile and keys after a USB reboot. The tester accepted its four previous peers, including G002. The new application and host adapter passed the migration and capacity checks. The original tester disconnected after backup and before the application write. Next, reconnect the tester for the write and verify all eleven peers across its reboot. [Commissioning record and release](../docs/operations/survey-firmware-20261114.md#additional-raks-flashed-over-usb).
+
 ## 2026-11-14 - Seven application-only RAK updates across two batches
 
 Flashed R001, R002, R008 and former REF1, then R006, R009 and R010, with the pinned survey image. The owner assigned former REF1 to R011. All seven rebooted on LongFast slot 35 with their original keys. R009 retained enabled GPS at 120 seconds. R011's original automatic buzzer setting reads back as GPIO 21. RF and enrollment were deferred. Ten numbered repeaters now have the survey firmware. R003 retains its separate hardware hold. [Board readbacks and assignment](../docs/operations/survey-firmware-20261114.md#additional-raks-flashed-over-usb).
