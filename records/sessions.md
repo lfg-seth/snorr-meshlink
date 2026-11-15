@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-14 - Identify the selected survey repeater on the map
+
+The map now marks the client-selected site with an amber ring and target ID.
+**Show target** frames the site and available vehicle fix. A dotted bearing
+shows their geographic relationship. The target panel identifies the coordinate
+source and displays the last matching result for the current session and segment.
+The two preview repeaters use built-in simulator coordinates. Operators can
+enter or import fixed site records for live target IDs.
+
+Verified target framing on the private HTTPS preview at phone size, plus
+target switching, sample filtering, missing coordinates, reply and timeout states
+in the disposable browser suite. Updated browser assets in place while the
+desktop recorder continued serving. Next, owner checks target legibility on
+Duo/iPad. [Map behavior and sources](../survey-app/README.md#reading-the-target-on-the-map).
+
 ## 2026-11-14 - Private direct-hop survey app and phone map
 
 Delivered the [separate survey app](../survey-app/README.md) with a deterministic

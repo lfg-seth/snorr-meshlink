@@ -221,6 +221,74 @@ async function main() {
       await textIs("#range", "−135 to −70 dBm");
     });
     await check(
+      "Target framing, sample filter and repeater coordinates",
+      async () => {
+        await page.setViewportSize({ width: 382, height: 580 });
+        await page.locator("#openMap").click();
+        await textIs("#mapTargetId", "SIM-R01");
+        await textIs("#siteOrigin", "Simulator coordinates");
+        await page.locator("#maplayers summary").click();
+        await page.locator("#filter").selectOption("SIM-R02");
+        await page.locator("#maplayers summary").click();
+        await page.locator("#locateTarget").click();
+        assert.equal((await state()).state.target_id, "SIM-R01");
+        await page.waitForFunction(() => {
+          const canvas = document.querySelector("#map");
+          const pixels = canvas
+            .getContext("2d")
+            .getImageData(0, 0, canvas.width, canvas.height).data;
+          for (let i = 0; i < pixels.length; i += 4) {
+            if (
+              pixels[i] === 255 &&
+              pixels[i + 1] === 215 &&
+              pixels[i + 2] === 126
+            )
+              return true;
+          }
+          return false;
+        });
+        await page.screenshot({
+          path: path.join(dir, "selected-repeater-382.png"),
+        });
+        await page.locator("#closeMap").click();
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.locator("#scenario").selectOption("Timeouts");
+        await page.waitForFunction(
+          () =>
+            document
+              .querySelector("#mapReply")
+              .textContent.startsWith("Timed out"),
+          null,
+          { timeout: 16000 },
+        );
+        await page.locator("#scenario").selectOption("Strong link");
+        await page.waitForFunction(
+          () =>
+            document
+              .querySelector("#mapReply")
+              .textContent.startsWith("Replied"),
+          null,
+          { timeout: 16000 },
+        );
+        const missing = await ctx.newPage();
+        try {
+          await missing.route("**/api/state", async (route) => {
+            const response = await route.fetch(),
+              snapshot = await response.json();
+            delete snapshot.sites[snapshot.state.target_id];
+            await route.fulfill({ response, json: snapshot });
+          });
+          await missing.goto(url);
+          await missing
+            .getByText("Site position unknown", { exact: true })
+            .waitFor();
+          assert.ok(await missing.locator("#locateTarget").isDisabled());
+        } finally {
+          await missing.close();
+        }
+      },
+    );
+    await check(
       "Basemap outage leaves commands and recording available",
       async () => {
         await page.locator("#scenario").selectOption("Map outage");
@@ -278,6 +346,8 @@ async function main() {
         await page.waitForFunction(() =>
           document.querySelector("#facts").textContent.includes("SIM-R02"),
         );
+        await textIs("#mapTargetId", "SIM-R02");
+        await textIs("#mapReply", "No result this segment");
       },
     );
     await check("Replay, export and immutable history", async () => {

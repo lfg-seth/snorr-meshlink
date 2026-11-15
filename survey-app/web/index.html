@@ -75,6 +75,21 @@
               Open map ↗
             </button>
           </div>
+          <div id="targetHome">
+            <div id="mapTarget">
+              <div>
+                <span class="eyebrow">Target repeater</span
+                ><strong id="mapTargetId">—</strong>
+              </div>
+              <div class="target-evidence">
+                <span id="mapReply">Awaiting state</span
+                ><small id="siteOrigin"></small>
+              </div>
+              <button id="locateTarget" type="button" disabled>
+                Show target
+              </button>
+            </div>
+          </div>
           <div id="maphome">
             <div class="mapstage">
               <canvas
@@ -114,14 +129,15 @@
                     <option value="rssi_dbm">RSSI</option>
                   </select></label
                 ><label
-                  >Show target<select id="filter">
+                  >Samples for<select id="filter">
                     <option value="">All targets</option>
                   </select></label
                 >
               </div>
               <div class="legend">
                 <span class="ramp"></span><span id="range">−20 to +10 dB</span
-                ><span>× Timeout</span><span>△ Site</span>
+                ><span>× Timeout</span><span>△ Site</span
+                ><span>··· Target bearing</span>
               </div>
             </div>
           </div>
@@ -244,9 +260,11 @@
             ← Survey</button
           ><span class="map-source" id="fullSource"></span>
         </div>
+        <div id="targetMount"></div>
         <div class="pills" aria-label="Survey indicators">
-          <span id="pillTarget"></span><span id="pillSignal"></span
-          ><span id="pillGps"></span><span id="pillRecord"></span><span id="pillMap" hidden></span>
+          <span id="pillRun"></span><span id="pillSignal"></span
+          ><span id="pillGps"></span><span id="pillRecord"></span
+          ><span id="pillMap" hidden></span>
         </div>
       </div>
       <div class="hudfoot">

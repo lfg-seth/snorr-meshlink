@@ -650,6 +650,62 @@ main {
 #pillRecord {
   color: #1c523a;
 }
+#mapTarget {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  background: #fff5da;
+  color: #352a16;
+  border-left: 5px solid #ac5e0e;
+  padding: 6px 12px;
+}
+#mapTarget .eyebrow {
+  color: #72480d;
+  margin: 0;
+}
+#mapTargetId {
+  font:
+    700 16px/1.3 ui-monospace,
+    Consolas,
+    monospace;
+  overflow-wrap: anywhere;
+}
+.target-evidence {
+  display: grid;
+  font-size: 13px;
+}
+#siteOrigin {
+  font-size: 12px;
+  color: #665338;
+}
+#locateTarget {
+  margin-left: auto;
+  padding-inline: 10px;
+  font-size: 14px;
+  pointer-events: auto;
+}
+#targetMount #mapTarget {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px #26342432;
+}
+@media (max-width: 430px) {
+  #mapTarget {
+    gap: 4px 8px;
+    padding-inline: 7px;
+  }
+  .target-evidence {
+    flex: 1;
+  }
+}
+@media (max-height: 420px) and (min-width: 481px) {
+  #targetMount {
+    max-width: calc(100% - 195px);
+  }
+}
 .hudfoot {
   bottom: max(36px, calc(env(safe-area-inset-bottom) + 28px));
 }

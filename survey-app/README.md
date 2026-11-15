@@ -46,6 +46,12 @@ The host binds to 127.0.0.1. HTTPS on the private tailnet uses Tailscale Serve. 
 
 The baseline uses four-edge safe areas, viewport-relative sizing and container resize observation. It preserves state across layout changes and uses Pointer Events for map gestures. [WebKit Duo viewport guidance](https://webkit.org/blog/18486/webkit-features-for-safari-27-1/). [WebKit safe areas](https://webkit.org/blog/7929/designing-websites-for-iphone-x/).
 
+### Reading the target on the map
+
+The amber ring and **TARGET** label identify the repeater selected by the client. **Show target** brings its fixed site into view along with the vehicle when GPS is available. The dotted line shows the geographic bearing to the selected site. The reply or timeout time comes from the most recent completed result matching that target, session and configuration segment. **Samples for** filters historical measurements and leaves the selected repeater in view.
+
+The simulation supplies two preset repeater IDs and coordinates. A saved site record for the same ID takes precedence on the map. In live mode, the client reports the target node ID through the firmware USB adapter. Enter or import its fixed coordinates under **Setup → Fixed repeater locations**. A target with unknown coordinates still shows its ID and results. Replay uses the site positions stored with the recording.
+
 ## Recording and recovery
 
 The host ticks independently of HTTP clients. The firmware owns RF scheduling, GPS gating and the heartbeat interlock. The simulator models those responsibilities inside its adapter. Each source has a separate SQLite database below ignored `local-data/direct-hop-survey/{simulation,live}/`. A source lease prevents concurrent hosts from opening the same source directory. Keep the same data directory for reconnect and replay. To move a recording, stop the host before copying its data directory, or use SQLite's online backup API.

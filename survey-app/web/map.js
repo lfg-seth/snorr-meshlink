@@ -5,7 +5,10 @@ function world(lon, lat) {
   return [(lon + 180) / 360, (1 - Math.asinh(Math.tan(rad)) / Math.PI) / 2];
 }
 function good(g) {
-  return g?.valid && Number.isFinite(g.lat_deg) && Number.isFinite(g.lon_deg);
+  return g?.valid && hasPosition(g);
+}
+export function hasPosition(g) {
+  return Number.isFinite(g?.lat_deg) && Number.isFinite(g?.lon_deg);
 }
 function color(value, metric) {
   if (!Number.isFinite(value)) return "#737975";
@@ -42,6 +45,7 @@ export class SurveyMap {
     this.area = null;
     this.outage = false;
     new ResizeObserver(() => this.draw()).observe(this.canvas);
+    el("locateTarget").onclick = () => this.frameTarget();
     el("follow").onclick = () => {
       this.setFollow(!this.follow);
       this.draw();
@@ -238,6 +242,36 @@ export class SurveyMap {
     this.zoom = clamp(this.zoom + d, 9, 16);
     this.draw();
   }
+  frameTarget() {
+    const site = this.sites[this.target];
+    if (!hasPosition(site)) return;
+    const dest = world(site.lon_deg, site.lat_deg);
+    const start = good(this.gps)
+      ? world(this.gps.lon_deg, this.gps.lat_deg)
+      : dest;
+    const w = this.canvas.clientWidth,
+      h = this.canvas.clientHeight;
+    const full = el("mapdialog").open;
+    const top = full
+      ? document.querySelector(".maphud").getBoundingClientRect().bottom + 20
+      : 64;
+    const bottom = full
+      ? document.querySelector(".hudfoot").getBoundingClientRect().top - 16
+      : h - 27;
+    const usableHeight = Math.max(32, bottom - top);
+    const usableWidth = Math.max(48, w - (full ? 146 : 88));
+    const fit = Math.min(
+      usableWidth / Math.abs(dest[0] - start[0]),
+      usableHeight / Math.abs(dest[1] - start[1]),
+    );
+    this.setFollow(false);
+    this.zoom = clamp(Math.min(this.zoom, Math.log2(fit / 256)), 9, 16);
+    this.placeAnchor(
+      [(start[0] + dest[0]) / 2, (start[1] + dest[1]) / 2],
+      [full ? w / 2 - 25 : w / 2, clamp((top + bottom) / 2, h * 0.3, h * 0.8)],
+    );
+    this.draw();
+  }
   update(rows, state) {
     this.rows = rows;
     this.sites = state.sites || {};
@@ -350,6 +384,17 @@ export class SurveyMap {
     el("range").textContent =
       metric === "snr_db" ? "−20 to +10 dB" : "−135 to −70 dBm";
     this.hits = [];
+    const targetSite = this.sites[this.target];
+    if (good(this.gps) && hasPosition(targetSite)) {
+      g.beginPath();
+      g.moveTo(...ll(this.gps.lon_deg, this.gps.lat_deg));
+      g.lineTo(...ll(targetSite.lon_deg, targetSite.lat_deg));
+      g.strokeStyle = "#875009";
+      g.lineWidth = 2;
+      g.setLineDash([2, 5]);
+      g.stroke();
+      g.setLineDash([]);
+    }
     g.beginPath();
     let last = null;
     for (const r of this.rows) {
@@ -414,13 +459,7 @@ export class SurveyMap {
       }
     }
     for (const [name, p] of Object.entries(this.sites)) {
-      if (
-        !p ||
-        !Number.isFinite(p.lat_deg) ||
-        !Number.isFinite(p.lon_deg) ||
-        (filter && filter !== name)
-      )
-        continue;
+      if (!hasPosition(p) || name === this.target) continue;
       const [x, y] = ll(p.lon_deg, p.lat_deg);
       g.beginPath();
       g.moveTo(x, y - 7);
@@ -445,6 +484,30 @@ export class SurveyMap {
       g.strokeStyle = "white";
       g.lineWidth = 2;
       g.stroke();
+    }
+    if (hasPosition(targetSite)) {
+      const [x, y] = ll(targetSite.lon_deg, targetSite.lat_deg);
+      g.beginPath();
+      g.arc(x, y, 11, 0, 2 * Math.PI);
+      g.fillStyle = "#ffd77e";
+      g.fill();
+      g.strokeStyle = "#643710";
+      g.lineWidth = 2.5;
+      g.stroke();
+      g.beginPath();
+      g.moveTo(x, y - 7);
+      g.lineTo(x + 6, y + 5);
+      g.lineTo(x - 6, y + 5);
+      g.closePath();
+      g.fillStyle = "#492d0e";
+      g.fill();
+      const label = "TARGET · " + this.target;
+      g.font = "bold 12px system-ui";
+      const width = g.measureText(label).width + 12;
+      const left = x + 16 + width < w ? x + 16 : x - 16 - width;
+      g.fillRect(left, y - 11, width, 22);
+      g.fillStyle = "#fff4d6";
+      g.fillText(label, left + 6, y + 4);
     }
     const lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * this.center[1])));
     const meters = (100 * 40075017 * Math.cos(lat)) / sz;

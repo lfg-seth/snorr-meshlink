@@ -1,4 +1,4 @@
-import { SurveyMap } from "./map.js";
+import { SurveyMap, hasPosition } from "./map.js";
 const $ = (id) => document.getElementById(id);
 const uid = () =>
   Array.from(crypto.getRandomValues(new Uint32Array(4)), (x) =>
@@ -151,6 +151,7 @@ const mapDialog = $("mapdialog"),
 function openMap() {
   if (mapDialog.open) return;
   $("mapmount").append(stage);
+  $("targetMount").append($("mapTarget"));
   $("optionmount").append($("mapsettings"));
   $("pickmount").append($("pick"));
   document.body.classList.add("map-open");
@@ -162,6 +163,7 @@ function closeMap() {
   if (!mapDialog.open) return;
   mapDialog.close();
   $("maphome").append(stage);
+  $("targetHome").append($("mapTarget"));
   $("optionshome").append($("mapsettings"));
   $("pickhome").append($("pick"));
   $("maplayers").open = false;
@@ -241,6 +243,54 @@ $("target").onchange = () =>
   runAction(() => send("set_target", { target_id: $("target").value }));
 $("scenario").onchange = () =>
   runAction(() => api("/api/simulation", { scenario: $("scenario").value }));
+function isTargetResult(row, state) {
+  const data = row?.event.data;
+  return (
+    !!state.session_id &&
+    row?.event.name === "result" &&
+    data.target_id === state.target_id &&
+    data.session_id === state.session_id &&
+    data.segment_id === state.segment_id &&
+    data.status !== "late" &&
+    !data.duplicate
+  );
+}
+function targetSummary(state, site, result, isReplay) {
+  const id = state.target_id;
+  $("mapTargetId").textContent = id || "Unselected";
+  $("locateTarget").disabled = !hasPosition(site);
+  if (!id) {
+    $("siteOrigin").textContent = "";
+  } else if (!hasPosition(site)) {
+    $("siteOrigin").textContent = "Site position unknown";
+  } else if (isReplay) {
+    $("siteOrigin").textContent = "Recorded site position";
+  } else {
+    const preset = host.hello.targets?.[id];
+    const matches =
+      preset?.lat_deg === site.lat_deg && preset?.lon_deg === site.lon_deg;
+    $("siteOrigin").textContent = matches
+      ? host.source === "simulation"
+        ? "Simulator coordinates"
+        : "Adapter coordinates"
+      : "Saved site coordinates";
+  }
+  const status = result?.event.data.status;
+  const when = result ? new Date(result.received_ms).toLocaleTimeString() : "";
+  $("mapReply").textContent = !id
+    ? "No target selected"
+    : !result
+      ? state.session_id
+        ? "No result this segment"
+        : "No survey result"
+      : (status === "success"
+          ? "Replied"
+          : status === "timeout"
+            ? "Timed out"
+            : status || "Result") +
+        " · " +
+        when;
+}
 function render() {
   const s = host.state,
     caps = host.hello,
@@ -275,25 +325,18 @@ function render() {
   $("simlabel").hidden = host.source !== "simulation";
   options($("scenario"), caps.scenarios || [], s.scenario);
   $("scenario").disabled = !connected || !host.has_control || busy;
-  const newest = rows.findLast(
-    (r) =>
-      r.event.name === "result" &&
-      r.event.data.session_id === s.session_id &&
-      r.event.data.target_id === s.target_id &&
-      !["late"].includes(r.event.data.status),
-  );
+  const newest = rows.findLast((r) => isTargetResult(r, s));
   if (newest) latestResult = newest;
-  const result =
-    latestResult && latestResult.event.data.target_id === s.target_id
-      ? latestResult.event.data
-      : null;
+  const result = isTargetResult(latestResult, s)
+    ? latestResult.event.data
+    : null;
   $("up").textContent = readings(result?.uplink);
   $("down").textContent = readings(result?.downlink);
   const gps = s.gps || {};
   const mapState = playback?.state || s;
   const mapGps = mapState.gps || {};
   const mapResult = playback
-    ? playback.rows.findLast((r) => r.event.name === "result")?.event.data
+    ? playback.rows.findLast((r) => isTargetResult(r, mapState))?.event.data
     : result;
   $("fullSource").textContent = playback
     ? host.source === "simulation"
@@ -302,10 +345,14 @@ function render() {
     : host.source === "simulation"
       ? "Simulation"
       : "Live";
-  $("pillTarget").textContent =
-    (mapState.target_id || "No target") +
-    " · " +
-    (mapState.run_state || "unknown");
+  $("pillRun").textContent = mapState.run_state || "Awaiting state";
+  if (!playback)
+    targetSummary(
+      s,
+      host.sites?.[s.target_id],
+      result ? latestResult : null,
+      false,
+    );
   const mapDir = $("direction").value,
     mapMetric = $("metric").value;
   $("pillSignal").textContent =
@@ -620,6 +667,12 @@ async function replayStep() {
     if (["result", "gps", "gap", "transport_lost"].includes(e.name))
       p.rows = p.rows.concat(r).slice(-600);
     fieldMap.update(p.rows, { state: p.state, sites: p.sites });
+    targetSummary(
+      p.state,
+      p.sites[p.state.target_id],
+      p.rows.findLast((row) => isTargetResult(row, p.state)),
+      true,
+    );
     $("replaytime").textContent =
       new Date(r.received_ms).toLocaleTimeString() +
       " · " +
@@ -684,7 +737,7 @@ $("exitReplay").onclick = () => {
   playback = null;
   $("replaybar").hidden = true;
   $("pick").hidden = true;
-  fieldMap.update(rows, host);
+  render();
 };
 async function sync() {
   if (syncing) return syncing;
