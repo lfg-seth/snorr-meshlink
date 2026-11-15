@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-11-14 - RF slot and preset comparison
+
+LongFast median queue waits were 271 ms on slot 35, 333 ms on slot 61 and 363 ms back on slot 35. No outside packets were decoded in those trials. ShortFast with a two-second timeout led the completed runs with 144 on-air PINGs and 108 confirmed round trips in three minutes. The owner stopped the last MediumFast run at 34.92 seconds. [Measurement table and method](../docs/operations/survey-rf-comparison-20261114.md).
+
 ## 2026-11-14 - Four-board direct-hop bench
 
 Installed and reboot-verified survey firmware `2.7.26.bcb22e0` on three RAK responders and the original GPS Heltec V4. The owner stopped the adaptive three-target soak after 3,013.484 seconds. It recorded 744 successful round trips and 118 timeouts, plus one in-flight cancellation. Median RTT was 2.086 seconds. Both link-direction metrics matched independent observations for every success. All selected, recognized requests produced a responder TX. Ten of 2,335 direct PING decodes had no matching quiet renewal. Five delayed requests account for those ten observations. Live GNSS supplied 2,383 valid samples out of 3,004. The client acknowledged stop and the station lease is released. Natural quiet expiry, the full two hours and field geometry remain open. [Cadence trials, timeout attribution and per-RAK evidence](../docs/operations/survey-firmware-20261114.md#owner-stopped-adaptive-soak).

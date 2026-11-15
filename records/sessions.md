@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Short RF comparisons and owner-requested stop
+
+Completed eight short trials. ShortFast with a two-second timeout led at 47.99 PINGs/min and 35.99 confirmed round trips/min. Slot 61 fell between the slot-35 controls for LongFast queue delay. Stopped the ninth run on request and restored the four original LongFast slot-35 profiles. Field range and the earlier delayed-PING freshness question remain open. [Measured results](../docs/operations/survey-rf-comparison-20261114.md).
+
 ## 2026-11-14 - Installed four survey boards and stopped the RF soak on request
 
 Verified the three RAKs and original GPS Heltec V4 on `2.7.26.bcb22e0` after individual restarts, enrolled them over USB and measured real RF, GNSS and heartbeat behavior. The owner stopped the three-target run at 50 minutes 13 seconds. The client acknowledged STOP and reported idle. Serial handles and the station lease were released. Of 862 completed attempts, 744 succeeded, including matching independent measurements in both directions. Publication contains aggregate evidence only. Next, resolve the delayed-PING freshness boundary and repeat the duration/expiry checks when the owner restarts testing. [Bench measurements and remaining gates](../docs/operations/survey-firmware-20261114.md#owner-stopped-adaptive-soak).
