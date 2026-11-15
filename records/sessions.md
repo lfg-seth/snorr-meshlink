@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-15 - Portal Tailscale installed; TUN access required
+
+Owner requests login on the active-node CLI's server, supplies `10.1.20.237`
+after local DNS failure and explicitly approves installation/service enablement.
+Installed Tailscale 1.104.7 and its keyring from the official signed Ubuntu Noble
+repository. SSH succeeds with the existing hostname's host-key alias.
+Service enablement passes, but startup fails because `/dev/net/tun` is absent;
+journal/device checks confirm the blocker. Direct login cannot reach the daemon,
+so tailnet enrollment remains incomplete. No Proxmox change or restart occurred.
+[Hosting evidence and next action](sites.md#portal-hosting-record--owners-proxmox-lxc).
+
+Next: owner enables TUN device passthrough and stops/starts the container, or
+supplies the Proxmox SSH host/container ID; then restart tailscaled, retry login
+and verify enrollment/connectivity. Records branch
+`codex/portal-tailscale-20261115`; commit/push reported at handoff.
+
 ## 2026-11-15 - Publish all pending project updates
 
 Owner requests publication of all project updates. Consolidated the original

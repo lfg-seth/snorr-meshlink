@@ -98,6 +98,19 @@ Create a separate entry when a specific site is identified. Record hardware IDs,
 
 ### Portal hosting record — owner's Proxmox LXC
 
+2026-11-15 — Owner requests Tailscale login and explicitly approves adding its
+official Ubuntu repository, installation and service enablement. SSH works as
+`root@10.1.20.237` with the existing `meshlink.int.spp.lol` host-key alias;
+the hostname failed local resolution during this session. Installed Tailscale
+1.104.7 and its archive keyring from the signed stable Noble repository.
+`tailscaled.service` is enabled but failed: the container has no `/dev/net/tun`,
+confirmed by device inspection and its journal. Direct `tailscale login` cannot
+connect to the daemon; no authorization URL or tailnet enrollment exists yet.
+Next: provide TUN access from Proxmox, stop/start the container, restart the
+daemon and retry login. Host SSH access/container ID have not been supplied;
+no host/container restart was performed. See the
+[official LXC procedure](https://tailscale.com/docs/features/containers/lxc/lxc-unprivileged).
+
 2026-10-13 — Owner confirms LXC creation, authorizes SSH setup and selects `meshlink.spp.lol` for Cloudflare Tunnel HTTPS. Inspected Ubuntu 24.04.5 amd64, 4 logical CPUs, 8192 MiB RAM, 512 MiB swap and 64 GiB SSD-backed root storage. Installed production static frontend/Nginx, pinned PocketBase and a persistent Python simulation worker with unprivileged service accounts, boot enablement and restart supervision. Private API/storage remain on loopback/owner-only paths. Owner configured the existing cloudflared connector; four edge connections and its loopback-8080 route are verified. No router forwarding or MQTT work resumed.
 
 Local admin/member login, service restart persistence, proxy restrictions, independent client throttling and isolated backup restore pass. Public HTTPS/certificate checks pass with public DNS, but LAN DNS retained an old negative IPv4 answer, preventing desktop browser review during setup. Public authenticated sign-in remains owner verification; no admin credentials were sent through Cloudflare by the agent. Daily 02:30 Pacific backups retain 14 private archives on the same container disk; off-host backup destination/Proxmox backup setup remain outstanding. This deployment serves fictional simulation data, not live member tracks. [Setup and evidence](../docs/operations/portal-lxc.md).

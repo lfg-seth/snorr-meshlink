@@ -36,6 +36,12 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
+Portal Tailscale login: 1.104.7 installed and service enabled with owner approval;
+startup/login blocked by missing `/dev/net/tun`. Next: owner supplies Proxmox
+SSH host/container ID or enables TUN passthrough and stops/starts the container;
+then restart daemon, login and verify connectivity.
+[Evidence](../records/sites.md#portal-hosting-record--owners-proxmox-lxc).
+
 Keep implementation, release, native presentation, live delivery and field acceptance separate. Imported open criteria remain pending unless later evidence is recorded.
 
 | Task | Remaining check / evidence |
