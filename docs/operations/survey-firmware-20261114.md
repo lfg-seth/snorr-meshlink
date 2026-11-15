@@ -2,6 +2,18 @@
 
 **Installed on three RAK4631s and the original GPS Heltec V4.** Both survey targets were built from `bcb22e037293df5531da391bb88d46b6969633b0` on `snorr/develop`. The project submodule pins that version. The dedicated targets leave the existing production target names available. [Prerelease and checksums](https://github.com/lfg-seth/firmware/releases/tag/snorr-direct-survey-2.7.26.bcb22e0-pre.1) · [Firmware source](https://github.com/lfg-seth/firmware/tree/bcb22e037293df5531da391bb88d46b6969633b0) · [USB, authenticated RF and CLI reference](survey-usb-v1.md).
 
+## Numbered repeater handoff
+
+The owner selected US LongFast, slot 35 for member-free survey testing. These three physical RAKs already had the survey application and had passed an explicit reboot. At handoff, each reported the expected image and matched its own saved owner, security keys, channels, local configuration and module configuration. The Heltec then sent an authenticated direct PING to each. Each RAK independently recorded receiving the request and transmitting the PONG that the Heltec matched.
+
+| Current repeater label | Radio ID | USB port at handoff | Confirmed round trip |
+| --- | --- | --- | ---: |
+| R004 | `!49ac6d7f` | COM32 | 3,697 ms |
+| R005 | `!a65601b3` | COM8 | 2,026 ms |
+| R007 | `!b456f760` | COM9 | 2,069 ms |
+
+These are individual exchanges at the bench. Private run evidence is in `private/bench/survey-rollout-20261114/pilot-1794722937458177100/` in the survey worktree. The tested Heltec image stores eight enrolled peers in total. G002 and these three RAKs account for four. R003 remains on its previously recorded RF hold.
+
 ## Artifacts
 
 | Artifact | Bytes | SHA-256 |

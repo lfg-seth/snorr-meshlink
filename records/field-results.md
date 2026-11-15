@@ -1,5 +1,9 @@
 # Field testing and tangible results
 
+## 2026-11-14 - Three numbered RAKs verified for survey testing
+
+On the bench, the Heltec exchanged a direct PING/PONG with R004, R005 and R007 on LongFast slot 35. Each responder independently recorded RX and TX with matching packet IDs. [Per-board measurements](../docs/operations/survey-firmware-20261114.md#numbered-repeater-handoff).
+
 ## 2026-11-14 - RF slot and preset comparison
 
 LongFast median queue waits were 271 ms on slot 35, 333 ms on slot 61 and 363 ms back on slot 35. No outside packets were decoded in those trials. ShortFast with a two-second timeout led the completed runs with 144 on-air PINGs and 108 confirmed round trips in three minutes. The owner stopped the last MediumFast run at 34.92 seconds. [Measurement table and method](../docs/operations/survey-rf-comparison-20261114.md).

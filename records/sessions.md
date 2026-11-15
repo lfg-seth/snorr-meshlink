@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Three survey RAKs ready for the owner
+
+Freshly numbered R004, R005 and R007 matched their saved settings and keys. Each returned a witnessed direct PONG to the Heltec on LongFast slot 35. Their round trips were 3,697, 2,026 and 2,069 ms respectively. The owner authorized one-at-a-time intake for the other RAKs with the same radio settings. The current tester has eight peer slots, four accounted for by the three RAKs and G002. Next, identify the next attached numbered RAK and verify its profile and direct RF after reboot. [Per-board handoff](../docs/operations/survey-firmware-20261114.md#numbered-repeater-handoff).
+
 ## 2026-11-14 - Short RF comparisons and owner-requested stop
 
 Completed eight short trials. ShortFast with a two-second timeout led at 47.99 PINGs/min and 35.99 confirmed round trips/min. Slot 61 fell between the slot-35 controls for LongFast queue delay. Stopped the ninth run on request and restored the four original LongFast slot-35 profiles. Field range and the earlier delayed-PING freshness question remain open. [Measured results](../docs/operations/survey-rf-comparison-20261114.md).
