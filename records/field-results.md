@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R006 Lee Junction configuration verified
+
+Owner selects **R006 / !638b9515 / Case 3 / eight cells / Muzi** and supplies
+exact Lee Junction coordinates. **ROUTER / retained 2.7.26.bcb22e0**, fixed
+pin, enabled MQTT permission and complete intended profile pass independent
+readback before and after one explicit reboot. No flash; individual keys,
+channels, 180-second device/environment/power plus SNNS retained. Own position
+and NeighborInfo remain 21,600 seconds, GPS NOT_PRESENT and smart position off.
+Serial closes. No new sensor/CLI/portal, ping or field measurement in this
+configuration session; installation, sustained cadence, relay/coverage and
+runtime remain separate. [Evidence](../docs/operations/r006-lee-junction-deployment.md).
+
 ## 2026-11-15 - G001 SD recording and own-uplink SD-health pass
 
 USB **!1bbf0638 / 2.7.26.5bd4923** confirms selected Wi-Fi/direct MQTT at

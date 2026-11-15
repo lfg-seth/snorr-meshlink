@@ -1,5 +1,14 @@
 # Hardware inventory
 
+## 2026-11-15 - R006 / Case 3 allocated to Lee Junction
+
+Owner selects **R006 / !638b9515 / Case 3 / eight cells / Muzi** for Lee
+Junction. Case 3 intake: **v4 ASA, one SMA port, two 160 mA panels, two
+four-cell parallel holders**. Existing equipment; no purchase, stock recount,
+cell-capacity, wiring, antenna-gain or panel-output inference. INA219/AHT21
+were previously measured; fresh field readings remain separate.
+[Configuration](../docs/operations/r006-lee-junction-deployment.md).
+
 ## 2026-11-15 - G001 existing SD card recording verified
 
 Owner confirms the existing G001 card is inserted and unchanged. USB diagnostics

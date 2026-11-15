@@ -1,5 +1,34 @@
 # Session log
 
+## 2026-11-15 - R006 configured for Lee Junction
+
+Owner selects **R006 / Case 3 / eight cells / Muzi** and supplies exact Lee
+Junction coordinates. USB **76642362C6FCE382**, radio **!638b9515**, hardware
+**82e3fcc66223647615958b63dd296ca1**, retained **2.7.26.bcb22e0** independently
+match. [Configuration and remaining gates](../docs/operations/r006-lee-junction-deployment.md).
+Set **ROUTER/fixed pin**, preserving own keys/admin/channels/names, LOCAL_ONLY,
+US/LongFast35/10 dBm/hop 3, already-enabled MQTT permission, ignore-MQTT/RX
+boost/FEM, network/Bluetooth and disabled power saving. Keep timezone,
+triple-click/Fahrenheit settings, enabled 180-second device/environment/power,
+SNNS, 21,600-second position/NeighborInfo and own GPS NOT_PRESENT/smart off.
+Reassert role-affected sections; accept ROUTER owner flag/API sleep default.
+
+Station lease/full fresh-profile guard used. Explicit DTR/RTS serial sessions
+all succeed without retry. Complete intended local/module/channel bytes,
+owner/identity, firmware metadata and exact integer coordinates pass before
+and after one explicit reboot; serial closes, ready to unplug. No flash,
+factory reset or key replacement. Prior INA219/AHT21/RF measurements are
+historical; no new sensor, ping, CLI/portal, relay, field/runtime claim.
+
+Update inventory/sites/roster/project/tracker and CLI position baseline; full
+profile/key/channel/coordinate and cadence-loader assertions plus docs/whitespace
+checks pass. Exact coordinates/profiles/logs remain ignored in
+`private/bench/R006-lee-junction-20261115/`. Clean-branch pull fails on the
+pre-existing broken local Codex checkpoint ref; no history/ref repair attempted.
+Next: obtain fresh ordinary reports, confirm installation and sustained/relay/
+coverage/runtime gates. Branch `codex/r006-lee-junction-20261115`; commit/push
+result at handoff.
+
 ## 2026-11-15 - G001 USB diagnosis verifies SD recording and own MQTT report
 
 Owner reconnects G001 and confirms its SD card is inserted/unchanged. Exact

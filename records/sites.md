@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R006 selected for Lee Junction
+
+Owner supplies exact Lee Junction coordinates and selects **R006 / !638b9515**,
+**Case 3 / eight cells / Muzi**. Pin saved privately in mesh configuration and
+independently verified through reboot without flashing. Existing mountain
+access authority remains the basis; no modeled micro-site substitution or
+completed installation/coverage/runtime claim.
+[Configuration](../docs/operations/r006-lee-junction-deployment.md).
+
 ## 2026-11-15 - R010 selected for Upper Bristle
 
 Owner supplies an exact Upper Bristle pin and selects **R010 / !77fdb9f1**,

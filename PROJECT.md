@@ -26,6 +26,9 @@ New R011 CLI delivery remains unverified while server access is unavailable.
 R010 / Case 4 / eight cells / Muzi is selected for Upper Bristle;
 [ROUTER/fixed-location verification](docs/operations/r010-upper-bristle-deployment.md)
 retains survey firmware, enabled MQTT permission and 180-second reporting.
+R006 / Case 3 / eight cells / Muzi is selected for Lee Junction;
+[ROUTER/fixed-location verification](docs/operations/r006-lee-junction-deployment.md)
+retains survey firmware, enabled MQTT permission and 180-second reporting.
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.
