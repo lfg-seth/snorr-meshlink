@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-15 - G001 replacement Wi-Fi and direct MQTT connect
+
+Owner-selected SSID/password persist on **!1bbf0638 / 2.7.26.5bd4923** after
+the network-setting reboot. Complete intended profile and identity comparison
+passes. ESP32-S3 uses 2.4 GHz. Six associated samples show **−66 to −63 dBm**;
+final three show direct MQTT connected, ending at 14:20:59 Pacific. Serial
+closed; no other settings or firmware changed. This supersedes the disconnected
+bench condition below, without claiming portal ingestion or sustained runtime.
+[Evidence](../docs/operations/g001-wifi-test-20261115.md#owner-selected-wi-fi-change--2026-11-15).
+
 ## 2026-11-15 - G001 Wi-Fi disconnected; nearby networks checked on laptop
 
 Three local USB status reads on verified **!1bbf0638 / 2.7.26.5bd4923** show

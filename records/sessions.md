@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-15 - G001 owner-selected Wi-Fi saved and uplink recovered
+
+Owner supplies replacement Wi-Fi credentials and requests 2.4 GHz. Verified
+G001 **!1bbf0638 / F8:5B:1B:BF:06:38 / 2.7.26.5bd4923** receives only new
+SSID/password; Wi-Fi stays enabled. ESP32-S3 uses 2.4 GHz hardware, requiring
+no band setting. Complete intended local/module/channel bytes, owner and
+hardware identity pass independent readback after network-setting reboot.
+Keys, MQTT/radio profile and telemetry preserved; no flash or factory reset.
+
+Six associated status samples show **−66 to −63 dBm** over about 51 seconds.
+The final three confirm direct MQTT connected as well as Wi-Fi, ending at
+**14:20:59 Pacific**. Serial closed. Credentials/profile/logs remain ignored
+under `private/bench/g001-wifi-station-20261115/`.
+[Evidence](../docs/operations/g001-wifi-test-20261115.md#owner-selected-wi-fi-change--2026-11-15).
+Docs/whitespace pass. Next: sustained operation and ordinary portal receipts;
+connection status alone does not establish ingestion, field coverage or runtime.
+Records branch `codex/g001-wifi-test-20261115`; commit/push result at handoff.
+
 ## 2026-11-15 - G001 Wi-Fi status and laptop network scan
 
 Owner-requested read-only test identifies screenless G001 **!1bbf0638** /
