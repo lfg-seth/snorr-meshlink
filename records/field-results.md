@@ -1,8 +1,8 @@
 # Field testing and tangible results
 
-## 2026-11-14 - Four-board direct-hop survey preparation
+## 2026-11-14 - Four-board direct-hop bench
 
-Identified and backed up three RAK4631s and the original GPS Heltec V4 over USB. Each device read back its intended staging profile on the original firmware with TX disabled. The V4 full flash recovery image was captured. The four-board installation was blocked before execution. Bench RF duration is 0 seconds. Rate, directional reception, utilization, quiet behavior and outdoor GPS await measurement. [Per-board firmware and recovery evidence](../docs/operations/survey-firmware-20261114.md).
+Installed and reboot-verified survey firmware `2.7.26.bcb22e0` on three RAK responders and the original GPS Heltec V4. The owner stopped the adaptive three-target soak after 3,013.484 seconds. It recorded 744 successful round trips and 118 timeouts, plus one in-flight cancellation. Median RTT was 2.086 seconds. Both link-direction metrics matched independent observations for every success. All selected, recognized requests produced a responder TX. Ten of 2,335 direct PING decodes had no matching quiet renewal. Five delayed requests account for those ten observations. Live GNSS supplied 2,383 valid samples out of 3,004. The client acknowledged stop and the station lease is released. Natural quiet expiry, the full two hours and field geometry remain open. [Cadence trials, timeout attribution and per-RAK evidence](../docs/operations/survey-firmware-20261114.md#owner-stopped-adaptive-soak).
 
 ## 2026-11-12 - G007 bench and G001 radio receipts
 

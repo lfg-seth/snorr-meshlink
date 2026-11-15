@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Installed four survey boards and stopped the RF soak on request
+
+Verified the three RAKs and original GPS Heltec V4 on `2.7.26.bcb22e0` after individual restarts, enrolled them over USB and measured real RF, GNSS and heartbeat behavior. The owner stopped the three-target run at 50 minutes 13 seconds. The client acknowledged STOP and reported idle. Serial handles and the station lease were released. Of 862 completed attempts, 744 succeeded, including matching independent measurements in both directions. Publication contains aggregate evidence only. Next, resolve the delayed-PING freshness boundary and repeat the duration/expiry checks when the owner restarts testing. [Bench measurements and remaining gates](../docs/operations/survey-firmware-20261114.md#owner-stopped-adaptive-soak).
+
 ## 2026-11-14 - Direct-hop survey firmware prerelease and bench staging
 
 Published survey RAK4631 and original Heltec V4 builds from firmware `bcb22e037`, pinned the submodule and delivered the Windows/Linux USB adapter and cancellable recorder. Native ASan/UBSan controller tests passed for both roles. Independent fixed-diff review and artifact SHA-256 values are in the [firmware handoff](../docs/operations/survey-firmware-20261114.md).
