@@ -1,6 +1,6 @@
 # Direct-hop survey firmware handoff, 2026-11-14
 
-**Installed on three RAK4631s and the original GPS Heltec V4.** Both survey targets were built from `bcb22e037293df5531da391bb88d46b6969633b0` on `snorr/develop`. The project submodule pins that version. The dedicated targets leave the existing production target names available. [Prerelease and checksums](https://github.com/lfg-seth/firmware/releases/tag/snorr-direct-survey-2.7.26.bcb22e0-pre.1) · [Firmware source](https://github.com/lfg-seth/firmware/tree/bcb22e037293df5531da391bb88d46b6969633b0) · [USB, authenticated RF and CLI reference](survey-usb-v1.md).
+**Installed on ten RAK4631s and the original GPS Heltec V4.** Both survey targets were built from `bcb22e037293df5531da391bb88d46b6969633b0` on `snorr/develop`. The project submodule pins that version. The dedicated targets leave the existing production target names available. [Prerelease and checksums](https://github.com/lfg-seth/firmware/releases/tag/snorr-direct-survey-2.7.26.bcb22e0-pre.1) · [Firmware source](https://github.com/lfg-seth/firmware/tree/bcb22e037293df5531da391bb88d46b6969633b0) · [USB, authenticated RF and CLI reference](survey-usb-v1.md).
 
 ## Numbered repeater handoff
 
@@ -13,6 +13,22 @@ The owner selected US LongFast, slot 35 for member-free survey testing. These th
 | R007 | `!b456f760` | COM9 | 2,069 ms |
 
 These are individual exchanges at the bench. Private run evidence is in `private/bench/survey-rollout-20261114/pilot-1794722937458177100/` in the survey worktree. The tested Heltec image stores eight enrolled peers in total. G002 and these three RAKs account for four. R003 remains on its previously recorded RF hold.
+
+## Additional RAKs flashed over USB
+
+The owner deferred RF tests and survey enrollment for this batch. Each USB identity, hardware ID and radio ID matched the roster. The application-only UF2 matched the published SHA-256 in the table below. Each board had a private configuration backup before the write. A new boot ID and a native USB readback confirmed the installed image, owner settings, local and module configuration, channel settings and keys.
+
+| Repeater | Radio ID | USB port | Previous build | Post-reboot readback |
+| --- | --- | --- | --- | --- |
+| R001 | `!f95b5501` | COM19 | `2.7.26.4c96b9b` | Exact profile and keys |
+| R002 | `!05237743` | COM14 | `2.7.26.4c96b9b` | Exact profile and keys |
+| R008 | `!120b04fd` | COM34 | `2.7.26.4c96b9b` | Exact profile and keys |
+| R011, formerly REF1 | `!8737c2c9` | COM27 | `2.7.15.567b8ea` | Requested names and individual keys verified. Automatic buzzer GPIO reads back as 21. |
+| R006 | `!638b9515` | COM33 | `2.7.26.4c96b9b` | Exact profile and keys |
+| R009 | `!da581e5f` | COM24 | `2.7.26.4c96b9b` | Exact profile and keys, including enabled GPS with its 120-second update interval |
+| R010 | `!77fdb9f1` | COM17 | `2.7.26.4c96b9b` | Exact profile and keys |
+
+All seven in the two USB-only batches run `rak4631-survey / 2.7.26.bcb22e0` on US LongFast slot 35. R011 reports `SNORR Repeater 011 / R011` after reboot and retains its zero-hop, no-rebroadcast CLIENT profile. Reapplying the previously unset buzzer pin and rebooting again returned GPIO 21, the RAK4631 target's default. Every other saved field matched after allowing for the requested name change. R010 remains assigned to `!77fdb9f1`. Full backups and USB captures are stored privately under `private/bench/survey-rollout-20261114/` in the survey worktree.
 
 ## Artifacts
 

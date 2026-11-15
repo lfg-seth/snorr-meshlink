@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Seven application-only RAK updates across two batches
+
+Flashed R001, R002, R008 and former REF1, then R006, R009 and R010, with the pinned survey image. The owner assigned former REF1 to R011. All seven rebooted on LongFast slot 35 with their original keys. R009 retained enabled GPS at 120 seconds. R011's original automatic buzzer setting reads back as GPIO 21. RF and enrollment were deferred. Ten numbered repeaters now have the survey firmware. R003 retains its separate hardware hold. [Board readbacks and assignment](../docs/operations/survey-firmware-20261114.md#additional-raks-flashed-over-usb).
+
 ## 2026-11-14 - Three survey RAKs ready for the owner
 
 Freshly numbered R004, R005 and R007 matched their saved settings and keys. Each returned a witnessed direct PONG to the Heltec on LongFast slot 35. Their round trips were 3,697, 2,026 and 2,069 ms respectively. The owner authorized one-at-a-time intake for the other RAKs with the same radio settings. The current tester has eight peer slots, four accounted for by the three RAKs and G002. Next, identify the next attached numbered RAK and verify its profile and direct RF after reboot. [Per-board handoff](../docs/operations/survey-firmware-20261114.md#numbered-repeater-handoff).
