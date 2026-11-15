@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-15 - B003 to R001 simple ping verified
+
+Owner connects B003 and requests one simple R001 ping. Identified live tester
+**!699c2ed8 / 2.7.26.7b766e6**. Direct serial attempt is denied by its existing
+survey-service exclusive lock before sending commands; use the service API.
+Exactly one authenticated **physical zero-hop** attempt to **!f95b5501** returns
+success: **2,460 ms**, uplink **-89 dBm / 5.25 dB SNR**, downlink
+**-69 dBm / 5.5 dB SNR**. [Evidence](../docs/operations/r001-cathedral-deployment.md#b003-direct-ping-check---2026-11-15).
+
+Stop immediately, restore original timing and verify stopped state. Service
+remains connected; R001 remains selected because the initial empty target list
+cannot be restored through this interface. No firmware/persistent mesh change.
+Raw GPS/API transcript remains private. Exact one-attempt/result, direct-path
+and restoration assertions pass; documentation checks pass. This closes the
+requested simple ping check; forced-relay/portal/sustained coverage/runtime
+remain separate. Survey PING renews hearing responders' 900-second quiet.
+Records continue on `codex/r001-cathedral-deployment-20261115`; completed
+commit/push reported at handoff. Next: owner-selected further deployment or
+field acceptance; no additional automatic pinging.
+
 ## 2026-11-15 - R001 Cathedral Rock deployment configuration
 
 Owner begins deployments: fresh **R001 / !f95b5501**, **Case 01**, **eight

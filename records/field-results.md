@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-15 - B003 to R001 simple direct ping passes
+
+Owner-selected B003 **!699c2ed8 / 2.7.26.7b766e6** sends one survey ping to
+configured Cathedral Rock R001 **!f95b5501** through the existing local survey
+controller: **1/1 authenticated zero-hop round trips**, **2,460 ms** from TX
+start. Uplink **-89 dBm / 5.25 dB SNR**; downlink **-69 dBm / 5.5 dB SNR**.
+Stopped after one result; original timing restored, R001 remains selected,
+service remains connected. No firmware or persistent mesh-config mutation.
+[Evidence and limits](../docs/operations/r001-cathedral-deployment.md#b003-direct-ping-check---2026-11-15).
+Forced relay, portal delivery, sustained coverage and runtime remain untested.
+
 ## 2026-11-15 - R001 Cathedral Rock configuration
 
 Fresh **!f95b5501**, USB **E93C5FF0F97DD76B**, retains **2.7.26.bcb22e0**;

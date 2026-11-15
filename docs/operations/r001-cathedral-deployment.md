@@ -60,3 +60,29 @@ installation completion remain to be confirmed. This survey image retains its
 quiet time and airtime admission can defer its own reports. Ordinary relaying
 and reporting must be evaluated separately in the field. No portal change is
 part of the owner's mesh-configuration request.
+
+## B003 direct ping check - 2026-11-15
+
+Owner connects B003 **!699c2ed8**, installed survey tester **2.7.26.7b766e6**,
+and requests one simple R001 ping. Existing local survey service already owns
+USB **90:70:69:9C:2E:D8**; the direct open correctly fails its exclusive lock,
+with no command sent. Use that service's live command API rather than compete
+for serial ownership or stop the service.
+
+One authenticated **zero-hop** attempt to **!f95b5501** succeeds: **1/1**, reply
+matched to session/attempt/target, **2,460 ms** TX-start-to-reply round trip.
+R001 measures uplink **-89 dBm / 5.25 dB SNR**; B003 measures downlink
+**-69 dBm / 5.5 dB SNR**. Local/remote utilization is **12% / 11%**. Production
+LongFast slot 35 / 10 dBm remains selected. Explicit bench mode avoids making
+GPS freshness an interlock for this simple radio check; raw GPS stays private.
+
+Stop after the first result, restore original timing and independently confirm
+idle/stopped state. The original target list was empty; R001 remains selected
+because the interface cannot clear a target list. No firmware or persistent
+mesh configuration change. Existing survey service retains its serial handle;
+no competing direct handle remains. Private result, API transcript and final
+state: `private/bench/B003-R001-ping-20261115/`.
+
+This verifies the requested direct ping round trip, not forced relaying,
+portal delivery, sustained coverage or runtime. An accepted survey PING renews
+the 900-second autonomous-report quiet window on hearing responders.
