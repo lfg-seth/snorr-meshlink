@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R008 selected for Kyle Junction
+
+Owner continues deployment with fresh **R008 / !120b04fd**, **Case 8**, **eight
+cells**, **Muzi antenna**, Kyle Junction and supplied fixed coordinates.
+Coordinates remain private and are saved in mesh config. ROUTER setup uses
+retained survey firmware without flashing. Actual mount/installation and field
+coverage/runtime remain unmeasured. [Configuration](../docs/operations/r008-kyle-junction-deployment.md).
+
 ## 2026-11-15 - R001 selected for Cathedral Rock
 
 Owner begins deployment and assigns fresh R001 **!f95b5501** to Cathedral Rock,

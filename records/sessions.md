@@ -1,5 +1,33 @@
 # Session log
 
+## 2026-11-15 - R008 Kyle Junction deployment configuration
+
+Owner continues the same deployment sequence with **R008 / !120b04fd**, USB
+**F4D0968336047CA0**, hardware **a07c04368396d0f4fd040b12638298d4**: Kyle Junction,
+**Case 8**, **eight cells**, **Muzi antenna**, supplied fixed coordinates.
+Retain **2.7.26.bcb22e0 / rak4631-survey** without flashing/reset/rebuild.
+[Configuration and private evidence reference](../docs/operations/r008-kyle-junction-deployment.md).
+
+Complete original profile backed up; set ROUTER/fixed position and reassert
+sections affected by firmware role defaults. Exact full local/module/channel
+comparison, metadata/identity/owner and integer coordinates pass before and
+after explicit reboot. Keys/admin allowlist, LOCAL_ONLY, US/LongFast slot 35,
+10 dBm, hop 3 and all three **180-second** telemetry settings persist. Retain
+this unit's own **43,200-second smart position** settings/GPS and 21,600-second
+standard NeighborInfo; only intended role effects differ. Cadence baseline is
+reverified unchanged. First read has USB I/O errors; early post-reboot open
+loses the port; bounded read-only retries pass after settling. No mutation or
+reboot repeated; USB stability is not established. Station lease used, serial
+closed. No B003 attached in enumeration, so no ping was run.
+
+Update site/inventory/physical roster/project/tracker/field evidence. Final
+identity/firmware/coordinate/key/channel/module/cadence assertions and Markdown
+links/whitespace pass. Exact coordinates/profiles/logs stay private. Physical
+mount, RF/portal delivery, forced-relay/coverage and battery/solar runtime are
+unverified. Next: owner-selected B003 ping or placement/field evidence.
+Records branch `codex/r008-kyle-junction-20261115`; completed commit/push
+reported at handoff. Prior deployment/publication branches remain unchanged.
+
 ## 2026-11-15 - B003 to R001 simple ping verified
 
 Owner connects B003 and requests one simple R001 ping. Identified live tester

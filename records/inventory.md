@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-11-15 - R008 / Case 8 deployment allocation
+
+Owner assigns existing **R008 / !120b04fd**, RAK4631 with previously detected
+INA219/AHT21, to **Case 8**, **eight cells**, **one Muzi antenna**, Kyle Junction.
+Case 8 intake: v4 ASA, two SMA ports, two 160 mA panels and two four-cell
+parallel holders. No purchase, expense or acquisition; no cell-capacity,
+inter-holder-wiring or antenna-gain inference. Historical empty-case intake
+below predates this and the Case 01 allocation. Loose-stock totals are not
+recounted. [Configuration evidence](../docs/operations/r008-kyle-junction-deployment.md).
+
 ## 2026-11-15 - R001 / Case 01 deployment allocation
 
 Owner assigns fresh **R001 / !f95b5501**, RAK19007/RAK4631 with INA219/AHT21,

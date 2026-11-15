@@ -12,8 +12,11 @@ inputs. The first fresh **R001** is RAK19007/4631 **!f95b5501**, USB
 eight cells and Muzi antenna; retained `2.7.26.bcb22e0` is configured **ROUTER**
 with fixed coordinates and preserved 180-second telemetry.
 [Deployment configuration](docs/operations/r001-cathedral-deployment.md).
+R008 is selected for Kyle Junction, Case 8, eight cells and Muzi antenna on
+2026-11-15; [ROUTER/fixed-position configuration](docs/operations/r008-kyle-junction-deployment.md)
+retains its survey firmware and 180-second telemetry.
 Member-node labels/identities are not reset.
-Other prepared boards stay **CLIENT on the bench**; switch selected repeaters to
+Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.
 The owner plans batches of 4-8; all deployment RAKs have INA219. Use the
 [plug-in label station](docs/operations/rak-batch-station.md), automatically

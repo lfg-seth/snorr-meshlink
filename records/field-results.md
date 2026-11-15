@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R008 Kyle Junction configuration verified
+
+Owner selects fresh **R008 / !120b04fd**, **Case 8**, **eight cells**, **Muzi
+antenna** and Kyle Junction coordinates. USB/hardware identity, **ROUTER**,
+exact fixed position and complete intended profile pass **before and after
+explicit reboot**; firmware remains **2.7.26.bcb22e0**, no flash/reset. Keys,
+channels and module bytes are preserved; device/environment/power **180 s**.
+Initial/early post-reboot serial opens fail; read-only retry after settling
+passes, without repeating writes/reboot. [Evidence](../docs/operations/r008-kyle-junction-deployment.md).
+No B003 attached/ping run, live telemetry/portal, forced relay, coverage,
+completed physical mount or runtime acceptance claimed.
+
 ## 2026-11-15 - B003 to R001 simple direct ping passes
 
 Owner-selected B003 **!699c2ed8 / 2.7.26.7b766e6** sends one survey ping to
