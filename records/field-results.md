@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-15 - Fresh physical portal identities and history verified
+
+All 16 current transmitting-device mappings pass registry/worker/public checks;
+per-radio histories and raw archive are preserved through atomic relabeling.
+At 2026-11-15 07:06:16 Pacific, 5 sources have actual new accepted
+receipts; R002, R003, R004, R005, R006, R007, R008, R009, R010, R011, G003 still lack fresh live evidence. Historic unknown-source
+telemetry is replayed with original times and excluded from that live count.
+No radio, power, position or site change; R003 hold and MC00 receive-only role
+remain. [Preservation, backups and limits](../docs/operations/portal-roster-reconcile-20261115.md).
+
 ## 2026-11-15 - Overnight fleet bench continuity and remaining gaps
 
 Midnight–06:04 Pacific: 4,446 of 4,462 observed unique packets reach all three

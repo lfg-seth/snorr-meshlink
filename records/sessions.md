@@ -1,5 +1,28 @@
 # Session log
 
+## 2026-11-15 - Fresh portal roster reconciled with per-radio history
+
+Owner-authorized live migration aligns all 16 current transmitting-device
+identities with the fresh roster, retaining four explicitly named legacy V3
+records. Six old repeater histories follow their physical radios to fresh
+labels; mobile former G002 history moves to G003 and displaced old gateways
+receive legacy keys. Empty planned-site placeholders are privately archived
+before reuse; R003/R011 are registered without changing hardware or holds.
+All original history counts/content, record IDs, timestamps, accounts and raw
+archive are preserved. [Mapping, recovery and verification](../docs/operations/portal-roster-reconcile-20261115.md).
+
+Independent review, real-data rehearsal, three failure injections, full pre/post
+backup hashes/integrity, isolated live API recovery and authenticated public
+identities pass. Fresh accepted receipts verify 5/16 sources at
+2026-11-15 07:06:16 Pacific; remaining live evidence: R002, R003, R004, R005, R006, R007, R008, R009, R010, R011, G003.
+Historical recovery preserves original timestamps and is excluded from live
+counts. Separate installed demo restore timed out; not claimed passing.
+Application source, radio firmware/profiles, keys and API limits unchanged.
+Next: owner confirms power/survey quiet for silent sources, then obtain fresh
+receipts; existing GNSS/runtime/field gates remain. Records branch
+`codex/portal-roster-reconcile-20261115`; commit/push reported at handoff.
+Unrelated original-checkout changes are preserved.
+
 ## 2026-11-15 - Overnight fleet performance analysis
 
 Read-only archive/journal analysis covers 18:00 November 14–06:04 November 15
