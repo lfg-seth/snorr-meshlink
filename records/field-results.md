@@ -1,5 +1,17 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R011 Angel Peak Vegas-side configuration verified
+
+Fresh **R011 / !8737c2c9** retains **2.7.26.bcb22e0**; owner selects Angel Peak
+Vegas Side, **Case 6 / eight cells / Muzi** and supplies exact coordinates.
+Former reference NONE/zero-hop/hourly settings become **ROUTER / LOCAL_ONLY /
+hop 3**, enabled device/environment/power **180 s**, over-LoRa NeighborInfo
+**21,600 s** and saved-baseline SNNS. Exact complete intended profile and fixed
+coordinates pass before/after explicit reboot; own keys/channel preserved,
+no flash. Initial USB I/O failure recovers on a read-only retry without
+repeating writes. Actual sensors, RF/ping/portal, forced relay, placement and
+runtime remain unverified. [Evidence](../docs/operations/r011-angel-vegas-deployment.md).
+
 ## 2026-11-15 - R008 Kyle Junction configuration verified
 
 Owner selects fresh **R008 / !120b04fd**, **Case 8**, **eight cells**, **Muzi

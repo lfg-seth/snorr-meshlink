@@ -18,6 +18,7 @@
     "!120b04fd": {"profile": "rak-client"},
     "!da581e5f": {"profile": "rak-client", "streams": {"position": 3600}},
     "!77fdb9f1": {"profile": "rak-client"},
+    "!8737c2c9": {"profile": "rak-client", "streams": {"position": 900}},
     "!699ca878": {"profile": "member"},
     "!699c2ed8": {"profile": "member"},
     "!1bbf0638": {"profile": "gateway-sd"},

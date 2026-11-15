@@ -1,5 +1,16 @@
 # Hardware inventory
 
+## 2026-11-15 - R011 / Case 6 deployment allocation
+
+Owner assigns former REF1, fresh **R011 / !8737c2c9**, RAK4631, to
+**Case 6**, **eight cells**, **one Muzi antenna**, Angel Peak Vegas Side.
+Case 6 historical intake: v4 ASA, one SMA port, two 200 mA panels and two
+four-cell parallel holders. Existing equipment; no purchase/expense/stock
+acquisition. Cell capacity, inter-holder wiring, antenna model/gain and panel
+output are unverified. INA219 owner-confirmed on deployment RAKs; actual
+R011 INA219/AHT21 readings unverified in this assignment. Historical empty-case
+intake below predates Case 01/8/6 allocations. [Configuration](../docs/operations/r011-angel-vegas-deployment.md).
+
 ## 2026-11-15 - R008 / Case 8 deployment allocation
 
 Owner assigns existing **R008 / !120b04fd**, RAK4631 with previously detected

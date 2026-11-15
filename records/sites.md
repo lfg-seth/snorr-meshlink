@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R011 selected for Angel Peak Vegas Side
+
+Owner assigns fresh **R011 / !8737c2c9**, **Case 6**, **eight cells** and
+**Muzi antenna** to Angel Peak Vegas Side. Owner supplies an exact deployment
+pin privately; save it in mesh configuration without substituting a modeled
+micro-site. Existing mountain-access authority remains the recorded basis.
+Physical mount, installation completion, valley coverage and runtime remain
+unverified. [Configuration](../docs/operations/r011-angel-vegas-deployment.md).
+
 ## 2026-11-15 - R008 selected for Kyle Junction
 
 Owner continues deployment with fresh **R008 / !120b04fd**, **Case 8**, **eight

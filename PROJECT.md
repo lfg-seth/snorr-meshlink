@@ -15,6 +15,9 @@ with fixed coordinates and preserved 180-second telemetry.
 R008 is selected for Kyle Junction, Case 8, eight cells and Muzi antenna on
 2026-11-15; [ROUTER/fixed-position configuration](docs/operations/r008-kyle-junction-deployment.md)
 retains its survey firmware and 180-second telemetry.
+R011 is selected for Angel Peak Vegas Side, Case 6, eight cells and Muzi;
+[deployment configuration](docs/operations/r011-angel-vegas-deployment.md)
+replaces its former reference restrictions without flashing.
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.

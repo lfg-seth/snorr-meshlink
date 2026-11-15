@@ -42,18 +42,19 @@ watchdog where supplied (gateway health, Wi-Fi and SD).
 
 | Report | Expected interval |
 | --- | --- |
-| R001-R010 device, environment and INA219 power | 180 seconds / 3 minutes each |
+| R001-R011 device, environment and INA219 power | 180 seconds / 3 minutes each |
 | RAK passive SNNS | 180-second baseline; scheduling/jitter/airtime can defer |
 | B002/B003 device and SNNS | 180 seconds / 3 minutes |
 | B002/B003 GPS position packets | 120 seconds / 2 minutes |
 | G001 screenless device, INA219 power, SNNS, backhaul and Wi-Fi | 300-second / 5-minute baseline |
 | Other inventoried V3 gateways' device, SNNS and backhaul | 180-second / 3-minute baseline |
+| R011 fixed-position packets (2026-11-15 deployment profile) | 900 seconds / 15 minutes; smart settings retained |
 | R009 GPS position packets | 3,600 seconds / 1 hour; smart reports can occur earlier |
 | Standard NeighborInfo on enabled ordinary boards | 21,600 seconds / 6 hours |
 | NodeInfo | 10,800 seconds / 3 hours |
 | G001 SD health | 86,400 seconds / 24 hours |
 
-Source readbacks: [RAK batch](rak-batch-20261112.md),
+Source readbacks: [R011 deployment](r011-angel-vegas-deployment.md), [RAK batch](rak-batch-20261112.md),
 [R009 GPS](r009-gps-20261112.md), [B003 profile](b003-v4-client.md),
 [gateway rollout](gateway-backhaul-health.md), and
 [screenless gateway profile and measured cadence](https://github.com/lfg-seth/snorr-meshlink/blob/0692833c9f5dcd8e0a20c44b2258f1914adb4446/docs/operations/g007-screenless-gateway.md#profile-and-source-verification).

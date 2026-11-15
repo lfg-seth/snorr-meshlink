@@ -1,5 +1,36 @@
 # Session log
 
+## 2026-11-15 - R011 Angel Peak Vegas-side deployment configuration
+
+Owner selects **R011 / !8737c2c9**, **Case 6**, **eight cells**, **Muzi antenna**
+for Angel Peak Vegas Side, then supplies an exact coordinate pair. Private
+study pins are absent on this laptop; no site estimate/model pin is substituted.
+USB **70DF102F58D2A034**, hardware **34a0d2582f10df70c9c237879e77e47a** and existing
+**2.7.26.bcb22e0 / rak4631-survey** independently match. No flashing/reset.
+[Configuration, measured limits and private evidence reference](../docs/operations/r011-angel-vegas-deployment.md).
+
+Former REF1 still has CLIENT/NONE, hop zero, hourly telemetry and disabled
+sensors/NeighborInfo. Existing private primary channel name/key matches R008.
+Set **ROUTER/fixed coordinates/LOCAL_ONLY/hop 3**, enabled device/environment/
+power **180 seconds**, enabled over-LoRa NeighborInfo **21,600 seconds** and
+SNNS baseline. Preserve this board's 900-second smart position/GPS settings,
+individual keys/admin allowlist, channels, names, US/LongFast slot 35, 10 dBm,
+other radio/network/Bluetooth and disabled power saving. Document ROUTER owner
+flag/API sleep default. Entire intended profile, firmware metadata, identity
+and exact coordinates pass independent readback before and after explicit
+reboot. First verification open hits USB I/O errors; read-only retry passes,
+then one explicit reboot/settling wait/final readback pass. No mutation replay.
+Station lease used and serial closed. Actual INA219/AHT21 readings remain
+unverified; enabled measurement alone does not prove fitted sensors.
+
+Update site/assembly/physical roster/project/tracker/field evidence and add
+R011's saved cadence to the dashboard baseline. Exact profile/coordinates,
+key/channel preservation and live baseline-loader assertions pass; Markdown
+links/whitespace pass. Raw profiles/location/logs stay private. No B003 attached,
+so no ping; RF/portal, forced relay, physical mount, coverage and runtime remain
+separate. Next: owner-selected B003 ping and fresh sensor/report/field evidence.
+Records branch `codex/r011-angel-vegas-20261115`; commit/push reported at handoff.
+
 ## 2026-11-15 - R008 Kyle Junction deployment configuration
 
 Owner continues the same deployment sequence with **R008 / !120b04fd**, USB
