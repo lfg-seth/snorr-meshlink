@@ -19,6 +19,12 @@ Safari and the bench owner verifies real adapter, timing and RF measurements
 after handoff. Branch `codex/survey-gui-20261114`. Linux and field acceptance
 remain open. [Run instructions and verification](../survey-app/README.md).
 
+At the owner's request, stopped the active simulation and restarted the desktop
+host on build `37482e5`. Verified the previous run's durable stopped state and
+3,812 simulated attempts through the private HTTPS endpoint. The new host came
+up idle with healthy recording and heartbeat. A fresh phone-size browser opened
+the full-page offline map through the same 9447 link.
+
 ## 2026-11-14 - Parallel survey firmware and mobile app assignments
 
 Completed owner-invoked firmware and GUI grilling. Published separate
