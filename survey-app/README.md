@@ -48,6 +48,21 @@ On the commissioned Fedora field laptop, plug in the GPS Heltec and open **MeshL
 
 The baseline uses four-edge safe areas, viewport-relative sizing and container resize observation. It preserves state across layout changes and uses Pointer Events for map gestures. [WebKit Duo viewport guidance](https://webkit.org/blog/18486/webkit-features-for-safari-27-1/). [WebKit safe areas](https://webkit.org/blog/7929/designing-websites-for-iphone-x/).
 
+### Keeping the field laptop awake
+
+The installed recorder keeps the laptop awake with the lid closed and on AC or battery power. Protection starts with the recorder service, including when it is waiting for the next survey. Stopping the recorder service releases it. Fedora can still power off at a critical battery level.
+
+On a replacement Fedora host with `meshlink-survey.service` installed, run these commands from the repository root to install the same settings. The companion service holds the idle, sleep and lid inhibitors. Its runtime directory also blocks Fedora's shared sleep target while the service is active.
+
+~~~sh
+sudo install -Dm644 survey-app/systemd/meshlink-survey-awake.service /etc/systemd/system/meshlink-survey-awake.service
+sudo install -Dm644 survey-app/systemd/sleep.target.d/meshlink-survey.conf /etc/systemd/system/sleep.target.d/meshlink-survey.conf
+sudo systemctl daemon-reload
+sudo systemctl enable meshlink-survey-awake.service
+if systemctl is-active --quiet meshlink-survey.service; then sudo systemctl start meshlink-survey-awake.service; fi
+systemd-inhibit --list
+~~~
+
 ### Reading the target on the map
 
 The amber ring and **TARGET** label identify the repeater selected by the client. **Show target** brings its fixed site into view along with the vehicle when GPS is available. The dotted line shows the geographic bearing to the selected site. The reply or timeout time comes from the most recent completed result matching that target, session and configuration segment. **Samples for** filters historical measurements and leaves the selected repeater in view.

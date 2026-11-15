@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-14 - Keep the survey laptop awake and open the live phone map
+
+Enabled a companion service that follows the recorder and blocks idle sleep,
+lid handling, suspend and hibernate on AC and battery. On the discharging
+laptop, KDE listed the active inhibition. Fedora rejected a harmless request
+for the pre-sleep target while the original recorder process continued running.
+UPower reported power-off at critical battery. A physical lid and charger cycle
+remains to be checked. [Installed power settings](../survey-app/README.md#keeping-the-field-laptop-awake).
+
+The laptop had joined the private tailnet. Enabled its HTTPS listener on 9447
+and verified the live adapter, three selectable RAKs and the offline full-page
+map in a phone-sized browser. Next, try the phone while cycling the lid and
+charger and check that it continues to receive fresh recorder updates.
+
 ## 2026-11-14 - Commission the Fedora laptop for live surveys
 
 Installed recorder `37f419f`, the survey adapter from `3541137` and the
