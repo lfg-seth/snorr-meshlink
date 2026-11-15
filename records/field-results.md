@@ -1,5 +1,25 @@
 # Field testing and tangible results
 
+## 2026-11-14 - Fedora survey laptop and direct-hop repeaters
+
+Ran a GPS-required survey from the Fedora 44 laptop through the USB Heltec
+`!699c2ed8`, firmware `2.7.26.bcb22e0`, with three enrolled RAK targets.
+The recorder saved four attempts with valid transmit GPS snapshots and 14
+independent GPS events. The fourth attempt was in flight when the operator
+stopped the test.
+
+| RAK target | Recorded result |
+| --- | --- |
+| `!49ac6d7f` | Round trip in 2,738 ms. The RAK received the uplink at −58 dBm and +6.25 dB SNR. The Heltec received the reply at −39 dBm and +6.0 dB SNR. |
+| `!b456f760` | Timed out. The recorder subsequently logged a late reply. |
+| `!a65601b3` | First attempt timed out. The next attempt was cancelled on stop. |
+
+Host event gaps, host drops and firmware drops all read zero. The radio returned
+to idle, the recorder stayed active and SQLite returned `ok` on its integrity
+quick check. Raw events and GPS positions remain private on the laptop. This
+stationary check establishes one completed round trip. Moving coverage and
+sustained operation still need a field run.
+
 ## 2026-11-12 - G007 bench and G001 radio receipts
 
 G007's automatic daily report reached its own MQTT uplink with 393,216 bytes

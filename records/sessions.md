@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-14 - Commission the Fedora laptop for live surveys
+
+Installed recorder `37f419f`, the survey adapter from `3541137` and the
+private offline area on the field laptop. The enabled systemd service opens
+the GPS Heltec by its stable USB ID. **MeshLink Field Survey** in Applications
+opens the local recorder on port 5187. The target selector retains all three
+commissioned RAK IDs when the firmware selects just one. The desktop phone
+preview continues to run the simulator.
+
+Verified the physical client, fresh GPS, a two-direction RAK receipt and saved
+attempts. After service restart the final build returned live/idle status and
+all three IDs over HTTP. The 16 recorder and adapter checks passed on Fedora.
+A later SSH connection timed out before the remote browser check could run.
+The laptop's Tailscale client still needs owner sign-in for phone access.
+Next, check the full-page map on the owner's phone and collect a moving survey.
+[Stationary measurements](field-results.md#2026-11-14---fedora-survey-laptop-and-direct-hop-repeaters).
+
 ## 2026-11-14 - Identify the selected survey repeater on the map
 
 The map now marks the client-selected site with an amber ring and target ID.
