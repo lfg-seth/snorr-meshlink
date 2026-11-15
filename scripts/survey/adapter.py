@@ -343,6 +343,9 @@ class SurveyAdapter:
             name = "state"
             data = dict(self.state)
         elif name == "targets":
+            # Firmware pads every snapshot to its selection capacity (8 or 10).
+            if len(a) - 1 in (8, 10):
+                self.hello["capabilities"]["max_targets"] = len(a) - 1
             self.targets = [node_id(int(v)) for v in a[1 : 1 + int(a[0])]]
             self.state["target_ids"] = list(self.targets)
             name = "state"
@@ -560,7 +563,7 @@ class SurveyAdapter:
                 if set(params) not in ({"target_id"}, {"target_ids"}):
                     raise ValueError("expected one target selection")
                 ids = params["target_ids"] if "target_ids" in params else [params["target_id"]]
-                if not isinstance(ids, list) or not 1 <= len(ids) <= 8:
+                if not isinstance(ids, list) or not 1 <= len(ids) <= self.hello["capabilities"]["max_targets"]:
                     raise ValueError("target count")
                 args = list(map(number, ids))
                 applied = {"target_ids": [node_id(n) for n in args]}

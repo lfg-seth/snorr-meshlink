@@ -18,7 +18,7 @@ def frame(s):
 class Device:
     """Wire peer for testing the actual serial worker and its exclusive controller session."""
 
-    def __init__(self):
+    def __init__(self, max_targets=8):
         self.stream = bytearray()
         self.lock = threading.Lock()
         self.seq = self.command_serial = self.starts = 0
@@ -26,6 +26,8 @@ class Device:
         self.closed = False
         self.epoch = 44
         self.hello_serials = []
+        self.max_targets = max_targets
+        self.targets = [3]
         self.settings = [v[2] for v in LIMITS.values()]
 
     @property
@@ -59,6 +61,8 @@ class Device:
                 self.running = False
             elif name == "configure":
                 self.settings = args
+            elif name == "set_target":
+                self.targets = args
             if name in ("hello", "get_state", "configure", "start", "stop", "set_target"):
                 self.emit(
                     "state",
@@ -83,7 +87,7 @@ class Device:
                 )
                 self.emit("profile", 0, 0, 1)
                 self.emit("settings", *self.settings)
-                self.emit("targets", 1, 3, 0, 0, 0, 0, 0, 0, 0)
+                self.emit("targets", len(self.targets), *self.targets, *([0] * (self.max_targets - len(self.targets))))
             if name != "hello":
                 self.command_serial = serial
             self.emit("ack", serial, op, err)
@@ -101,6 +105,18 @@ class Device:
 
 
 class AdapterTests(unittest.TestCase):
+    def test_target_capacity_matches_firmware(self):
+        ids = [f"!{i:08x}" for i in range(3, 13)]
+        for limit in (8, 10):
+            with self.subTest(limit=limit), tempfile.TemporaryDirectory() as t:
+                dev = Device(max_targets=limit)
+                with SurveyAdapter("fake", "!00000002", Path(t) / "events.jsonl", serial_factory=lambda **_: dev) as a:
+                    self.assertEqual(a.hello["capabilities"]["max_targets"], limit)
+                    reply = a.command(dict(v=1, kind="command", id="ten", name="set_target", params={"target_ids": ids}))
+                    self.assertEqual(reply["data"]["ok"], limit == 10)
+                    if limit == 10:
+                        self.assertEqual(a.targets, ids)
+
     def test_frame_splits_resynchronization(self):
         d = Decoder()
         wire = b"log" + SYNC + b"\xff\xff" + b"text" + b"\x94\xc3\x00\x02ab" + frame("1,2,3,fault,gps_stale")
