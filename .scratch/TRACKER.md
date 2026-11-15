@@ -12,7 +12,7 @@ Fresh repeater/gateway numbering starts 2026-11-12. The [current physical roster
 
 | Task | Lane | Handoff / next action |
 | --- | --- | --- |
-| RAK batch intake / ID label station | Read-only USB intake | Corrected watch-raks.py displays REF1 as REFERENCE and skips Heltec. CLIENT bench; INA219 expected on all, AHT21 detected from actual temp/RH. 107 offline tests pass. Next: owner plugs selected units and labels !IDs; worker stops watcher or validates paused live process/heartbeat before opening ports. Sequential preparation and paired RF; enumeration alone is not a USB stability verdict. [Station](../docs/operations/rak-batch-station.md), [batch](../docs/operations/rak-batch-20261112.md). |
+| RAK batch intake / ID label station | Read-only USB intake | R011 is the former REF1. Start the watcher without the old reference USB argument. Heltec units are skipped. CLIENT bench; INA219 expected on all, AHT21 detected from actual temp/RH. 107 offline tests pass. Next: owner plugs selected units and labels !IDs; worker stops watcher or validates paused live process/heartbeat before opening ports. Sequential preparation and paired RF; enumeration alone is not a USB stability verdict. [Station](../docs/operations/rak-batch-station.md), [batch](../docs/operations/rak-batch-20261112.md). |
 
 ## Next
 

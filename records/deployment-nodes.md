@@ -29,20 +29,16 @@ Portal registry/history has not been reassigned by this board-preparation step.
 | **R008 / SNORR Repeater 008** | USB **F4D0968336047CA0**; radio **!120b04fd**; hardware `a07c04368396d0f4fd040b12638298d4` | RAK4631; INA219 and AHT21 detected | Original complete backup, own keys preserved, updated to **4c96b9b / CLIENT**, complete explicit-reboot profile pass; RF **3/3 TX, 3/3 RX** and both sensors pass. [Retest](../docs/operations/rak-repair-retest-20261112.md). | Owner selects Sunday case/power/location/ROUTER, then cadence readback and forced-relay/end-to-end acceptance. |
 | **R009 / SNORR Repeater 009** | USB **E9B12C5CA98FBCB8**; radio **!da581e5f**; hardware `b8bc8fa95c2cb1e95f1e58dafebb06cc` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified; owner-confirmed RAK12501 GNSS | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | GPS already enabled; ordinary image supports L76K; fresh fix pending. [GPS check](../docs/operations/r009-gps-20261112.md). Sunday case/power/location/ROUTER + cadence readback. |
 | **R010 / SNORR Repeater 010** | USB **820C9B4F0C2D7675**; radio **!77fdb9f1**; hardware `75762d0c4f9b0c82f1b9fd774661875b` | RAK4631; INA219 and AHT21 detected after owner solder rework | Retained **4c96b9b / CLIENT**; complete power-cycle profile/keys pass; INA219 CH1 and temperature/RH received; RF **3/3 TX, 3/3 RX**. Solder hold cleared. [Retest](../docs/operations/rak-repair-retest-20261112.md). | Owner selects Sunday case/power/location/ROUTER, then cadence readback and forced-relay/end-to-end acceptance. |
+| **R011 / SNORR Repeater 011** | USB **70DF102F58D2A034**; radio **!8737c2c9**; hardware `34a0d2582f10df70c9c237879e77e47a` | RAK4631, formerly REF1. Sensors unverified for this assignment. | **rak4631-survey / 2.7.26.bcb22e0**, CLIENT, LongFast slot 35. New owner names, individual keys, channel and profile checked after reboot. The original automatic buzzer pin reads as GPIO 21 on this build. | Retains zero-hop/no-rebroadcast bench settings. RF and survey enrollment deferred by owner. |
 
-Current board-level passes: **R001, R002, R004, R005, R006, R007, R008,
+**Survey firmware update, 2026-11-14.** R001, R002 and R004 through R011 run `rak4631-survey / 2.7.26.bcb22e0` on LongFast slot 35. R004, R005 and R007 returned direct survey PONGs. R001, R002, R006, R008, R009, R010 and R011 received USB reboot and profile verification. The owner deferred RF and survey enrollment for these seven. R009 retained enabled GPS at a 120-second interval. Earlier ordinary-image results in these rows remain historical.
+
+Prior ordinary-image board-level passes: **R001, R002, R004, R005, R006, R007, R008,
 R009 and R010**. **R003 alone remains held** for radio/connection acceptance.
 R008 is now configured and accepted; R010 passes after owner solder rework.
-All ten physical numbers stay assigned; the next unused repeater number is
-**R011**. This session does not assign gateways or alter portal history.
+All eleven repeater numbers are assigned. The next unused number is **R012**.
 
-## Bench reference - excluded from deployment numbering
+## Former bench reference
 
-**REF1 / SNORR RF Reference**: USB **70DF102F58D2A034**, radio **!8737c2c9**,
-hardware **34a0d2582f10df70c9c237879e77e47a**. Owner explicitly authorizes a
-full factory reset without an old-settings backup. Retains compatible
-**2.7.15.567b8ea**, generates its own distinct keys, and has a reboot-verified
-CLIENT/no-rebroadcast, zero-hop, US/LONG_FAST/slot-35/10 dBm private reference
-profile. It is ready to remain connected for subsequent paired checks; it is
-not a numbered deployment repeater or gateway. V4/SD work stays with its other
-chat; this session never opens COM31.
+Former **REF1 / SNORR RF Reference** (`!8737c2c9`) served on `2.7.15.567b8ea`.
+On 2026-11-14 the owner reassigned that physical radio to **R011**. No replacement reference was designated.

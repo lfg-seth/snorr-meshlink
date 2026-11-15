@@ -13,14 +13,14 @@ firmware defaults; confirm the 180-second reporting settings again afterward.
 From the repository root, use the existing Python environment:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/bench/watch-raks.py --reference-usb 70DF102F58D2A034
+.\.venv\Scripts\python.exe scripts/bench/watch-raks.py
 ```
 
 Plug boards in one at a time to attach their initial **!nodeid** labels. Several
 boards may remain connected; the watcher reads new RAKs sequentially and closes
 each port immediately after identification. All RAKs are shown by default;
-Heltec USB devices are skipped. **REF1** (!8737c2c9, USB ending A034) is shown
-with a **REFERENCE** annotation and excluded from deployment numbering. Example:
+Heltec USB devices are skipped. Former REF1 (`!8737c2c9`) is now **R011**.
+Use `--reference-usb` only for a separately designated bench reference. Example:
 
 ```text
 !f95b5501  |  R001  |  CLIENT  |  COM19  |  USB E93C5FF0F97DD76B  |  2.7.26.4c96b9b
@@ -92,7 +92,7 @@ and wait for exit before acquiring it; a paused watcher retains that lease.
 4. Collect INA219 and temperature/humidity startup data across the batch. If
    AHT21 does not return both measurements, mark it **not detected/unverified**;
    silence alone does not prove absence or failure. Serialize paced RF checks
-   against REF1. R001's six-packet check measured **44.4 seconds**; whole-batch
+   against a designated reference when RF testing resumes. R001's six-packet check measured **44.4 seconds**; whole-batch
    throughput has not yet been measured. Preserve failures.
 5. Report each verified **!ID -> R00N / CLIENT / firmware / sensor fit**, resume
    the station and update labels. Sunday's ROUTER/site step and forced-relay/
