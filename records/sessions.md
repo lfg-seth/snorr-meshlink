@@ -1,5 +1,35 @@
 # Session log
 
+## 2026-11-15 - R001 Cathedral Rock deployment configuration
+
+Owner begins deployments: fresh **R001 / !f95b5501**, **Case 01**, **eight
+cells**, **Muzi antenna**, Cathedral Rock and supplied fixed coordinates.
+Verified USB **E93C5FF0F97DD76B** / hardware **6bd77df9f05f3ce901555bf96d5ed7fc**;
+retained **2.7.26.bcb22e0 / rak4631-survey** needs configuration only.
+No flash, reset, rebuild, key replacement or portal mutation. Owner permits
+direct commands; historical role script mappings are deliberately not used.
+[Deployment configuration and private evidence reference](../docs/operations/r001-cathedral-deployment.md).
+
+Saved ROUTER/fixed position and reapplied affected original sections after
+role defaults. Exact complete local/module/channel comparisons, identities,
+keys/admin allowlist, names, firmware metadata and integer fixed coordinates
+pass before and after explicit reboot. LOCAL_ONLY, US/LongFast slot 35,
+10 dBm, hop 3, disabled power saving, all three 180-second telemetry settings,
+SNNS baseline and 21,600-second NeighborInfo/position cadence remain.
+ROUTER's unmessagable owner flag/API sleep default are documented effects.
+Initial full-list and first post-reboot API connections time out; bounded
+no-node-list read-only connections succeed. No mutation is repeated; cause
+unisolated. Station lease used; serial closed. Raw profiles/location/logs stay
+in ignored private evidence. Saved cadence baseline is reverified unchanged.
+
+Updated physical roster, assembly/site allocations, project brief, tracker and
+field record. Documentation/whitespace checks pass. No field RF/MQTT/portal,
+forced-relay, physical mount, battery-only/solar/runtime acceptance claimed.
+Survey quiet remains 900 seconds after the latest accepted PING. Next: owner
+confirms installation/mount, then obtain new delivery and field evidence.
+Records branch `codex/r001-cathedral-deployment-20261115`; completed commit/push
+reported at handoff. Existing publication branch is preserved unchanged.
+
 ## 2026-11-15 - Publish all pending project updates
 
 Owner requests publication of all project updates. Consolidated the original

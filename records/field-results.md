@@ -1,5 +1,18 @@
 # Field testing and tangible results
 
+## 2026-11-15 - R001 Cathedral Rock configuration
+
+Fresh **!f95b5501**, USB **E93C5FF0F97DD76B**, retains **2.7.26.bcb22e0**;
+owner selects Case 01/eight cells/Muzi and supplies Cathedral Rock coordinates.
+Configuration saves ROUTER/fixed position and restores original private
+rebroadcast/report settings after firmware role defaults. Complete intended
+profile and exact coordinates pass independent USB readback before and after
+explicit reboot. Details are in the [configuration record](../docs/operations/r001-cathedral-deployment.md).
+No flash or portal change. Saved device/environment/power cadence is 180 s;
+new RF/portal reports, physical placement, relay coverage and runtime are
+separate unmeasured gates. Full-node-list read times out; bounded no-node-list
+read succeeds without repeating writes.
+
 ## 2026-11-15 - Fresh physical portal identities and history verified
 
 All 16 current transmitting-device mappings pass registry/worker/public checks;

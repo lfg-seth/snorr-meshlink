@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - R001 selected for Cathedral Rock
+
+Owner begins deployment and assigns fresh R001 **!f95b5501** to Cathedral Rock,
+Case 01, eight cells and Muzi antenna. Owner-supplied coordinates are saved as
+fixed position in mesh configuration and retained only in private evidence.
+ROUTER configuration is verified without flashing; installation/mount and
+field coverage/runtime remain unmeasured. Earlier mountain-access authority
+remains the recorded access basis. [Configuration evidence](../docs/operations/r001-cathedral-deployment.md).
+
 ## 2026-11-14 - G003 vehicle backhaul
 
 Owner assigns **G003 / !849ad7a0** to mobile vehicle backhaul with supplied

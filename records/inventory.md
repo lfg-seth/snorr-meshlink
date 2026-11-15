@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-11-15 - R001 / Case 01 deployment allocation
+
+Owner assigns fresh **R001 / !f95b5501**, RAK19007/RAK4631 with INA219/AHT21,
+to **Case 01**, **eight cells** and **one Muzi antenna** for Cathedral Rock.
+Existing equipment allocation; no purchase, expense or stock acquisition.
+Case 1 intake is v4 PETG, one SMA port, two 160 mA panels and two four-cell
+parallel holders. Exact cell model/capacity, holder interconnection, antenna
+model/gain and installed runtime remain unverified for this assembly. The
+2026-11-13 case table below is the historical empty-case intake, not the
+post-allocation installed count. No subtraction from stale loose-stock counts
+is inferred. Retained survey firmware; ROUTER/fixed-position setup is
+[recorded separately](../docs/operations/r001-cathedral-deployment.md).
+
 ## 2026-11-14 - G003 mobile V3 backhaul
 
 Existing Heltec V3 **!849ad7a0**, hardware
