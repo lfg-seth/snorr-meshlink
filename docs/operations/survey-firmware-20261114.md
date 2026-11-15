@@ -1,6 +1,14 @@
 # Direct-hop survey firmware handoff, 2026-11-14
 
-**Installed on ten RAK4631s and the original GPS Heltec V4.** Both survey targets were built from `bcb22e037293df5531da391bb88d46b6969633b0` on `snorr/develop`. The project submodule pins that version. The dedicated targets leave the existing production target names available. [Prerelease and checksums](https://github.com/lfg-seth/firmware/releases/tag/snorr-direct-survey-2.7.26.bcb22e0-pre.1) · [Firmware source](https://github.com/lfg-seth/firmware/tree/bcb22e037293df5531da391bb88d46b6969633b0) · [USB, authenticated RF and CLI reference](survey-usb-v1.md).
+The ten RAKs run `rak4631-survey / 2.7.26.bcb22e0`. The Heltec tester runs `heltec-v4-survey / 2.7.26.7b766e6`. The project submodule pins the expanded tester source. [RAK release](https://github.com/lfg-seth/firmware/releases/tag/snorr-direct-survey-2.7.26.bcb22e0-pre.1) · [Tester release](https://github.com/lfg-seth/firmware/releases/tag/snorr-survey-tester-2.7.26.7b766e6-pre.1) · [USB reference](survey-usb-v1.md).
+
+## Expanded Heltec tester and fleet enrollment
+
+The original Heltec V4 (`!699c2ed8`) runs `heltec-v4-survey / 2.7.26.7b766e6` with twelve saved peer slots and ten targets per rotation. It retained R004, R005, R007 and G002 (`!1bbf0ab8`). R001, R002, R006, R008, R009, R010 and R011 each saved the original tester’s public-key pairing and reported enrollment after an independent reboot. All seven retained their verified configuration and individual keys.
+
+After the tester rebooted, USB accepted G002 by itself and then all ten RAK IDs in one ordered selection. The tester remained idle on US LongFast slot 35 with its original settings, channels and keys. RF PING/PONG trials were deferred. Peers persist through reboot. Target selection is in RAM, so the host selects the ten again after a power cycle.
+
+The application-only image is 2,053,424 bytes, SHA-256 `4b3f6c5488e8e279364696ffbba7fa7d2553b12dc2c8cf060b0007f597e9791b`. esptool verification matched the installed image at `0x10000`. The partition layout matched the original. Both legacy pairing files remain available to the earlier application. Physical flash recovery segments, profile snapshots and commissioning records stay under the survey worktree's ignored `private/bench/survey-rollout-20261114/tester-expansion/`. The native client and responder fixtures, including legacy import and interrupted-write fallback, passed. All eight Linux adapter tests passed.
 
 ## Numbered repeater handoff
 

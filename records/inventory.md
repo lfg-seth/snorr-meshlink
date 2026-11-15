@@ -1,5 +1,9 @@
 # Hardware inventory
 
+## 2026-11-14 - Heltec tester paired to eleven peers
+
+The original GPS Heltec V4 `!699c2ed8` now runs `2.7.26.7b766e6`. It retains G002 and stores ten numbered RAKs with one spare peer slot. The ten RAKs retain `2.7.26.bcb22e0`. [Per-device commissioning and USB verification](../docs/operations/survey-firmware-20261114.md#expanded-heltec-tester-and-fleet-enrollment).
+
 ## 2026-11-14 - Seven more survey RAKs
 
 R001, R002, R006, R008, R009, R010 and the former REF1 now run `rak4631-survey / 2.7.26.bcb22e0`. The owner assigned REF1 (`!8737c2c9`) to R011. USB verified the label, individual keys and LongFast slot 35 after reboot. [Per-board settings and the R011 buzzer default](../docs/operations/survey-firmware-20261114.md#additional-raks-flashed-over-usb).

@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-14 - Expanded tester and fleet pairing
+
+All ten commissioned RAKs and G002 are paired with the original Heltec tester. R003 remains on its hardware hold. All seven new responder enrollments survived reboot. The rebooted tester accepted G002 individually and all ten RAKs together. LongFast slot 35 and individual keys were verified over USB. The next field check is an authenticated round trip to each new responder when the owner resumes RF testing. [Firmware, recovery and verification](../docs/operations/survey-firmware-20261114.md#expanded-heltec-tester-and-fleet-enrollment).
+
 ## 2026-11-14 - Seven RAK responder enrollments
 
 R001, R002, R006, R008, R009, R010 and R011 each retained the original Heltec tester pairing and their saved profile and keys after a USB reboot. The tester accepted its four previous peers, including G002. The new application and host adapter passed the migration and capacity checks. The original tester disconnected after backup and before the application write. Next, reconnect the tester for the write and verify all eleven peers across its reboot. [Commissioning record and release](../docs/operations/survey-firmware-20261114.md#additional-raks-flashed-over-usb).
