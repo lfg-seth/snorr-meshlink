@@ -20,10 +20,10 @@ test('field views match physical radios and keep fixed order, pins and names acr
   assert.deepEqual(placedLinks([link, {...link, heardDeviceId: legacy.id}, {...link, observerDeviceId: 'b002'}], shown), [link]);
 });
 
-test('Lee Fire Station retains gateway health and uses its authenticated station reference only', () => {
+test('Lee Fire Station retains gateway health and uses its owner-supplied deployment pin only', () => {
   const gateway = {...infrastructure[0], id: 'g001', radioNodeId: '!1bbf0638',
     batterySetup: 'Verified pack', antenna: 'Verified antenna', longitude: -115, latitude: 36,
-    locationLabel: 'Lee Fire Station', locationSource: 'field-station-reference',
+    locationLabel: 'Lee Fire Station', locationSource: 'owner-deployment-pin',
     gatewayHealth: {state: 'online', label: 'Online'}};
   const [station] = placedInfrastructure([gateway]);
   assert.equal(station.role, 'Backhaul');
