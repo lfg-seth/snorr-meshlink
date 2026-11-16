@@ -1,5 +1,27 @@
 # Field testing and tangible results
 
+## 2026-11-15 - Mount Charleston deployment AAR
+
+[Full AAR](aar/2026-11-15-mount-charleston.md) records the owner's **07:00-18:00
+Pacific / 11-hour** placement outing. Owner reports placements at Cathedral
+Rock, Kyle Junction, both Angel Peak sides, Upper Bristlecone and Lee Junction;
+G001 at Lee Fire and G002 recording offline at Shady Hollow. Successful
+placement reports do not establish sustained reception, relay or runtime.
+
+Priority observations: G001 was unstable on larger USB-C solar panels and
+seemed normal after dark; solar-related brownout is a hypothesis. R001 showed
+about **16 mA reported net battery current**, versus **160-250 mA** on other
+boards; estimated **32 mA panel input** is unmeasured. Lee Junction reception
+was present at the car but lost hiking; its intended Lee Fire/Upper Bristlecone
+links remain unproven. No planned field ping/pong survey or antenna/feedline
+comparison was completed. Earlier isolated configuration-session pings retain
+their limited scope. No raw logs or photos were inspected for this AAR.
+
+Return intentions: G001 power work, R001 panel inspection, Lee Junction
+repositioning, additional selected placements and SD-card collection. Fletcher
+replacement and Sisters recovery remain outstanding. See the AAR for workflow
+lessons, evidence limits and the full follow-up list.
+
 ## 2026-11-15 - G002 Shady Hollow offline SD recording verified
 
 Owner selects **G002 / !1bbf0ab8 / Case 7 / eight cells / Muzi** for Shady

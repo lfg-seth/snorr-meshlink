@@ -1,5 +1,24 @@
 # Hardware inventory
 
+## 2026-11-15 - Field condition and recovery follow-ups
+
+Owner's [Mount Charleston AAR](aar/2026-11-15-mount-charleston.md) reports the
+field laptop's touchscreen remains broken; repair/replacement is desired, with
+no exact model, repair choice, purchase or cost supplied. The rugged Dell is
+available to carry but inconvenient for hiking. No stock quantity changes.
+
+Current board-in-case assemblies block USB-C access; final assembly from
+separate sleds/cases in the field was inconvenient. G001 at Lee Fire used
+larger panels described by the owner as **5 W** through USB-C; exact panel
+model, count, voltage and fault remain unverified. R001's low reported charging
+needs inspection; no failed component or replacement is confirmed. TP4056 or
+similar charging and a larger R001 panel are proposed options only.
+
+The car-node roof antenna was left behind, not reported lost. Sisters hardware
+still needs recovery; identity/count and condition await retrieval. Fletcher
+replacement was not reached. No acquisition, disposal, recovered quantity or
+expense is inferred from this outing.
+
 ## 2026-11-15 - G002 / Case 7 allocated to Shady Hollow
 
 Owner selects **G002 / !1bbf0ab8 / Case 7 / eight cells / Muzi** as an offline

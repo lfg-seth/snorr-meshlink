@@ -1,5 +1,35 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - Field placement and access report
+
+The owner's [same-day AAR](aar/2026-11-15-mount-charleston.md) reports physical
+placements at **Cathedral Rock / R001, Kyle Junction / R008, Angel Peak Vegas
+Side / R005, Angel Peak Mountain Side / R011, Upper Bristlecone / R010 and
+Lee Junction / R006**, plus **G002 offline recording at Shady Hollow** and
+**G001 at Lee Fire Station**. This advances the earlier setup-only records
+below to owner-reported placement; detailed mount inspection, sustained
+coverage/relay and solar/runtime acceptance remain separate.
+
+- **Lee Fire:** Wi-Fi available; currently the only available station Wi-Fi
+  backhaul. G001 daytime power instability needs investigation.
+- **Kyle Fire:** visited, but Wi-Fi access was unavailable to the owner;
+  follow-up required. No working backhaul claim.
+- **Lee Junction:** initially appeared to reach Lee Fire and Upper Bristlecone,
+  but reception was lost hiking away from the car. Owner intends to relocate
+  it; both intended links remain unproven. Cell and vehicle Starlink reach
+  were unavailable at the hiking location.
+- **Sisters:** not visited; recover existing hardware. Owner probably will not
+  redeploy there. This supersedes the earlier assumption of a Sisters placement
+  trial; final retirement and recovery are still outstanding.
+- **Fletcher:** not visited; owner wants replacement and continued presence.
+  Likely a dedicated full-day outing, not a completed replacement.
+- **Northwest valley home:** friends may host a node with an apparent straight
+  shot to Angel Peak. Candidate only; permission, path and backhaul unverified.
+  Host identity/address omitted.
+
+Capture the missing Angel Peak Mountain Side photo at the next opportunity.
+The reported 09:00 Cathedral Rock solar photo has not been inspected here.
+
 ## 2026-11-15 - Published deployment setup and fixed locations
 
 Owner explicitly authorizes publishing this project's fixed node locations to

@@ -1,5 +1,39 @@
 # Deferred feature wishlist
 
+## Field preparation and service access
+
+Added 2026-11-15 from the [Mount Charleston AAR](aar/2026-11-15-mount-charleston.md).
+Capture only; research/design/implementation wait for owner activation.
+
+- Prepare and test a repeatable flashing/configuration script before field
+  outings, reusing existing tooling where suitable. Include complete profile
+  verification and **OK to MQTT** so omissions are caught before mounting;
+  reconcile project records with chat afterward. The owner reports agent-driven
+  setup was slow and a missed permission required retrieving a deployed node.
+- Improve enclosure/sled service access: assembled cases currently block
+  USB-C on every device. Reduce field final assembly and allow practical
+  servicing. No enclosure redesign is selected.
+- Repair or replace the field laptop's broken touchscreen to improve usability.
+  No model, parts, budget, purchase or repair decision is selected.
+
+## Offline walking and driving reception survey
+
+Added 2026-11-15 from the [AAR](aar/2026-11-15-mount-charleston.md).
+Owner wants local reception feedback while hiking without cell/Starlink reach,
+and a driving dashboard showing which nodes the car node can reach to find
+useful overlap for repeater placement. Possible approaches are a phone paired
+with existing **B003** and a **ping/pong** feature; neither is validated here.
+The rugged Dell is an available but inconvenient hiking fallback.
+
+Relate future scope to the existing [survey procedure](../docs/research/repeater-operations-survey.md)
+and [node dashboard](../docs/operations/live-node-dashboard.md). Preserve the
+distinction between hearing a node, completing a round trip and proving a
+particular relay path. Requested antenna comparisons remain unperformed:
+fiberglass versus Muzi, and short Type-N/IPEX versus 10-15-foot Type-N/SMA
+plus short SMA/IPEX feedlines, to explore height/line-of-sight tradeoffs with
+solar-panel positioning. Exact cables/connectors and test criteria remain to
+confirm. Capture only; no survey work is activated by this record.
+
 ## Gateway SD logging
 
 2026-10-31: Owner requests [LOCAL-10](../.scratch/pilot/issues/29-gateway-sd-logging.md)

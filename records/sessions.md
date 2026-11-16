@@ -1,5 +1,32 @@
 # Session log
 
+## 2026-11-15 - Mount Charleston field AAR recorded
+
+Organized the owner's **07:00-18:00 Pacific / 11-hour** deployment account in
+the [AAR](aar/2026-11-15-mount-charleston.md): stops, successful preparation,
+assembly/configuration lessons, missed equipment/tests, suspected faults and
+return intentions. Updated field results, sites, physical roster, inventory,
+wishlist and tracker. Placement is now owner-reported for six repeaters,
+G001 at Lee Fire and G002 offline at Shady Hollow; sustained/relay/runtime
+acceptance remains open. Sisters recovery/probable non-redeployment supersedes
+the earlier assumed placement trial; Fletcher remains a desired replacement.
+
+G001 solar-related brownout and low voltage remain hypotheses; TP4056 is a
+proposed option, not a selected fix. R001's 16 mA reported net battery current
+and comparison with 160-250 mA elsewhere are owner observations; 32 mA panel
+input is an estimate. Lee Junction links need relocation/verification. No raw
+logs/photos reviewed, hardware changed, live service accessed, purchase made
+or external outreach performed. New script/service-access and offline survey
+requests are captured as Deferred, without activating implementation.
+
+Validation: all **8 changed/new Markdown files** pass local link and Git
+whitespace checks; focused diff review complete. The initial sandboxed check
+could not read existing firmware-submodule Git metadata; the same check passes
+with the required read access. Records branch `codex/aar-20261115`; commit and
+push result reported at handoff. Next: owner reviews morning behavior and selects return-trip
+scope/date, power diagnosis, panel inspection, local reception feedback and
+SD-card collection. No reminder or automated monitoring was requested.
+
 ## 2026-11-15 - Seven field placements and Activity deployed
 
 Fetched all GitHub branches and tags. Used the published fixed positions at
