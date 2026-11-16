@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-16 - Shortlisted assembled solar charger modules
+
+Owner asks for a ready-made PCB comparable to TP4056 boards. Checked primary
+vendor specifications for DFRobot DFR0559 (nominal 5 V solar, 900 mA charging,
+regulated 5 V / 1 A output) and Adafruit 4755 / BQ24074 (up to 1.5 A charging,
+independent load sharing, manufacturer-recommended 6-7 V solar panels). Basic
+CN3065 boards also exist, but a documented 500 mA version does not improve on
+the stock V4 charging current. [Module comparison](../docs/research/heltec-v4-solar-recovery.md#ready-made-module-options---2026-11-16).
+
+DFR0559 is a candidate to evaluate with the existing nominal 5 V panels, not a
+selected field fix. BQ24074's LOAD can reach 4.4 V, above the Heltec battery
+input's 4.2 V maximum; panel matching, power interface, charge termination under
+load and actual cell-temperature protection need review before wiring. Amazon
+availability was not verified. No purchase, wiring, firmware or live changes.
+Documentation checks pass. Next: select an exact module and review its complete
+circuit against the actual panel/pack and gateway, then bench-test weak-sun
+recovery and net charging before deployment.
+
 ## 2026-11-16 - Researched Heltec V4 solar instability
 
 Owner confirms G001's battery was attached during daytime failures, identifies

@@ -136,6 +136,62 @@ Then measure daily energy and cold-charge protection. None of those bench or
 field checks was performed by this research; no wiring, purchase, firmware or
 deployment change is recorded here.
 
+## Ready-made module options - 2026-11-16
+
+The owner wants an assembled standalone PCB similar in convenience to a
+TP4056 module, using the existing 5 V USB panels and improving on the V4's
+roughly 540 mA charging ceiling. These are online candidates, not tested
+assemblies or purchase selections. Amazon stock/listings could not be verified;
+use the exact model numbers below when searching and compare with the primary
+seller's specification.
+
+| Module | Useful capability | Fit and limitation |
+| --- | --- | --- |
+| [DFRobot Solar Power Manager 5V, DFR0559](https://www.dfrobot.com/product-1712.html) | CN3165, up to **900 mA charge**, **5 V / 1 A regulated output**, 33 × 63 mm. | Closest documented match to an existing nominal 5 V source. Linear charging, so this is a modest current increase rather than a multi-panel high-power solution. |
+| [Adafruit Universal USB/DC/Solar charger, product 4755](https://www.adafruit.com/product/4755) | BQ24074, **1 A default / 1.5 A selectable charge**, independent load sharing and input droop regulation. | Better system power-path behavior, but additional output interfacing is required for a Heltec. Adafruit recommends raw **6-10 V solar** and warns that raw 5 V panels droop too far. |
+
+For **DFR0559**, the [manufacturer reference](https://wiki.dfrobot.com/dfr0559/docs/21586)
+describes nominal 5 V solar input and an always-on boosted USB output. The
+module's specified solar operating range is roughly 4.4/4.5-6 V; 6.5 V is a
+damage boundary, not a normal design target. Its output can be evaluated as a
+regulated supply to the gateway USB input, with the pack managed by the
+external module. Do not leave the same pack also wired to the Heltec battery
+connector in that arrangement: it creates overlapping charging paths. The
+CN3165 still has a shared BAT/load node; verify termination under continuous
+gateway load, restart after depletion and thermal behavior. The 1 A output
+rating also needs testing against radio/SD/Wi-Fi peaks. Battery-temperature
+charge cutoff is not established by the listed protection features.
+
+For **Adafruit 4755**, a regulated 5 V USB output from the existing panel is
+different from a raw 5 V photovoltaic panel, so the raw-panel warning alone
+does not rule it out. Nevertheless, the panel's reported 2-4 V periods will
+stop useful charging and require battery fallback. Its [LOAD/OUT range is
+approximately battery voltage to 4.4 V](https://learn.adafruit.com/adafruit-bq24074-universal-usb-dc-solar-charger-breakout?view=all):
+**do not connect LOAD directly to the Heltec's 4.2 V maximum BAT input**, or
+expect it to meet the Heltec USB minimum of 4.7 V. A suitable 5 V boost stage
+from LOAD is one integration option requiring full testing. Its optional NTC
+must actually be fitted and coupled to the cells to provide temperature
+monitoring; it is not supplied by default.
+
+Two shopping filters prevent misleading upgrades:
+
+- Small **CN3065/CN3165 mini solar modules** are the right inexpensive search
+  family, but check the actual programmed current and output topology. A chip
+  advertised as capable of 1 A does not mean its assembled board charges at
+  1 A; [PMD Way's CN3065 solar/USB module](https://pmdway.com/products/cn3065-solar-and-usb-lithium-battery-charger)
+  is specified at **500 mA charge**, so it does not improve this ceiling.
+- **CN3791 switching solar modules** can offer more current, but the
+  [manufacturer's MPPT divider is programmed for an input operating voltage](https://www.consonance-elec.com/en/static/upload/file/20220426/1650944536175148.pdf).
+  A module sold with a 6/9/12 V tracking setpoint is not automatically suitable
+  for an existing 5 V USB panel. Its charge-current marketing also does not
+  establish load sharing, pack protection or cold-charge cutoff.
+
+The practical first external-board candidate for the existing panels is
+**DFR0559 for bench evaluation**. Adafruit 4755 is a useful alternative when
+true load sharing justifies the extra output stage. Neither board makes a
+collapsing panel charge at 2-4 V, and neither has been verified here as a
+drop-in winter gateway supply.
+
 The [planned comparison](../../records/field-results.md#2026-11-16---g001-solar-power-isolation-plan-not-run)
 defines controls and proposed short bench criteria. The [inventory follow-up](../../records/inventory.md#2026-11-16---g001-usb-solar-panel-identified)
 preserves the owner-supplied panel identity and voltage report separately from
