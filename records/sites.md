@@ -1,5 +1,47 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - Published deployment setup and fixed locations
+
+Owner explicitly authorizes publishing this project's fixed node locations to
+GitHub on 2026-11-15. This supersedes earlier location-withholding notes for
+these deployment assignments. Decimal coordinates below are copied from two
+matching post-reboot configuration readbacks for each physical radio; they
+record the selected saved pins, not a new field GPS measurement or completed
+installation. Full profiles, credentials, keys and packet logs remain in the
+ignored evidence directories linked from each procedure.
+
+All seven assemblies below have **eight cells and a Muzi antenna**, as selected
+by the owner. Case numbering and physical identity remain independent of older
+R/G label assignments. The R005 replacement keeps Angel Peak Vegas Side;
+R011's current assignment is Mountain Side.
+
+| Node / radio ID | Selected site | Latitude | Longitude | Case | Saved role / firmware | Configuration evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| R001 / !f95b5501 | Cathedral Rock | 36.2563100 | -115.6488600 | 01 | ROUTER / 2.7.26.bcb22e0 | [Reboot profile and B003 ping](../docs/operations/r001-cathedral-deployment.md) |
+| R008 / !120b04fd | Kyle Junction | 36.2625900 | -115.6011800 | 8 | ROUTER / 2.7.26.bcb22e0 | [Reboot profile](../docs/operations/r008-kyle-junction-deployment.md) |
+| R005 / !a65601b3 | Angel Peak Vegas Side | 36.3176300 | -115.5728800 | Unnumbered ASA | ROUTER / 2.7.26.bcb22e0 | [Replacement and fresh CLI reports](../docs/operations/r005-angel-vegas-deployment.md) |
+| R011 / !8737c2c9 | Angel Peak Mountain Side | 36.3187900 | -115.5804900 | 6 | ROUTER / 2.7.26.bcb22e0 | [Reboot profile and MQTT permission](../docs/operations/r011-angel-mountain-deployment.md) |
+| R010 / !77fdb9f1 | Upper Bristle | 36.3064800 | -115.6784300 | 4 | ROUTER / 2.7.26.bcb22e0 | [Reboot profile](../docs/operations/r010-upper-bristle-deployment.md) |
+| R006 / !638b9515 | Lee Junction | 36.3423600 | -115.6539800 | 3 | ROUTER / 2.7.26.bcb22e0 | [Reboot profile](../docs/operations/r006-lee-junction-deployment.md) |
+| G002 / !1bbf0ab8 | Shady Hollow | 36.2727400 | -115.5843000 | 7 | CLIENT / 2.7.26.f6cdbeb | [Offline SD recorder](../docs/operations/g002-shady-hollow-deployment.md) |
+
+The six selected RAK repeaters retain 180-second device/environment/power
+report settings and their own SNNS baselines. G002 retains 300-second ordinary
+telemetry, disables Wi-Fi/MQTT and verifies increasing synced SD frames with
+zero drops. Saved intervals do not establish measured delivery or runtime.
+
+Today's separate **G001 / !1bbf0638 / 2.7.26.5bd4923** work verifies replacement
+Wi-Fi association, direct MQTT forwarding, increasing healthy SD records and
+its own SNSD receipt at **15:17:09 Pacific**. It retains a 300-second device/SD
+baseline; [USB diagnosis](../docs/operations/g001-usb-diagnosis-20261115.md) and
+[Wi-Fi checks](../docs/operations/g001-wifi-test-20261115.md) preserve the
+measurements. No new G001 fixed deployment pin is asserted here.
+
+Installation/mount confirmation, sustained reporting, copied-card inspection,
+power-loss/clock recovery, forced-relay GPS, field coverage and battery/solar
+runtime remain the separate acceptance steps recorded in the
+[roster](deployment-nodes.md) and [tracker](../.scratch/TRACKER.md).
+
 ## 2026-11-15 - G002 selected for Shady Hollow offline logging
 
 Owner supplies exact Shady Hollow coordinates and selects **G002 / !1bbf0ab8**,

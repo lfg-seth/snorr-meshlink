@@ -1,5 +1,7 @@
 # Current deployment node labels
 
+[Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.
+
 ## Fresh numbering - 2026-11-12
 
 The owner restarts **all repeater/gateway labels** for the Sunday deployment.

@@ -1,5 +1,48 @@
 # Session log
 
+## 2026-11-15 - Project and node setup consolidated for GitHub publication
+
+Owner requests saving the whole project and today's node setup to GitHub,
+explicitly approving publication of the fixed node locations. Consolidate
+completed node/bench records from `f4f231f`, current `origin/main` `406a396`
+and the separately completed combined node dashboard `f194272` on
+`codex/save-project-20261115`. Two normal merges preserve their histories;
+retain main's MeshLink **0.3.1** application/backend/SD-reader files exactly,
+plus both sets of inventory, measured results and sessions. No history rewrite,
+branch deletion, hardware access or production deployment.
+
+[Published setup and location table](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations)
+records R001 Cathedral Rock, R008 Kyle Junction, R005 Angel Peak Vegas Side,
+R011 Angel Peak Mountain Side, R010 Upper Bristle, R006 Lee Junction and G002
+Shady Hollow. Every coordinate matches both saved post-reboot readbacks and
+the original integer-degree pin; retain each physical identity, case/eight-cell/
+Muzi allocation, role, installed firmware and procedure link. G001 Wi-Fi,
+direct MQTT and SD measurements are linked alongside the deployment setup.
+README, project, roster, tracker and seven procedures make the approved
+locations discoverable and supersede their earlier withholding notes. Original
+profiles, credentials, keys and raw logs remain ignored.
+
+Validation: changed Markdown links/whitespace, all seven exact coordinate
+comparisons and preservation of both histories' record headings pass. All
+**107 bench**, **10 firmware-release** and **42 node-dashboard** tests pass;
+**22 portal test files**, TypeScript and Vite build pass; offline SD-reader
+suite and all **94 backend tests** pass. The first
+system-Python bench attempt lacked Meshtastic; rerun with the existing `.venv`
+passes. Sandbox socket/process restrictions prevent backend tests and Vite's
+Git metadata subprocess; rerun affected checks with the necessary permissions, with no failures.
+No dependency installation or production access is part of these checks.
+Pinned firmware `5bd492399` is an ancestor of the published `snorr/develop`
+head `7b766e6`; keep that pin unchanged.
+
+A normal fetch fails on a pre-existing broken local Codex checkpoint ref.
+Independently verify GitHub main `406a396` and the published node head
+`f4f231f` without repairing/deleting refs; remote branch publication succeeds.
+Final documentation commit and main publication are reported at handoff.
+Existing other worktrees and already published historical/held branches stay
+intact. Next: confirm installation/mounts and select sustained reporting,
+copied-card/power-loss/clock, forced-relay GPS, coverage and runtime checks
+from the tracker; this publication does not establish those field gates.
+
 ## 2026-11-15 - G002 configured for Shady Hollow offline SD recording
 
 Owner selects **G002 / Case 7 / eight cells / Muzi** and exact Shady Hollow

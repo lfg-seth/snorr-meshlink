@@ -1,5 +1,9 @@
 # G002 Shady Hollow offline SD recorder - 2026-11-15
 
+**Publication update, 2026-11-15:** owner approves publishing the exact fixed
+location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
+complete profiles and raw logs remain ignored.
+
 Owner selects **G002 / Case 7 / eight cells / Muzi** for **Shady Hollow**, with
 exact supplied coordinates. Purpose is local SD recording without Wi-Fi;
 CLIENT or ROUTER is authorized. Keep existing **CLIENT / rebroadcast NONE**,

@@ -1,5 +1,9 @@
 # R006 Lee Junction deployment - 2026-11-15
 
+**Publication update, 2026-11-15:** owner approves publishing the exact fixed
+location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
+complete profiles and raw logs remain ignored.
+
 Owner selects **R006 / Case 3 / eight cells / Muzi antenna** for **Lee
 Junction**, supplying exact coordinates. Coordinates and full profiles remain
 private. Configuration only; stop if flashing is needed.

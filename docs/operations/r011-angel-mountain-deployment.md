@@ -1,5 +1,9 @@
 # R011 Angel Peak Mountain Side - 2026-11-15
 
+**Publication update, 2026-11-15:** owner approves publishing the exact fixed
+location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
+complete profiles and raw logs remain ignored.
+
 Owner selects **R011 / Case 6**, retaining its assembly/configuration, for
 **Angel Peak Mountain Side** at a newly supplied exact pin. This is a new
 site assignment after R005 replaces it on the Vegas side. R005 remains at

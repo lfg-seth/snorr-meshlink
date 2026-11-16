@@ -1,5 +1,9 @@
 # R008 Kyle Junction deployment configuration
 
+**Publication update, 2026-11-15:** owner approves publishing the exact fixed
+location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
+complete profiles and raw logs remain ignored.
+
 Owner selects **Kyle Junction**, **R008**, **Case 8**, **eight cells** and
 **Muzi antenna** on 2026-11-15, continuing the configuration-only deployment
 sequence. Exact supplied coordinates stay in private evidence and mesh config.

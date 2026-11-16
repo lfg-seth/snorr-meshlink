@@ -1,5 +1,9 @@
 # R001 Cathedral Rock deployment configuration
 
+**Publication update, 2026-11-15:** owner approves publishing the exact fixed
+location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
+complete profiles and raw logs remain ignored.
+
 Owner selects Cathedral Rock on 2026-11-15: **R001**, **Case 01**, **eight
 cells**, **Muzi antenna**, ROUTER role and the supplied fixed coordinates.
 This is the fresh radio **!f95b5501**, USB **E93C5FF0F97DD76B**, hardware

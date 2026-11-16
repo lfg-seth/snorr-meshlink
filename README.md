@@ -8,6 +8,7 @@ Priority order: member location awareness, member communications, and later supp
 
 ## Start here
 
+- [Node setup and locations](records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations): November 15 deployment assignments, exact fixed pins, configuration evidence and remaining field checks.
 - [Local tracker](.scratch/TRACKER.md): current work, next actions, verification and deferred ideas on `main`.
 - [Latest session entry](records/sessions.md): the most recent handoff; read older entries when the task needs their history.
 - [Board flashing and configuration](docs/operations/board-flashing-handoff.md): new-chat entry point, pinned builds, preserved profiles, sensor wiring and portal verification gaps.
@@ -44,7 +45,7 @@ Git history is the change record. The GitHub repository is [lfg-seth/snorr-meshl
 
 ## Releases and tracking
 
-MeshLink application **0.1.0** is versioned independently of SNORR Firmware.
+MeshLink application **0.3.1** is versioned independently of SNORR Firmware.
 See [release operations](docs/operations/meshlink-releases.md),
 [changelog](CHANGELOG.md) and [firmware releases](records/firmware-releases/README.md).
 Builds emit `version.json` with source/version/compatibility metadata.

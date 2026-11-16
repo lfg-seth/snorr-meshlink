@@ -109,6 +109,9 @@ the Project board remain unchanged unless requested.
 
 ## Boundaries and evidence
 
+Owner authorizes publishing fixed infrastructure deployment coordinates on
+2026-11-15; [published setup and pins](records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) supersede earlier withholding notes for those assignments.
+
 Keep secrets, identifiable rosters and raw tracks in ignored `private/` or
 `local-data/`; publish sanitized evidence. Member consent and a private network
 do not settle operational access, retention, radio compliance or publication
