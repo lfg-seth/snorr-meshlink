@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-16 - Deployed remembered sign-in and stable Activity rows
+
+After the owner restored the VPN, deployed MeshLink 0.4.2 at `dd1b036` with
+the requested Activity commit `159a3a1`. Verified the public release, field
+spacing, production token lifetimes, browser restart and sign-out. Fifteen
+telemetry rows stayed in place across two live updates. All seven services
+were active and the archive received fresh radio traffic. Existing sessions
+keep their original expiry. On the next sign-in, leave the remember option
+checked on personal devices. [Release and recovery evidence](../docs/operations/field-portal.md#remembered-sign-in-and-activity-row-order).
+
 ## 2026-11-16 - MeshLink 0.4.2 deployment requested
 
 The owner selected production deployment. [PR #74](https://github.com/lfg-seth/snorr-meshlink/pull/74)

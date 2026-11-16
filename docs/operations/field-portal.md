@@ -118,3 +118,40 @@ restored live database contained the owner's exact G001 pin and provenance.
 | --- | --- |
 | `meshlink-20261116T031939Z.tar.gz` | `022423b9de4a00f2b0330c9d52d1edc2c9874240eb98934a96ba67081dfb3ced` |
 | `meshlink-20261116T033213Z.tar.gz` | `69192d2207a5f9297bc303143a5dbd82f64ddcdfe2429bdbd48c992fb080abe1` |
+
+## Remembered sign-in and Activity row order
+
+On November 16 the production LXC moved from 0.4.1 to `meshlink-v0.4.2`
+at `dd1b036ab2fac3563413691bf795afbcd1a6c158`. The release includes the
+Activity fix at `159a3a1`. All 69 portal tests, 95 backend tests, 42
+dashboard tests, type checking and the production build passed on the host.
+The deployed backend hook matched the release file and all ten publicly
+served build files matched the staged hashes. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/74)
+
+The public HTTPS form had a checked remember option and approximately 44 CSS
+pixels between field borders at both 1280px and 390px. Production password
+authentication issued a 30-day token for a remembered login and a one-hour
+token for a shared-device login. Both accessed protected state. A temporary
+read-only SSH test connection kept the production password and bearer token
+on the LXC while a disposable Edge profile exercised the deployed form with a
+test handle. One sign-in survived a full browser restart. Sign-out persisted
+across a second restart. All eight live Activity cards appeared, and 15
+reading rows in an expanded card kept their order and vertical positions
+across two snapshot updates.
+
+All seven services passed. The MQTT archive gained two receipts during the
+check. Of 200 recent envelopes, 199 were normalized and one was unsupported.
+The worker queue was empty. Promotion under the deployment lock preserved the
+quiesced live and demo database, credential, queue and configuration hashes.
+Prior application files and their install manifest are in
+`/opt/meshlink-rollback-field-dd1b036`. Rollback restores 0.4.1 assets and
+backend source together. Already-issued credentials retain their expiry.
+
+Both backups passed SHA-256 and isolated recovery checks for the live and
+demo databases. The post-release archive contained the exact deployed login
+hook and portal version marker.
+
+| Backup | SHA-256 |
+| --- | --- |
+| `meshlink-20261116T204952Z.tar.gz` | `c1b7a3add7d5b87ec3bac5f8f3c99d88e81352cd8ba5a782118e24b479a73198` |
+| `meshlink-20261116T205547Z.tar.gz` | `853894fdca3103327cb857406378e4c88753780f52fcf8051d77f9f6e0b8c571` |

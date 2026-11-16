@@ -1,8 +1,9 @@
 # Portal LXC deployment
 
-**Current production release, 2026-11-15.** MeshLink 0.4.1 is deployed at
-`bac80fd`. The map, Infrastructure and Activity show eight placements,
-including G001 Lee Fire Station. [Deployment and recovery evidence](field-portal.md#lee-fire-station-deployment)
+**Current production release, 2026-11-16.** MeshLink 0.4.2 is live at
+`dd1b036`. The login form remembers a browser for 30 days by default and
+spaces the two fields vertically. Expanded Activity cards keep telemetry
+readings in a fixed order. [Deployment and recovery evidence](field-portal.md#remembered-sign-in-and-activity-row-order)
 
 Initial deployment: 2026-10-13. Owner authorized the Ubuntu LXC and Cloudflare Tunnel at **https://meshlink.spp.lol**. Updated 2026-10-14: the portal now runs **real bench GPS data**, with fictional operational records privately archived and replaced by B001/B002 trackers and G001/G002 gateways. The receive-only MQTT worker, deduplication, restart and live-backup recovery are verified. [Live MQTT configuration, cutover and recovery](live-mqtt.md). Earlier simulation evidence below describes the original rollout.
 
