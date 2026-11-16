@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-11-16 - Created requested portal member account
+
+Created the owner-requested additional standard member account on the live
+MeshLink server through private SSH and its loopback account administration
+route. Verified the supplied credentials by signing in and reading protected
+live state; confirmed the member role. No administrative privileges, device
+assignment, application release or demo changes. Credentials and account/member
+identifiers are omitted from this record. No secrets were written to Git.
+
+Next: sign in at the production portal with the credentials supplied in chat.
+Server-side sign-in and protected access pass; native browser use of this
+specific account remains unverified.
+
 ## 2026-11-16 - Shortlisted assembled solar charger modules
 
 Owner asks for a ready-made PCB comparable to TP4056 boards. Checked primary
