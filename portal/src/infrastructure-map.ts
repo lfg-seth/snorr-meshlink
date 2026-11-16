@@ -1,6 +1,7 @@
 import type { Infrastructure } from './demo';
 
 export function infrastructureLabel(device: Infrastructure) {
+  if (device.shortName) return device.shortName;
   const named = device.name.match(/\b[RGS]\d{3}\b/i)?.[0];
   if (named) return named.toUpperCase();
   const numbered = device.id.match(/^([rgb])(\d+)$/i);

@@ -678,6 +678,8 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(raised.exception.status, status)
 
     def test_roles_and_collection_bypass(self):
+        for client, status in ((Client(self.url), 401), (self.worker, 403), (self.member, 404)):
+            self.denied(status, client, 'GET', '/api/meshlink/activity')
         self.denied(401, Client(self.url), 'GET', '/api/meshlink/state')
         self.denied(403, self.worker, 'GET', '/api/meshlink/state')
         self.denied(403, self.member, 'POST', '/api/meshlink/rules', {'deviceId': 'r1', 'trigger': 3.5, 'recovery': 3.7})

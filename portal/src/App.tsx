@@ -14,9 +14,11 @@ import type { BackendSession, BackendState } from './backend';
 import type { LoadBatteryHistory } from './BatteryChart';
 import type { LoadCurrentHistory } from './current';
 import { currentSignalRows } from './signal-freshness';
-type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure';
-const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure'];
-const icons = { Map: '◎', Users: '♙', Messages: '☷', Infrastructure: '⌁' };
+import ActivityPage from './activity/ActivityPage';
+import { placedInfrastructure, placedLinks } from './placed-fleet';
+type Page = 'Map' | 'Users' | 'Messages' | 'Infrastructure' | 'Activity';
+const pages: Page[] = ['Map', 'Users', 'Messages', 'Infrastructure', 'Activity'];
+const icons = { Map: '◎', Users: '♙', Messages: '☷', Infrastructure: '⌁', Activity: '∿' };
 function pageFromHash(): Page {
   return (
     pages.find((page) => `#${page.toLowerCase()}` === window.location.hash) ??
@@ -58,14 +60,21 @@ function Portal() {
   const simulation = snapshot?.simulation === true;
   const trackers = snapshot?.trackers ?? [];
   const members = snapshot?.members ?? [];
-  const infrastructureNodes = snapshot?.infrastructure ?? [];
+  const fieldView = Boolean(snapshot && !simulation && !demoMode);
+  const infrastructureNodes = fieldView ? placedInfrastructure(snapshot!.infrastructure) : snapshot?.infrastructure ?? [];
+  const fieldIds = new Set(infrastructureNodes.map(device => device.id));
+  const recorder = infrastructureNodes.find(device => device.role === 'Offline SD recorder');
+  const displayedTrackers = fieldView ? [] : trackers;
   const assignments = snapshot?.assignments ?? [];
   const nameJobs = snapshot?.nameJobs ?? [];
   const messages = snapshot?.messages ?? [];
-  const incidents = snapshot?.incidents ?? [];
+  const incidents = (snapshot?.incidents ?? []).filter(item => !fieldView || fieldIds.has(item.deviceId));
+  const warnings = (snapshot?.warnings ?? []).filter(item => !fieldView || (fieldIds.has(item.deviceId)
+    && !(item.deviceId === recorder?.id && item.kind === 'backhaul')));
   const events = snapshot?.events ?? [];
   const rules = snapshot?.rules ?? {};
-  const currentLinks = snapshot ? currentSignalRows(snapshot) : [];
+  const links = snapshot ? currentSignalRows(snapshot) : [];
+  const currentLinks = fieldView ? placedLinks(links, infrastructureNodes) : links;
   const admin = session?.account.role === 'admin';
   const feedOnline = Boolean(snapshot?.feedOnline && backendConnected);
   const selfMemberId = session?.account.memberId ?? '';
@@ -247,7 +256,7 @@ function Portal() {
   }
   const warningCount =
     incidents.filter((i) => !i.resolvedAt).length +
-    (snapshot?.warnings.filter((w) => !w.recoveredAt).length ?? 0);
+    warnings.filter(w => !w.recoveredAt).length;
   function signOut() {
     saveToken('');
     setRestoreToken('');
@@ -309,7 +318,7 @@ function Portal() {
         </div>
         <p className="nav-label">{demoMode ? 'Demo workspace' : 'Dispatch workspace'}</p>
         <nav aria-label="Portal pages">
-          {pages.map((item) => (
+          {pages.filter(item => item !== 'Activity' || fieldView).map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
@@ -352,7 +361,7 @@ function Portal() {
         </div>
       </aside>
       <div className="workspace">
-        {page !== 'Map' && <div className="demo-banner">
+        {page !== 'Map' && page !== 'Activity' && <div className="demo-banner">
           <span>
             <strong>
               {simulation ? 'Connected backend · synthetic scenario' : 'Connected backend · real devices'}
@@ -364,7 +373,7 @@ function Portal() {
             {backendError}
           </div>
         )}
-        {page !== 'Map' && <div className={`feed-bar ${feedOnline ? '' : 'offline'}`}>
+        {page !== 'Map' && page !== 'Activity' && <div className={`feed-bar ${feedOnline ? '' : 'offline'}`}>
           <span>
             <span className={`feed-dot ${feedOnline ? '' : 'off'}`} />
             <strong>
@@ -391,10 +400,10 @@ function Portal() {
           )}
         </div>}
         <main id="page-content" tabIndex={-1}>
-          {page !== 'Map' && <div className="page-heading">
+          {page !== 'Map' && page !== 'Activity' && <div className="page-heading">
             <div>
               <p className="eyebrow">
-                SNORR operations · {simulation ? 'training scenario' : 'live bench'}
+                SNORR operations · {simulation ? 'training scenario' : 'field deployment'}
               </p>
               <h1>
                 {page === 'Users'
@@ -424,6 +433,9 @@ function Portal() {
           {!snapshot && (
             <p className="empty">Loading authenticated backend records…</p>
           )}
+          {snapshot && page === 'Activity' && (fieldView
+            ? <ActivityPage key={session.account.id} token={session.token} />
+            : <p className="empty">Sign in to the live portal to view field activity.</p>)}
           {snapshot && page === 'Map' && (
             <MapPage
               loadBatteryHistory={loadBatteryHistory}
@@ -433,7 +445,7 @@ function Portal() {
               online={feedOnline}
               key={session?.account.id ?? 'demo'}
               assignments={assignments}
-              trackers={trackers}
+              trackers={displayedTrackers}
               members={members}
               now={now}
               selectedId={selectedId}
@@ -495,8 +507,8 @@ function Portal() {
               now={now}
               infrastructureNodes={infrastructureNodes}
               links={currentLinks}
-              trackers={trackers}
-              warnings={snapshot?.warnings}
+              trackers={displayedTrackers}
+              warnings={warnings}
               onAckWarning={
                 session
                   ? (id) => {

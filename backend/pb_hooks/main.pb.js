@@ -1,4 +1,18 @@
 // Each PocketBase handler runs in its own scope; shared code is a local module.
+routerAdd('GET', '/api/meshlink/activity', (e) => {
+  const c = require(`${__hooks}/common.js`);
+  c.human(e);
+  if (c.simulation()) throw new NotFoundError('Field activity is available on the live portal.');
+  e.response.header().set('Cache-Control', 'no-store');
+  let snapshot;
+  try {
+    snapshot = JSON.parse(toString($os.readFile('/run/meshlink-activity/snapshot.json')));
+  } catch {
+    throw new ApiError(503, 'Waiting for the activity sampler.');
+  }
+  if (Date.now() - Date.parse(snapshot.at) > 15000) snapshot.status = 'No new snapshots';
+  return e.json(200, snapshot);
+}, $apis.requireAuth('accounts'));
 routerAdd(
   'GET',
   '/api/meshlink/current-history/{id}',

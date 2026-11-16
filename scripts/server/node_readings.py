@@ -275,11 +275,14 @@ def feed_status(db):
     return {"connected": bool(row[0]) and not bool(row[1]), "heartbeatAt": row[2] or None}
 
 
-def run(settings):
+def run(settings, publish=None):
     """One incremental reader per SSH session; archive cursor avoids full rescans."""
     try:
         cfg = json.loads(Path(settings["config"]).read_text())
-        state = Measurements(configured_nodes(cfg, settings["roster"]), settings.get("cadences"))
+        nodes = configured_nodes(cfg, settings["roster"])
+        if "selected" in settings:
+            nodes = [node for node in nodes if node["radio"] in settings["selected"]]
+        state = Measurements(nodes, settings.get("cadences"))
         decoder = Decoder(cfg, state, settings["backend"])
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
@@ -307,7 +310,10 @@ def run(settings):
                     payload = {"schema": 1, "at": utc(time.time()), "feed": feed_status(db),
                                "nodes": sorted(state.nodes.values(), key=lambda n: n["label"]),
                                "skipped": state.rejected, "catchingUp": len(rows) == 2000}
-                    print(json.dumps(payload, allow_nan=False), flush=True)
+                    if publish is None:
+                        print(json.dumps(payload, allow_nan=False), flush=True)
+                    else:
+                        publish(payload)
                 except sqlite3.Error:
                     print(json.dumps({"error": "Database read unavailable", "at": utc(time.time())}), flush=True)
                 if settings.get("once"):
