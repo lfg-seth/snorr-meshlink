@@ -24,6 +24,15 @@ changes occurred. Next: verify actual board/connector/panel maximum and polarity
 then run the planned comparison on a selected accessible board before the return
 visit; capture rails and resets before calling the brownout resolved.
 
+Same-day current-limit follow-up: owner reports 560 mA net battery charging.
+Recorded it as owner-reported and clarified that stock V4 USB/solar share the
+roughly 540 mA-programmed CN3165, despite the chip's 1 A capability. Solar-only
+operation subtracts gateway consumption from that output; USB can power the
+system separately. TP4056 supports up to 1 A gross subject to input/cooling,
+with no solar-regulation or independent system-path solution by itself. Added
+explicitly hypothetical 160 mA load examples and a 1.3 W dissipation example;
+no physical measurement, rewire or charger selection. Documentation checks pass.
+
 ## 2026-11-16 - Deployed remembered sign-in and stable Activity rows
 
 After the owner restored the VPN, deployed MeshLink 0.4.2 at `dd1b036` with

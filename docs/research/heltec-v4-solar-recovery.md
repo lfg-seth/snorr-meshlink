@@ -13,8 +13,8 @@ normal after dark. On November 16 the owner confirms the battery was connected,
 identifies [panel ASIN B0C4L1L1BD](https://www.amazon.com/dp/B0C4L1L1BD), and
 reports **2-4 V outside direct sunlight, especially dawn/dusk**. This is
 owner-reported voltage; the measurement point, instrument and loaded condition
-are unverified. Reset cause, battery condition and charging current remain
-unmeasured. G001 is the screenless V4.3 `!1bbf0638`; do not generalize its
+are unverified. Reset cause, battery condition and calibrated charging current
+remain unverified. G001 is the screenless V4.3 `!1bbf0638`; do not generalize its
 behavior to every V4 gateway or to the RAKs.
 
 ## What the official board documents establish
@@ -87,6 +87,43 @@ interfere with termination. It does not solve source collapse or load sharing
 by itself, and was already excluded for the owner's three-panel harvesting
 objective. Do not parallel arbitrary charger/SYS outputs or add external
 charging alongside the onboard charger without a complete reviewed circuit.
+
+## Charging-current follow-up - 2026-11-16
+
+Owner now reports **560 mA net into the battery** in the current setup. No
+reference-meter capture, supply voltage, shunt path or simultaneous gateway
+load was inspected. This is close to the schematic's nominal 540 mA setting;
+component variation, measurement error or different fitted parts are possible
+explanations, not diagnosed causes. It is not evidence of unused charger capacity.
+
+The [CN3165 chip](https://consonance-elec.com/103.html) supports up to 1 A, but
+the stock V4 schematic programs roughly 0.54 A. USB and solar use that same
+charger. A resistor change alone is not a verified board upgrade; thermal,
+connector, input and protection limits still apply.
+
+USB can supply the gateway through the separate system path while the charger
+feeds the battery. With solar only, the gateway draws from the charger/battery
+bus, reducing the current left for battery charging. Thus the solar-port remedy
+may improve stability while reducing net charging relative to good USB power.
+
+| Arrangement | Nominal charger output | Illustrative net battery charge with a 160 mA load on the battery bus |
+| --- | ---: | ---: |
+| Stock V4, solar input only | 540 mA | 380 mA |
+| TP4056 set for 1 A, gateway on its BAT bus | 1,000 mA | 840 mA |
+
+These are current-balance examples, not forecasts. The earlier 160 mA report
+has an uncertain measurement path; use a calibrated load measurement at the
+same bus before relying on the subtraction. Actual charge current falls with
+weak input, thermal regulation and the constant-voltage phase near full charge.
+
+The [TP4056 datasheet](https://www.toppwr.com/uploadfile/file/20240130/65b892bb04a3c.pdf)
+specifies programmable charging up to 1 A and thermal current reduction. It can
+exceed 560 mA gross with adequate input and cooling; it is not rated as a
+multiamp charger. At an illustrative 5 V input, 3.7 V battery and 1 A output,
+linear-regulator dissipation is about **1.3 W**, before small additional losses.
+It cannot maintain that current from a collapsing 2-4 V panel, and adding it
+alone does not supply solar input regulation or an independent system power
+path. Charger selection must address both current and weak-sun stability.
 
 ## Outstanding gates
 

@@ -16,6 +16,11 @@ maximum, reverse blocking, cable losses, battery assembly/protection and fitted
 board power-path details need inspection. No purchase, quantity or wiring change.
 [Board research and proposed remedy](../docs/research/heltec-v4-solar-recovery.md).
 
+Same-day follow-up: owner reports **560 mA net into the battery** in the current
+gateway setup. Retain as owner-reported; shunt placement/calibration, battery
+voltage and simultaneous gateway load remain unverified. No charger or wiring
+change is reported. [Current limits and USB/solar distinction](../docs/research/heltec-v4-solar-recovery.md#charging-current-follow-up---2026-11-16).
+
 ## 2026-11-15 - Field condition and recovery follow-ups
 
 Owner's [Mount Charleston AAR](aar/2026-11-15-mount-charleston.md) reports the
