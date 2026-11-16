@@ -1,5 +1,21 @@
 # Hardware inventory
 
+## 2026-11-16 - G001 USB solar panel identified
+
+Owner confirms the battery remained connected during G001's daytime instability
+and identifies the generic Amazon USB panels as
+[ASIN B0C4L1L1BD](https://www.amazon.com/dp/B0C4L1L1BD). Owner calls them 5 W;
+the current listing advertises a two-pack of 6 W / 5 V panels and describes
+4.5-5 W maximum USB output per panel. These are seller ratings, not measured
+harvest. The two-pack listing does not establish the installed panel count.
+
+Owner reports **2-4 V panel output outside direct sunlight, especially dawn
+and dusk**. Meter, load, sampling and exact measurement point were not supplied;
+board-rail sag and reset cause remain unmeasured. Panel regulation, open-circuit
+maximum, reverse blocking, cable losses, battery assembly/protection and fitted
+board power-path details need inspection. No purchase, quantity or wiring change.
+[Board research and proposed remedy](../docs/research/heltec-v4-solar-recovery.md).
+
 ## 2026-11-15 - Field condition and recovery follow-ups
 
 Owner's [Mount Charleston AAR](aar/2026-11-15-mount-charleston.md) reports the

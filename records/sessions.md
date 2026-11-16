@@ -1,5 +1,29 @@
 # Session log
 
+## 2026-11-16 - Researched Heltec V4 solar instability
+
+Owner confirms G001's battery was attached during daytime failures, identifies
+the Amazon USB panel and reports 2-4 V outside direct sunlight at dawn/dusk.
+Updated inventory without inferring installed count, measured harvest or a
+confirmed reset cause. Reviewed Heltec's official schematic visually and checked
+its input limits plus charger manufacturer documentation. USB feeds the system
+rail and controls the battery path; the dedicated solar input feeds charging.
+
+The [research](../docs/research/heltec-v4-solar-recovery.md) recommends first
+bench-testing a compatible panel through the dedicated solar input, battery
+connected and USB absent. This remains an unverified remedy. The roughly 540 mA
+onboard charge ceiling, winter cell-temperature protection and any later
+multi-panel/external-controller design remain separate checks. TP4056 alone
+does not address solar regulation and system load sharing.
+
+Prepared an [isolation plan](field-results.md#2026-11-16---g001-solar-power-isolation-plan-not-run)
+with battery-only/stable-USB controls, original USB-panel reproduction and
+solar-port comparison. Documentation whitespace/local-link checks pass. No
+hardware access, physical reproduction, wiring, firmware, portal or field
+changes occurred. Next: verify actual board/connector/panel maximum and polarity,
+then run the planned comparison on a selected accessible board before the return
+visit; capture rails and resets before calling the brownout resolved.
+
 ## 2026-11-16 - Deployed remembered sign-in and stable Activity rows
 
 After the owner restored the VPN, deployed MeshLink 0.4.2 at `dd1b036` with

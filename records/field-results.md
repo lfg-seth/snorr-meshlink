@@ -1,5 +1,46 @@
 # Field testing and tangible results
 
+## 2026-11-16 - G001 solar power isolation plan (not run)
+
+Scope: screenless V4.3 **G001 / !1bbf0638**, retaining its Wi-Fi/MQTT, radio,
+SD card and firmware profile. Owner confirms battery connected and reports
+2-4 V from the USB panel at dawn/dusk; see [parts evidence](inventory.md#2026-11-16---g001-usb-solar-panel-identified).
+The [schematic research](../docs/research/heltec-v4-solar-recovery.md) supports
+testing the dedicated solar charging input with USB absent. No physical test,
+reproduction, wiring change or confirmed diagnosis has occurred in this session.
+
+Before testing, identify board revision, panel/cable/polarity, battery chemistry,
+protection and charge temperature; measure the panel's maximum output and check
+against the board's 6 V maximum. Use one identified panel first. Keep an attached
+matching antenna and the saved RF profile. Do not combine panel outputs or alter
+pack topology for this comparison. Select the bench board and operator first;
+G001 remains deployed, so use a verified equivalent or arrange access to G001.
+
+| Comparison | Planned observation / interpretation |
+| --- | --- |
+| Battery only, USB and solar absent | Establish stable uptime, RF reception, SD sync and ordinary MQTT delivery. Inspect battery connector, lead/holder resistance and pack voltage under peaks if this already fails. |
+| Same battery plus known stable 5 V USB supply | Check normal operation while charging, with sufficient source capacity for gateway peaks plus charging. A failure here requires a wider board/load diagnosis. |
+| Same battery plus original panel through USB | Recreate sun/shade and especially the reported 2-4 V condition. Capture the actual supply event and uptime/reset evidence; MQTT silence alone is not a brownout verdict. |
+| Same panel through verified dedicated solar connector, USB absent | Repeat identical shade transitions and compare uptime/rails/SD/MQTT. This should let solar charging fall away while the battery continues to supply the gateway; it is the proposed remedy to verify. |
+
+Record panel voltage at the board, battery voltage/current and the 3.3 V rail
+with suitable peak capture; correlate them with reset/boot evidence and SD sync.
+Use non-powering instrumentation: connecting a powered laptop USB lead would
+change the power path being tested. An averaging USB meter or the uncalibrated
+INA219 alone cannot exclude brief voltage dips. Repeat at a partially discharged
+but healthy pack, when charging demand is greater, and after full charge.
+
+Proposed short bench gate: battery-only and stable-USB controls pass, the old
+USB-panel setup reproduces the symptom, and the solar-port setup completes ten
+matching shade transitions with no uncommanded reboot or rail collapse, continued
+RF/SD operation and MQTT recovery. Ten cycles are a proposed diagnostic gate,
+not measured evidence or endurance acceptance. If the symptom cannot be reproduced,
+retain the proposed fix as unverified and collect the missing reset/rail evidence.
+
+Then verify a full dawn/day/dusk/night cycle, safe charging temperatures and
+measured gateway Wh/day versus solar harvest. No-sun autonomy and recovery targets
+remain to agree; this plan does not establish unattended or winter acceptance.
+
 ## 2026-11-15 - Mount Charleston deployment AAR
 
 [Full AAR](aar/2026-11-15-mount-charleston.md) records the owner's **07:00-18:00
