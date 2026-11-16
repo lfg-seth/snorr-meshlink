@@ -18,7 +18,10 @@ def main():
 
     def publish(snapshot):
         for node in snapshot["nodes"]:
-            if sites[node["radio"]].get("offlineRecorder"):
+            site = sites[node["radio"]]
+            if site.get("stationBackhaul"):
+                node["kind"] = "gateway"
+            elif site.get("offlineRecorder"):
                 node["kind"] = "recorder"
                 # Historical uplink readings predate the offline deployment.
                 for stream in ("gateway", "wifi", "sd"):

@@ -95,7 +95,8 @@ export function mountActivity(root) {
     const heading = el("div",null,"topline");
     heading.append(el("h2",node.name),el("span",groups[node.health],"badge dot"));
     const heard = el("div",null,"heard");
-    heard.append(el("strong",node.label + (node.kind === "recorder" ? " · Offline SD recorder" : "")));
+    const role = {recorder: " · Offline SD recorder", gateway: " · Backhaul"}[node.kind] ?? "";
+    heard.append(el("strong",node.label + role));
     heard.append(el("span",node.seen ? "Last heard " + duration(data.now-Date.parse(node.seen)/1000,true) + " ago" : "Never heard"));
     if (received) heard.append(el("span","↳ Received","rx"));
     const measures = values(node), highlights = el("div",null,"metrics");

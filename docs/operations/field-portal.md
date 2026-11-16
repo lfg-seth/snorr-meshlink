@@ -1,8 +1,13 @@
 # Field portal and activity
 
 The [November 15 site table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations)
-owns the fixed locations. The portal and its activity sampler share
-[the seven placements](../../portal/src/placements.json). Match physical radio IDs before
+owns the seven saved radio pins. G001 at Lee Fire Station uses the station
+reference point from the private field atlas. Its exact antenna mount has no
+recorded fix. The live registry for physical radio `!1bbf0638` stores the
+coordinates with `locationSource=field-station-reference` and
+`locationLabel=Lee Fire Station`. Keep these coordinates in private backup
+and recovery data. The portal and its activity sampler share
+[the field placements](../../portal/src/placements.json). Match physical radio IDs before
 applying site names and map pins. The map shows saved field coordinates.
 Shady Hollow records locally and has no scheduled backhaul, Wi-Fi or remote SD
 watchdog. Ordinary radio observations can still arrive through another gateway.
@@ -28,8 +33,9 @@ mode and atomically publishes the selected cards to
 account role before returning it. The demo API rejects this route.
 
 After the [normal release checks](meshlink-releases.md), verify that the live
-map and Infrastructure show six repeaters plus G002 and that Activity returns
-the same seven physical IDs in roster order, including silent radios. Verify
+map and Infrastructure show six repeaters, the Lee Fire Station backhaul G001
+and offline recorder G002. Activity returns the same eight physical IDs in roster order,
+including silent radios. Verify
 fresh snapshot timestamps, demo isolation and an anonymous request denial.
 For rollback, stop and disable the sampler and restore the previous application
 and static build under the deployment lock. The release writes no roster or

@@ -3,6 +3,14 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.1 - 2026-11-15
+
+Add G001 Lee Fire Station to Map, Infrastructure and Activity as the eighth
+placement. The authenticated registry supplies the station reference point.
+The gateway retains its own Wi-Fi, MQTT, SD and radio health. Radio protocols
+and database schema are unchanged. Rollback restores the 0.4.0 application
+and sampler roster and the previous G001 location metadata.
+
 ## 0.4.0 - 2026-11-15
 
 The live map and infrastructure cards use the seven November 15 placements,

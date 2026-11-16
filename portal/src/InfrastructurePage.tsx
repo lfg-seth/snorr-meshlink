@@ -214,7 +214,8 @@ export default function InfrastructurePage({
           )}
           <div>
             <dt>Placement</dt>
-            <dd>{selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>
+            <dd>{selected.deploymentStatus === 'station' ? 'Station reference point · exact mount unmeasured'
+              : selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>
           </div>
           <div>
             <dt>Solar input</dt>
