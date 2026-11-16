@@ -1,5 +1,11 @@
 # G002 screenless SD gateway - 2026-11-14
 
+**Deployment update, 2026-11-15:** owner selects G002 / Case 7 / eight cells /
+Muzi for [Shady Hollow offline SD recording](g002-shady-hollow-deployment.md).
+CLIENT/NONE retained, fixed coordinates saved, Wi-Fi/MQTT disabled; successful
+SD sync/frame growth verified without networking. Identity/firmware retained.
+The uplink/assembly state below records original commissioning.
+
 The owner selects the newly connected Heltec V4 with SD and INA219 as fresh
 **G002 / SNORR Pilot Gateway G002**, matching the current screenless
 [G001 profile](g001-sd-cadence.md). USB identity is

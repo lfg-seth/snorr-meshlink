@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-11-15 - G002 / Case 7 allocated to Shady Hollow
+
+Owner selects **G002 / !1bbf0ab8 / Case 7 / eight cells / Muzi** as an offline
+SD recorder. Existing Heltec V4/SD/INA219; no purchase or stock recount.
+Historical Case 7 intake is **v4 PETG, one SMA, two 200 mA panels, one four-cell
+parallel holder/four-cell capacity**. New owner-confirmed **eight-cell** count
+supersedes the old count; do not infer a second holder, wiring or fit. Actual
+cell capacity, panel output and runtime remain unverified. SD sync/frame growth
+passes without Wi-Fi/MQTT. [Deployment](../docs/operations/g002-shady-hollow-deployment.md).
+
 ## 2026-11-15 - R006 / Case 3 allocated to Lee Junction
 
 Owner selects **R006 / !638b9515 / Case 3 / eight cells / Muzi** for Lee

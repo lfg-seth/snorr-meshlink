@@ -22,6 +22,7 @@
     "!699ca878": {"profile": "member"},
     "!699c2ed8": {"profile": "member"},
     "!1bbf0638": {"profile": "gateway-sd"},
+    "!1bbf0ab8": {"profile": "gateway-sd", "streams": {"gateway": null, "wifi": null, "sd": null, "position": 3600, "neighbor_info": 21600}},
     "!9ea13cc0": {"profile": "gateway-v3"},
     "!849ad7a0": {"profile": "gateway-v3"},
     "!9e9f167c": {"profile": "gateway-v3", "streams": {"power": 180}},

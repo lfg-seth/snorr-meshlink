@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-15 - G002 selected for Shady Hollow offline logging
+
+Owner supplies exact Shady Hollow coordinates and selects **G002 / !1bbf0ab8**,
+**Case 7 / eight cells / Muzi**. Fixed pin saved privately and verified through
+reboot. Existing CLIENT/NONE retained with Wi-Fi/MQTT disabled; SD records
+continue syncing locally. Existing mountain-access authority remains the basis;
+completed installation/mount, field reception/coverage and runtime remain
+unverified. [Deployment](../docs/operations/g002-shady-hollow-deployment.md).
+
 ## 2026-11-15 - R006 selected for Lee Junction
 
 Owner supplies exact Lee Junction coordinates and selects **R006 / !638b9515**,

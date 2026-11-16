@@ -1,5 +1,40 @@
 # Session log
 
+## 2026-11-15 - G002 configured for Shady Hollow offline SD recording
+
+Owner selects **G002 / Case 7 / eight cells / Muzi** and exact Shady Hollow
+coordinates, requiring SD recording without Wi-Fi and allowing CLIENT/ROUTER.
+Fresh USB **F8:5B:1B:BF:0A:B8**, radio **!1bbf0ab8**, hardware
+**bfd67fc07c1161ce8fae291933705196**, installed **2.7.26.f6cdbeb** match.
+[Configuration and measurements](../docs/operations/g002-shady-hollow-deployment.md).
+Retain CLIENT/NONE, own keys/admin/channels/names, radio/power/GPS settings,
+300-second ordinary telemetry/SNNS and own 3,600-second smart position. Disable
+Wi-Fi/MQTT, preserve saved credentials privately and set exact fixed coordinates.
+Complete intended profile/owner/firmware/location passes before/after explicit
+reboot; no flash, factory reset, rename or portal/server mutation.
+
+Pinned recorder source operates independently of Wi-Fi/MQTT. Actual successful
+SD sync/capacity diagnostics show segment **23**, frames **123 → 151**, **zero drops**, **4,208 / 31,149,056 KiB** used/total
+with networking disabled. Temporary debug-log API is restored; independent final
+complete-profile comparison passes. Serial closes, ready to unplug. No destructive card
+test/erase; existing recording files remain. A first 135-second window gets
+one healthy sync but no proven growth. Extended observation includes one
+USB telemetry request addressed only to G002 itself, creating new local
+recorder events; this is not an RF ping or field reception measurement. Pinned SNSD/SNGH send gates
+require Wi-Fi/MQTT enabled, so remote SD/gateway/Wi-Fi health is intentionally
+absent. CLI baseline adds G002 ordinary cadences and disables those deadlines.
+No inference of valid field cold-start UTC from USB time.
+
+Case 7 old four-cell/one-holder intake is preserved as history; owner now confirms
+eight cells, without holder/wiring/fit inference. Update inventory/sites/roster/
+project/tracker and commissioning pointer. Full profile/coordinates/key/channel/
+minimal-change and cadence assertions, docs/whitespace pass. Raw pins, payloads,
+credentials/logs stay ignored in `private/bench/G002-shady-hollow-20261115/`.
+Clean-branch pull fails on the existing broken local Codex checkpoint ref; no
+history repair. Next: copied-card integrity, sustained/power-loss/clock and
+installation/field/runtime checks. Branch `codex/g002-shady-hollow-20261115`;
+commit/push reported at handoff.
+
 ## 2026-11-15 - R006 configured for Lee Junction
 
 Owner selects **R006 / Case 3 / eight cells / Muzi** and supplies exact Lee

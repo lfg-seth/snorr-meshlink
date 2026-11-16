@@ -48,6 +48,17 @@ All eleven repeater numbers are assigned. The next unused number is **R012**.
 Former **REF1 / SNORR RF Reference** (`!8737c2c9`) served on `2.7.15.567b8ea`.
 On 2026-11-14 the owner reassigned that physical radio to **R011**. No replacement reference was designated.
 
+## G002 offline deployment - 2026-11-15
+
+Owner selects existing **G002 / !1bbf0ab8 / F8:5B:1B:BF:0A:B8** for
+**Shady Hollow / Case 7 / eight cells / Muzi**. Retain **2.7.26.f6cdbeb**, keys,
+channels and CLIENT/NONE; disable Wi-Fi/MQTT, save exact fixed pin and verify
+complete profile through reboot. SD sync confirms segment **23**, frames **123 → 151**, **zero drops**, **4,208 / 31,149,056 KiB** used/total
+with networking disabled. Label/portal identity unchanged; no direct backhaul
+or remote SNSD/SNGH/Wi-Fi health expected in this use. Copied-card, sustained,
+clock/field/runtime acceptance remain separate.
+[Current deployment](../docs/operations/g002-shady-hollow-deployment.md).
+
 ## Gateway addition - 2026-11-14
 
 Fresh **G002 / SNORR Pilot Gateway G002** is the screenless V4

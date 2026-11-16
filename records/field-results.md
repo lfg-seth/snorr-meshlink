@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-11-15 - G002 Shady Hollow offline SD recording verified
+
+Owner selects **G002 / !1bbf0ab8 / Case 7 / eight cells / Muzi** for Shady
+Hollow, authorizing CLIENT or ROUTER and requesting SD recording without Wi-Fi.
+Retain **CLIENT/NONE / 2.7.26.f6cdbeb**, disable **Wi-Fi and MQTT**, save exact
+fixed coordinates, preserve own keys/channels/recorder/300-second ordinary
+telemetry and verify complete intended profile before/after explicit reboot.
+No firmware flash, factory reset, card erase or portal reassignment.
+
+Successful local `f_sync`/capacity diagnostics show segment **23**, frames **123 → 151**, **zero drops**, **4,208 / 31,149,056 KiB** used/total
+while network settings remain disabled. Temporary structured logs restored;
+independent final full-profile read passes and serial closes. No remote SD/
+gateway/Wi-Fi health expected with this firmware's offline configuration.
+Copied-card integrity, sustained/power-loss/clock, installation and field/runtime
+remain distinct. [Evidence](../docs/operations/g002-shady-hollow-deployment.md).
+
 ## 2026-11-15 - R006 Lee Junction configuration verified
 
 Owner selects **R006 / !638b9515 / Case 3 / eight cells / Muzi** and supplies

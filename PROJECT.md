@@ -29,6 +29,10 @@ retains survey firmware, enabled MQTT permission and 180-second reporting.
 R006 / Case 3 / eight cells / Muzi is selected for Lee Junction;
 [ROUTER/fixed-location verification](docs/operations/r006-lee-junction-deployment.md)
 retains survey firmware, enabled MQTT permission and 180-second reporting.
+G002 / Case 7 / eight cells / Muzi is selected for Shady Hollow as an
+[offline SD recorder](docs/operations/g002-shady-hollow-deployment.md): CLIENT,
+fixed location, Wi-Fi/MQTT disabled, retained firmware and increasing synced
+SD records verified. Its G002 identity remains; direct backhaul is disabled.
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.
