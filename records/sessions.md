@@ -1,5 +1,26 @@
 # Session log
 
+## 2026-11-16 - Remembered portal sign-in
+
+Reproduced loss of live sign-in after closing a tab and measured the original
+PocketBase token lifetime at one hour. The live form now offers a checked
+30-day remembered sign-in. Users can clear the checkbox on shared devices.
+The username and password fields stack with an explicit gap.
+
+The PocketBase integration test verified the issued expiry, access to protected
+state, and revocation after a password change. The portal tests cover restart,
+tab-only sign-in, cross-tab sign-out, outage retry, rejected access and demo
+isolation. A disposable Edge profile reopened the production build against a
+local test API without another password request and stayed signed out after a
+second restart. The inputs had 44 CSS pixels between their borders at both
+1280px and 390px viewport widths, with the password label in that space.
+All 69 portal tests, typecheck and production build passed. The Windows backend
+suite showed intermittent loopback failures. The targeted login test and
+individual reruns of the simulation-control, low-battery and archive checks passed.
+
+Next step is a manual release of the backend hook and portal together, followed
+by a live browser-restart and sign-out check. [Authentication contract](../docs/research/portal-backend-contract.md).
+
 ## 2026-11-16 - Stabilized Activity telemetry rows
 
 The expanded node card now displays readings in a fixed order across polls.

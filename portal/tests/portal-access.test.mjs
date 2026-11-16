@@ -158,6 +158,7 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.ok(requests.length >= 2, 'demo authenticates and reads its PocketBase');
     assert.ok(requests.every(r => r.url.startsWith('/demo-api/')), 'demo cannot use production routes');
     assert.equal(window.sessionStorage.length, 0, 'demo tokens cannot become saved production sign-ins');
+    assert.equal(window.localStorage.length, 0);
     await navigate('#infrastructure');
     assert.match(document.querySelector('.neighbor-table').textContent, /DB901/);
     assert.match(document.querySelector('.neighbor-table').textContent, /0 dB/);
@@ -210,8 +211,12 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.equal(document.querySelector('.demo-mode-label'), null);
     assert.equal(document.querySelectorAll('.tracker-row').length, 0, 'authenticated empty state cannot show demos');
     assert.doesNotMatch(document.querySelector('.workspace').textContent, /Demo Avery/);
-    assert.equal(window.sessionStorage.getItem('meshlink-session-token'), 'test-token');
-    assert.equal(window.localStorage.length, 0, 'sign-in is scoped to this tab');
+    window.sessionStorage.clear(); // Closing the browser discards tab storage.
+    await act(async () => root.render(createElement(App, { key: 'browser-restart' })));
+    assert.ok(button('Sign out'), 'reopening this browser restores the live account');
+    assert.equal(window.localStorage.getItem('meshlink-session-token'), 'test-token');
+    assert.ok(requests.some(r => !r.url.startsWith('/demo-api/') && r.url.endsWith('/auth-with-password')
+      && JSON.parse(r.options.body).rememberDevice === true));
     await navigate('#activity');
     const activity = document.querySelector('#page-content > div').shadowRoot;
     assert.equal(activity.querySelector('article h2').textContent, 'Cathedral Rock');
@@ -249,28 +254,50 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.equal(document.querySelector('.app-shell'), null);
     assert.ok(button('View demo'));
     assert.equal(window.sessionStorage.length, 0);
+    assert.equal(window.localStorage.length, 0);
+    await act(async () => document.querySelector('.remember-device input').click());
+    await act(async () => document.querySelector('form').dispatchEvent(
+      new window.Event('submit', { bubbles: true, cancelable: true }),
+    ));
+    assert.equal(window.localStorage.length, 0, 'a shared browser does not remember the account');
+    assert.equal(window.sessionStorage.getItem('meshlink-session-token'), 'test-token');
+    assert.equal(JSON.parse(requests.filter(r => r.url.endsWith('/auth-with-password')).at(-1).options.body).rememberDevice, undefined);
+    window.sessionStorage.clear();
     await act(async () => root.render(createElement(App, { key: 'signed-out-reload' })));
     assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo', 'signed-out refresh returns to the demo');
     assert.equal(window.sessionStorage.length, 0, 'refresh cannot restore the signed-out live account');
 
-    window.sessionStorage.setItem('meshlink-session-token', 'test-token');
+    window.localStorage.setItem('meshlink-session-token', 'test-token');
     stateFailure = 503;
     await act(async () => root.render(createElement(App, { key: 'offline-reload' })));
     assert.match(document.querySelector('[role="status"]').textContent, /sign-in is saved/);
     assert.equal(document.querySelector('.app-shell'), null, 'records wait for server validation');
-    assert.equal(window.sessionStorage.getItem('meshlink-session-token'), 'test-token');
+    assert.equal(window.localStorage.getItem('meshlink-session-token'), 'test-token');
     stateFailure = 0;
     await act(async () => button('Try again').click());
     assert.ok(document.querySelector('.app-shell'), 'reconnect restores the account without a password');
+
+    window.localStorage.removeItem('meshlink-session-token');
+    await act(async () => window.dispatchEvent(new window.StorageEvent('storage', {
+      key: 'meshlink-session-token', oldValue: 'test-token', storageArea: window.localStorage,
+    })));
+    assert.ok(button('View demo'), 'sign-out in another tab closes this remembered workspace');
+    window.localStorage.setItem('meshlink-session-token', 'test-token');
+    await act(async () => root.render(createElement(App, { key: 'active-account' })));
+    stateFailure = 403;
+    await navigate('#messages'); // Navigation starts a fresh state poll.
+    assert.ok(button('View demo'), 'losing access closes an already-open live workspace');
+    assert.equal(window.localStorage.length, 0);
+    window.localStorage.setItem('meshlink-session-token', 'test-token');
 
     for (const status of [401, 403]) {
       stateFailure = status;
       await act(async () => root.render(createElement(App, { key: `rejected-${status}` })));
       assert.ok(button('View demo'), 'rejected sign-in returns to login');
-      assert.equal(window.sessionStorage.length, 0, 'rejected token is removed');
-      window.sessionStorage.setItem('meshlink-session-token', 'test-token');
+      assert.equal(window.localStorage.length, 0, 'rejected token is removed');
+      window.localStorage.setItem('meshlink-session-token', 'test-token');
     }
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     stateFailure = 0;
     let releaseState;
     stateGate = new Promise(resolve => { releaseState = resolve; });
@@ -282,6 +309,8 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.ok(button('View demo'), 'a late restore response cannot undo sign-out');
     assert.equal(window.sessionStorage.length, 0);
     Object.defineProperty(window, 'sessionStorage', { configurable: true,
+      get() { throw new Error('Storage disabled'); } });
+    Object.defineProperty(window, 'localStorage', { configurable: true,
       get() { throw new Error('Storage disabled'); } });
     await act(async () => root.render(createElement(App, { key: 'storage-disabled' })));
     assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
