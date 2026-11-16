@@ -2,6 +2,7 @@ import { temperatureLabel } from './temperature';
 import { useState } from 'react';
 import Badge from './Badge';
 import { gatewayHealthLabel } from './gateway-health';
+import { wifiSignalLabel } from './wifi-signal';
 import { sdHealthLabel } from './sd-health';
 import BatteryHistory from './BatteryHistory';
 import BatterySummary from './BatterySummary';
@@ -136,7 +137,10 @@ export default function InfrastructurePage({
                   </Badge>
                 )}
                 {device.role === 'Backhaul' && (
-                  <span className="small">{sdHealthLabel(device.sdHealth, now, online)}</span>
+                  <>
+                    <span className="small">{wifiSignalLabel(device.wifiSignal, now, online)}</span>
+                    <span className="small">{sdHealthLabel(device.sdHealth, now, online)}</span>
+                  </>
                 )}
                 <span className="infra-value">
                   {device.battery === null

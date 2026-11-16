@@ -49,6 +49,7 @@ export type Message = {
   evidence: string;
 };
 export type Infrastructure = {
+  wifiSignal?: import('./wifi-signal').WifiSignal | null;
   sdHealth?: import('./sd-health').SdHealth | null;
   gatewayHealth?: { state: string; label: string; radioAlive?: boolean; transportGatewayId?: string;
     measuredAt?: string; intervalSeconds?: number; wifiConnected?: boolean; mqttConnected?: boolean } | null;
@@ -247,6 +248,7 @@ export const infrastructure: Infrastructure[] = [
   {
     id: 'b1',
     name: 'Demo dispatch gateway',
+    wifiSignal: {state:'measured', rssiDbm:-58, channel:6, measuredAt:minutesAgo(1), receivedAt:minutesAgo(1), intervalSeconds:300},
     sdHealth: {flags: 15, usedBytes: '12000000000', totalBytes: '32000000000', dropped: 0,
       measuredAt: minutesAgo(390), receivedAt: minutesAgo(390), intervalSeconds: 86400},
     role: 'Backhaul',

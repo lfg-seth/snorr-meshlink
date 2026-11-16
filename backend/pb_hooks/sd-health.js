@@ -9,7 +9,8 @@ function validate(device, b, time) {
   const d = b.data;
   if (device.getString('kind') !== 'backhaul' || Object.keys(d).length !== fields.length ||
       fields.some(k => d[k] === undefined) || ![d.bootId, d.sequence, d.uptimeSeconds, d.dropped].every(uint32) ||
-      !d.bootId || !d.sequence || d.intervalSeconds !== 86400 || ![0, 2, 3, 4].includes(d.clockSource) ||
+      !d.bootId || !d.sequence || !uint32(d.intervalSeconds) || d.intervalSeconds < 180 || d.intervalSeconds > 2147468 ||
+      ![0, 2, 3, 4].includes(d.clockSource) ||
       ![0, 1, 3, 7, 11, 15].includes(d.flags) ||
       (d.clockSource ? !['valid', 'future'].includes(time.quality) : b.measuredAt !== null) ||
       b.packetId !== [d.bootId, d.sequence].map(v => v.toString(16).padStart(8, '0')).join('-'))

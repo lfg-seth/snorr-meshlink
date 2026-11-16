@@ -112,6 +112,27 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(node()['state'], 'wifi-lost')
         self.assertEqual(len(warnings()), 1)
 
+    def test_wifi_signal_history_duplicates_disconnect_and_stale_order(self):
+        base = dict(bootId=41, sequence=1, uptimeSeconds=30, intervalSeconds=300, state='measured',
+                    rssiDbm=-56, channel=11, association=1)
+        report = lambda seq, age, **changes: packet('b1','wifi-signal',{**base,'sequence':seq,**changes},
+                                                    age, f'{41:08x}-{seq:08x}')
+        card = lambda: next(d for d in self.state()['infrastructure'] if d['id']=='b1')['wifiSignal']
+        first = report(1,3)
+        self.assertEqual(self.ingest(first)['outcome'],'accepted')
+        self.assertEqual(self.ingest({**first,'gatewayId':'b2'})['outcome'],'duplicate')
+        self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',{**first,'data':{**base,'rssiDbm':-70}})
+        self.ingest(report(3,1,state='disconnected',rssiDbm=None,channel=None,association=None))
+        self.ingest(report(2,2))
+        self.assertEqual((card()['state'],card()['rssiDbm']),('disconnected',None))
+        self.assertEqual(len([r for r in self.records('observations') if r['packetKey'].startswith('wifi-signal:')]),3)
+        self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',report(4,0,state='disconnected'))
+        next_boot = report(1,0.5,bootId=42)
+        next_boot['packetId'] = '0000002a-00000001'
+        self.ingest(next_boot)
+        self.ingest(report(5,0))
+        self.assertEqual(card()['bootId'],42)
+
     def test_daily_sd_generations_receipts_order_unknown_and_errors(self):
         base = dict(bootId=41, sequence=1, uptimeSeconds=60, intervalSeconds=86400, flags=15,
                     clockSource=3, usedBytes='8589934592', totalBytes='9007199254740993', dropped=3)
@@ -135,6 +156,11 @@ class BackendTests(unittest.TestCase):
         for item in [report(42,6,0,totalBytes='0'), report(42,6,0,totalBytes='18446744073709551616'),
                      report(42,6,0,flags=0), {**first,'deviceId':'r1'}]:
             self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',item)
+        for seq, interval in enumerate((180, 300, 900, 86400, 2147468), 6):
+            self.assertEqual(self.ingest(report(42,seq,0,intervalSeconds=interval))['outcome'], 'accepted')
+            self.assertEqual(current()['intervalSeconds'], interval)
+        for interval in (0, 179, 2147469, 4294967295, '300', 300.5):
+            self.denied(400,self.worker,'POST','/api/meshlink/worker/ingest',report(42,11,0,intervalSeconds=interval))
 
     def test_gateway_health_requires_backhaul_and_valid_flags(self):
         data = dict(bootId=1, sequence=1, uptimeSeconds=0, intervalSeconds=180,

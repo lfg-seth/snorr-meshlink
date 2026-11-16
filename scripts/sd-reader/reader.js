@@ -2,7 +2,7 @@
 const Sml = (() => {
   const names = ['Unknown','Boot','Raw RX','Decoded','Duplicate','Local outbound','Router admission','TX start',
     'TX complete','MQTT envelope','MQTT queued','MQTT queue discard','MQTT publish result','Connectivity',
-    'Record loss','Clock anchor','Eviction','Radio queue discard','MQTT intent','TX queue eviction'];
+    'Record loss','Clock anchor','Eviction','Radio queue discard','MQTT intent','TX queue eviction','USB Wi-Fi survey'];
   const crcTable = Array.from({length:256}, (_, i) => {
     for (let j = 0; j < 8; j++) i = (i >>> 1) ^ (i & 1 ? 0xedb88320 : 0);
     return i >>> 0;
@@ -49,6 +49,12 @@ const Sml = (() => {
   }
   function decodeApplication(port,b) {
     try {
+      if(port===256 && magic(b,0)==='SNWF' && b.length===36 && b[4]===1) {
+        const v=new DataView(b.buffer,b.byteOffset,b.byteLength);
+        return {type:'SNWF v1',state:['disconnected','unavailable','measured'][b[5]],rssiDbm:b[5]===2?v.getInt8(6):null,
+          channel:b[7]||null,association:v.getUint32(32,true)||null,node:hex(v.getUint32(8,true)),boot:hex(v.getUint32(12,true)),
+          sequence:v.getUint32(16,true),uptime:v.getUint32(20,true),sourceUtc:v.getUint32(24,true)||null,interval:v.getUint32(28,true)};
+      }
       if(port===256 && magic(b,0)==='SNSD' && b.length===52 && b[4]===1) {
         const v=new DataView(b.buffer,b.byteOffset,b.byteLength);
         return {type:'SNSD v1',flags:b[5],clock:b[6],node:hex(v.getUint32(8,true)),boot:hex(v.getUint32(12,true)),
@@ -96,7 +102,9 @@ const Sml = (() => {
           yield {...meta, event:names[kind] || 'Unknown', sequence:u(pos+8), uptimeMs:Number(v.getBigUint64(pos+12,true)),
             observed:utc ? new Date(utc*1000).toISOString() : null, clockSource:b[pos+7], source:hex(u(pos+24)),
             packetId:u(pos+28),related:u(pos+32),detail,rssi:v.getInt16(pos+40,true),snr:v.getInt16(pos+42,true)/4,
-            application:kind===3 || kind===5 ? decodeApplication(detail,payload) : null,
+            application:kind===20 && len===8 && payload[0]===1 ? {type:'USB Wi-Fi survey',state:['disconnected','unavailable','measured'][payload[1]],
+              rssiDbm:payload[1]===2?v.getInt8(pos+50):null,channel:payload[3]||null,association:u(pos+52)||null} :
+              kind===3 || kind===5 ? decodeApplication(detail,payload) : null,
             text:kind===1 || ((kind===3 || kind===5) && detail===1) ? new TextDecoder().decode(payload) : '',
             raw:Array.from(payload,c=>c.toString(16).padStart(2,'0')).join('')};
           count++; pos=end+4; continue;

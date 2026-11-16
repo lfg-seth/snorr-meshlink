@@ -3,6 +3,24 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.3.1 - 2026-11-13
+
+Accept SNSD v1 SD-health reports at the saved device telemetry cadence, retaining
+compatibility with older daily reports. Cards use the advertised interval for
+freshness and await a report without assuming daily timing. No database migration
+or private configuration change. Roll back portal and backend together to 0.3.0;
+that version rejects the faster SD reports, so restore prior firmware as well.
+Raw archives and existing observations remain intact. Deployment is owner-selected.
+
+## 0.3.0 - 2026-11-12
+
+Gateway cards show Wi-Fi RSSI in dBm, channel and sample age, plus SD capacity
+in IEC units. SNWF v1 reports use the configured device telemetry cadence.
+Encrypted MQTT receipts and normalized observations retain measurements and
+disconnects using existing collections. No database migration. Older gateways
+show awaiting report. Roll back portal and backend together to 0.2.0; original
+archives and observations remain intact. USB survey samples stay local.
+
 ## 0.2.0 - 2026-11-12
 
 Add daily SNSD v1 storage reports to encrypted MQTT ingestion and gateway
@@ -12,6 +30,22 @@ Deployment requires the matching portal and backend plus registered source and
 gateway mappings. Roll back both components to the previous checked release.
 Archived SNSD observations remain readable as JSON. SNGH v1 and SNNS v1 retain
 their existing contracts. Production rollout is pending owner selection.
+
+## 0.1.5 - 2026-10-25
+
+Add admin-only **Users → Add member** to create a member and login together,
+generate their stable internal key automatically, and select them for tracker
+assignment. The owner account CLI also creates member identities automatically;
+explicit existing-member linking remains supported. Account creation failures
+roll back the new member, and existing assignments/history remain unchanged.
+
+Compatibility: existing Meshtastic telemetry, SNNS v1 and gateway-health v1.
+No firmware, schema migration, data rewrite or private configuration change.
+Password reset/deactivation remain owner-run commands; no public signup is
+added. Rollback restores matching backend, portal and root release metadata
+from the verified pre-deployment backup. Accounts created after deployment must
+be preserved during a source rollback. Owner selects manual deployment of the
+merged PR #66; authenticated owner-phone acceptance remains separate.
 
 ## 0.1.4 - 2026-10-24
 

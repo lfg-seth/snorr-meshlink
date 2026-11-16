@@ -31,7 +31,8 @@ class VerifierCallSiteTests(unittest.TestCase):
     def test_live_accepts_the_one_member_provisioned_fleet(self):
         module = load_script('verify.py')
         state = {'simulation': False, 'trackers': [{'id': 'b002'}],
-                 'infrastructure': [{'id': 'g003'}], 'members': []}
+                 'infrastructure': [{'id': 'g003'}], 'members': [
+                     {'id': 'm1', 'name': 'Fixture', 'initials': 'F', 'shortName': 'FX'}]}
         client = Mock()
         client.request.return_value = state
         def urlopen(request, **kwargs):
@@ -40,6 +41,11 @@ class VerifierCallSiteTests(unittest.TestCase):
             raise ReachedNextCheck('device checks reached authentication isolation')
         statuses = {'/': 200, '/map': 200, '/api/health': 200, '/api/meshlink/state': 401}
         with ExitStack() as stack:
+            db = sqlite3.connect(':memory:')
+            stack.callback(db.close)
+            db.execute('CREATE TABLE members (key TEXT, name TEXT, initials TEXT, shortName TEXT)')
+            db.execute("INSERT INTO members VALUES ('m1', 'Fixture', 'F', 'FX')")
+            stack.enter_context(patch.object(module.sqlite3, 'connect', return_value=db))
             stack.enter_context(patch.object(sys, 'argv', ['verify.py']))
             stack.enter_context(patch.object(module, 'status', side_effect=lambda base, path: statuses.get(path, 404)))
             stack.enter_context(patch.object(module, 'Client', return_value=client))
@@ -51,6 +57,9 @@ class VerifierCallSiteTests(unittest.TestCase):
             stack.enter_context(patch.object(module, 'expected_infrastructure', create=True, return_value={'g003', 'retired'}))
             stack.enter_context(redirect_stdout(io.StringIO()))
             with self.assertRaises(ReachedNextCheck):
+                module.main()
+            state['members'] = []
+            with self.assertRaises(AssertionError):
                 module.main()
 
     def test_demo_accepts_a_full_bounded_window_before_isolation_checks(self):

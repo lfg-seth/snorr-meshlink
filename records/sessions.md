@@ -850,6 +850,43 @@ plugs a batch of 4-8 RAKs into the label station, supplying INA219/AHT21 fit by
 Fresh R002 onward requires independent USB/identity mapping.
 Actual case/power/site selection, fresh portal enrollment and forced-relay/
 end-to-end field acceptance remain separate from this board-level result.
+## 2026-11-13 - G001 SD health follows saved telemetry cadence
+
+Updated and app-only flashed screenless G001 `!1bbf0638` to published firmware
+`5bd492399`, preserving its complete profile, keys and non-app flash regions.
+SD scheduling and advertised interval now use `telemetry.device_update_interval`,
+currently 300 seconds, with existing reboot reservation and admission checks.
+Three automatic SD generations reach both uplinks; SD/SNGH source gaps match
+at 361/345 seconds. Fresh authenticated public state, one observation and both
+normalized raw receipt routes pass; storage is healthy with zero dropped logs.
+
+PR #68 merged as `62dcc0b`; immutable MeshLink 0.3.1 is deployed after explicit
+owner approval. Native SD and existing SNNS/SNGH fixtures pass; the exact tagged
+release passes 94 backend/66 portal tests and main/tag hosted CI. Public assets,
+six services, protected-state hashes and pre/post live/demo isolated recovery
+pass. Serial/MQTT closed and temporary package mapping removed. Earlier legacy
+invalid-interval fixture failure is corrected; Cloudflare public acceptance uses
+the documented curl path. [Hashes, rollback and evidence](../docs/operations/g001-sd-cadence.md).
+
+Records use `codex/g001-sd-cadence`; completed commits are pushed at handoff.
+Unrelated dirty root edits are preserved. Next: owner-selected copied-card
+inspection and sustained operation; antenna A/B, calibration, field coverage
+and battery/solar acceptance remain separate.
+
+## 2026-11-12 - G001 Wi-Fi telemetry and fast USB antenna survey
+
+Deployed MeshLink 0.3.0 (`1901aa7`) and app-only G001 firmware `246ec7285`.
+Integrated Wi-Fi reports and USB measurements with raw/archive history, portal
+and SD reader. Independent source review passed after fixing serial disable,
+RSSI handling and retired-boot ordering. Release-host tests: 93 backend, 65
+portal; all 4 offline reader tests passed. On Windows two initial API connection
+errors during concurrent compilation disappeared on full rerun (7 POSIX-only
+skips); clean Linux tests passed without skips. Pre/post backups restored and
+six services were active. Dual-route radio/own encrypted receipts and the
+authenticated live card showed −40 dBm, channel 5; existing SD report showed
+384 KiB of 29.7 GiB. USB survey median −38 dBm; no field range established.
+Next: repeated A/B at measured distances, physical card copy and long run.
+[Bench, wire format and deployment evidence](../docs/operations/g001-wifi-survey.md).
 
 ## 2026-11-12 - MeshLink 0.2.0 deployed and rollout G001 verified
 
@@ -1049,6 +1086,39 @@ unverified. Full operational history/runtime is not established by this kit.
   V4/R8 targets; require verified wiring for each selected physical board.
 - Next: requirements interview, then selected-board pinout verification.
   Preserve unrelated working-tree changes. Documentation-only validation.
+## 2026-10-25 - RAK script main integration and branch audit
+
+- Owner selects merging the RAK role/location/B002 admin script to main and
+  asks why so many branches remain. Isolate only the two script commits from
+  the original branch's stacked bench records and a subsequent local B003
+  commit. Preserve current main's MeshLink 0.1.5 deployment record while
+  resolving tracker/session conflicts; no board or service mutation.
+- Prepare the integration on `codex/repeater-role-main`, based on current
+  `origin/main` `653d71b`. All 51 offline bench tests and changed-doc checks
+  pass. The firmware pin matches the original checkout; tests reuse that
+  exact pinned verifier. Laptop instructions now fetch and run from main.
+- GitHub Project record checks pass for `7a2ea48`; owner-authorized
+  [PR #67](https://github.com/lfg-seth/snorr-meshlink/pull/67) merges as
+  `9a6d0e0d2f1793b683278804f415433f6c31de98`. Publish this confirmation to
+  main, fast-forward the existing clean main checkout and retire only this
+  session's temporary integration branch/worktree. Preserve all pre-existing
+  task branches, worktrees and unrelated edits.
+- Fresh branch audit before the temporary integration branch: 49 local and
+  51 GitHub branches. Of the GitHub branches, 30 are ancestors of main:
+  main itself, the preserved archive and 28 merged task/history branches.
+  The other 21 have commits absent by ancestry, often shared across stacked
+  branches or equivalent to rewritten/squashed changes; they are not 21
+  independent features. Ten worktrees existed, including a detached record
+  checkout; attached branches must not be deleted casually. The one open PR
+  is held draft #50 (neighbor signal freshness), which remains undeployed.
+- Branch count reflects completed short-lived branches retained after merging,
+  stacked unpublished-to-main bench records and persistent worktrees. No broad
+  branch cleanup or bulk merge is performed. Preserve unrelated dirty edits.
+
+Next useful step: update the Linux laptop's main checkout,
+run the script against one selected RAK and retain saved role/location/admin
+and live-delivery evidence. A separate branch cleanup should first distinguish
+merged leftovers, intentional archive/draft work and commits needing review.
 
 ## 2026-10-25 - RAK fixed location and B002 admin script extension
 
@@ -1279,6 +1349,26 @@ operation, sensor calibration, runtime and field acceptance remain separate.
 
 Next useful step: select sites and attended/unattended scope, verify access and
 equipment permission, then agree a measured field run.
+## 2026-10-25 - MeshLink 0.1.5 member creation deployed
+
+- Owner selects deployment of merged PR #66. Publish **0.1.5**, clean source
+  `b3eba74139bb519068631aeaf88358179415d262` and immutable `meshlink-v0.1.5`.
+  Exact-source Linux checks pass: 90 backend, 63 portal, TypeScript/live build.
+- Deploy matching backend/portal/root metadata with verified pre/final backups,
+  unchanged protected-state hashes, retained rollback and ten byte-matched
+  public assets. No schema migration, radio or private-configuration change.
+- Initial post-recovery inventory mismatch is traced to concurrent B003
+  registration. Preserve its new record, take a current-inventory backup and
+  pass final live/demo isolated recovery. The member/login/assignment flow,
+  login, duplicate rollback and role restriction pass on an isolated copy of
+  the final backup; operational accounts/assignments remain unchanged.
+- Authenticated live feed, public boundaries/throttling and fresh MQTT pass;
+  all six services are active. [Release, backup hashes and limitations](../docs/operations/member-management.md#meshlink-015-deployment---2026-10-25).
+  Preserve unrelated hardware edits in the original checkout.
+
+Next useful step: owner-phone **Users → Add member** acceptance and assignment
+of the intended person's node. Source publication, tag and deployment are now
+complete; no real user account was created as a test.
 
 ## 2026-10-25 - Member creation PR merged
 

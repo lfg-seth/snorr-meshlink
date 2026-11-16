@@ -81,7 +81,9 @@ def main():
         assert member.request('GET', '/api/meshlink/state')['account']['role'] == 'member'
     else:
         assert provisioned['infrastructure'] <= expected_infrastructure()
-        assert not live['members']
+        with sqlite3.connect('file:/var/lib/meshlink/pb_data/data.db?mode=ro', uri=True) as db:
+            roster = db.execute('SELECT key, name, initials, shortName FROM members ORDER BY key').fetchall()
+        assert [(m['id'], m['name'], m['initials'], m['shortName']) for m in live['members']] == roster
     print('Proxy, protected routes and sign-in: PASS')
 
     # The loopback proxy trusts only CF-Connecting-IP. Public callers cannot

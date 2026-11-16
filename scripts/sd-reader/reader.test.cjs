@@ -36,6 +36,13 @@ test('position measurement time, power telemetry and daily uint64 report are rea
   assert.equal(rows[0].application.longitude,-115.6);assert.equal(rows[1].application.ch1CurrentMa,-15.5);
   assert.equal(rows[2].application.totalBytes,'9007199254740993');
 });
+test('USB survey and radio report retain signed RSSI, channel and association separately from LoRa',()=>{
+  const wire=Buffer.from('534e57460102c506c03ca19e2a000000070000006400000000f153652c01000003000000','hex');
+  const sample=Buffer.from('0102c50603000000','hex');
+  const rows=Array.from(Sml.parse(Buffer.concat([header,entry(20,1,sample),entry(5,2,wire,0,256)])));
+  for(const r of rows.slice(0,2)) assert.deepEqual([r.application.rssiDbm,r.application.channel,r.application.association],[-59,6,3]);
+  assert.equal(rows[0].event,'USB Wi-Fi survey');assert.equal(rows[1].application.interval,300);
+});
 test('scan multi-month segments without accumulating records',()=>{
   const event=entry(2,1,Buffer.alloc(600));
   const events=Array(1000).fill(event);

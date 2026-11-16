@@ -1,5 +1,10 @@
 # G001 screenless gateway and MeshLink 0.2.0 production rollout
 
+**Current update, 2026-11-13:** G001 runs `2.7.26.5bd4923`; SD health now
+shares the saved 300-second device telemetry cadence. MeshLink 0.3.1 is live.
+[Cadence, recovery and acceptance](g001-sd-cadence.md). The daily interval and
+0.2.0 version below describe the original rollout.
+
 On 2026-11-12 the owner began a new rollout numbering sequence. **G001** is
 the screenless Heltec V4.3 with USB MAC **F8:5B:1B:BF:06:38** and radio
 **`!1bbf0638`**. Its earlier bench label was G007. The board's long name is
