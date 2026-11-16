@@ -1,0 +1,46 @@
+# Mount Charleston placements with Lee Fire as the only backhaul
+
+**November 16, 2026.** Keep G001 at Lee Fire Station and R010 at Upper Bristlecone. For passive member tracking on Kyle, the first new site worth an attended test is the divide above the Charleston Peak North Loop Trail. At the proposed point a single repeater has a terrain path to G001, R001 at Cathedral Rock and R008 at Kyle Junction. A second radio on the shoulder near Acastus Trail can bring both Angel Peak faces into the same three-forwarder network. Winter access to the divide is the deciding factor. [Current sites](../../records/sites.md) · [Field receipts](../../records/field-results.md#2026-11-16---lee-fire-overnight-reception)
+
+## Starting from the placements
+
+| Location | What the plan can count on |
+| --- | --- |
+| Lee Fire and Upper Bristlecone | G001 is the sole internet uplink. The archive recorded 1,061 R010 receipts through G001 and direct neighbor reports in both directions in the overnight window. G001's own stream had a 2 h 22 min gap. Check power, station Wi-Fi and logging before interpreting a silent RF trial. |
+| Lee Junction | R006 was silent through G001 in that window. At the saved pin, terrain blocks the 2.85 km direct line to G001 by about 25 m. The 4.55 km R006–R010 line clears terrain. Test that line from the mount. |
+| Cathedral Rock and Kyle Junction | The R001–R008 line clears terrain over 4.34 km. The as-placed model gives neither a route to G001 within the hop budget. Inspect R001's low charging on the return visit. |
+| Angel Peak | R011 is Mountain Side and R005 is Vegas Side. A ridge obstructs the straight line between them despite only 0.70 km of separation. Test each face independently. |
+| Shady Hollow | G002 records locally on SD with Wi-Fi and MQTT disabled. Copy its card to check Kyle-side reception. Its data can diagnose an outage after recovery. |
+
+Four unplaced RAKs have board-level bench passes: **R002, R004, R007 and R009**. The layouts below propose assignments. Assembly, deployment profile and site selection remain pending. R009 carries GPS and can serve as a scout until a fourth permanent slot is needed. R003 remains on RF hold. Sisters is a recovery trip. Fletcher is a requested replacement and a separate, potentially full-day outing. The model gives no forwarding credit to legacy hardware at either site or to G002. [Roster](../../records/deployment-nodes.md) · [Field AAR](../../records/aar/2026-11-15-mount-charleston.md)
+
+## Placement options
+
+Distances are road kilometres where a member packet has a modeled path to G001. The study covers **52.43 km of road**, including **15.22 km on SR 157**. All scenarios use the same route segments and only G001 as the receiving station.
+
+| Layout | Where to use the remaining radios | All roads | Kyle / SR 157 | Main tradeoff |
+| --- | --- | ---: | ---: | --- |
+| Current | Six repeaters at their reported pins | 6.48 km | 0.00 km | Only R010 and R006 have modeled paths. Only R010 had receipts in the checked window. |
+| **A. Kyle and both Angel faces** | R002 on the **North Loop divide**. R004 on the **Acastus shoulder**. Keep R006 at its present pin during comparison. Hold R007 and R009. | **28.05 km** | **10.66 km** | All six placed repeaters have a modeled path. The divide alone reaches 10.54 km of SR 157. The second radio connects both Angel faces. This option depends on a serviceable upper ridge. |
+| **B. Lee, Macks and Fletcher** | Trial **R006 at Lee Junction South**, about 0.96 km southeast of its current pin. R007 at **Macks Mouth North**. R009 for the **Fletcher replacement**. Hold R002 and R004. | **26.08 km** | **2.20 km** | Reaches 9.70 of 10.14 km of SR 156 and brings R011 and Fletcher through Macks. Cathedral Rock, Kyle Junction and the Vegas-side Angel lack a three-forwarder route. This sequence avoids the North Loop divide. |
+| **C. Both routes** | R002 on the divide, R004 at Acastus, R006 moved south, R007 at Macks and R009 at Fletcher. | **39.06 km** | **12.42 km** | All ten modeled repeaters have paths to Lee. SR 158 reaches 8.22 of 14.25 km, and Macks Canyon Road reaches 1.96 of 5.31 km. This uses all four spare boards. |
+
+**Why the two bridges work.** A member heard at Kyle Junction can use R008 → North Loop divide → G001. Cathedral Rock can use the same divide directly. Each Angel face can use its own link to Acastus → North Loop divide → G001. On the Lee route, Fletcher and R011 can each use Macks Mouth North → Lee Junction South → G001. Lee Junction South has a modeled **direct** path to the station. Its line to Upper Bristlecone is obstructed. On option B, a member heard only by R005 would need a fourth forwarder via Fletcher. [Meshtastic hop handling](https://meshtastic.org/docs/overview/mesh-algo/)
+
+**If R006 proves useful where it is**, leave it in place and use one spare to trial Lee Junction South before moving anything. Keeping R006 and installing separate Lee Junction South, Macks and Fletcher radios gives 27.60 km of modeled road reach and leaves one spare. Compare the current and proposed sites from the same road stops. The proposed move trades some Champion Road reach for a shorter route to Lee.
+
+## What to test on the return visit
+
+1. At Lee Fire, record G001's antenna height, input/charging behavior and uptime through daylight. Match local SD timestamps against station receipts to narrow down the morning gap. With G001 or its internet connection down, remote dispatch loses live updates. Local radio reception and the SD record remain available wherever the equipment has power. Resume freshness checks on restoration using the GPS measurement time.
+2. Start at the known R010–G001 link. Compare R006's current mount with a temporary radio at Lee Junction South using the paired zero-hop survey tester for supported repeater links and a receiving station observer or timestamped G001 receipts for the station leg. Take readings at the antenna position. Compare ordinary member fixes from SR 156 and Champion before deciding to move R006. [Direct survey](repeater-operations-survey.md)
+3. If the divide is serviceable, test it before carrying an Acastus assembly. The survey point is at approximately **3,318 m / 10,885 ft**, about 48 m horizontally and 44 m vertically above the nearest mapped North Loop trail point. The Acastus shoulder is about 242 m horizontally and 115 m above its nearest mapped trail point. Those offsets do not establish a walking route. Use the agency approach appropriate to conditions. Check both Angel faces independently from Acastus. [Forest Service order and map](https://www.fs.usda.gov/r04/humboldt-toiyabe/alerts/area-road-and-trail-closures-spring-mountains-national-recreation-area)
+4. For the Lee route, verify the direct Lee Junction South–G001 leg, then Macks–Lee Junction South before the longer Fletcher carry. The prior study estimates one-way approaches of 1.56 km / 307 m ascent at Lee Junction South, 2.22 km / 91 m at Macks and 3.57 km / 497 m at Fletcher. Ground-truth the access and the existing Fletcher mount. [Winter field atlas](winter-mesh-siting.md)
+5. For each proposed addition, compare the same member-carry stops with and without the trial relay. Record sent/received GPS packet IDs, measurement age, per-leg reception and channel load. Use an obstructed test location or a control with the relay removed to verify forwarding. Prefer the layout that repeats the gain at dispatch while previously served stops stay within the **15-minute freshness limit**. Log outage intervals separately and keep raw tracks private. [Pilot criteria](../../.scratch/pilot/issues/02-pilot-needs.md)
+
+## Terrain and evidence
+
+The rerun starts from the six saved repeater pins and the owner-supplied G001 station pin. It screens 18,215 possible mountain locations on an 80 m grid, refines the two new trial areas at 5 m, then profiles the shortlisted links using the winter study's native one-metre tiles with its local DEM fallback. The road/trail comparison evaluates 5,250 segments (up to 40 m each). Member visibility uses the 5 m bare-earth surface. A relay link must clear 60% of the first Fresnel radius, and a member packet may use at most three forwarding radios. Assumptions are a 1 m station antenna, 4 m repeater antennas and a 1.2 m member antenna. Trees, winter mounting, body shielding, interference and charging affect actual delivery. [USGS terrain data](https://www.usgs.gov/faqs/what-projection-horizontal-datum-vertical-datum-and-resolution-a-usgs-digital-elevation-model) · [Model and map sources](winter-mesh-siting.md#sources)
+
+Twelve selected links were independently reprofiled from the exported trial coordinates. If repeater antennas are only 2 m high, the direct Cathedral Rock–divide link drops from 172% to 16% first-Fresnel clearance. Kyle Junction–divide still clears 80% (rounded). Measure both mounts and test the Cathedral-to-Kyle Junction alternate before relying on it.
+
+The private field packet is under `private/winter-siting/lee-only-20261116/`. It contains the placement map, five candidate GPX waypoints, receipt-window query and aggregate, scenario paths and weighted lengths, terrain profiles and rerun scripts. The GPX carries survey points only. Exact G001 coordinates remain private.

@@ -1,5 +1,27 @@
 # Field testing and tangible results
 
+## 2026-11-16 - Lee Fire overnight reception
+
+A read-only query of the live archive counted accepted and duplicate packet
+receipts through G001 for the eight placed infrastructure identities, **20:00
+Pacific November 15 to 12:45 Pacific November 16** (end exclusive). G001 had
+**1,016 own receipts**. R010 Upper Bristlecone had **1,061**. R001, R005, R006,
+R008, R011 and offline G002 had zero in this window. Silence through G001
+leaves power, RF path and reporting behavior unresolved.
+
+G001 reported directly hearing R010 in 164 neighbor reports, and R010
+reported directly hearing G001 in 248. In the final reports their respective
+hearing ages were 64 and 127 seconds. These are report counts, which can
+include repeat reports about an earlier packet. G001's longest interval
+between own receipts was 2 h 21 min 37 s, from **06:28:57 to 08:50:33 Pacific**.
+R010's longest gap overlapped it, from **06:24:49 to 08:50:46**. The cause
+remains open. No field GPS survey or radio changes were performed.
+
+The fixed window, filtered query and aggregate are in the ignored
+`private/winter-siting/lee-only-20261116/` field packet. The
+[placement comparison](../docs/research/lee-only-siting.md) uses the reciprocal
+R010–G001 observation as its field reference.
+
 ## 2026-11-15 - Mount Charleston deployment AAR
 
 [Full AAR](aar/2026-11-15-mount-charleston.md) records the owner's **07:00-18:00

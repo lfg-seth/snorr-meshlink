@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-16 - Replanned Mount Charleston around G001 at Lee Fire
+
+Recorded the owner's single-backhaul constraint and reran terrain paths from
+the six placed repeater pins and G001's actual station pin. Screened 18,215
+locations, calculated route reach for three placement options and reprofiled
+twelve links at two mount heights. The private map and five GPX trial points
+match the selected scenario pins. [Placements and methods](../docs/research/lee-only-siting.md)
+
+The [overnight archive](field-results.md#2026-11-16---lee-fire-overnight-reception)
+confirms direct reciprocal G001–R010 reports and a morning receipt gap. The
+other five placed repeaters had no G001 receipts in the checked window.
+Next visit: check station power/continuity, compare the current and proposed
+R006 sites and test the chosen cross-canyon path with fresh member GPS.
+Winter access, actual mount heights and field delivery remain to verify.
+
 ## 2026-11-16 - MeshLink 0.4.2 deployment requested
 
 The owner selected production deployment. [PR #74](https://github.com/lfg-seth/snorr-meshlink/pull/74)

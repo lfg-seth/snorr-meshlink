@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-11-16 - Lee Fire is the only mountain backhaul
+
+The owner confirms that Wi-Fi is available only on the Lee side. Plan for
+**G001 at Lee Fire Station as the sole internet backhaul**. Kyle-side member
+positions must cross the mountain by radio to reach dispatch. G002 stays at
+Shady Hollow for offline SD recording. The [Lee-only placement study](../docs/research/lee-only-siting.md)
+compares two new Kyle/Angel relay sites, a Lee–Macks–Fletcher option and their
+combination. R006's current mount and a trial at Lee Junction South are
+distinct sites. All five proposed points await field selection.
+
 ## 2026-11-15 - Field placement and access report
 
 The owner's [same-day AAR](aar/2026-11-15-mount-charleston.md) reports physical
@@ -13,8 +23,8 @@ coverage/relay and solar/runtime acceptance remain separate.
 - **Lee Fire:** Wi-Fi available; currently the only available station Wi-Fi
   backhaul. G001 daytime power instability needs investigation. The live map
   uses the owner's deployment pin. [Portal verification](../docs/operations/field-portal.md#lee-fire-station-deployment)
-- **Kyle Fire:** visited, but Wi-Fi access was unavailable to the owner;
-  follow-up required. No working backhaul claim.
+- **Kyle Fire:** visited, but Wi-Fi access was unavailable to the owner.
+  The November 16 owner update above settles the single-backhaul planning basis.
 - **Lee Junction:** initially appeared to reach Lee Fire and Upper Bristlecone,
   but reception was lost hiking away from the car. Owner intends to relocate
   it; both intended links remain unproven. Cell and vehicle Starlink reach

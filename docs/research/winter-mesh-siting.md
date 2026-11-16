@@ -1,5 +1,9 @@
 # Winter mesh siting study
 
+For the November 15 placements and the owner's November 16 confirmation that
+only Lee has Wi-Fi, use the [Lee-only placement comparison](lee-only-siting.md).
+The earlier layouts below used two station anchors.
+
 The November 2026 study compares the owner's original seven placements, the previous nine, a tenth repeater on Sisters and two optional additions for passive GPS tracking. All scenarios use the same two fire-station gateways. The coordinate-bearing packet, terrain, model and navigation stay in ignored `private/winter-siting/`. [Local workflow](../../scripts/winter-siting/README.md).
 
 At nine and ten repeaters the model reaches 41.26 of 52.43 km of road, 92.16 of 155.60 km of named trail and 110.59 of 265.40 km² of land. The Angel Peak objective follows SR 158 to both owner-confirmed drive-up sites and reaches 98.38% of that approach. At the assumed 1 m station height, adding the supplied Sisters replacement pin cannot get a member GPS packet to either station within three forwarders. Its direct Lee path is 5.2 m below terrain. A 7 m Sisters antenna alone leaves the road scores unchanged. A 9 m Lee station antenna is the first tested height that opens the direct Sisters link. Measure the actual mount before choosing a ridge approach.
