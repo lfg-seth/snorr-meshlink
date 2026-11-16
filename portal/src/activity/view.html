@@ -1,0 +1,70 @@
+<style>
+:host { display:block; color-scheme: dark; --bg:#101316; --panel:#1b2025; --line:#343b42; --text:#edf1f3;
+  --muted:#afbac3; --green:#61d5a2; --amber:#ffbe63; --red:#ff8786; --gray:#a2adba; --ice:#a8ecff;
+  font:14px/1.4 Inter,"Segoe UI",sans-serif; color:var(--text); background:var(--bg); }
+* { box-sizing:border-box; }
+h1, h2, h3, p, dl, dd { margin:0; }
+main { max-width:112rem; margin:auto; padding:clamp(15px,2.5vw,40px); }
+header, .identity, .topline, .heard, .section-label, .statusline { display:flex; align-items:center; gap:9px; }
+header, .topline, .heard, .section-label { justify-content:space-between; }
+header { flex-wrap:wrap; margin-bottom:22px; }
+.identity { gap:13px; }
+.identity svg { width:45px; height:45px; background:#203129; border:1px solid #385744; border-radius:11px; padding:8px; color:var(--green); }
+.brand, .section-label, .eyebrow { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+h1 { font-size:clamp(25px,3vw,34px); line-height:1.15; letter-spacing:-.04em; }
+.statusline { flex-wrap:wrap; color:var(--muted); font-size:12px; }
+#status { color:var(--tone); font-weight:650; }
+.dot::before { content:""; display:inline-block; width:.57em; height:.57em; border-radius:50%; background:var(--tone); margin-right:.5em; vertical-align:.1em; }
+.all { --tone:#c2dcec; } .reporting,.fresh { --tone:var(--green); } .attention,.aging { --tone:var(--amber); }
+.silent,.stale { --tone:var(--red); } .unknown,.event { --tone:var(--gray); }
+#summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-bottom:22px; }
+button { font:inherit; color:inherit; cursor:pointer; }
+.stat { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:3px 8px; text-align:left;
+  background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:10px 14px; }
+.stat span { font-size:12px; font-weight:600; color:var(--muted); }
+.stat strong { color:var(--tone); font-size:26px; line-height:1.1; font-variant-numeric:tabular-nums; }
+.stat[aria-pressed=true] { border-color:var(--tone); }
+.stat:hover, summary:hover { background:#282f35; }
+:focus-visible { outline:2px solid var(--ice); outline-offset:3px; }
+#cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr)); gap:12px; align-items:start; }
+article { min-width:0; background:linear-gradient(130deg,color-mix(in srgb,var(--tone) 10%,var(--panel)),var(--panel) 82%);
+  border:1px solid color-mix(in srgb,var(--tone) 32%,var(--line)); border-top:3px solid var(--tone); border-radius:8px;
+  padding:14px 16px 0; }
+h2 { font-size:22px; letter-spacing:-.035em; overflow-wrap:anywhere; line-height:1.2; }
+.badge { color:var(--tone); border:1px solid color-mix(in srgb,var(--tone) 38%,transparent);
+  background:color-mix(in srgb,var(--tone) 8%,transparent); border-radius:5px; padding:2px 7px; font-size:11px; font-weight:700; white-space:nowrap; }
+.heard { color:var(--muted); font-size:12px; margin:6px 0 12px; min-height:18px; }
+.rx { color:var(--ice); font-weight:650; font-size:11px; }
+.metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.metric,.timer { min-width:0; padding:6px 7px; border-radius:4px; background:#11171bbd; }
+.metric span,.timer span { display:block; font-size:11px; color:var(--muted); overflow-wrap:anywhere; }
+.metric b { font:600 clamp(15px,1.3vw,21px)/1.45 "Segoe UI",sans-serif; font-variant-numeric:tabular-nums; color:var(--tone); }
+.metric small { font-size:11px; margin-left:2px; color:var(--muted); }
+.section-label { margin:12px 0 6px; }
+.reason { text-transform:none; letter-spacing:0; color:var(--tone); }
+.timers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+.timer { position:relative; padding:5px 6px 8px; overflow:hidden; }
+.timer b { font-size:12px; font-weight:600; color:var(--tone); font-variant-numeric:tabular-nums; }
+.track { position:absolute; bottom:0; left:0; width:100%; height:3px; background:#353c43; }
+.track i { display:block; height:100%; background:var(--tone); }
+details { margin-top:12px; border-top:1px solid var(--line); }
+summary { cursor:pointer; padding:8px 0; color:var(--muted); font-size:12px; }
+details[open] { padding-bottom:10px; }
+h3 { font-size:12px; margin:8px 0 4px; }
+.row { display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:2px 0; font-size:12px; }
+dt,.empty { color:var(--muted); overflow-wrap:anywhere; } dd { text-align:right; color:var(--tone); font-variant-numeric:tabular-nums; }
+.empty { font-size:12px; }
+.incoming { animation:receive 1.4s ease-out 1; }
+@keyframes receive { from { box-shadow:inset 0 0 0 2px var(--ice),0 0 8px #9be8ff35; } to { box-shadow:inset 0 0 0 2px transparent; } }
+@media (prefers-reduced-motion:reduce) { .incoming { animation:none; } }
+@media(max-width:680px) { #summary { gap:4px; margin-bottom:14px; } .stat { flex-direction:column-reverse; align-items:start; padding:7px 5px; }
+  .stat span { font-size:10px; } .stat span::before { display:none; } .stat strong { font-size:21px; } header { margin-bottom:14px; } }
+</style>
+<main>
+<header><div class="identity"><svg viewBox="0 0 28 28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M1 16h6l4-10 5 17 4-11 2 4h5"/></svg>
+<div><div class="brand">SNORR MeshLink</div><h1>Node activity</h1></div></div>
+<div class="statusline"><span id="status" class="dot unknown">Connecting</span><time id="stamp"></time></div></header>
+<nav id="summary" aria-label="Filter nodes by reporting status"></nav>
+<section id="cards" aria-label="Nodes"></section>
+<noscript>Enable JavaScript to see live node activity.</noscript>
+</main>

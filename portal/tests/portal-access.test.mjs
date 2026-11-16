@@ -10,6 +10,10 @@ import ts from 'typescript';
 // WebGL, as in the device interaction tests.
 registerHooks({
   resolve(specifier, context, next) {
+    if (specifier.endsWith('.html?raw')) {
+      const content = readFileSync(new URL(specifier.split('?')[0], context.parentURL), 'utf8');
+      return { url: 'data:text/javascript,' + encodeURIComponent('export default ' + JSON.stringify(content)), shortCircuit: true };
+    }
     if (specifier === 'maplibre-gl')
       return next(new URL('./maplibre-stub.mjs', import.meta.url).href, context);
     if (specifier.endsWith('.png'))
@@ -82,6 +86,12 @@ test('production opens the isolated demo by default and live sign-in survives re
     if (url.endsWith('/auth-with-password'))
       return { ok: true, json: async () => ({ token: demo ? 'demo-token' : 'test-token', record: demo ? demoAccount : account }) };
     assert.equal(options.headers.Authorization, demo ? 'demo-token' : 'test-token');
+    if (url.endsWith('/api/meshlink/activity')) {
+      assert.equal(demo, false);
+      return {ok: true, json: async () => ({at: new Date().toISOString(), now: Date.now()/1000, status: 'Live',
+        nodes: [{radio:'!f95b5501', label:'R001', name:'Cathedral Rock', health:'silent', kind:'repeater',
+          readings:{}, timers:[], seen:null, contact:'stale'}]})};
+    }
     if (url.endsWith('/api/meshlink/accounts')) {
       const body = JSON.parse(options.body);
       assert.equal(body.createMember, true);
@@ -111,6 +121,7 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.ok(document.querySelector('.brand-row .access-button'));
     assert.equal(document.querySelector('.brand-row .access-button').textContent, 'Sign in');
     assert.equal(document.querySelector('.demo-mode-label').textContent, 'Demo');
+    assert.equal(document.querySelector('nav a[href="#activity"]'), null);
     assert.equal(document.querySelector('.demo-banner'), null, 'map remains banner-free');
     await navigate('#users');
     assert.match(document.querySelector('.users-trackers').textContent, /Demo Database Person/);
@@ -172,6 +183,14 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.doesNotMatch(document.querySelector('.workspace').textContent, /Demo Avery/);
     assert.equal(window.sessionStorage.getItem('meshlink-session-token'), 'test-token');
     assert.equal(window.localStorage.length, 0, 'sign-in is scoped to this tab');
+    await navigate('#activity');
+    const activity = document.querySelector('#page-content > div').shadowRoot;
+    assert.equal(activity.querySelector('article h2').textContent, 'Cathedral Rock');
+    assert.match(activity.querySelector('article').textContent, /R001/);
+    activity.querySelector('button.reporting').click();
+    assert.equal(activity.querySelector('article').hidden, true);
+    activity.querySelector('button.silent').click();
+    assert.equal(activity.querySelector('article').hidden, false);
     await navigate('#users');
     const addForm = document.querySelector('.add-member-fields').closest('form');
     addForm.elements.name.value = 'New Person';

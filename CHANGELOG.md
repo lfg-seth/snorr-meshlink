@@ -3,6 +3,17 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.0 - 2026-11-15
+
+The live map and infrastructure cards use the seven November 15 placements,
+their fixed pins and site names. The signed-in Activity page uses the original
+field dashboard's cards and watchdogs from one read-only sampler on the portal
+host. Shady Hollow is an offline SD recorder. Member management, the synthetic
+demo, radio ingestion and historical device records keep their existing data.
+Existing radios and packet formats are compatible. No database migration.
+Rollback restores the 0.3.1 backend and portal assets and disables
+`meshlink-activity.service`. See [field portal operations](docs/operations/field-portal.md).
+
 ## 0.3.1 - 2026-11-13
 
 Accept SNSD v1 SD-health reports at the saved device telemetry cadence, retaining

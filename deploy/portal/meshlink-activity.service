@@ -1,0 +1,22 @@
+[Unit]
+Description=MeshLink placed-node activity sampler
+After=meshlink-api.service
+
+[Service]
+User=meshlink
+Group=meshlink
+SupplementaryGroups=meshlink-worker
+RuntimeDirectory=meshlink-activity
+RuntimeDirectoryMode=0750
+UMask=0027
+ExecStart=/opt/meshlink-mqtt-venv/bin/python -B /opt/meshlink/scripts/portal-activity.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+InaccessiblePaths=/var/lib/meshlink/credentials.json /var/lib/meshlink-demo /var/lib/meshlink-worker /etc/meshlink/worker.json
+RestrictAddressFamilies=AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

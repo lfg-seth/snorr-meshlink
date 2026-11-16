@@ -30,6 +30,14 @@ type Props = {
   selectedSignalId: string | null;
   onSignalSelect: (id: string) => void;
 };
+function placedBounds(nodes: Infrastructure[] = []): [number, number, number, number] | undefined {
+  const placed = nodes.filter(node => node.deploymentStatus === 'placed'
+    && Number.isFinite(node.longitude) && Number.isFinite(node.latitude));
+  if (!placed.length) return undefined;
+  const lng = placed.map(node => node.longitude!);
+  const lat = placed.map(node => node.latitude!);
+  return [Math.min(...lng), Math.min(...lat), Math.max(...lng), Math.max(...lat)];
+}
 export default function TrackingMap(props: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -52,6 +60,8 @@ export default function TrackingMap(props: Props) {
         style: mapStyle(basemap),
         center: [-115.656, 36.278],
         zoom: 12,
+        bounds: placedBounds(current.current.infrastructureNodes),
+        fitBoundsOptions: { padding: 45, maxZoom: 14 },
         maxZoom: 17,
         attributionControl: false,
       });
@@ -214,7 +224,7 @@ export default function TrackingMap(props: Props) {
       <div
         ref={container}
         className="map-canvas"
-        aria-label="Map with recorded tracker positions"
+        aria-label={placedBounds(props.infrastructureNodes) ? 'Map of placed devices' : 'Map with recorded tracker positions'}
       />
       <div className="map-tools">
         <div className="segmented">
@@ -231,7 +241,7 @@ export default function TrackingMap(props: Props) {
         <button
           onClick={() =>
             map.current?.fitBounds(
-              [
+              placedBounds(props.infrastructureNodes) ?? [
                 [-115.705, 36.239],
                 [-115.6, 36.324],
               ],

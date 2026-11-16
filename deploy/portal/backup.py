@@ -48,7 +48,13 @@ def main():
                                  ('/var/lib/meshlink-worker', 'worker-state'),
                                  ('/etc/systemd/system/meshlink-api.service', 'services/meshlink-api.service'),
                                  ('/etc/systemd/system/meshlink-api.service.d', 'services/meshlink-api.service.d'),
-                                 ('/etc/systemd/system/meshlink-worker.service', 'services/meshlink-worker.service')]:
+                                 ('/etc/systemd/system/meshlink-worker.service', 'services/meshlink-worker.service'),
+                                 ('/etc/systemd/system/meshlink-activity.service', 'services/meshlink-activity.service'),
+                                 ('/opt/meshlink/scripts/portal-activity.py', 'release/scripts/portal-activity.py'),
+                                 ('/opt/meshlink/scripts/watch-nodes.py', 'release/scripts/watch-nodes.py'),
+                                 ('/opt/meshlink/scripts/node-cadence.json', 'release/scripts/node-cadence.json'),
+                                 ('/opt/meshlink/scripts/server/node_readings.py', 'release/scripts/server/node_readings.py'),
+                                 ('/opt/meshlink/portal/src/placements.json', 'release/portal/src/placements.json')]:
                 if Path(source).exists():
                     archive.add(source, arcname=name)
         with tarfile.open(temporary) as archive:

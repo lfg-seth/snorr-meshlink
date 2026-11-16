@@ -49,13 +49,15 @@ export type Message = {
   evidence: string;
 };
 export type Infrastructure = {
+  radioNodeId?: string;
+  shortName?: string;
   wifiSignal?: import('./wifi-signal').WifiSignal | null;
   sdHealth?: import('./sd-health').SdHealth | null;
   gatewayHealth?: { state: string; label: string; radioAlive?: boolean; transportGatewayId?: string;
     measuredAt?: string; intervalSeconds?: number; wifiConnected?: boolean; mqttConnected?: boolean } | null;
   id: string;
   name: string;
-  role: 'Repeater' | 'Backhaul';
+  role: 'Repeater' | 'Backhaul' | 'Offline SD recorder';
   deploymentStatus?: string;
   lastContactAt?: string | null;
   downlink?: boolean;

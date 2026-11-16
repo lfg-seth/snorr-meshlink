@@ -98,7 +98,8 @@ export default function InfrastructurePage({
           >
             <option>All</option>
             <option>Repeater</option>
-            <option>Backhaul</option>
+            {infrastructureNodes.some(device => device.role === 'Backhaul') && <option>Backhaul</option>}
+            {infrastructureNodes.some(device => device.role === 'Offline SD recorder') && <option>Offline SD recorder</option>}
           </select>
         </label>
         <span className="muted small">
@@ -128,7 +129,7 @@ export default function InfrastructurePage({
                 }}
               >
                 <span className="eyebrow">
-                  {device.role} · {device.id.toUpperCase()}
+                  {device.role} · {device.shortName ?? device.id.toUpperCase()}
                 </span>
                 <strong>{device.name}</strong>
                 {device.role === 'Backhaul' && device.gatewayHealth && (
@@ -258,7 +259,7 @@ export default function InfrastructurePage({
                 ? selected.downlink ?? selected.id === 'b1'
                   ? 'Designated downlink + uplink'
                   : 'Uplink only'
-                : 'Relay'}
+                : selected.role === 'Offline SD recorder' ? 'Local SD recording · Wi-Fi and MQTT disabled' : 'Relay'}
             </dd>
           </div>
         </dl>

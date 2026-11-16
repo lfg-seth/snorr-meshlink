@@ -2,6 +2,7 @@
 """Live node readings over read-only SSH; local Python and OpenSSH are enough."""
 
 import argparse
+import hashlib
 from collections import deque
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -586,6 +587,61 @@ def demo_snapshot(tick):
                                for stream, age in (("device", 3), ("environment", 240), ("power", 12))}},
                 {"radio": "!00000002", "label": "R002", "lastContactAt": None, "registered": False, "readings": {},
                  "watchdogs": {"device": {"cadenceSeconds": 180, "lastReceivedAt": None}}}]}
+
+
+def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
+    """Build the browser view from the same freshness and cadence calculations as the CLI."""
+    data = {"at": None, "now": now, "status": "Waiting for first snapshot", "nodes": []}
+    if snapshot is None:
+        return data
+    data["at"] = snapshot["at"]
+    beat = epoch(snapshot.get("feed", {}).get("heartbeatAt"))
+    sampled = epoch(snapshot["at"])
+    if demo:
+        data["status"] = "Demo"
+    elif not connected or sampled is None or now - sampled > max(15, interval * 3):
+        data["status"] = "No new snapshots"
+    elif not snapshot.get("feed", {}).get("connected") or beat is None or not 0 <= now - beat < 20:
+        data["status"] = "MQTT feed offline"
+    elif snapshot.get("catchingUp"):
+        data["status"] = "Catching up"
+    else:
+        data["status"] = "Live"
+    fields = {"gateway": ("wifiConnected", "mqttConnected"), "wifi": ("rssiDbm",),
+              "sd": ("usedBytes", "totalBytes", "dropped"), "gps": ("satellites", "pdop", "altitude")}
+    for node in dashboard.display_nodes(snapshot, now):
+        readings = {}
+        for metric, item in node["readings"].items():
+            state, age = dashboard.metric_state(node, metric, item, now)
+            if metric in fields:
+                value = {k: item["value"].get(k) for k in fields[metric]} if isinstance(item["value"], dict) else {}
+            elif metric in METRIC_STREAM or metric in ("envVoltage", "envCurrent", "standardNeighbors"):
+                display_metric = {"envVoltage": "voltage", "envCurrent": "inaCurrent"}.get(metric, metric)
+                value = format_value(display_metric, item, age)
+            else:
+                continue
+            signature = item.get("sample") or item.get("receivedAt")
+            revision = hashlib.sha256(str(signature).encode()).hexdigest()[:16]
+            readings[metric] = {"value": value, "state": state, "age": age, "revision": revision}
+        watches = dashboard.watchdogs(node, now)
+        timers = []
+        for stream in [s for s in STREAMS if s in watches] + sorted(watches.keys() - STREAMS.keys()):
+            item = watches[stream]
+            timers.append({"stream": stream, "state": item["state"], "period": item.get("cadenceSeconds"),
+                           "due": item["dueInSeconds"], "age": item["ageSeconds"], "missed": item["missedCycles"],
+                           "received": item.get("lastReceivedAt")})
+        seen = node.get("lastContactAt")
+        contact, _ = dashboard.metric_state(node, "contact", {"receivedAt": seen}, now)
+        state = {"fresh": "reporting", "aging": "attention", "stale": "silent", "unknown": "unknown"}[contact]
+        gateway = readings.get("gateway")
+        link_down = gateway and gateway["state"] == "fresh" and False in gateway["value"].values()
+        late = sum(t["missed"] > 0 for t in timers)
+        if state == "reporting" and (late or link_down):
+            state = "attention"
+        data["nodes"].append({"label": node["label"], "radio": node["radio"], "seen": node.get("lastContactAt"),
+                              "health": state, "contact": contact, "kind": node.get("kind"),
+                              "linkDown": bool(link_down), "readings": readings, "timers": timers})
+    return data
 
 
 def main(argv=None):
