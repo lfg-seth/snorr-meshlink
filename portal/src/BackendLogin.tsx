@@ -7,7 +7,7 @@ export default function BackendLogin({
   onDemo,
   demo = false,
 }: {
-  onLogin: (session: BackendSession) => void;
+  onLogin: (session: BackendSession, remember: boolean) => void;
   onClose?: () => void;
   onDemo?: () => Promise<void>;
   demo?: boolean;
@@ -16,6 +16,7 @@ export default function BackendLogin({
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [remember, setRemember] = useState(true);
   return (
     <section className="panel backend-login" aria-label="Backend sign in">
       <div className="panel-heading">
@@ -26,13 +27,13 @@ export default function BackendLogin({
         Sign in with your MeshLink account.
       </p>
       <form
-        className="assignment-form"
+        className="login-form"
         onSubmit={async (event) => {
           event.preventDefault();
           setBusy(true);
           setError('');
           try {
-            onLogin(await login(username, password, demo));
+            onLogin(await login(username, password, demo, remember), remember);
             setPassword('');
           } catch (e) {
             setError(e instanceof Error ? e.message : 'Sign in failed');
@@ -60,6 +61,10 @@ export default function BackendLogin({
             required
           />
         </label>
+        {!demo && <label className="remember-device">
+          <input type="checkbox" checked={remember} onChange={event => setRemember(event.target.checked)} />
+          Remember this device for 30 days
+        </label>}
         <button className="primary" disabled={busy} type="submit">
           {busy ? 'Signing in…' : 'Sign in'}
         </button>

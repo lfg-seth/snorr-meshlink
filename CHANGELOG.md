@@ -3,6 +3,16 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.2 - 2026-11-16
+
+Live member and admin sign-ins can remember a browser for 30 days.
+Unchecking the option keeps the one-hour, tab-only session. The login form
+stacks its fields, and expanded Activity cards keep readings in a stable order.
+Existing sessions retain their original expiry. This release works with the
+current schema, radio protocols and private configuration. Rollback restores
+the 0.4.1 portal assets and backend hook together. Tokens already issued keep
+their server expiry until invalidated by an account password change.
+
 ## 0.4.1 - 2026-11-15
 
 Add G001 Lee Fire Station to Map, Infrastructure and Activity as the eighth

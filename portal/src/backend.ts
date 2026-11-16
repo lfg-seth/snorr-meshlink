@@ -40,16 +40,38 @@ export type BackendState = {
   events: AuditEvent[];
 };
 export type BackendSession = { token: string; account: BackendAccount; demo?: boolean };
-const sessionKey = 'meshlink-session-token';
-export function savedToken(): string {
-  try { return window.sessionStorage.getItem(sessionKey) ?? ''; }
+export const sessionKey = 'meshlink-session-token';
+function tokenStorage(remember: boolean): Storage | undefined {
+  try { return remember ? window.localStorage : window.sessionStorage; }
+  catch { return undefined; }
+}
+function readToken(remember: boolean): string {
+  try { return tokenStorage(remember)?.getItem(sessionKey) ?? ''; }
   catch { return ''; }
 }
-export function saveToken(token: string): void {
+export function savedToken(): string {
+  return readToken(false) || readToken(true);
+}
+function removeToken(remember: boolean): void {
+  try { tokenStorage(remember)?.removeItem(sessionKey); }
+  catch { /* Storage can be blocked. */ }
+}
+export function forgetToken(token: string): void {
+  for (const remember of [false, true]) {
+    if (token && token === readToken(remember)) removeToken(remember);
+  }
+}
+export function saveToken(token: string, remember: boolean): void {
+  removeToken(!remember);
   try {
-    if (token) window.sessionStorage.setItem(sessionKey, token);
-    else window.sessionStorage.removeItem(sessionKey);
-  } catch { /* Sign-in still works when browser storage is unavailable. */ }
+    const storage = tokenStorage(remember);
+    if (storage) { storage.setItem(sessionKey, token); return; }
+  } catch { /* Try tab storage if durable storage is full or blocked. */ }
+  removeToken(remember);
+  if (remember) {
+    try { tokenStorage(false)?.setItem(sessionKey, token); }
+    catch { /* The current page can still use the in-memory session. */ }
+  }
 }
 export class BackendError extends Error {
   constructor(message: string, public status: number) { super(message); }
@@ -89,11 +111,12 @@ export async function login(
   username: string,
   password: string,
   demo = false,
+  rememberDevice = false,
 ): Promise<BackendSession> {
   const result = await request<{ token: string; record: BackendAccount }>(
     '/api/collections/accounts/auth-with-password',
     '',
-    { identity: username, password },
+    { identity: username, password, ...(!demo && rememberDevice && { rememberDevice: true }) },
     undefined,
     demo,
   );

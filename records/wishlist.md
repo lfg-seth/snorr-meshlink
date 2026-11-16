@@ -165,9 +165,9 @@ Desired behavior: remove the "Endpoint locations" heading and its section conten
 
 Original issue: [Improve portal sign-in persistence to avoid roughly hourly reauthentication](https://github.com/lfg-seth/snorr-meshlink/issues/49).
 
-Status: deferred; portal fix-list capture only. Added 2026-10-21.
+Added 2026-10-21. The owner activated this request on 2026-11-16 and specified persistence across browser restarts on the same device. See the [implementation and deployment handoff](sessions.md#2026-11-16---remembered-portal-sign-in).
 
-Owner reports needing to sign back in every hour or so. Desired behavior: retain a valid sign-in through ordinary use without roughly hourly credential prompts. This interval is approximate owner-reported behavior, not a measured token lifetime or established cause. Browser/device, application version, idle/active use and tab/reload behavior remain uncaptured. Exact longer duration and cross-tab/browser-restart expectations remain to define when activated; preserve deliberate sign-out, rejected/revoked-session handling and live/demo isolation. Diagnosis and verification wait for activation.
+The original report described roughly hourly credential prompts. The selected behavior remembers a personal browser for 30 days and offers tab-only sign-in on shared devices. Preserve deliberate sign-out, rejected or revoked access, and live/demo isolation.
 
 ## Infrastructure page overhaul
 

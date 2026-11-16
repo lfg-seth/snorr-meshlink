@@ -2,6 +2,8 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack, closing
 from datetime import datetime, timedelta, timezone
+import base64
+import json
 import os
 from pathlib import Path
 import socket
@@ -10,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -585,7 +588,6 @@ class BackendTests(unittest.TestCase):
             self.ingest(packet('r1', 'telemetry', {'humidity': 101}, gateway='b1'))
 
     def test_live_cutover_transaction_and_real_gps_receipts(self):
-        import json
         migrations = self.data / 'cutover-migrations'
         migrations.mkdir()
         source = Path(__file__).resolve().parents[2] / 'deploy/portal/live-cutover.js'
@@ -676,6 +678,30 @@ class BackendTests(unittest.TestCase):
         with self.assertRaises(ApiError) as raised:
             client.request(method, path, body)
         self.assertEqual(raised.exception.status, status)
+
+    def test_remembered_password_login_lifetime_and_revocation(self):
+        def sign_in(key, expected_seconds=3600, remember=True):
+            creds = self.credentials[key]
+            result = Client(self.url).request('POST', '/api/collections/accounts/auth-with-password', {
+                'identity': creds['username'], 'password': creds['password'], 'rememberDevice': remember})
+            payload = result['token'].split('.')[1]
+            expiry = json.loads(base64.urlsafe_b64decode(payload + '==='))['exp']
+            self.assertAlmostEqual(expiry - time.time(), expected_seconds, delta=5)
+            return Client(self.url, result['token'])
+
+        sign_in('admin')  # The demo server always uses ordinary credentials.
+        self.stop()
+        self.process = subprocess.Popen(command(self.data) + ['serve', '--http=' + self.url.split('//')[1]],
+                                        env={**os.environ, 'MESHLINK_SIMULATION': '0'}, stdout=self.log, stderr=self.log)
+        wait_ready(self.url, self.process)
+        sign_in('worker')
+        sign_in('admin', remember=False)
+        sign_in('admin', expected_seconds=30 * 86400)
+        member = sign_in('member', expected_seconds=30 * 86400)
+        account = member.request('GET', '/api/meshlink/state')['account']
+        self.superuser.request('PATCH', '/api/collections/accounts/records/' + account['id'],
+                               {'password': 'new-test-password', 'passwordConfirm': 'new-test-password'})
+        self.denied(401, member, 'GET', '/api/meshlink/state')
 
     def test_roles_and_collection_bypass(self):
         for client, status in ((Client(self.url), 401), (self.worker, 403), (self.member, 404)):

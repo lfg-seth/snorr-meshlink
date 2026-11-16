@@ -67,7 +67,11 @@ queue/archive bytes, observations and stored caches retain their raw signs;
 direct database readers must convert explicitly and API readers must not
 convert again. Timing, freshness and sensor/channel provenance are unchanged.
 
-All custom routes load PocketBase authentication and enforce current roles on the server. Account registration and direct collection mutation are locked. The worker cannot read the human snapshot; humans cannot ingest. State responses use `Cache-Control: no-store`. Browser bearer tokens are saved in tab-scoped `sessionStorage` so sign-in survives refresh (2026-10-16). Restoration validates the token against the protected state endpoint and uses its current account details; no account profile or operational snapshot is persisted in browser storage. Sign-out and rejected authentication clear the token; temporary connection failures allow retry without discarding it. Storage failure falls back to memory-only sign-in. Demo mode remains memory-only. This follows PocketBase's [stateless bearer authentication](https://pocketbase.io/docs/authentication/); no worker/superuser secret is shipped in the frontend.
+All custom routes load PocketBase authentication and enforce current roles on the server. Account registration and direct collection mutation are locked. State responses use `Cache-Control: no-store`.
+
+Live admin/member password login with `rememberDevice: true` issues a non-refreshable PocketBase bearer token with a fixed 30-day lifetime. The live portal saves only that token in the browser profile's `localStorage`. Other password logins keep the collection's one-hour lifetime. The unchecked form and legacy tab sessions use `sessionStorage`. If persistent storage fails, sign-in falls back to tab storage or memory. Demo sessions stay in memory. [PocketBase record token methods](https://pocketbase.io/jsvm/interfaces/core.Record.html#newStaticAuthToken).
+
+Restoration fetches the protected state endpoint for the current account and role before opening the workspace. Password changes invalidate the token on the server. Sign-out removes the browser's copy and other tabs using that saved token leave the workspace. A 401 or 403 clears the rejected sign-in. A temporary connection failure leaves it available for retry. [PocketBase authentication](https://pocketbase.io/docs/authentication/).
 
 | Endpoint | Allowed operation |
 | --- | --- |

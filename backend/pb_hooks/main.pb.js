@@ -1,4 +1,14 @@
 // Each PocketBase handler runs in its own scope; shared code is a local module.
+onRecordAuthRequest((e) => {
+  const role = e.record.getString('role');
+  if (e.authMethod === 'password' && (role === 'admin' || role === 'member')
+      && !require(`${__hooks}/common.js`).simulation() && e.requestInfo().body.rememberDevice === true) {
+    // PocketBase accepts Go durations in nanoseconds.
+    e.token = e.record.newStaticAuthToken(30 * 24 * 60 * 60 * 1e9);
+  }
+  e.next();
+}, 'accounts');
+
 routerAdd('GET', '/api/meshlink/activity', (e) => {
   const c = require(`${__hooks}/common.js`);
   c.human(e);

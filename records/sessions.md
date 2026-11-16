@@ -1,5 +1,38 @@
 # Session log
 
+## 2026-11-16 - Remembered portal sign-in
+
+Reproduced loss of live sign-in after closing a tab and measured the original
+PocketBase token lifetime at one hour. The live form now offers a checked
+30-day remembered sign-in. Users can clear the checkbox on shared devices.
+The username and password fields stack with an explicit gap.
+
+The PocketBase integration test verified the issued expiry, access to protected
+state, and revocation after a password change. The portal tests cover restart,
+tab-only sign-in, cross-tab sign-out, outage retry, rejected access and demo
+isolation. A disposable Edge profile reopened the production build against a
+local test API without another password request and stayed signed out after a
+second restart. The inputs had 44 CSS pixels between their borders at both
+1280px and 390px viewport widths, with the password label in that space.
+All 69 portal tests, typecheck and production build passed. The Windows backend
+suite showed intermittent loopback failures. The targeted login test and
+individual reruns of the simulation-control, low-battery and archive checks passed.
+The [complete Linux backend suite](https://github.com/lfg-seth/snorr-meshlink/actions/runs/43951303509)
+passed on the published implementation commit `55ce274`.
+
+Next step is a manual release of the backend hook and portal together, followed
+by a live browser-restart and sign-out check. [Authentication contract](../docs/research/portal-backend-contract.md).
+
+## 2026-11-16 - Stabilized Activity telemetry rows
+
+The expanded node card now displays readings in a fixed order across polls.
+A regression test reproduced Device voltage moving below GPS when the same
+readings arrived in a different order. All 69 portal tests, typecheck and
+production build passed. Local headless Edge checks at 504 and 1250 CSS pixels
+confirmed four row labels kept their vertical positions as voltage updated.
+The next step is a manual portal deployment and signed-in check on the live
+site. [Regression test](../portal/tests/portal-access.test.mjs).
+
 ## 2026-11-15 - Added Lee Fire Station to the live portal
 
 Deployed MeshLink 0.4.1 (`bac80fd`) with G001 Lee Fire Station as the eighth

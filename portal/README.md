@@ -2,7 +2,9 @@
 
 React + TypeScript + Vite with MapLibre. All four pages now read API-backed records, including demo viewing. Production remains on the VM. The demo uses a separate PocketBase and a [synthetic SQLite checkpoint tracked in Git](../backend/demo/README.md); the frontend has no browser-fixture fallback.
 
-Build the hosted portal with `VITE_PORTAL_MODE=live npm run check`. Anonymous visitors open the separate database demo automatically, including in production. Its header says Demo and keeps **Sign in** at the top for opening the live account form; **View demo** returns to the demo. Saved live sign-ins are validated and restored before opening a workspace. Demo tokens stay in memory, while ordinary sign-ins retain their tab-scoped persistence. Demo actions save to the separate demo database. The live build marker continues to select live account sign-in; it does not restrict demo startup. A failed demo connection offers sign-in and retry without sample-data fallbacks.
+Build the hosted portal with `VITE_PORTAL_MODE=live npm run check`. Anonymous visitors open the separate database demo automatically, including in production. Its header says Demo and keeps **Sign in** at the top for opening the live account form. **View demo** returns to the demo. Demo tokens stay in memory and demo actions save to the separate demo database. A failed demo connection offers sign-in and retry.
+
+Live sign-in defaults to **Remember this device for 30 days**. The same browser profile can reopen the portal during that period. On a shared device, clear the checkbox for a one-hour sign-in scoped to the current tab. The portal validates a saved sign-in before showing live records. Signing out forgets the saved sign-in and closes other tabs using it.
 
 ## Run on the Dell or desktop WSL
 

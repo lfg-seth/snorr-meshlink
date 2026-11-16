@@ -9,7 +9,7 @@ import type { NewMember } from './AddMember';
 import MessagesPage from './MessagesPage';
 import InfrastructurePage from './InfrastructurePage';
 import BackendLogin from './BackendLogin';
-import { BackendError, login, request, savedToken, saveToken } from './backend';
+import { BackendError, forgetToken, login, request, savedToken, saveToken, sessionKey } from './backend';
 import type { BackendSession, BackendState } from './backend';
 import type { LoadBatteryHistory } from './BatteryChart';
 import type { LoadCurrentHistory } from './current';
@@ -36,7 +36,7 @@ function Portal() {
   const [selectedId, setSelectedId] = useState('d1');
   const [trailId, setTrailId] = useState<string | null>(null);
   const [session, setSession] = useState<BackendSession | null>(null);
-  const [restoreToken, setRestoreToken] = useState(savedToken);
+  const [restoreToken, setRestoreToken] = useState(() => liveBuild ? savedToken() : '');
   const [restoreAttempt, setRestoreAttempt] = useState(0);
   const [snapshot, setSnapshot] = useState<BackendState | null>(null);
   const [backendConnected, setBackendConnected] = useState(false);
@@ -104,7 +104,6 @@ function Portal() {
     return () => { demoAttempt.current++; };
   }, []);
   function startSession(value: BackendSession) {
-    if (!value.demo) saveToken(value.token);
     setRestoreToken('');
     seenMessages.current = null;
     setSession(value);
@@ -127,7 +126,7 @@ function Portal() {
       .catch((error: unknown) => {
         if (!active) return;
         if (error instanceof BackendError && (error.status === 401 || error.status === 403)) {
-          saveToken('');
+          forgetToken(restoreToken);
           setRestoreToken('');
         } else {
           setBackendError('Unable to reconnect. Your sign-in is saved; try again when the connection returns.');
@@ -197,9 +196,15 @@ function Portal() {
         setBackendError('');
       } catch (e) {
         if (active) {
+          if (!session!.demo && e instanceof BackendError && (e.status === 401 || e.status === 403)) {
+            forgetToken(session!.token);
+            clearWorkspace();
+            setBackendError('Your sign-in has expired or access has changed. Please sign in again.');
+            return;
+          }
           setBackendConnected(false);
           setBackendError(
-            'Backend unavailable or login expired. Last observations retained; sign out and sign in if needed.',
+            'Unable to reconnect. Showing the last observations while the portal retries.',
           );
         }
       }
@@ -257,8 +262,7 @@ function Portal() {
   const warningCount =
     incidents.filter((i) => !i.resolvedAt).length +
     warnings.filter(w => !w.recoveredAt).length;
-  function signOut() {
-    saveToken('');
+  function clearWorkspace() {
     setRestoreToken('');
     setSession(null);
     setSnapshot(null);
@@ -271,6 +275,20 @@ function Portal() {
     setBackendError('');
     seenMessages.current = null;
   }
+  function signOut() {
+    forgetToken(restoreToken || session?.token || '');
+    clearWorkspace();
+  }
+  useEffect(() => {
+    const token = restoreToken || session?.token;
+    if (!token || session?.demo) return;
+    const syncSignOut = (event: StorageEvent) => {
+      if ((event.key === sessionKey && event.oldValue === token && event.newValue !== token)
+          || (event.key === null && savedToken() !== token)) clearWorkspace();
+    };
+    window.addEventListener('storage', syncSignOut);
+    return () => window.removeEventListener('storage', syncSignOut);
+  }, [restoreToken, session]);
   if (restoreToken)
     return <main className="workspace" style={{ maxWidth: 640, margin: '64px auto', padding: 24 }}>
       <h1>SNORR MeshLink</h1>
@@ -292,7 +310,10 @@ function Portal() {
         <BackendLogin
           demo={!liveBuild}
           onDemo={openDemo}
-          onLogin={startSession}
+          onLogin={(value, remember) => {
+            if (!value.demo) saveToken(value.token, remember);
+            startSession(value);
+          }}
         />
       </main>
     );
