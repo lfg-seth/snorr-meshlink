@@ -214,7 +214,7 @@ export default function InfrastructurePage({
           )}
           <div>
             <dt>Placement</dt>
-            <dd>{selected.deploymentStatus === 'station' ? 'Station reference point · exact mount unmeasured'
+            <dd>{selected.deploymentStatus === 'station' ? 'Owner-supplied deployment pin'
               : selected.deploymentStatus === 'planned' ? 'Planned location · installation unverified' : 'Recorded location'}</dd>
           </div>
           <div>

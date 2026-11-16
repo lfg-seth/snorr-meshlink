@@ -1,10 +1,9 @@
 # Field portal and activity
 
 The [November 15 site table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations)
-owns the seven saved radio pins. G001 at Lee Fire Station uses the station
-reference point from the private field atlas. Its exact antenna mount has no
-recorded fix. The live registry for physical radio `!1bbf0638` stores the
-coordinates with `locationSource=field-station-reference` and
+owns the seven saved radio pins. G001 at Lee Fire Station uses the deployment pin
+supplied by the owner on November 15. The live registry for physical radio `!1bbf0638` stores the
+coordinates with `locationSource=owner-deployment-pin` and
 `locationLabel=Lee Fire Station`. Keep these coordinates in private backup
 and recovery data. The portal and its activity sampler share
 [the field placements](../../portal/src/placements.json). Match physical radio IDs before

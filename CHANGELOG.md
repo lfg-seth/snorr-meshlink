@@ -6,7 +6,7 @@ of SNORR Firmware versions. The authoritative version is `meshlink-release.json`
 ## 0.4.1 - 2026-11-15
 
 Add G001 Lee Fire Station to Map, Infrastructure and Activity as the eighth
-placement. The authenticated registry supplies the station reference point.
+placement. The authenticated registry supplies the owner-selected deployment pin.
 The gateway retains its own Wi-Fi, MQTT, SD and radio health. Radio protocols
 and database schema are unchanged. Rollback restores the 0.4.0 application
 and sampler roster and the previous G001 location metadata.
