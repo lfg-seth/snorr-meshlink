@@ -42,6 +42,35 @@ registerHooks({
   },
 });
 
+test('an open Activity dropdown keeps telemetry rows in place across refreshes', async () => {
+  const { mountActivity } = await import('../src/activity/view.js');
+  const dom = new JSDOM('<div id="host"></div>');
+  globalThis.document = dom.window.document;
+  try {
+    const root = document.querySelector('#host').attachShadow({ mode: 'open' });
+    const view = mountActivity(root);
+    const voltage = { value: '3.95', state: 'fresh', age: 0, revision: '1' };
+    const gps = { ...voltage, value: { satellites: 8 } };
+    const render = readings => view.render({
+      at: '2026-11-16T12:00:00Z', now: 0, status: 'Live',
+      nodes: [{ radio: '!00000001', label: 'R001', name: 'Test node', health: 'reporting', readings, timers: [] }],
+    });
+    render({ voltage, gps });
+    root.querySelector('summary').click();
+    const labels = () => Array.from(root.querySelectorAll('details dt'), dt => dt.textContent);
+    const initial = labels();
+    assert.equal(initial.length, 3);
+    render({ gps: { ...gps, age: 3 }, voltage });
+    assert.equal(root.querySelector('details').open, true);
+    assert.deepEqual(labels(), initial);
+    const gpsRow = Array.from(root.querySelectorAll('details .row')).find(row => row.firstChild.textContent === 'GPS fix age');
+    assert.equal(gpsRow.lastChild.textContent, '3s');
+  } finally {
+    dom.window.close();
+    delete globalThis.document;
+  }
+});
+
 test('production opens the isolated demo by default and live sign-in survives refresh', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://portal.example.test/' });
   globalThis.window = dom.window;

@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-16 - Stabilized Activity telemetry rows
+
+The expanded node card now displays readings in a fixed order across polls.
+A regression test reproduced Device voltage moving below GPS when the same
+readings arrived in a different order. All 69 portal tests, typecheck and
+production build passed. Local headless Edge checks at 504 and 1250 CSS pixels
+confirmed four row labels kept their vertical positions as voltage updated.
+The next step is a manual portal deployment and signed-in check on the live
+site. [Regression test](../portal/tests/portal-access.test.mjs).
+
 ## 2026-11-15 - Added Lee Fire Station to the live portal
 
 Deployed MeshLink 0.4.1 (`bac80fd`) with G001 Lee Fire Station as the eighth

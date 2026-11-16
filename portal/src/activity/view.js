@@ -11,6 +11,7 @@ export function mountActivity(root) {
     inaCurrent:["INA219 current","mA"], envVoltage:["Sensor voltage","V"], envCurrent:["Sensor current","mA"],
     temperature:["Temperature","°C"], humidity:["Humidity","%"], busy:["Channel use","%"], tx:["TX airtime","%"],
     uptime:["Uptime",""], neighbors:["SNNS neighbors",""], standardNeighbors:["Standard neighbors",""]};
+  const readingOrder = [...Object.keys(metrics), "gps", "gateway", "wifi", "sd"];
   const streams = {device:"Device",environment:"Environment",power:"Power",snns:"SNNS",position:"GPS packet",
     gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD",neighbor_info:"NeighborInfo",nodeinfo:"NodeInfo"};
   const views = new Map(), buttons = new Map();
@@ -48,7 +49,9 @@ export function mountActivity(root) {
   }
   function values(node) {
     const result = new Map();
-    for (const [key, reading] of Object.entries(node.readings)) {
+    for (const key of readingOrder) {
+      const reading = node.readings[key];
+      if (!reading) continue;
       const v = reading.value;
       const add = (id,label,value,unit="") => result.set(id,{key,label,value,unit,reading});
       if (metrics[key]) {
