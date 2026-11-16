@@ -17,6 +17,8 @@ second restart. The inputs had 44 CSS pixels between their borders at both
 All 69 portal tests, typecheck and production build passed. The Windows backend
 suite showed intermittent loopback failures. The targeted login test and
 individual reruns of the simulation-control, low-battery and archive checks passed.
+The [complete Linux backend suite](https://github.com/lfg-seth/snorr-meshlink/actions/runs/43951303509)
+passed on the published implementation commit `55ce274`.
 
 Next step is a manual release of the backend hook and portal together, followed
 by a live browser-restart and sign-out check. [Authentication contract](../docs/research/portal-backend-contract.md).
