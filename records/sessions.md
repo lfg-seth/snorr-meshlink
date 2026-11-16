@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-16 - MeshLink 0.4.2 deployment requested
+
+The owner selected production deployment. [PR #74](https://github.com/lfg-seth/snorr-meshlink/pull/74)
+passed its checks and merged to `main` at `dd1b036`. The annotated
+tag `meshlink-v0.4.2` identifies that commit. Main and tag CI passed, including
+the [tagged backend suite](https://github.com/lfg-seth/snorr-meshlink/actions/runs/43952796644).
+The release includes remembered sign-in,
+the spaced login form and the previously verified Activity row ordering.
+
+Public HTTPS still served 0.4.1 at `bac80fd`. The internal SSH hostname
+failed to resolve and repeated connections to the previous deployment address
+timed out. The deployment host and its backups were untouched. Once the
+private route is available, use the prepared release bundle, verify a fresh
+backup, promote the backend and frontend together, and verify live sign-in,
+restart, sign-out, telemetry and post-release recovery.
+
 ## 2026-11-16 - Remembered portal sign-in
 
 Reproduced loss of live sign-in after closing a tab and measured the original
