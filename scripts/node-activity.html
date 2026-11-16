@@ -269,10 +269,8 @@ async function refresh() {
       paint(views.get(node.radio),node,data);
     }
     for (const [id,view] of views) if (!present.has(id)) { view.article.remove(); views.delete(id); }
-    // Keep current traffic in sight, preserving roster order within each group.
-    const rank = {reporting:0, attention:0, silent:1, unknown:2};
-    const ordered = [...data.nodes].sort((a,b)=>rank[a.health]-rank[b.health]);
-    ordered.forEach((node,index)=>{
+    // The sampler supplies the same roster order used by the CLI.
+    data.nodes.forEach((node,index)=>{
       const article = views.get(node.radio).article;
       const current = cards.children[index];
       if (article !== current) {

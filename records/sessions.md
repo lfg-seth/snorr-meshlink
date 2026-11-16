@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-15 - Fixed node card order
+
+Removed the browser's health-based sort and deployed the CLI roster order.
+Edge verified all 20 card positions over two live HTTPS reloads, a simulated
+health change, and a reload with those changed states. Filtering preserved
+relative order. The 45 Windows dashboard tests passed; one POSIX check skipped.
+Refresh an existing tab to load the change. [Dashboard](../docs/operations/live-node-dashboard.md#private-web-page).
+
 ## 2026-11-15 - Visual node health and packet updates
 
 Updated the existing private node dashboard with fleet status filters,

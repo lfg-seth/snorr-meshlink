@@ -18,8 +18,9 @@ two cycles of the node's shortest expected cadence, including the CLI grace
 period. Gray means contact timing is unknown. Silence describes what the
 sampler has heard. The header separately shows the upstream feed status.
 
-Select a count to filter the fleet. Reporting and attention cards appear
-first, in roster order. Each scheduled stream has a countdown and a bar
+Cards always follow the CLI roster order: numbered repeaters, numbered gateways,
+legacy gateways by radio ID, then member nodes by label. Select a status count
+to see matching cards in that same order. Each scheduled stream has a countdown and a bar
 showing its remaining time, turning amber or red when overdue. Measurement
 colors show reading freshness. Expand **Telemetry & timer details** for all
 measurements and event timers. A new receipt briefly outlines the card and
