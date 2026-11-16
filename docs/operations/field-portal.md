@@ -36,9 +36,11 @@ map and Infrastructure show six repeaters, the Lee Fire Station backhaul G001
 and offline recorder G002. Activity returns the same eight physical IDs in roster order,
 including silent radios. Verify
 fresh snapshot timestamps, demo isolation and an anonymous request denial.
-For rollback, stop and disable the sampler and restore the previous application
-and static build under the deployment lock. The release writes no roster or
-telemetry migrations.
+To roll back 0.4.1, hold the deployment lock, stop the live sampler and
+writers, and restore the saved 0.4.0 application, static files and sampler.
+Restore G001's four prior location fields from its private pre-deployment
+configuration, preserving later telemetry. Restart the services and verify
+the previous seven-card snapshot.
 
 ## Production deployment
 
@@ -88,3 +90,31 @@ delivery at the field sites.
 | --- | --- |
 | `meshlink-20261116T023535Z.tar.gz` | `4c411e41384922c355e4e5d0df659bd26abe4815a75ba7a5a1f0a4e6615b86bd` |
 | `meshlink-20261116T024644Z.tar.gz` | `b5210a5e2741965b9b5c123986064a2c71514cb005e8259499e5e35629b21ef5` |
+
+## Lee Fire Station deployment
+
+MeshLink 0.4.1 deployed November 15 at `bac80fd04531735ef13182692028a05266e00157`
+with tag `meshlink-v0.4.1`. The field report identifies G001 as the Lee Fire
+Station Wi-Fi backhaul. Its owner-supplied pin is in the authenticated live
+registry. The deployment matched the physical radio before writing the
+coordinates, source and site label. The previous release files are under
+`/opt/meshlink-rollback-field-bac80fd`. [Field report](../../records/aar/2026-11-15-mount-charleston.md)
+
+The public HTTPS version and all ten asset hashes matched the staged release.
+The signed-in state returned the exact supplied coordinates. Edge showed eight
+map pins, eight Infrastructure cards and eight Activity cards. The Activity
+filters, single-column mobile layout and recovery after disconnect passed.
+G001 reported online, and its Activity card included gateway, Wi-Fi and SD
+watchdogs. The other gateway, G002, retained its offline recorder role.
+All seven services were active. The archive gained a fresh receipt during the
+check, all 200 recent envelopes were normalized, and the worker queue was empty.
+
+The release host passed 68 portal tests, type checking, the live build, 94
+backend tests and 42 dashboard tests. Main and tag CI passed. Both backups
+passed SHA-256 verification and separate live and demo recovery checks. The
+restored live database contained the owner's exact G001 pin and provenance.
+
+| Backup | SHA-256 |
+| --- | --- |
+| `meshlink-20261116T031939Z.tar.gz` | `022423b9de4a00f2b0330c9d52d1edc2c9874240eb98934a96ba67081dfb3ced` |
+| `meshlink-20261116T033213Z.tar.gz` | `69192d2207a5f9297bc303143a5dbd82f64ddcdfe2429bdbd48c992fb080abe1` |

@@ -11,7 +11,8 @@ below to owner-reported placement; detailed mount inspection, sustained
 coverage/relay and solar/runtime acceptance remain separate.
 
 - **Lee Fire:** Wi-Fi available; currently the only available station Wi-Fi
-  backhaul. G001 daytime power instability needs investigation.
+  backhaul. G001 daytime power instability needs investigation. The live map
+  uses the owner's deployment pin. [Portal verification](../docs/operations/field-portal.md#lee-fire-station-deployment)
 - **Kyle Fire:** visited, but Wi-Fi access was unavailable to the owner;
   follow-up required. No working backhaul claim.
 - **Lee Junction:** initially appeared to reach Lee Fire and Upper Bristlecone,

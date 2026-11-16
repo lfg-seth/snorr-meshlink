@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-11-15 - Added Lee Fire Station to the live portal
+
+Deployed MeshLink 0.4.1 (`bac80fd`) with G001 Lee Fire Station as the eighth
+placement. Its private registry record holds the owner-supplied coordinates.
+Verified the exact pin over signed-in HTTPS and all eight devices in the map,
+Infrastructure and Activity in Edge. The release passed 68 portal, 94 backend
+and 42 dashboard tests. The archive recorded three receipts via G001 after
+deployment, two from G001 itself. The post-release backup contained the exact
+station pin. The next field check is sustained reception and power at Lee Fire.
+[Deployment and recovery evidence](../docs/operations/field-portal.md#lee-fire-station-deployment)
+
 ## 2026-11-15 - Mount Charleston field AAR recorded
 
 Organized the owner's **07:00-18:00 Pacific / 11-hour** deployment account in
