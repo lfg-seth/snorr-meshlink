@@ -256,6 +256,40 @@ Private payloads/locations/keys remain ignored; no debug instrumentation is
 installed. Next: deduce enclosure number when selected, sustained/field gates;
 R011 correction/role/location reassignment only if owner selects reuse.
 Branch `codex/r005-angel-vegas-20261115`; completed commit/push at handoff.
+## 2026-11-15 - Node CLI combined overview and live identity audit
+
+Owner requests a full check after Legacy V3 appeared weeks old and W/A stopped
+working, then selects one organized screen with readings and all watchdogs.
+The keep-awake wrapper piped stdin; the POSIX reader now uses its controlling
+terminal and restores its attributes. The default view puts readings and
+per-stream timers together, without W/A switching. Distinct `V3-<radio ID>`
+labels separate four physical legacy gateways. `--include R011` retains the
+requested waiting node without exposing all inactive historical rows.
+[Behavior, independent SQL/raw-envelope evidence and local launcher](../docs/operations/live-node-dashboard.md#combined-view-audit---2026-11-15).
+
+The active **!9ea13cc0** has matching normalized/raw receipt at **12:10:48
+Pacific**; the three old V3s last reported October 25/29. No data was replaced,
+registered or written on the server. R011's ordinary reports remain absent and
+are a separate radio/profile gate. No radio command or serial access.
+
+42 offline dashboard checks pass, including distinct legacy identities,
+readings plus all watchdogs, selected inactive visibility, a 20-node tall
+terminal and Q/terminal restoration with piped stdin. A real `kde-inhibit`
+pseudo-terminal integration accepts Q and exits zero. Documentation/link and
+whitespace checks pass. Local P1 display-only shortcut and no-lock settings
+are retained; the owner already verified its physical off/on cycle.
+
+The durable local launcher returns a live feed at **12:15 Pacific** with the
+active V3 last heard 59 seconds earlier and R011 still waiting. The maximized
+native terminal is **216 columns / 44 rows**, fitting all eight active/selected
+nodes and every watchdog. Its CLI has a real controlling-terminal fd despite
+piped stdin; the session is unlocked and both KDE inhibitors are active.
+
+Work is isolated from concurrent deployment edits on
+`codex/node-dashboard-overview-20261115`; completed commit/push is reported at
+handoff. Next: observe new ordinary R011 reports
+after its separately selected radio/profile work; this presentation change
+does not establish sensor, RF or field acceptance.
 
 ## 2026-11-15 - R011 Angel Peak Vegas-side deployment configuration
 
