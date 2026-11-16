@@ -31,7 +31,7 @@ type Props = {
   onSignalSelect: (id: string) => void;
 };
 function placedBounds(nodes: Infrastructure[] = []): [number, number, number, number] | undefined {
-  const placed = nodes.filter(node => node.deploymentStatus === 'placed'
+  const placed = nodes.filter(node => (node.deploymentStatus === 'placed' || node.deploymentStatus === 'station')
     && Number.isFinite(node.longitude) && Number.isFinite(node.latitude));
   if (!placed.length) return undefined;
   const lng = placed.map(node => node.longitude!);

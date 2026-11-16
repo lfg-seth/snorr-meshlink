@@ -59,6 +59,8 @@ export type Infrastructure = {
   name: string;
   role: 'Repeater' | 'Backhaul' | 'Offline SD recorder';
   deploymentStatus?: string;
+  locationSource?: string;
+  locationLabel?: string;
   lastContactAt?: string | null;
   downlink?: boolean;
   longitude?: number;

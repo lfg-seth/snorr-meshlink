@@ -43,6 +43,7 @@ export default function InfrastructureQuickStats({
       mapNodes={[{ id: device.id, label: infrastructureLabel(device), markerClassName: infrastructureMarkerClass(true),
         coordinates: device.longitude != null && device.latitude != null ? [device.longitude, device.latitude] : null }]}>
       <p className="small">{device.name}</p>
+      {device.deploymentStatus === 'station' && <p className="small muted">Station reference point · exact mount unmeasured</p>}
       {device.deploymentStatus === 'planned' && (
         <p className="small muted">
           Planned location · installation unverified
