@@ -1,5 +1,27 @@
 # Session log
 
+## 2026-11-15 - Seven field placements and Activity deployed
+
+Fetched all GitHub branches and tags. Used the published fixed positions at
+`943a43c` and the Activity cards at `8cfd518`. The owner chose the seven
+placements, existing uppercase short names, site display names and production
+deployment. [PR #71](https://github.com/lfg-seth/snorr-meshlink/pull/71) merged
+as `e375a32`, tagged `meshlink-v0.4.0`. The live Map, Infrastructure and
+Activity pages now show six repeaters and the Shady Hollow offline recorder.
+Activity runs on the portal host and requires a signed-in human account.
+
+The clean Linux release passed 67 portal, 94 backend and 42 dashboard tests.
+Verified ten public assets, seven map markers and cards, mobile-width layout,
+filters, disconnect recovery, demo isolation, ongoing MQTT ingestion, and
+pre/post isolated live and demo restores. Configuration and database hashes
+matched across promotion. Windows loopback resets and remaining field limits
+are recorded in the [deployment evidence](../docs/operations/field-portal.md#production-deployment).
+
+Next field check is sustained reception from the installed repeaters. At 18:50
+Pacific, R010 showed Reporting and the other six showed Silent while the feed
+was live. No radio settings were changed. Records branch
+`codex/placed-fleet-activity`.
+
 ## 2026-11-15 - Project and node setup consolidated for GitHub publication
 
 Owner requests saving the whole project and today's node setup to GitHub,

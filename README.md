@@ -45,7 +45,10 @@ Git history is the change record. The GitHub repository is [lfg-seth/snorr-meshl
 
 ## Releases and tracking
 
-MeshLink application **0.3.1** is versioned independently of SNORR Firmware.
+MeshLink application **0.4.0** shows the seven November 15 placements on the
+live map and Infrastructure page. Signed-in users can follow packet activity
+and watchdogs on [Activity](https://meshlink.spp.lol/#activity).
+The application is versioned independently of SNORR Firmware.
 See [release operations](docs/operations/meshlink-releases.md),
 [changelog](CHANGELOG.md) and [firmware releases](records/firmware-releases/README.md).
 Builds emit `version.json` with source/version/compatibility metadata.
