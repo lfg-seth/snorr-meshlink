@@ -5,10 +5,13 @@
 The owner confirms that Wi-Fi is available only on the Lee side. Plan for
 **G001 at Lee Fire Station as the sole internet backhaul**. Kyle-side member
 positions must cross the mountain by radio to reach dispatch. G002 stays at
-Shady Hollow for offline SD recording. The [Lee-only placement study](../docs/research/lee-only-siting.md)
-compares two new Kyle/Angel relay sites, a Lee–Macks–Fletcher option and their
-combination. R006's current mount and a trial at Lee Junction South are
-distinct sites. All five proposed points await field selection.
+Shady Hollow for offline SD recording. The owner reports R001/R005/R008/R011
+connect within the Kyle–Angel group. The preferred next trial moves R006 to
+Lee Junction South and tests Macks Mouth North into R011. If Macks fails, the
+[Lee Junction bridge comparison](../docs/research/lee-only-siting.md) gives
+alternatives at Sawmill, Champion Road, a northwest R006 shoulder and a ridge
+above Seven Mile Canyon Road. North Loop divide is ruled out. Fletcher may be
+unavailable and remains optional. These are candidate mounts.
 
 ## 2026-11-15 - Field placement and access report
 

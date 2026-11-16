@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-16 - Owner-reported Kyle and Angel connectivity
+
+The owner reports that **R001 Cathedral Rock, R005 Angel Peak Vegas Side,
+R008 Kyle Junction and R011 Angel Peak Mountain Side are connected**.
+The report establishes an internally connected group for planning. It does
+not identify each direct neighbor, hop count, or delivery of a member fix
+to G001 through that group. The earlier G001 receipt window below measures
+traffic at Lee. No new over-the-air or member GPS test was run for this update.
+[Lee Junction bridge trials](../docs/research/lee-only-siting.md)
+
 ## 2026-11-16 - Lee Fire overnight reception
 
 A read-only query of the live archive counted accepted and duplicate packet

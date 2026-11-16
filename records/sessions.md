@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-16 - Lee Junction alternatives into the connected Angel group
+
+The owner reports R001/R005/R008/R011 are connected, rules out North Loop
+divide and may defer Fletcher. The revised sequence tests Lee Junction South,
+then Macks Mouth North. Four [fallbacks](../docs/research/lee-only-siting.md)
+were profiled into R011, including Sawmill, Champion, a northwest move using
+R010, and a shorter direct-to-station route above Seven Mile Canyon Road.
+Verified the proposed links at 2 m and 4 m repeater heights and generated
+the private survey map and six waypoints. Next: ground-check the selected
+approach and both RF legs, then match Kyle member packets at G001. Internal
+direct edges, remaining hop budget in use and field delivery remain open.
+
 ## 2026-11-16 - Replanned Mount Charleston around G001 at Lee Fire
 
 Recorded the owner's single-backhaul constraint and reran terrain paths from
