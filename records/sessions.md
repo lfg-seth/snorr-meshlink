@@ -1,5 +1,70 @@
 # Session log
 
+## 2026-11-16 - Activity scrolling on desktop staging
+
+Reproduced the reported jump at 382 × 580 in Windows WebKit with ten synthetic
+node cards. A three-second refresh on the previous preview moved the page from
+4,116 to 2,740 CSS pixels while the card list kept its height. Replacing visible
+card elements and age text discarded scroll anchors. The temporary Received
+label could also wrap and resize cards above the reader.
+
+Activity now keeps the headings, readings, timers and their text nodes in place
+between polls and reserves space for the receipt indicator. All 71 portal tests,
+typecheck and the build passed. WebKit and Edge held the same card position
+between scroll inputs on the private Tailscale preview across four normal
+three-second polls with alternating packet arrivals. Additional checks covered
+Timers at the bottom and 669 and 951 px widths. The browser checks used
+synthetic readings. The desktop serves clean 0.4.10 source `edfa7ac` from
+ignored `local-data/desktop-staging/edfa7ac/` at the existing private URL.
+Live reads still require sign-in and writes return 405. Production served
+0.4.9. Next is checking scrolling and folding with a live session on the Duo.
+
+## 2026-11-16 - Desktop staging for iPhone review
+
+Started a private Tailscale Serve preview of MeshLink 0.4.10 on the owner's
+desktop. It serves the ten verified build files from `80ad2e7`. Sign-in and
+allowlisted portal reads use the existing HTTPS API. Operational writes return
+405. Production continues to serve 0.4.9 at `0685156`.
+
+The staging URL returned the expected version. Anonymous Activity returned 401.
+The live sampler reported ten nodes with readings and timers in a two-second-old
+snapshot. Headless Edge opened the staging demo and sign-in screen and rendered
+a browser-only Activity fixture. The remaining check is signing in on the
+owner's iPhone and viewing the live cards across a fold. The staging runtime
+is in ignored `local-data/desktop-staging/80ad2e7/`; the Tailscale URL was
+shared privately with the owner.
+
+## 2026-11-16 - iPhone Duo layout
+
+Prepared MeshLink 0.4.10 with the theme selector and the deployed 0.4.9
+gateway attribution. The touch header measured 98 CSS px in Windows WebKit
+at the 382 × 580 outer-display viewport, down from 175 px. The map gained
+77 px. At widths of 382 px and 385 px, four headline readings now form two
+rows. A synthetic −123.4 mA value and its unit fit in full. The 951 px
+inner landscape view shows two node cards across. Readings and Timers touch
+targets increased from 27 to 44 px tall.
+
+All 71 portal tests, typecheck and the production build passed. Headless WebKit
+26.5 exercised all five published Safari viewport widths at both listed heights,
+using synthetic data in light and dark modes. Edge also passed at the smaller
+heights. The selected Activity view and open map device card survived resizing.
+Next check is Safari on a physical Duo after a selected deployment.
+[WebKit viewport dimensions](https://webkit.org/blog/18486/).
+
+## 2026-11-16 - Portal theme follows the device
+
+Prepared MeshLink 0.4.9 on `codex/portal-appearance`. The Theme selector
+defaults to System and remembers Light or Dark in this browser across sign-in,
+sign-out and reloads. Device sheets, Activity readings and status colors share
+the setting. Dark mode dims the topographic map and preserves aerial imagery.
+
+All 71 portal tests, TypeScript and the production build passed. Headless Edge
+with synthetic records exercised system changes, cross-tab overrides and
+navigation at 1440 px and 390 px, including sign-in, device sheets and Activity.
+In the Windows backend suite, 87 checks passed, seven POSIX checks skipped and
+one PocketBase connection reset. That check passed on its isolated rerun.
+Next step is source review and a manually selected production deployment.
+
 ## 2026-11-16 - Deployed last-heard MQTT gateway attribution
 
 MeshLink 0.4.9 runs tagged main commit `0685156`. All ten authenticated Activity cards rendered the gateway from the last contact. All ten public assets matched, seven services were active and the MQTT archive received a fresh packet after promotion. PR and tag CI and isolated release-host checks passed. Pre- and post-release backups passed checksum verification and isolated live and demo restores. The rollback directory is `/opt/meshlink-rollback-field-0685156`. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/87).

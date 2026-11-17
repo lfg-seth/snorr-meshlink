@@ -92,29 +92,86 @@ export function mountActivity(root) {
     }
     return result;
   }
-  function bar(fraction,signed=false) {
-    const track = el("div",null,signed ? "track signed" : "track"), level = el("i");
-    const start = signed ? Math.min(.5,fraction) : 0;
-    level.style.marginLeft = 100*start+"%";
-    level.style.width = 100*(signed ? Math.abs(fraction-.5) : fraction)+"%";
-    track.setAttribute("aria-hidden","true");
-    track.append(level);
-    return track;
-  }
   function readingTile(m,changed) {
-    const tile = el("div",null,"metric "+m.tone+(changed ? " incoming" : ""));
-    const number = el("b",m.value);
-    if (m.unit && m.value !== "Unknown") number.append(el("small",m.unit));
     const age = m.reading.age == null ? "Age unknown" : duration(m.reading.age)+" ago";
-    tile.title = (m.value === "USB*" ? "Charging or no battery detected · " : "")+
-      age+" · "+stateNames[m.reading.state];
-    tile.append(el("span",m.label),number,el("small",age,"age"),bar(m.fraction,m.key==="batteryCurrent"));
-    return tile;
+    return {key:"reading:"+m.key, kind:"metric", tone:m.tone, label:m.label, value:m.value,
+      unit:m.value === "Unknown" ? "" : m.unit, age, fraction:m.fraction, signed:m.key==="batteryCurrent", changed,
+      title:(m.value === "USB*" ? "Charging or no battery detected · " : "") + age+" · "+stateNames[m.reading.state]};
+  }
+  function timerTile(t,changed) {
+    return {key:"timer:"+t.stream, kind:"timer", tone:t.state, label:streamName(t),
+      value:t.age == null && !t.missed ? "Waiting" : timerValue(t,true),
+      age:t.period ? "every "+duration(t.period,t.period % 60 !== 0) : "Event", title:timerHint(t), changed,
+      fraction:t.period ? (t.missed ? 1 : t.age == null ? 0 : Math.max(0,Math.min(1,t.due/t.period))) : null};
+  }
+  function setText(node,value) {
+    const text = String(value);
+    if (node.textContent === text) return;
+    // Replacing even the text inside a visible age can lose WebKit's scroll anchor.
+    if (node.firstChild) node.firstChild.data = text;
+    else node.textContent = text;
+  }
+  function pulse(element) {
+    if (element.ownerDocument.defaultView.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    for (const animation of element.getAnimations()) animation.cancel();
+    element.animate([{boxShadow:"inset 0 0 0 2px var(--ice)"},{boxShadow:"inset 0 0 0 2px transparent"}],1400);
+  }
+  // Keep the elements Safari uses as scroll anchors attached while readings change.
+  function tileList(className) {
+    const element = el("div",null,className), tiles = new Map(), empty = el("p",null,"empty");
+    function update(items,emptyMessage) {
+      const present = new Set(items.map(item=>item.key));
+      for (const [key,tile] of tiles) if (!present.has(key)) { tile.box.remove(); tiles.delete(key); }
+      if (!items.length) {
+        setText(empty,emptyMessage);
+        if (!empty.parentNode) element.append(empty);
+        return;
+      }
+      empty.remove();
+      items.forEach((item,index)=>{
+        let tile = tiles.get(item.key);
+        if (!tile) {
+          const box = el("div"), label = el("span"), number = el("b"), value = document.createTextNode("");
+          const unit = el("small"), age = el("small",null,"age"), track = el("div",null,"track"), level = el("i");
+          track.setAttribute("aria-hidden","true");
+          track.append(level);
+          number.append(value,unit);
+          box.append(label,number,age,track);
+          tile = {box,label,value,unit,age,track,level};
+          tiles.set(item.key,tile);
+        }
+        const {box,label,value,unit,age,track,level} = tile;
+        box.className = item.kind+" "+item.tone;
+        box.title = item.title;
+        setText(label,item.label);
+        setText(value,item.value);
+        setText(unit,item.unit || "");
+        unit.hidden = !item.unit;
+        setText(age,item.age);
+        track.hidden = item.fraction == null;
+        track.classList.toggle("signed",!!item.signed);
+        if (item.fraction != null) {
+          level.style.marginLeft = 100*(item.signed ? Math.min(.5,item.fraction) : 0)+"%";
+          level.style.width = 100*(item.signed ? Math.abs(item.fraction-.5) : item.fraction)+"%";
+        }
+        const current = element.children[index];
+        if (box !== current) element.insertBefore(box,current ?? null);
+        if (item.changed) pulse(box);
+      });
+    }
+    return {element,update};
   }
   function createView() {
-    const article = el("article"), face = el("div"), controls = el("div",null,"controls"), body = el("div",null,"tiles");
+    const article = el("article"), heading = el("div",null,"topline"), controls = el("div",null,"controls");
+    const name = el("h2"), badge = el("span",null,"badge dot"), heard = el("div",null,"heard");
+    const identity = el("span",null,"radio-label"), label = el("strong");
+    const contact = el("span"), receipt = el("span","↳ Received","rx");
+    heading.append(name,badge);
+    identity.append(label,receipt);
+    heard.append(identity,contact);
+    const highlights = tileList("metrics"), body = tileList("tiles");
     const reason = el("span",null,"reason");
-    const view = {article,face,body,reason,mode:"Readings",previous:null};
+    const view = {article,name,badge,heard,label,contact,receipt,highlights,body,reason,mode:"Readings",previous:null};
     for (const mode of ["Readings","Timers"]) {
       const button = el("button",mode);
       button.type = "button";
@@ -128,7 +185,7 @@ export function mountActivity(root) {
       controls.append(button);
     }
     controls.append(reason);
-    article.append(face,controls,body);
+    article.append(heading,heard,highlights.element,controls,body.element);
     cards.append(article);
     return view;
   }
@@ -139,58 +196,41 @@ export function mountActivity(root) {
     const timerChanged = t => !!old && !!t.received && t.received !== priorTimers.get(t.stream);
     const received = old && ((node.seen && node.seen !== old.seen) ||
       Object.keys(node.readings).some(readChanged) || node.timers.some(timerChanged));
-    const {article,face,body} = view;
+    const {article,highlights,body} = view;
     article.className = node.health;
     article.dataset.radio = node.radio;
-    const heading = el("div",null,"topline");
-    heading.append(el("h2",node.name),el("span",groups[node.health],"badge dot"));
-    const heard = el("div",null,"heard");
+    setText(view.name,node.name);
+    setText(view.badge,groups[node.health]);
     const role = {recorder: " · Offline SD recorder", gateway: " · Backhaul"}[node.kind] ?? "";
-    heard.append(el("strong",node.label + role));
+    setText(view.label,node.label + role);
     const age = node.seen ? duration(data.now-Date.parse(node.seen)/1000) : null;
     const route = node.heardThrough ? " through " + node.heardThrough : "";
-    heard.append(el("span",age ? "Last heard " + age + " ago" + route : "Never heard"));
-    if (received) heard.append(el("span","↳ Received","rx"));
-    const measures = values(node), highlights = el("div",null,"metrics");
+    setText(view.contact,age ? "Last heard " + age + " ago" + route : "Never heard");
+    view.receipt.style.visibility = received ? "visible" : "hidden";
+    view.heard.title = node.radio;
+    const measures = values(node);
     const displayed = ["voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",
       "neighbors","charge"].filter(key=>measures.has(key)).slice(0,3);
     if (measures.has("batteryCurrent")) displayed.push("batteryCurrent");
-    highlights.style.setProperty("--columns",Math.max(1,displayed.length));
-    for (const key of displayed) {
+    highlights.element.style.setProperty("--columns",Math.max(1,displayed.length));
+    highlights.update(displayed.map(key=>{
       const m = measures.get(key);
-      highlights.append(readingTile(m,readChanged(m.source)));
-    }
+      return readingTile(m,readChanged(m.source));
+    }),"No telemetry yet");
     const timers = node.timers.filter(t=>!["position","neighbor_info","nodeinfo"].includes(t.stream));
     const late = timers.filter(t=>t.period && t.missed).length;
     const reasons = [node.linkDown && "Link down",late && late+" overdue"].filter(Boolean);
     if (!reasons.length && node.contact==="aging") reasons.push("Late contact");
-    view.reason.textContent = reasons.join(" · ");
+    setText(view.reason,reasons.join(" · "));
     view.reason.className = "reason "+(node.linkDown ? "down" : "aging");
-    heard.title = node.radio;
-    face.replaceChildren(heading,heard,displayed.length ? highlights : el("p","No telemetry yet","empty"));
-    body.replaceChildren();
     if (view.mode==="Readings") {
-      for (const [key,m] of measures) {
-        if (!displayed.includes(key)) body.append(readingTile(m,readChanged(m.source)));
-      }
-      if (!body.childElementCount) body.append(el("p",displayed.length ? "All readings shown above" : "No readings yet","empty"));
+      const others = [...measures.values()].filter(m=>!displayed.includes(m.key));
+      body.update(others.map(m=>readingTile(m,readChanged(m.source))),displayed.length ? "All readings shown above" : "No readings yet");
     } else {
-      for (const t of timers.sort((a,b)=>Number(!!b.missed)-Number(!!a.missed))) {
-        const tile = el("div",null,"timer "+t.state+(timerChanged(t) ? " incoming" : ""));
-        tile.title = timerHint(t);
-        tile.append(el("span",streamName(t)),el("b",t.age == null && !t.missed ? "Waiting" : timerValue(t,true)),
-          el("small",t.period ? "every "+duration(t.period,t.period % 60 !== 0) : "Event","age"));
-        if (t.period) tile.append(bar(t.missed ? 1 : t.age == null ? 0 : Math.max(0,Math.min(1,t.due/t.period))));
-        body.append(tile);
-      }
-      if (!body.childElementCount) body.append(el("p","No timers yet","empty"));
+      timers.sort((a,b)=>Number(!!b.missed)-Number(!!a.missed));
+      body.update(timers.map(t=>timerTile(t,timerChanged(t))),"No timers yet");
     }
-    if (received) {
-      // Restart the accent even when two consecutive polls each contain a new packet.
-      for (const animation of article.getAnimations()) animation.cancel();
-      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) article.animate(
-        [{boxShadow:"inset 0 0 0 2px #a8ecff"},{boxShadow:"inset 0 0 0 2px transparent"}],1400);
-    }
+    if (received) pulse(article);
     view.previous = node;
   }
   for (const [key,label] of Object.entries(groups)) {
@@ -212,14 +252,14 @@ export function mountActivity(root) {
     }
     for (const [key,button] of buttons) {
       button.setAttribute("aria-pressed",String(key===filter));
-      button.lastChild.textContent = latest?.at ? counts[key] : "—";
+      setText(button.lastChild,latest?.at ? counts[key] : "—");
     }
-    empty.textContent = latest?.at && !counts[filter] ? "No nodes in this view" : "";
+    setText(empty,latest?.at && !counts[filter] ? "No nodes in this view" : "");
   }
   function render(data) {
-      statusLine.textContent = data.status === "Live" ? "Live feed" : data.status;
+      setText(statusLine,data.status === "Live" ? "Live feed" : data.status);
       statusLine.className = "dot " + (data.status === "Live" ? "fresh" : "aging");
-      root.querySelector("#stamp").textContent = data.at ? "Snapshot " + new Date(data.at).toLocaleTimeString() : "";
+      setText(root.querySelector("#stamp"),data.at ? "Snapshot " + new Date(data.at).toLocaleTimeString() : "");
       const present = new Set();
       for (const node of data.nodes) {
         present.add(node.radio);

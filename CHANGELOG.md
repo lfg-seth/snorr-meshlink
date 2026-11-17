@@ -3,6 +3,20 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.10 - 2026-11-16
+
+The portal follows the device's light or dark appearance. The Theme selector
+on the sign-in screen and beside the workspace sign-in or sign-out button
+remembers a Light or Dark override in this browser. The same setting covers
+Activity, device cards and map controls. Dark mode dims the topographic map.
+On touch screens, the compact navigation leaves more room for the map. Activity
+cards fit two across when space allows and arrange readings to fit each card.
+The Readings and Timers buttons have larger tap targets.
+Live Activity refreshes update readings and timers in place to preserve the
+card being read while scrolling.
+The existing backend, database and firmware are compatible without a migration.
+Restore the 0.4.9 portal assets to roll back.
+
 ## 0.4.9 - 2026-11-16
 
 Activity identifies the MQTT gateway that delivered the last contact. Older

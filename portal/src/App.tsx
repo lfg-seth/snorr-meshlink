@@ -9,6 +9,7 @@ import type { NewMember } from './AddMember';
 import MessagesPage from './MessagesPage';
 import InfrastructurePage from './InfrastructurePage';
 import BackendLogin from './BackendLogin';
+import ThemeSelect from './ThemeSelect';
 import { BackendError, forgetToken, login, request, savedToken, saveToken, sessionKey } from './backend';
 import type { BackendSession, BackendState } from './backend';
 import type { LoadBatteryHistory } from './BatteryChart';
@@ -292,12 +293,13 @@ function Portal() {
   if (restoreToken)
     return <main className="workspace" style={{ maxWidth: 640, margin: '64px auto', padding: 24 }}>
       <h1>SNORR MeshLink</h1>
+      <ThemeSelect />
       <p role="status">{backendError || 'Restoring your sign-in…'}</p>
       {backendError && <button onClick={() => setRestoreAttempt(value => value + 1)}>Try again</button>}
       <button onClick={signOut}>Sign out</button>
     </main>;
   if (openingDemo)
-    return <main className="workspace"><p role="status">Opening the demo database…</p><button onClick={signOut}>Sign in</button></main>;
+    return <main className="workspace"><ThemeSelect /><p role="status">Opening the demo database…</p><button onClick={signOut}>Sign in</button></main>;
   if (!session)
     return (
       <main
@@ -305,6 +307,7 @@ function Portal() {
         style={{ maxWidth: 640, margin: '64px auto', padding: 24 }}
       >
         <h1>SNORR MeshLink</h1>
+        <ThemeSelect />
         <p>Sign in to view recorded device positions.</p>
         {backendError && <p role="status">{backendError}</p>}
         <BackendLogin
@@ -335,7 +338,10 @@ function Portal() {
           <img className="brand-logo" src={snorrLogo} alt="SNORR" width={3797} height={1418} />
           <strong>MeshLink{demoMode && <small className="demo-mode-label">Demo</small>}</strong>
         </a>
-        <button className="access-button" onClick={signOut}>{demoMode ? 'Sign in' : 'Sign out'}</button>
+        <div className="workspace-actions">
+          <ThemeSelect />
+          <button className="access-button" onClick={signOut}>{demoMode ? 'Sign in' : 'Sign out'}</button>
+        </div>
         </div>
         <p className="nav-label">{demoMode ? 'Demo workspace' : 'Dispatch workspace'}</p>
         <nav aria-label="Portal pages">
