@@ -623,6 +623,8 @@ def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
             signature = item.get("sample") or item.get("receivedAt")
             revision = hashlib.sha256(str(signature).encode()).hexdigest()[:16]
             readings[metric] = {"value": value, "state": state, "age": age, "revision": revision}
+            if metric == "uptime":
+                readings[metric]["seconds"] = item["value"]
         watches = dashboard.watchdogs(node, now)
         timers = []
         for stream in [s for s in STREAMS if s in watches] + sorted(watches.keys() - STREAMS.keys()):

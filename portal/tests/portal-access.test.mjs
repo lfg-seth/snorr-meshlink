@@ -42,41 +42,49 @@ registerHooks({
   },
 });
 
-test('an open Activity dropdown keeps telemetry rows in place across refreshes', async () => {
+test('Activity switches views and preserves ordered readings and value bars on refresh', async () => {
   const { mountActivity } = await import('../src/activity/view.js');
   const dom = new JSDOM('<div id="host"></div>');
   globalThis.document = dom.window.document;
   try {
     const root = document.querySelector('#host').attachShadow({ mode: 'open' });
     const view = mountActivity(root);
-    const voltage = { value: '3.95', state: 'fresh', age: 0, revision: '1' };
-    const gps = { ...voltage, value: { satellites: 8 } };
-    const render = readings => view.render({
-      at: '2026-11-16T12:00:00Z', now: 0, status: 'Live',
-      nodes: [{ radio: '!00000001', label: 'R001', name: 'Test node', health: 'reporting', readings, timers: [] }],
-    });
-    render({ voltage, gps });
-    root.querySelector('summary').click();
-    const labels = () => Array.from(root.querySelectorAll('details dt'), dt => dt.textContent);
+    const reading = (value, age=0) => ({ value, state:'fresh', age });
+    const data = {
+      voltage:reading('4.200'), busy:reading('1.0'), temperature:reading('6'),
+      inaCurrent:reading('-10',15), envCurrent:reading('-15',5),
+      inaVoltage:reading('3.700',8), envVoltage:reading('3.800',20),
+      charge:reading('30%'), uptime:{ ...reading('2m'), seconds:120 },
+      gateway:reading({ wifiConnected:false, mqttConnected:true }), sd:reading({ usedBytes:0,totalBytes:100,dropped:1 }),
+    };
+    const render = readings => view.render({ at:'2026-11-16T12:00:00Z', now:0, status:'Live',
+      nodes:[{ radio:'!00000001', label:'R001', name:'Test node', health:'reporting', readings,
+        timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}] }] });
+    render(data);
+    assert.match(root.querySelector('.timer').textContent,/Power.*2m 30s left.*every 3m/);
+    root.querySelectorAll('.controls button')[1].click();
+    const tiles = () => [...root.querySelectorAll('.metric')];
+    const labels = () => tiles().map(tile=>tile.firstChild.textContent);
+    const tile = label => tiles().find(t=>t.firstChild.textContent===label);
+    assert.deepEqual(labels().slice(0,4),['Device voltage','Channel use','MQTT','Battery current']);
+    assert.equal(tile('Battery current').querySelector('b').textContent,'-15mA');
+    assert.equal(tile('Battery voltage').querySelector('b').textContent,'3.700V');
+    assert.equal(tile('Device voltage').querySelector('.track i').style.width,'100%');
+    assert.equal(tile('Wi-Fi').querySelector('.track i').style.width,'100%');
+    assert.ok(tile('Wi-Fi').classList.contains('down'));
+    assert.ok(tile('Uptime').classList.contains('down'));
+    assert.ok(tile('Battery').classList.contains('aging'));
     const initial = labels();
-    assert.equal(initial.length, 3);
-    render({ gps: { ...gps, age: 3 }, voltage });
-    assert.equal(root.querySelector('details').open, true);
-    assert.deepEqual(labels(), initial);
-    const gpsRow = Array.from(root.querySelectorAll('details .row')).find(row => row.firstChild.textContent === 'GPS fix age');
-    assert.equal(gpsRow.lastChild.textContent, '3s');
-    const renderLinks = (wifiConnected, mqttConnected) => render({
-      gateway: { state: 'fresh', age: 0, value: { wifiConnected, mqttConnected } },
-    });
-    const detailsTone = label => [...root.querySelectorAll('details .row')]
-      .find(row => row.firstChild.textContent === label).lastChild.className;
-    renderLinks(false, true);
-    assert.equal(detailsTone('Wi-Fi'), 'down');
-    assert.equal(detailsTone('MQTT'), 'fresh');
-    renderLinks(null, false);
-    assert.equal(detailsTone('Wi-Fi'), 'unknown');
-    assert.equal(detailsTone('MQTT'), 'down');
-    assert.equal(root.querySelector('.metric.down b').textContent, 'Down');
+    for (const [pct,tone,seconds,upTone] of [[29,'down',121,'aging'],[60,'aging',3599,'aging'],[61,'fresh',3600,'fresh']]) {
+      render({ uptime:{...reading('1h'),seconds}, ...Object.fromEntries(Object.entries(data).filter(([k])=>k!=='uptime').reverse()),
+        charge:reading(pct+'%') });
+      assert.deepEqual(labels(),initial);
+      assert.ok(tile('Battery').classList.contains(tone));
+      assert.ok(tile('Uptime').classList.contains(upTone));
+    }
+    assert.equal(tile('Uptime').querySelector('.track i').style.width,'100%');
+    assert.equal(labels().filter(label=>label==='Battery voltage').length,1);
+    assert.ok(!labels().includes('SD drops'));
   } finally {
     dom.window.close();
     delete globalThis.document;

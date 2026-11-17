@@ -3,6 +3,16 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.7 - 2026-11-16
+
+Activity cards align by row and display compact Timers and Readings views.
+Reading bars show value, age and signed battery current. The newest INA219
+reading from either telemetry stream supplies battery voltage and current.
+Battery percentage is red below 30%, yellow through 60% and green above.
+Activity omits GPS, standard NeighborInfo, NodeInfo and SD drops. Existing
+schema and firmware remain compatible. Bar ranges are display scales.
+Rollback restores the 0.4.6 sampler and portal assets.
+
 ## 0.4.6 - 2026-11-16
 
 Repeater Activity cards omit NeighborInfo and NodeInfo when showing readings,
