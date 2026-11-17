@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Deployed Activity reading pills
+
+MeshLink 0.4.7 is live. Timers and Readings share aligned cards, with value bars and one battery voltage/current pair per device. Eight of ten production cards supplied headline battery current. All seven services and fresh MQTT receipt passed. Next field check is sustained delivery of the remaining telemetry streams. [Deployment evidence](../docs/operations/field-portal.md#activity-reading-pills).
+
 ## 2026-11-16 - Deployed Activity alert thresholds and repeater stream selection
 
 Production runs MeshLink 0.4.6 at `06e56cd`. All ten protected Activity
