@@ -166,12 +166,13 @@ export function mountActivity(root) {
     const name = el("h2"), badge = el("span",null,"badge dot"), heard = el("div",null,"heard");
     const identity = el("span",null,"radio-label"), label = el("strong");
     const contact = el("span"), receipt = el("span","↳ Received","rx");
+    const route = el("p",null,"route");
     heading.append(name,badge);
     identity.append(label,receipt);
     heard.append(identity,contact);
     const highlights = tileList("metrics"), body = tileList("tiles");
     const reason = el("span",null,"reason");
-    const view = {article,name,badge,heard,label,contact,receipt,highlights,body,reason,mode:"Readings",previous:null};
+    const view = {article,name,badge,heard,label,contact,receipt,route,highlights,body,reason,mode:"Readings",previous:null};
     for (const mode of ["Readings","Timers"]) {
       const button = el("button",mode);
       button.type = "button";
@@ -185,9 +186,18 @@ export function mountActivity(root) {
       controls.append(button);
     }
     controls.append(reason);
-    article.append(heading,heard,highlights.element,controls,body.element);
+    article.append(heading,heard,route,highlights.element,controls,body.element);
     cards.append(article);
     return view;
+  }
+  function routeText(route) {
+    const reception = {local:"Gateway-local report", direct:"Direct", relayed:"Relayed"}[route?.reception] ?? "Reception: Unknown";
+    const hops = route?.reportedHops;
+    const count = Number.isInteger(hops) && hops >= 0 ? hops + (hops === 1 ? " reported hop" : " reported hops") : "Reported hops: Unknown";
+    let relay = "Unknown";
+    if (route?.reception === "direct") relay = "None (direct)";
+    if (route?.reception === "relayed" && route.lastRelayCandidate) relay = route.lastRelayCandidate + " (roster candidate)";
+    return reception + " · " + count + " · Last relay: " + relay;
   }
   function paint(view,node,data) {
     const old = view.previous;
@@ -204,8 +214,9 @@ export function mountActivity(root) {
     const role = {recorder: " · Offline SD recorder", gateway: " · Backhaul"}[node.kind] ?? "";
     setText(view.label,node.label + role);
     const age = node.seen ? duration(data.now-Date.parse(node.seen)/1000) : null;
-    const route = node.heardThrough ? " through " + node.heardThrough : "";
-    setText(view.contact,age ? "Last heard " + age + " ago" + route : "Never heard");
+    const gateway = node.heardThrough ? " through " + node.heardThrough : "";
+    setText(view.contact,age ? "Last heard " + age + " ago" + gateway : "Never heard");
+    setText(view.route,routeText(node.route));
     view.receipt.style.visibility = received ? "visible" : "hidden";
     view.heard.title = node.radio;
     const measures = values(node);

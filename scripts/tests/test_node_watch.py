@@ -9,6 +9,7 @@ import re
 import sqlite3
 import unittest
 import time
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,6 +71,34 @@ class FreshnessTests(unittest.TestCase):
 
 
 class ArchiveTests(unittest.TestCase):
+    def test_reported_route_needs_supported_hops_and_radio_evidence(self):
+        sender, gateway, relay = "!11111101", "!22222202", "!333333ab"
+        names = {sender: "Source", gateway: "Gateway", relay: "Upper Bristle"}
+        index = sampler.relay_index(names)
+
+        def route(start, limit, byte, transport=1, rssi=0):
+            packet = SimpleNamespace(hop_start=start, hop_limit=limit, relay_node=byte,
+                                     transport_mechanism=transport, rx_rssi=rssi, rx_snr=0)
+            return sampler.packet_route(packet, sender, gateway, index)
+
+        for start, limit in [(0, 0), (0, 3), (3, 4), (8, 2)]:
+            self.assertIsNone(route(start, limit, 1))
+        self.assertIsNone(route(3, 3, 1, transport=6))  # UDP
+        self.assertEqual(route(3, 3, 1), {"reception": "direct", "reportedHops": 0})
+        self.assertEqual(route(3, 3, 1, transport=0, rssi=-90), route(3, 3, 1))
+        self.assertEqual(route(3, 3, 1, transport=0), {"reception": "unknown", "reportedHops": 0})
+        for byte in [0, 2, 0xab, 0x100]:
+            self.assertEqual(route(3, 3, byte), {"reception": "unknown", "reportedHops": 0})
+        self.assertEqual(route(2, 0, 0xab), {"reception": "relayed", "reportedHops": 2,
+                                             "lastRelayCandidate": "Upper Bristle"})
+        for byte in [0, 1, 2, 0xcd, 0x100]:
+            self.assertEqual(route(2, 1, byte), {"reception": "relayed", "reportedHops": 1})
+        index = sampler.relay_index({**names, "!ddddddab": None, "!eeeeee01": "Another source",
+                                     "!aaaaaa00": "Zero", "!bbbbbbff": "FF"})
+        for byte in [0xab, 0xff]:
+            self.assertEqual(route(2, 1, byte), {"reception": "relayed", "reportedHops": 1})
+        self.assertEqual(route(3, 3, 1), {"reception": "unknown", "reportedHops": 0})
+
     def test_legacy_gateways_have_distinct_physical_labels(self):
         cfg = {"members": {}, "gateways": {}, "infrastructure": {
             "!9ea13cc0": "legacy-v3-9ea13cc0", "!9e9f167c": "legacy-v3-9e9f167c"}}
@@ -78,23 +107,35 @@ class ArchiveTests(unittest.TestCase):
         self.assertTrue(all(n["radio"][1:] in n["label"] for n in nodes))
 
     def test_contact_keeps_gateway_and_timestamp_together(self):
-        state = sampler.Measurements([node()])
+        state = sampler.Measurements([node()], gateway_names={"!b": "Test Gateway"})
         radio = "!12345678"
         state.contact(radio, at(NOW))
         db = sqlite3.connect(":memory:")
         self.addCleanup(db.close)
         db.execute("CREATE TABLE devices (key,lastContactAt)")
         db.execute("INSERT INTO devices VALUES (?,?)", ("r1",at(NOW)))
-        db.execute("CREATE TABLE packet_receipts (deviceId,receivedAt,gatewayId,outcome)")
-        db.executemany("INSERT INTO packet_receipts VALUES (?,?,?,?)", [
+        db.execute("CREATE TABLE packet_receipts (deviceId,receivedAt,gatewayId,outcome,packetKey)")
+        db.executemany("INSERT INTO packet_receipts VALUES (?,?,?,?,'test-key')", [
             ("r1",at(NOW-1),"g1","accepted"), ("r1",at(NOW),"g1","rejected"),
             ("r1",at(NOW),"g2","duplicate")])
-        sampler.seed_gateway_receipts(db,state,{"r1":radio},{"!a":"g1","!b":"g2"})
+        route = {"reception": "relayed", "reportedHops": 1, "lastRelayCandidate": "Test Ridge"}
+        decoder = Mock()
+        decoder.persisted_route.return_value = route
+        sampler.seed_gateway_receipts(db,state,{"r1":radio},{"!a":"g1","!b":"g2"},decoder)
+        decoder.persisted_route.assert_called_once_with(db, radio, "!b", at(NOW), "test-key")
         state.contact(radio, at(NOW-1), "!a")
+        state.contact(radio, at(NOW), "!a", {"reception": "direct", "reportedHops": 0})
         state.contact(radio, at(NOW))
         self.assertEqual(state.nodes[radio]["heardThrough"], "!b")
+        self.assertEqual(state.nodes[radio]["route"], route)
+        dashboard = watch.Dashboard(False, show_inactive=True)
+        snapshot = {"at": at(NOW), "nodes": [state.nodes[radio]]}
+        card = watch.card_snapshot(dashboard, snapshot, NOW, False, True, 3)["nodes"][0]
+        self.assertEqual((card["seen"], card["heardThrough"], card["route"]), (at(NOW), "Test Gateway", route))
         state.contact(radio, at(NOW+1))
+        self.assertIsNone(state.nodes[radio]["route"])
         self.assertIsNone(state.nodes[radio]["heardThrough"])
+        self.assertIsNone(state.nodes[radio]["heardThroughName"])
         state.contact(radio, at(NOW+1), "!a")
         self.assertEqual(state.nodes[radio]["heardThrough"], "!a")
 

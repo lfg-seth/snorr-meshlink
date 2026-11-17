@@ -118,11 +118,15 @@ test('Activity switches views and preserves ordered readings and value bars on r
       charge:reading('30%'), uptime:{ ...reading('2m'), seconds:120 },
       gateway:reading({ wifiConnected:false, mqttConnected:true }), sd:reading({ usedBytes:0,totalBytes:100,dropped:1 }),
     };
-    const render = readings => view.render({ at:'2026-11-16T12:00:00Z', now:Date.parse('2026-11-16T12:00:00Z')/1000, status:'Live',
+    const render = (readings, contact={}) => view.render({ at:'2026-11-16T12:00:00Z', now:Date.parse('2026-11-16T12:00:00Z')/1000, status:'Live',
       nodes:[{ radio:'!00000001', label:'R001', name:'Test node', seen:'2026-11-16T11:45:00Z', heardThrough:'Seth Mobile', health:'reporting', readings,
-        timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}] }] });
+        timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}], ...contact }] });
     render(data);
     assert.match(root.querySelector('.heard').textContent,/Last heard 15m ago through Seth Mobile/);
+    const route = root.querySelector('.route');
+    const routeText = route.firstChild;
+    const unknown = 'Reception: Unknown · Reported hops: Unknown · Last relay: Unknown';
+    assert.equal(route.textContent, unknown); // snapshot from before route reporting
     const [readings, timers] = root.querySelectorAll('.controls button');
     assert.deepEqual([readings.textContent, timers.textContent], ['Readings', 'Timers']);
     assert.equal(readings.getAttribute('aria-pressed'), 'true');
@@ -130,14 +134,26 @@ test('Activity switches views and preserves ordered readings and value bars on r
     const anchors = anchorSelectors.map(selector => root.querySelector(selector));
     assert.ok(anchors.every(Boolean));
     const age = root.querySelector('.metrics .age').firstChild;
-    render({ ...data, voltage:reading('4.100',3) });
+    render({ ...data, voltage:reading('4.100',3) }, {route:{reception:'relayed', reportedHops:1, lastRelayCandidate:'Test ridge'}});
+    assert.equal(route.textContent, 'Relayed · 1 reported hop · Last relay: Test ridge (roster candidate)');
     anchorSelectors.forEach((selector,i) => assert.equal(root.querySelector(selector), anchors[i], selector));
     assert.match(anchors[2].textContent, /4\.100/);
     assert.equal(root.querySelector('.metrics .age').firstChild, age);
     assert.equal(age.data, '3s ago');
     timers.click();
     const timer = root.querySelector('.timer');
-    render(data);
+    assert.equal(route.firstChild, routeText);
+    assert.match(route.textContent, /Test ridge/);
+    render(data, {heardThrough:'Test gateway', seen:'2026-11-16T11:59:00Z'});
+    assert.match(root.querySelector('.heard').textContent, /Last heard 1m ago through Test gateway/);
+    assert.equal(route.textContent, unknown);
+    render(data, {route:{reception:'direct', reportedHops:0}});
+    assert.equal(route.textContent, 'Direct · 0 reported hops · Last relay: None (direct)');
+    render(data, {route:{reception:'local'}});
+    assert.equal(route.textContent, 'Gateway-local report · Reported hops: Unknown · Last relay: Unknown');
+    render(data, {route:{reception:'relayed', reportedHops:2}});
+    assert.equal(route.textContent, 'Relayed · 2 reported hops · Last relay: Unknown');
+    assert.equal(root.querySelector('.route').firstChild, routeText);
     assert.equal(timers.getAttribute('aria-pressed'), 'true');
     assert.equal(root.querySelector('.timer'), timer);
     assert.match(root.querySelector('.timer').textContent,/Power.*2m 30s left.*every 3m/);

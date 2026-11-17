@@ -5,12 +5,13 @@ does not subscribe, publish, authenticate to the portal, or write server files.
 """
 
 import base64
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from datetime import datetime, timezone
 import hashlib
 import json
 import math
 from pathlib import Path
+import re
 import sqlite3
 import struct
 import sys
@@ -45,8 +46,9 @@ METRIC_STREAM = {
 
 
 class Measurements:
-    def __init__(self, nodes, cadences=None):
+    def __init__(self, nodes, cadences=None, gateway_names=None):
         cadences = cadences or {}
+        self.gateway_names = gateway_names or {}
         self.nodes = {n["radio"]: {**n, "lastContactAt": None, "readings": {}, "watchdogs": {
             stream: {"cadenceSeconds": period, "lastReceivedAt": None, "sample": None, "basis": "saved-profile"}
             for stream, period in cadences.get(n["radio"], {}).items() if period is not None}} for n in nodes}
@@ -85,16 +87,21 @@ class Measurements:
             return
         item.update(lastReceivedAt=received, measuredAt=measured, sample=sample)
 
-    def contact(self, radio, received, gateway=None):
+    def contact(self, radio, received, gateway=None, route=None):
         node = self.nodes[radio]
         timestamp = epoch(received)
         previous = epoch(node["lastContactAt"])
         if timestamp is None:
             return
-        if previous is None or timestamp > previous:
-            node.update(lastContactAt=received, heardThrough=gateway)
-        elif timestamp == previous and gateway and not node.get("heardThrough"):
-            node["heardThrough"] = gateway
+        if previous is not None and timestamp < previous:
+            return
+        if timestamp == previous:
+            if not gateway or node.get("heardThrough"):
+                return
+            received = node["lastContactAt"]
+        node.update(lastContactAt=received, heardThrough=gateway,
+                    heardThroughName=self.gateway_names.get(gateway, gateway),
+                    route={"reception": "local"} if radio == gateway else route)
 
     def unique(self, fingerprint):
         if fingerprint in self.seen:
@@ -153,8 +160,49 @@ def telemetry_values(data):
                 yield rule[0], value
 
 
+def relay_index(names):
+    by_byte = defaultdict(list)
+    for radio, name in names.items():
+        if not re.fullmatch(r"![0-9a-fA-F]{8}", radio):
+            continue
+        # NodeDB::getLastByteOfNodeNum reserves zero and encodes both 00 and ff as ff.
+        suffix = int(radio[-2:], 16) or 0xff
+        by_byte[suffix].append((radio, name))
+    return by_byte
+
+
+def packet_route(packet, radio, gateway, by_byte, has_bitfield=False):
+    if radio == gateway:
+        return {"reception": "local"}
+    transport = getattr(packet, "transport_mechanism", 0)
+    start, limit = getattr(packet, "hop_start", 0), getattr(packet, "hop_limit", -1)
+    # Zero is internal/unspecified; 1–4 are the protobuf LoRa transports.
+    if transport not in (0, 1, 2, 3, 4) or not 0 <= limit <= start <= 7:
+        return None
+    # getHopsAway accepts zero start only when the decoded Data bitfield proves origin support.
+    if start == 0 and not has_bitfield:
+        return None
+    # With a supported start, an omitted proto3 limit is a valid exhausted budget.
+    hops = start - limit
+    route = {"reception": "unknown", "reportedHops": hops}
+    # The receive driver discards the relay byte at zero start. The count can still be known.
+    has_signal = packet.rx_rssi < 0 or (math.isfinite(packet.rx_snr) and packet.rx_snr != 0)
+    if start == 0 or (not transport and not has_signal):
+        return route
+    matches = by_byte.get(getattr(packet, "relay_node", 0), [])
+    if hops:
+        route["reception"] = "relayed"
+        if len(matches) == 1:
+            candidate, name = matches[0]
+            if name and candidate not in (radio, gateway):
+                route["lastRelayCandidate"] = name
+    elif len(matches) == 1 and matches[0][0] == radio:
+        route["reception"] = "direct"
+    return route
+
+
 class Decoder:
-    def __init__(self, cfg, state, backend):
+    def __init__(self, cfg, state, backend, by_byte):
         sys.path.insert(0, backend)
         from mqtt_adapter import Adapter
         from meshtastic.protobuf import mqtt_pb2, mesh_pb2, telemetry_pb2, portnums_pb2
@@ -172,6 +220,40 @@ class Decoder:
         self.key = base64.b64decode(cfg["channelKey"], validate=True)
         self.cfg = cfg
         self.state = state
+        self.by_byte = by_byte
+
+    def packet_data(self, packet):
+        Cipher, algorithms, modes = self.crypto
+        nonce = struct.pack("<QI", packet.id, getattr(packet, "from")) + b"\0" * 4
+        plaintext = Cipher(algorithms.AES(self.key), modes.CTR(nonce)).decryptor().update(packet.encrypted)
+        return self.pb[1].Data.FromString(plaintext)
+
+    def persisted_route(self, db, radio, gateway, at, packet_key):
+        """Match the saved receipt to one archive envelope, even outside the replay window."""
+        topic = f'{self.adapter.root}/2/e/{self.adapter.channel}/{gateway}'
+        rows = db.execute("SELECT envelope FROM mqtt_archive WHERE receivedAt=? AND topic=?", (at, topic))
+        found = None
+        for (raw,) in rows:
+            try:
+                record = json.loads(raw)
+                if record.get("retained") or record.get("payloadBytes", 0) > 4096:
+                    continue
+                binary = base64.b64decode(record["payloadBase64"], validate=True)
+                normalized = self.adapter.decode(topic, binary, epoch(at))
+                if not normalized or packet_key != "{kind}:{deviceId}:{packetId}".format(**normalized):
+                    continue
+                packet = self.pb[0].ServiceEnvelope.FromString(binary).packet
+                if radio != f'!{getattr(packet, "from"):08x}':
+                    continue
+                if found is not None:
+                    return None  # Same time, gateway and content can still have two RF headers.
+                found = packet
+            except (ValueError, KeyError):
+                continue
+        if found is None:
+            return None
+        has_bitfield = found.hop_start == 0 and self.packet_data(found).HasField("bitfield")
+        return packet_route(found, radio, gateway, self.by_byte, has_bitfield)
 
     def consume(self, at, raw, topic):
         mqtt, mesh, telem, ports = self.pb
@@ -189,16 +271,15 @@ class Decoder:
                 or env.gateway_id != topic[len(prefix):] or env.channel_id != self.cfg["channel"]
                 or p.WhichOneof("payload_variant") != "encrypted"):
             return
-        Cipher, algorithms, modes = self.crypto
-        nonce = struct.pack("<QI", p.id, getattr(p, "from")) + b"\0" * 4
-        d = mesh.Data.FromString(Cipher(algorithms.AES(self.key), modes.CTR(nonce)).decryptor().update(p.encrypted))
+        d = self.packet_data(p)
         fingerprint = f"{radio}:{p.id}:{hashlib.sha256(p.encrypted).hexdigest()}"
-        if not self.state.unique(fingerprint):
-            # A persisted device contact may correspond to this transport copy.
-            if epoch(at) == epoch(self.state.nodes[radio]["lastContactAt"]):
-                self.state.contact(radio, at, env.gateway_id)
+        unique = self.state.unique(fingerprint)
+        # A persisted device contact may correspond to this transport copy.
+        if unique or epoch(at) == epoch(self.state.nodes[radio]["lastContactAt"]):
+            route = packet_route(p, radio, env.gateway_id, self.by_byte, d.HasField("bitfield"))
+            self.state.contact(radio, at, env.gateway_id, route)
+        if not unique:
             return
-        self.state.contact(radio, at, env.gateway_id)
         if d.portnum == ports.TELEMETRY_APP:
             t = telem.Telemetry.FromString(d.payload)
             data = self.to_dict(t, preserving_proto_field_name=True)
@@ -277,18 +358,22 @@ def configured_nodes(cfg, roster):
     return list(nodes.values())
 
 
-def seed_gateway_receipts(db, state, mappings, gateways):
+def seed_gateway_receipts(db, state, mappings, gateways, decoder):
     """Recover the route of a persisted contact even outside the archive replay window."""
     radios = {key: radio for radio, key in gateways.items()}
     rows = db.execute("""
-        SELECT r.deviceId, r.receivedAt, r.gatewayId FROM packet_receipts r
+        SELECT r.deviceId, r.receivedAt, r.gatewayId, r.packetKey FROM packet_receipts r
         JOIN devices d ON d.key = r.deviceId AND d.lastContactAt = r.receivedAt
         WHERE r.outcome IN ('accepted', 'duplicate') ORDER BY r.rowid
     """)
-    for key, received, gateway in rows:
+    for key, received, gateway, packet_key in rows:
         radio = mappings.get(key)
-        if radio in state.nodes and gateway in radios:
-            state.contact(radio, received, radios[gateway])
+        if radio in state.nodes and gateway in radios and not state.nodes[radio].get("heardThrough"):
+            gateway_radio = radios[gateway]
+            route = None
+            if radio != gateway_radio:
+                route = decoder.persisted_route(db, radio, gateway_radio, received, packet_key)
+            state.contact(radio, received, gateway_radio, route)
 
 
 def feed_status(db):
@@ -303,10 +388,14 @@ def run(settings, publish=None):
     try:
         cfg = json.loads(Path(settings["config"]).read_text())
         nodes = configured_nodes(cfg, settings["roster"])
+        site_names = settings.get("siteNames", {})
+        # Count collisions across the fleet, including radios without a displayed card or name.
+        names = dict.fromkeys(settings.get("cadences", {}))
+        names.update(cfg["gateways"])
+        names.update({node["radio"]: node["label"] for node in nodes})
+        names.update(site_names)
         if "selected" in settings:
             nodes = [node for node in nodes if node["radio"] in settings["selected"]]
-        state = Measurements(nodes, settings.get("cadences"))
-        decoder = Decoder(cfg, state, settings["backend"])
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
         with sqlite3.connect(database, uri=True, timeout=2) as db:
@@ -314,13 +403,17 @@ def run(settings, publish=None):
             # One consistent startup snapshot, then short incremental reads.
             db.execute("BEGIN")
             cursor = db.execute("SELECT COALESCE(MAX(rowid),0) FROM mqtt_archive").fetchone()[0]
-            state.seed(db, mappings)
-            seed_gateway_receipts(db, state, mappings, cfg["gateways"])
-            gateway_names = {
+            registered_names = {
                 key: (name or "").strip() or short or key
                 for key, name, short in db.execute(
                     "SELECT key, json_extract(configuration, '$.name'), shortName FROM devices WHERE kind='backhaul'")
             }
+            gateway_names = {radio: site_names.get(radio) or registered_names.get(key) or key or radio
+                             for radio, key in cfg["gateways"].items()}
+            state = Measurements(nodes, settings.get("cadences"), gateway_names)
+            decoder = Decoder(cfg, state, settings["backend"], relay_index(names))
+            state.seed(db, mappings)
+            seed_gateway_receipts(db, state, mappings, cfg["gateways"], decoder)
             cutoff = utc(time.time() - settings["hours"] * 3600)
             rows = db.execute("SELECT receivedAt,envelope,topic FROM mqtt_archive WHERE receivedAt>=? AND rowid<=? ORDER BY rowid",
                               (cutoff, cursor)).fetchall()
@@ -336,10 +429,6 @@ def run(settings, publish=None):
                     if rows:
                         consume_rows(decoder, [r[1:] for r in rows])
                         cursor = rows[-1][0]
-                    for node in state.nodes.values():
-                        gateway = node.get("heardThrough")
-                        key = cfg["gateways"].get(gateway)
-                        node["heardThroughName"] = gateway_names.get(key) or key or gateway
                     payload = {"schema": 1, "at": utc(time.time()), "feed": feed_status(db),
                                "nodes": sorted(state.nodes.values(), key=lambda n: n["label"]),
                                "skipped": state.rejected, "catchingUp": len(rows) == 2000}

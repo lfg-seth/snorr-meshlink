@@ -47,6 +47,40 @@ installed backend hooks and eight migration files matched the tagged source.
 | Pre-release `meshlink-20261117T065201Z.tar.gz` | `3ebbb703fd1ae11ff6c107fa501cd064d535b3a80819491c2de60319839c7dc0` |
 | Post-release `meshlink-20261117T065732Z.tar.gz` | `20f7ade69b073c226ba9777d5a44c915f2a0e3ad77151d0ab7164f1a74bb5757` |
 
+## Activity packet routes
+
+The route line in Readings and Timers describes the receipt selected for
+**Last heard** and **through**. On a timestamp tie the first attributed gateway
+keeps its place. When recovering a saved database contact, the sampler looks
+up its gateway and receive time in the raw MQTT archive and verifies the
+original source and normalized packet key. Multiple matching envelopes leave
+the route unknown. Each newer contact replaces all route fields together.
+Reports originating at the uplinking gateway appear as **Gateway-local report**.
+
+The pinned firmware sets the original hop budget and writes the transmitter's
+relay byte. The receiver extracts both three-bit hop fields and the relay byte
+from the radio header. The gateway's encrypted MQTT envelope carries the
+received packet with the gateway's own ID. The gateway can also publish its
+own outgoing packet before radio transmission. [Transmit path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L343-L390), [radio receive path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/RadioLibInterface.cpp#L645-L654), [gateway receive path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L732-L836), [MQTT envelope](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mqtt/MQTT.cpp#L822-L844).
+
+**Reported hops** is the starting limit minus the remaining limit, with both
+values in 0–7 and the remaining limit at most the start. A zero start requires
+the optional bitfield in the decoded payload to establish sender support. In
+that case the receiver has discarded the relay byte, so the count can be zero
+with reception still Unknown. The first forward decrements the limit. Later
+forwards can preserve it when the forwarding node and the previous relay
+have ROUTER, ROUTER_LATE or CLIENT_BASE roles and the previous relay matches
+a favorite. Physical relays can therefore exceed reported hops.
+[Firmware hop calculation](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NodeDB.cpp#L1675-L1691), [role checks](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L85-L133), [forwarding](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NextHopRouter.cpp#L135-L159).
+
+**Direct** requires RF evidence, a zero difference and a usable byte matching
+only the sender in the known roster. **Relayed** requires RF evidence and a
+positive difference. Its last relay is labeled **roster candidate** only when
+the byte matches one named radio distinct from both source and gateway. The
+lookup includes known radios outside the displayed fleet and treats IDs ending
+in `00` and `ff` as a possible collision. Unknown radios can share the same byte.
+[Packet fields](https://github.com/meshtastic/protobufs/blob/6b1ded439633cd03d4af85b44231b91d1d106278/meshtastic/mesh.proto), [byte encoding](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NodeDB.h#L215), [neighbor telemetry limits](../research/node-neighbor-telemetry.md).
+
 ## Serving Activity
 
 The portal serves the field dashboard from the Activity tab after live sign-in.
