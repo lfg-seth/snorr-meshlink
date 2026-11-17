@@ -9,7 +9,9 @@ relay byte does not invent a node identity. Main cards combine last heard and
 route beside the short name using the owner's wording. The packet row now fits
 four phone, six larger portrait and eight wide-screen cards. The owner asked
 to remove the fixed-height gap in preview; cards now size to their content,
-with larger name, type, age and route text.
+with larger name, type, age and route text. The owner's final refinement keeps
+routes anchored at the bottom of those content-sized cards while the type and
+age remain at the top.
 
 The updated local/Tailscale preview is running. All 72 portal checks, typecheck,
 build, 24 MQTT tests and 54 script tests pass (one script platform skip).
