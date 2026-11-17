@@ -90,9 +90,11 @@ class ArchiveTests(unittest.TestCase):
         for byte in [0, 2, 0xab, 0x100]:
             self.assertEqual(route(3, 3, byte), {"reception": "unknown", "reportedHops": 0})
         self.assertEqual(route(2, 0, 0xab), {"reception": "relayed", "reportedHops": 2,
-                                             "lastRelayCandidate": "Upper Bristle"})
+                                             "lastRelayCandidate": "Upper Bristle", "lastRelayRadio": relay})
         for byte in [0, 1, 2, 0xcd, 0x100]:
             self.assertEqual(route(2, 1, byte), {"reception": "relayed", "reportedHops": 1})
+        index = sampler.relay_index({**names, relay: None})
+        self.assertEqual(route(2, 1, 0xab), {"reception":"relayed", "reportedHops":1, "lastRelayRadio":relay})
         index = sampler.relay_index({**names, "!ddddddab": None, "!eeeeee01": "Another source",
                                      "!aaaaaa00": "Zero", "!bbbbbbff": "FF"})
         for byte in [0xab, 0xff]:

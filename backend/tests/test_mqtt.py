@@ -49,11 +49,13 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
 class ActivityArchiveTests(unittest.TestCase):
     radio = '!699c2ed8'
     first, second = CONFIG['gateways']
-    known_route = {'reception': 'relayed', 'reportedHops': 2, 'lastRelayCandidate': 'Test Ridge'}
+    known_route = {'reception': 'relayed', 'reportedHops': 2,
+                   'lastRelayCandidate': 'Test Ridge', 'lastRelayRadio': '!000000ab'}
 
     def setUp(self):
         names = {self.radio: 'Source', self.first: 'East', self.second: 'West', '!000000ab': 'Test Ridge'}
-        self.state = Measurements([{'radio': radio, 'label': name} for radio, name in names.items()])
+        self.state = Measurements([{'radio': radio, 'label': name} for radio, name in names.items()],
+                                  gateway_names={self.first:'East', self.second:'West'})
         self.decoder = Decoder(CONFIG, self.state, str(Path(__file__).resolve().parents[1]), relay_index(names))
 
     def archive(self, gateway, packet_id=123, source=None, bitfield=None, **header):
@@ -80,14 +82,21 @@ class ActivityArchiveTests(unittest.TestCase):
         self.decoder.consume(later, *direct)
         self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']),
                          (later, self.second, self.known_route))
+        first_packet = self.state.recent_packets(epoch(later))[0]
+        self.assertEqual((first_packet['heardThrough'], first_packet['heardThroughRadio'], first_packet['route']),
+                         ('East', self.first, {'reception':'direct', 'reportedHops':0}))
         self.decoder.consume(newest, *self.archive(self.first, packet_id=124))
         self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']), (newest, self.first, None))
         self.decoder.consume(newest, *self.archive(self.first, source=self.first, hop_start=3, hop_limit=3))
         self.assertEqual(self.state.nodes[self.first]['route'], {'reception': 'local'})
+        local_packet = self.state.recent_packets(epoch(newest))[0]
+        self.assertEqual((local_packet['heardThrough'], local_packet['route']), ('East', {'reception':'local'}))
 
     def test_packet_row_keeps_originals_between_polls_and_expires_from_first_receipt(self):
         at, later = '2026-11-17T00:00:00Z', '2026-11-17T00:00:02Z'
-        self.decoder.consume(at, *self.archive(self.first))
+        # A newer DB contact must not donate its route to an older archive transmission.
+        self.state.contact(self.radio, later, self.second, {'reception':'direct', 'reportedHops':0})
+        self.decoder.consume(at, *self.archive(self.first, hop_start=2, relay_node=0xab, transport_mechanism=1))
         self.decoder.consume(later, *self.archive(self.second, hop_limit=1))
         self.decoder.consume(later, *self.archive(self.first, packet_id=124))
         self.decoder.consume(later, *self.archive(self.first, packet_id=125))
@@ -96,7 +105,8 @@ class ActivityArchiveTests(unittest.TestCase):
         self.assertEqual([p['received'] for p in packets], [epoch(later), epoch(later), epoch(at)])
         self.assertEqual(len({p['id'] for p in packets}), 3)
         self.assertTrue(all(p['stream'] == 'position' and p['radio'] == self.radio for p in packets))
-        self.assertEqual(set(packets[0]), {'id', 'stream', 'radio', 'received'})
+        self.assertEqual(set(packets[0]), {'id', 'stream', 'radio', 'received', 'heardThrough', 'heardThroughRadio', 'route'})
+        self.assertEqual((packets[-1]['heardThrough'], packets[-1]['route']), ('East', self.known_route))
         self.assertEqual(self.state.recent_packets(end + .1), packets[:2])
         self.assertEqual(self.state.recent_packets(end + 3), [])
 

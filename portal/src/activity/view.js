@@ -1,5 +1,6 @@
 import template from "./view.html?raw";
 import { mountPacketRow } from "./packet-row.js";
+import { receiptRoute } from "./route.js";
 
 // Shared layout and interactions from the field dashboard at 8cfd518.
 export function mountActivity(root) {
@@ -170,15 +171,12 @@ export function mountActivity(root) {
   function createView() {
     const article = el("article"), heading = el("div",null,"topline"), controls = el("div",null,"controls");
     const name = el("h2"), badge = el("span",null,"badge dot"), heard = el("div",null,"heard");
-    const identity = el("span",null,"radio-label"), label = el("strong");
-    const contact = el("span"), receipt = el("span","↳ Received","rx");
-    const route = el("p",null,"route");
+    const label = el("strong"), contact = el("span",null,"contact");
     heading.append(name,badge);
-    identity.append(label,receipt);
-    heard.append(identity,contact);
+    heard.append(label,document.createTextNode(" "),contact);
     const highlights = tileList("metrics"), body = tileList("tiles");
     const reason = el("span",null,"reason");
-    const view = {article,name,badge,heard,label,contact,receipt,route,highlights,body,reason,mode:"Readings",previous:null};
+    const view = {article,name,badge,heard,label,contact,highlights,body,reason,mode:"Readings",previous:null};
     for (const mode of ["Readings","Timers"]) {
       const button = el("button",mode);
       button.type = "button";
@@ -192,18 +190,9 @@ export function mountActivity(root) {
       controls.append(button);
     }
     controls.append(reason);
-    article.append(heading,heard,route,highlights.element,controls,body.element);
+    article.append(heading,heard,highlights.element,controls,body.element);
     cards.append(article);
     return view;
-  }
-  function routeText(route) {
-    const reception = {local:"Gateway-local report", direct:"Direct", relayed:"Relayed"}[route?.reception] ?? "Reception: Unknown";
-    const hops = route?.reportedHops;
-    const count = Number.isInteger(hops) && hops >= 0 ? hops + (hops === 1 ? " reported hop" : " reported hops") : "Reported hops: Unknown";
-    let relay = "Unknown";
-    if (route?.reception === "direct") relay = "None (direct)";
-    if (route?.reception === "relayed" && route.lastRelayCandidate) relay = route.lastRelayCandidate + " (roster candidate)";
-    return reception + " · " + count + " · Last relay: " + relay;
   }
   function paint(view,node,data) {
     const old = view.previous;
@@ -215,15 +204,13 @@ export function mountActivity(root) {
     const {article,highlights,body} = view;
     article.className = node.health;
     article.dataset.radio = node.radio;
-    setText(view.name,node.name);
+    setText(view.name,node.name || node.radio);
     setText(view.badge,groups[node.health]);
-    const role = {recorder: " · Offline SD recorder", gateway: " · Backhaul"}[node.kind] ?? "";
-    setText(view.label,node.label + role);
+    setText(view.label,node.label);
     const age = node.seen ? duration(data.now-Date.parse(node.seen)/1000) : null;
-    const gateway = node.heardThrough ? " through " + node.heardThrough : "";
-    setText(view.contact,age ? "Last heard " + age + " ago" + gateway : "Never heard");
-    setText(view.route,routeText(node.route));
-    view.receipt.style.visibility = received ? "visible" : "hidden";
+    const route = receiptRoute(node);
+    const contact = age ? ["Last heard " + age + " ago",route.label,route.relay,route.gateway] : ["Never heard"];
+    setText(view.contact,contact.filter(Boolean).join(" · "));
     view.heard.title = node.radio;
     const measures = values(node);
     const displayed = ["voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",

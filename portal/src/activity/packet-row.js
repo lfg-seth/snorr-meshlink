@@ -1,3 +1,5 @@
+import { receiptRoute } from "./route.js";
+
 // The publisher supplies original transmissions in first-receipt order, newest first.
 export function mountPacketRow(section, streamName) {
   const row = section.querySelector("ol");
@@ -11,22 +13,28 @@ export function mountPacketRow(section, streamName) {
     const box = row.ownerDocument.createElement("li");
     const name = row.ownerDocument.createElement("strong");
     const type = row.ownerDocument.createElement("span");
+    type.className = "packet-type";
     const time = row.ownerDocument.createElement("time");
+    const route = row.ownerDocument.createElement("div");
+    route.className = "packet-route";
+    const hops = row.ownerDocument.createElement("span");
+    const relay = row.ownerDocument.createElement("span");
+    const gateway = row.ownerDocument.createElement("span");
+    route.append(hops, relay, gateway);
     type.textContent = streamName(packet);
     time.dateTime = new Date(packet.received * 1000).toISOString();
     box.style.animationDelay = -age + "s";
-    box.append(name, type, time);
-    return {box, name, time};
+    box.append(name, type, time, route);
+    return {box, name, time, hops, relay, gateway};
   }
 
   function paint() {
     if (section.hidden) return;
     const now = win.Date.now() / 1000 + clockOffset;
     const width = row.getBoundingClientRect().width;
-    // Compact screens fit as many 67px cards as possible up to twelve.
-    // Wider desktops can add further cards once they have 130px apiece.
-    const slots = Math.max(width >= 256 ? 4 : 1, Math.min(12, Math.floor((width + gap) / (67 + gap))),
-      Math.floor((width + gap) / (130 + gap)));
+    // Route names need room on phones and on the unfolded portrait display.
+    const phoneLandscape = win.matchMedia("(orientation: landscape) and (max-width:850px)").matches;
+    const slots = width >= 840 ? 8 : width >= 560 && !phoneLandscape ? 6 : width >= 240 ? 4 : 2;
     const stride = (width + gap) / slots;
     row.style.setProperty("--packet-width", stride - gap + "px");
     const visible = packets.filter(p => now - p.received <= 3600).slice(0, slots);
@@ -63,6 +71,12 @@ export function mountPacketRow(section, streamName) {
       const label = names.get(packet.radio) ?? packet.radio;
       if (tile.name.textContent !== label) tile.name.textContent = label;
       tile.box.title = label + " · " + streamName(packet);
+      const details = receiptRoute(packet);
+      const relay = details.relay ? details.relay + (details.gateway ? " >" : "") : "";
+      for (const [element, text] of [[tile.hops,details.label.replace("hop","Hop")],[tile.relay,relay],[tile.gateway,details.gateway]]) {
+        if (element.textContent !== text) element.textContent = text;
+        element.hidden = !text;
+      }
       const elapsed = age < 60 ? Math.floor(age) + "s" : Math.floor(age / 60) + "m";
       const text = elapsed + " ago";
       if (tile.time.textContent !== text) tile.time.textContent = text;
@@ -78,7 +92,7 @@ export function mountPacketRow(section, streamName) {
       section.hidden = !Array.isArray(snapshot.packets);
       clockOffset = snapshot.now - win.Date.now() / 1000;
       packets = snapshot.packets ?? [];
-      names = new Map(snapshot.nodes.map(node => [node.radio, node.name || node.label]));
+      names = new Map(snapshot.nodes.map(node => [node.radio, node.name || node.radio]));
       win.clearInterval(timer);
       if (packets.length) timer = win.setInterval(paint, 1000);
       paint();

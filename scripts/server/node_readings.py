@@ -58,12 +58,14 @@ class Measurements:
         self.packets = []
         self.rejected = 0
 
-    def record_packet(self, radio, stream, at, fingerprint):
+    def record_packet(self, radio, stream, at, fingerprint, gateway=None, route=None):
         received = epoch(at)
         if received is None:
             return
         packet = {"id": hashlib.sha256(fingerprint.encode()).hexdigest()[:24],
-                  "radio": radio, "stream": stream, "received": received}
+                  "radio": radio, "stream": stream, "received": received,
+                  "heardThroughRadio": gateway, "heardThrough": self.gateway_names.get(gateway, gateway),
+                  "route": route}
         # Keep the newest receipts even when archive rows arrive out of time order.
         insort(self.packets, packet, key=lambda item: item["received"])
         if len(self.packets) > 48:
@@ -211,8 +213,10 @@ def packet_route(packet, radio, gateway, by_byte, has_bitfield=False):
         route["reception"] = "relayed"
         if len(matches) == 1:
             candidate, name = matches[0]
-            if name and candidate not in (radio, gateway):
-                route["lastRelayCandidate"] = name
+            if candidate not in (radio, gateway):
+                route["lastRelayRadio"] = candidate
+                if name:
+                    route["lastRelayCandidate"] = name
     elif len(matches) == 1 and matches[0][0] == radio:
         route["reception"] = "direct"
     return route
@@ -299,7 +303,7 @@ class Decoder:
         if not unique:
             return
         stream = self.apply_readings(d, radio, at, fingerprint, topic, binary)
-        self.state.record_packet(radio, stream, at, fingerprint)
+        self.state.record_packet(radio, stream, at, fingerprint, env.gateway_id, route)
 
     def apply_readings(self, d, radio, at, fingerprint, topic, binary):
         """Update measurements and identify the stream of this original transmission."""
@@ -422,9 +426,8 @@ def run(settings, publish=None):
         site_names = settings.get("siteNames", {})
         # Count collisions across the fleet, including radios without a displayed card or name.
         names = dict.fromkeys(settings.get("cadences", {}))
-        names.update(cfg["gateways"])
-        names.update({node["radio"]: node["label"] for node in nodes})
-        names.update(site_names)
+        identities = {**cfg["members"], **cfg.get("infrastructure", {}), **cfg["gateways"]}
+        names.update(dict.fromkeys(identities))
         if "selected" in settings:
             nodes = [node for node in nodes if node["radio"] in settings["selected"]]
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
@@ -435,12 +438,14 @@ def run(settings, publish=None):
             db.execute("BEGIN")
             cursor = db.execute("SELECT COALESCE(MAX(rowid),0) FROM mqtt_archive").fetchone()[0]
             registered_names = {
-                key: (name or "").strip() or short or key
-                for key, name, short in db.execute(
-                    "SELECT key, json_extract(configuration, '$.name'), shortName FROM devices WHERE kind='backhaul'")
+                key: (name or "").strip()
+                for key, name in db.execute(
+                    "SELECT key, json_extract(configuration, '$.name') FROM devices")
             }
-            gateway_names = {radio: site_names.get(radio) or registered_names.get(key) or key or radio
-                             for radio, key in cfg["gateways"].items()}
+            names.update({radio: site_names.get(radio) or registered_names.get(key)
+                          for radio, key in identities.items()})
+            names.update({radio: name for radio, name in site_names.items() if name})
+            gateway_names = {radio: names.get(radio) or radio for radio in cfg["gateways"]}
             state = Measurements(nodes, settings.get("cadences"), gateway_names)
             decoder = Decoder(cfg, state, settings["backend"], relay_index(names))
             state.seed(db, mappings)
