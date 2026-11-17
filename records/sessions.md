@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-17 - R009 Sahara configuration
+
+Configured identity-checked **R009 / !da581e5f** on COM24 for **Sahara / Case 12 /
+eight 18650 cells / Muzi** at the owner-supplied fixed pin. Retained survey
+**2.7.26.bcb22e0**, keys, private channel, radio names, enabled MQTT permission,
+180-second telemetry and this unit's enabled GPS/120-second receiver/3,600-second
+smart position profile. ROUTER defaults were restored to the intended profile;
+full local/module/channel/identity/firmware/position readback passes before and
+after explicit reboot. Serial closed. Raw profiles remain private.
+[Evidence](../docs/operations/r009-sahara-deployment.md).
+
+Documentation whitespace and local-link checks pass for all six changed files.
+Published record branch: `codex/r009-sahara-20261117`; commit is in Git history.
+Next: fresh RF/MQTT/portal receipts, physical installation/mount confirmation,
+then sustained relay/coverage and battery/solar runtime acceptance. No flash,
+new GNSS fix, field measurement or portal mutation performed.
+
 ## 2026-11-17 - G003 vehicle Wi-Fi replacement
 
 Updated identity-checked G003 on COM6 with owner-supplied vehicle Wi-Fi.

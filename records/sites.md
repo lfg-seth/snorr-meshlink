@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-17 - Sahara repeater selection
+
+Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at
+**36.14484090826288, -115.11061987480886**. The radio's fixed pin rounds to
+**36.1448409, -115.1106199**. This records configuration selection, with physical
+installation, access/mount details and coverage/runtime unverified.
+[Configuration evidence](../docs/operations/r009-sahara-deployment.md).
+
 ## 2026-11-16 - Terry Home Wi-Fi backhaul
 
 The owner selected **G006 / Terry Home** for fixed Wi-Fi backhaul with AC power

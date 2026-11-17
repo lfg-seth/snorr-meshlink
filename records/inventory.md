@@ -178,7 +178,7 @@ Each battery holder in this intake is a **four-cell 18650 parallel holder
 | Case 9 | v4 | ASA | 1 × SMA; 1 × Type N | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
 | Case 10 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
 | Case 11 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
-| Case 12 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
+| Case 12 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 at intake | 0 at intake | 2026-11-17: owner selects R009 / Sahara, eight 18650 cells and Muzi; [configuration](../docs/operations/r009-sahara-deployment.md). Installation unverified. |
 | Case 13 | v3 | ASA | 1 × SMA | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
 | Case 14 | v3 | ASA | 1 × Type N | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
 | Case 15 | v1 | ASA | 1 × Type N | 3 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
