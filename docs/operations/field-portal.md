@@ -1,5 +1,37 @@
 # Field portal and activity
 
+## November 17 recent packet row
+
+MeshLink 0.4.13 shipped from tagged main commit
+`9ff127dfb77447c11149e441e098672a32cf01d7` after owner review of the
+phone preview. The production sampler publishes the 48 most recent original
+transmissions heard from the field roster within the past hour. The signed-in
+Activity row renders as many as fit, newest first. Gateway copies share
+one packet identity. Separate transmissions keep their own receipt times.
+[Release PR #93](https://github.com/lfg-seth/snorr-meshlink/pull/93).
+
+The release host passed 100 backend, 72 portal and 54 script tests, typecheck
+and a clean live build. PR, main and tag CI passed. The rollout verified
+installed migration parity, application table counts, protected configuration
+and worker-queue hashes. The rollback manifest and prior files are at
+`/opt/meshlink-rollback-field-9ff127d/files.json`.
+
+All ten public files matched the release build, anonymous Activity returned
+401 and all seven services were active. The authenticated check observed an
+advancing packet feed, unique IDs in newest-first order and stable first
+receipts for retained packets. The released view rendered twelve packet cards
+from 48 transmissions, eleven node cards and ten fixed map pins.
+
+| Private LXC backup | SHA-256 |
+| --- | --- |
+| Before `meshlink-20261117T175113Z.tar.gz` | `745e94448fdc6d283e24f5c0353792ea7426b47165699fc4d878f38d90e491ac` |
+| After `meshlink-20261117T175606Z.tar.gz` | `8e5b1167c6740d5fc240bfb45beeef7e990a9943559823c28ebd1e3b3bc95528` |
+
+Both archives passed SHA-256 verification and isolated live and demo recovery.
+After the final backup restart, the public hashes, seven services,
+authenticated renderer and another newly received packet passed again.
+The signed-in physical handset fold remains a separate acceptance check.
+
 ## November 17 Sahara roster update
 
 **MeshLink 0.4.11** at tagged main commit
