@@ -1,5 +1,29 @@
 # R009 Sahara configuration - 2026-11-17
 
+## Portal and Activity update
+
+Owner subsequently requests the live portal and Activity cards be updated.
+**MeshLink 0.4.11 / fbf161aa7bc53fd9187174ffa929daea26a421c3** adds Sahara
+to the shared placements. The live registry keeps R009's existing record ID
+and radio identity, records the exact owner-supplied display pin, Case 12,
+eight 18650 cells, Muzi and the inventoried panel description. Monitoring policy,
+telemetry history and other device configurations are preserved. Installation
+remains unverified; no new radio write was performed for this portal update.
+
+The clean merged release passes **71 portal tests**, typecheck/live build,
+**95 backend tests** and **44 dashboard tests** on the LXC. PR and main CI pass.
+All ten files served over public HTTPS match the build. The live sampler and
+released Activity renderer show **11 cards**, including **R009 / Sahara**;
+all have readings and timers. Seven production services and a fresh MQTT
+archive receipt pass. The receipt proves ingestion is running, not a new
+Sahara radio reception. Handset visual acceptance remains separate.
+
+Rollback files are under `/opt/meshlink-rollback-field-fbf161a`; R009's prior
+configuration and private deployment evidence are in `/root/sahara-0411/`.
+See the [session record](../../records/sessions.md) for backup/recovery results.
+
+## Radio configuration and assembly selection
+
 Owner selects **Sahara / R009 / Case 12 / eight 18650 cells / Muzi antenna**
 at **36.14484090826288, -115.11061987480886**. This is configuration and
 assembly selection; installation and field acceptance remain separate.
