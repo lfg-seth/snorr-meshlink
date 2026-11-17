@@ -205,3 +205,25 @@ passed separate live and demo recovery checks. The restored live registry
 contained the approved G006 pin. The post-deployment archive SHA256 was
 `4e0ea7c30c461a06c1eb3c9e87c9283aeecda0d8e428da2d74951be37e5ddc38`.
 Rollback files are under `/opt/meshlink-rollback-field-31a905b`.
+
+## Activity reading pills
+
+On November 16 Pacific, MeshLink 0.4.7 deployed from tagged main commit
+`e7ed8b72564716a13b4ddbd237c0eed609815e4e`. The authenticated production
+snapshot rendered both views for ten cards. Eight supplied battery current
+as a headline. The other two supplied no INA current sample. The verifier
+checked for duplicate labels, exact uptime seconds and the stream exclusions.
+All ten public build files matched, seven services were active and a fresh
+MQTT archive receipt arrived. The promotion retained the quiesced data and
+configuration hashes. Rollback files are in `/opt/meshlink-rollback-field-e7ed8b7`.
+
+Portal, backend and dashboard checks passed in the isolated release checkout,
+and portal and backend tag CI passed. The Windows portal tests passed. Local
+Windows backend integration encountered loopback connection resets.
+
+Both archives passed checksum verification and isolated live and demo recovery.
+
+| Backup | SHA-256 |
+| --- | --- |
+| `meshlink-20261117T034702Z.tar.gz` | `1d9ccfd9ffe4111efacbb21d23a7e1a9ff4bf20ea6be13f778b03113d800e7fc` |
+| `meshlink-20261117T035344Z.tar.gz` | `7259d01e98ded9df8894cc6b9ad542e0e89a1297a3a3448d0b0995ca7cc1170a` |
