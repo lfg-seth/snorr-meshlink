@@ -21,7 +21,10 @@ def main():
     def publish(snapshot):
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
-            if site.get("stationBackhaul") or site.get("mobileGateway"):
+            if site["shortName"].startswith("R"):
+                node["readings"].pop("gps", None)
+                node["watchdogs"].pop("position", None)
+            elif site.get("stationBackhaul") or site.get("mobileGateway"):
                 node["kind"] = "gateway"
             elif site.get("offlineRecorder"):
                 node["kind"] = "recorder"
