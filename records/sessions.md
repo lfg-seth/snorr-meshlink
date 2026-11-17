@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Verified G003 hotspot backhaul
+
+Updated the mobile gateway to the owner-supplied hotspot. G003 reported association twice at −30 dBm and a direct MQTT connection after restart. Vehicle runtime and field reliability remain open. [Bench measurements](../docs/operations/g003-mobile-gateway.md#2026-11-16-hotspot-connection-test).
+
 ## 2026-11-16 - Prepared G006 for Terry Home and updated the portal
 
 Verified the existing Heltec V3 **!b03d6790** on USB, retained gateway

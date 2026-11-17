@@ -52,3 +52,7 @@ and field coverage were not tested. No portal record, registry, mapping, history
 or server setting was changed; existing historical mappings may still label
 this hardware with its old identity. When the vehicle network is available,
 verify association and direct uplink if the owner selects that check.
+
+## 2026-11-16 hotspot connection test
+
+USB readback identified G003 (!849ad7a0) on COM41. The gateway initially reported Wi-Fi disconnected. After saving the owner-supplied hotspot credentials and restarting, the complete local and module configurations matched the intended values. Two gateway status replies ten seconds apart reported association, an assigned IP and −30 dBm RSSI. Direct MQTT was connected in the second reply. This verifies the exact supplied SSID by successful association. Vehicle runtime and field reliability remain unmeasured.
