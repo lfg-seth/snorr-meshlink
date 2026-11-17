@@ -77,6 +77,8 @@ export type Infrastructure = {
   intrusion: boolean | null;
   equipped: { solar: boolean; weather: boolean; intrusion: boolean };
   batterySetup: string;
+  deviceType?: string;
+  externalPower?: string;
   batteryProfile?: string;
   solarSetup: string;
   antenna: string;

@@ -11,10 +11,10 @@ export function placedInfrastructure(devices: Infrastructure[]): Infrastructure[
       const stationPin = device.locationSource === 'owner-deployment-pin' && device.locationLabel === site.name;
       return [{
         ...device, name: site.name, shortName: site.shortName, role: 'Backhaul',
-        deploymentStatus: 'station', latitude: stationPin ? device.latitude : undefined,
-        longitude: stationPin ? device.longitude : undefined,
+        deploymentStatus: 'station', latitude: site.latitude ?? (stationPin ? device.latitude : undefined),
+        longitude: site.longitude ?? (stationPin ? device.longitude : undefined),
         batterySetup: device.batterySetup || 'Unverified', antenna: device.antenna || 'Unverified',
-        solarSetup: 'Owner-reported 5 W panels via USB-C',
+        solarSetup: site.solarSetup || device.solarSetup,
       }];
     }
     return [{

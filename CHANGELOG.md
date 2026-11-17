@@ -3,6 +3,14 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.3 - 2026-11-16
+
+Add G006 Terry Home to Map, Infrastructure and Activity with the owner's
+approved public pin. The gateway card shows its declared hardware and planned
+AC power. The existing worker mapping retains this physical radio's history.
+The current radio protocols and database schema remain compatible. To roll
+back, restore the 0.4.2 application, sampler roster and prior G006 metadata.
+
 ## 0.4.2 - 2026-11-16
 
 Live member and admin sign-ins can remember a browser for 30 days.

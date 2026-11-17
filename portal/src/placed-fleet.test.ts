@@ -13,11 +13,23 @@ test('field views match physical radios and keep fixed order, pins and names acr
   const shown = placedInfrastructure([legacy, ...registry.toReversed()]);
   assert.deepEqual(shown.map(device => [device.shortName, device.name, device.longitude, device.latitude]),
     placements.map(site => [site.shortName, site.name, site.longitude, site.latitude]));
-  assert.equal(shown.length, 8);
-  assert.equal(shown.at(-1)?.role, 'Offline SD recorder');
+  assert.equal(shown.length, 9);
+  assert.equal(shown.find(device => device.shortName === 'G002')?.role, 'Offline SD recorder');
   assert.equal(shown.some(device => device.id === 'r001'), false);
   const link = {observerDeviceId: registry[0].id, heardDeviceId: registry[1].id, originalSourceDeviceId: null} as LinkObservation;
   assert.deepEqual(placedLinks([link, {...link, heardDeviceId: legacy.id}, {...link, observerDeviceId: 'b002'}], shown), [link]);
+});
+
+test('Terry Home uses the approved public pin and keeps its own power and gateway health', () => {
+  const gateway = {...infrastructure[0], radioNodeId: '!b03d6790', latitude: 0, longitude: 0,
+    antenna: 'Muzi', batterySetup: '1,000 mAh', externalPower: 'AC power planned', solarSetup: 'Unconfigured',
+    gatewayHealth: {state: 'offline', label: 'Offline'}};
+  const [station] = placedInfrastructure([gateway]);
+  assert.deepEqual([station.shortName, station.name, station.role], ['G006', 'Terry Home', 'Backhaul']);
+  assert.deepEqual([station.latitude, station.longitude], [36.26153180096932, -115.18904437592454]);
+  assert.equal(station.externalPower, gateway.externalPower);
+  assert.equal(station.solarSetup, gateway.solarSetup);
+  assert.equal(station.gatewayHealth, gateway.gatewayHealth);
 });
 
 test('Lee Fire Station retains gateway health and uses its owner-supplied deployment pin only', () => {
