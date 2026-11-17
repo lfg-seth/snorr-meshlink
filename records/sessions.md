@@ -1,5 +1,31 @@
 # Session log
 
+## 2026-11-16 - Owner stops R005 repeat; latest MQTT origins verified
+
+Owner requests 30 ping attempts at five-second intervals, then explicitly stops
+testing and asks which MQTT carried R005's latest reports. Stop the runner
+immediately using SIGINT, allowing cleanup: **24 started, 23 completed timeouts,
+zero pongs**, attempt 24 in flight. All completed attempts show TX start/done;
+actual enqueue spacing **5,000–5,039 ms**, utilization **8–16%**. Independently
+compare before/final snapshots: idle, exact original settings/targets restored.
+Existing USB survey service remains owner. No further RF test.
+
+Read-only live server archive query at **20:57:28 Pacific** finds newest R005
+**!a65601b3** device/environment/power via **G003 !849ad7a0** at
+**20:53:14.598 / 16.299 / 17.603**, same radio packet IDs first through
+**legacy-v3-b03d6790 / !b03d6790** at **20:53:05.760 / 06.612 / 07.769**.
+Broker **mqtt.snorr.org:8883**; topic suffixes match envelope gateway IDs.
+Latest G003 copies show hop **3/2**, legacy **3/3**, so strong G003 RSSI is not
+proof of a direct R005 link. Latest SNNS via G003 **20:20:32.844**. All dates
+November 16 Pacific; UTC receipts are November 17. [Topics and evidence](../docs/operations/r005-angel-vegas-deployment.md#owner-stopped-repeat-and-latest-mqtt-receipts---2026-11-16).
+
+Private evidence `private/bench/B003-R005-30-pings-20261116/`; no server mutation
+or mesh/firmware change. Documentation/link/whitespace checks and restoration
+assertions pass. Requested 30 attempts remain incomplete because owner stopped;
+no resumption assumed. Branch `codex/b003-angel-vegas-ping-20261116`, commit/push
+reported at handoff. Next: owner-selected reachability comparison only if
+requested; ordinary reporting and bidirectional survey acceptance stay distinct.
+
 ## 2026-11-16 - B003 ping/pong attempt to Angel Peak Vegas Side
 
 Owner connects B003 and requests Angel Vegas-side ping/pong. Identify USB

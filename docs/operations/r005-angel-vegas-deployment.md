@@ -115,3 +115,40 @@ by R005 is proven here. Raw GPS/events and before/final states stay ignored in
 Next: confirm R005 power/antenna and actual placement, then select a closer or
 known-good direct comparison to distinguish reachability from responder/path
 failure. Sustained reporting, forced relay, coverage and runtime remain open.
+
+
+## Owner-stopped repeat and latest MQTT receipts - 2026-11-16
+
+Owner requests 30 attempts five seconds apart, then explicitly stops testing.
+Through the same existing USB survey service, **24 attempts start**, with
+**23 completed timeouts / zero pongs** and attempt 24 in flight at interruption.
+The requested 30-attempt run is **not completed**. Configure min/max interval
+**5,000 ms**, retain **4,500 ms timeout**, adaptive admission and production
+radio settings. Measured enqueue spacing is **5,000–5,039 ms**; local utilization
+is **8–16%** across completed results. All 23 completed results confirm local
+TX start/done. Interrupt the runner immediately on owner request; its cleanup
+stops B003 and independently verifies idle, original complete runtime settings
+and original R005 target selection. No further test runs.
+
+Owner asks which MQTT carried the newest R005 reports. A read-only live archive
+query at **2026-11-17T04:57:28Z / November 16, 8:57:28 PM Pacific** identifies
+broker **mqtt.snorr.org:8883**. Latest device/environment/power receipts:
+
+| MQTT gateway | Topic | Device / environment / power receipt, November 16 Pacific |
+| --- | --- | --- |
+| **G003 !849ad7a0** | `snorr/pilot/2/e/SNORRbench/!849ad7a0` | **20:53:14.598 / 20:53:16.299 / 20:53:17.603** |
+| **legacy-v3-b03d6790 / !b03d6790** | `snorr/pilot/2/e/SNORRbench/!b03d6790` | **20:53:05.760 / 20:53:06.612 / 20:53:07.769** |
+
+The rows contain the **same three radio packet IDs**; the legacy gateway
+receives first, then G003 about ten seconds later. These are non-retained,
+channel-encrypted, non-PKI packets with source **!a65601b3**, and topic/envelope
+gateway identities agree. Receipt times are worker MQTT receipt times, not proof
+of direct R005-to-G003 RF: latest G003 copies have hop-start/remaining **3/2**,
+while legacy copies retain **3/3**. Do not attribute the G003 copies' strong
+RSSI to a direct R005 link. Latest SNNS is separately **20:20:32.844 Pacific**
+through G003. Fresh automatic telemetry does not establish bidirectional
+zero-hop survey reachability or sustained cadence.
+
+Private run/events/before/final snapshots and sanitized read-only audit:
+`private/bench/B003-R005-30-pings-20261116/`. No server state changes, new
+subscription, firmware/profile change or further RF command after stopping.

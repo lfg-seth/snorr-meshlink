@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-16 - R005 repeat stopped; latest MQTT gateways identified
+
+Owner requests 30 five-second B003-to-R005 attempts, then stops the run.
+**24 started / 23 completed timeouts / zero pongs**; attempt 24 in flight at
+stop. Enqueue spacing **5,000–5,039 ms**, utilization **8–16%**. B003 idle,
+original settings/target verified restored. Read-only live archive identifies
+latest ordinary device/environment/power packets via **G003 !849ad7a0** at
+**20:53:14–17 Pacific**, preceded by the same packet IDs via legacy gateway
+**!b03d6790** at **20:53:05–07**. Broker **mqtt.snorr.org:8883**; no direct
+G003 RF-path inference from the relayed copies. [Exact topics, timestamps and limits](../docs/operations/r005-angel-vegas-deployment.md#owner-stopped-repeat-and-latest-mqtt-receipts---2026-11-16).
+
 ## 2026-11-16 - B003 to Angel Vegas R005 ping/pong gets no reply
 
 Owner-requested USB B003 **!699c2ed8 / 2.7.26.7b766e6** targets current
