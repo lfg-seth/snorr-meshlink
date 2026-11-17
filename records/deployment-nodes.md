@@ -18,8 +18,10 @@ G002 recording offline at Shady Hollow and G001 at Lee Fire. This advances
 the earlier configuration-only installation status below. Mount details,
 sustained receipts, intended relay paths and solar/runtime acceptance remain
 open. R001 charging needs inspection; G001 solar-related brownout is suspected
-but unmeasured; R006 needs relocation/link verification. G002 field receptions
-await card recovery. R011 Mountain Side installation photo remains missing.
+but unmeasured; R006 needs relocation/link verification. The [subsequent G002
+card analysis](aar/2026-11-16-g002-offline-card.md) documents reception from
+Cathedral Rock, Kyle Junction and both Angel Peak radios. R011 Mountain Side
+installation photo remains missing.
 
 ## Fresh numbering - 2026-11-12
 

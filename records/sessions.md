@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-11-16 - Analyzed the G002 Shady Hollow SD card
+
+Verified 25 SML copies against the card by SHA-256. The project reader passed
+all four offline tests and validated 69,772 recorded events. The final boot
+contains 28 h 55 min and a complete sequence of 29,334 events, ending in an
+open segment with a valid final frame. Receptions and reciprocal neighbor
+reports cover Cathedral Rock, Kyle Junction and both Angel Peak sites.
+Mountain Side had a 51-minute gap. B002 supplied ten GPS fixes near setup.
+Four repeaters provided the approximate clock. Raw logs and hashes are in
+ignored local storage. The next field check is the long Mountain Side gap
+and whether it affects fresh member fixes at dispatch.
+[Field evidence, power readings and chart](aar/2026-11-16-g002-offline-card.md).
+
 ## 2026-11-16 - Activity scrolling on desktop staging
 
 Reproduced the reported jump at 382 × 580 in Windows WebKit with ten synthetic

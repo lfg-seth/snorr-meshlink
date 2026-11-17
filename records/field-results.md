@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-16 - G002 Shady Hollow card reception
+
+G002's final boot recorded **28 h 55 min**. Cathedral Rock, Kyle Junction and
+both Angel Peak radios repeatedly reached the recorder. Each also listed G002
+in its direct-neighbor reports. Longest gaps between packets through any path
+were **5:09, 2:59, 15:58 and 50:58** respectively (minutes:seconds, Vegas Side
+before Mountain Side). Ten timestamped B002 fixes arrived near setup. G002's
+clock stayed unset, with approximate Pacific times available from four peers.
+All 25 copied segments passed hash comparison and all 69,772 event frames
+passed the reader. [Reception chart, GPS, power and card integrity](aar/2026-11-16-g002-offline-card.md).
+
 ## 2026-11-16 - G006 fixed gateway bench readback
 
 Heltec V3 **G006 / !b03d6790** retained its gateway firmware and passed complete
