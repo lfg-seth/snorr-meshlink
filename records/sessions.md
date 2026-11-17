@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-17 - Recent packet row preview
+
+Prepared MeshLink 0.4.13 on `codex/activity-packet-row`. Activity shows one
+card per original transmission from the field roster, ordered by first receipt.
+The archive fingerprint collapses gateway copies while keeping later packets
+of the same type. The row shows the sender, type and age. Its theme colors
+interpolate from green at five minutes to yellow at fifteen and red at sixty.
+New arrivals fade in, existing cards shift right, and displaced or expired
+cards fade out. On unfolded touch screens, Activity moves navigation above
+the row to make room for packet names.
+
+The local preview uses synthetic packets and is available through a private
+Tailscale Serve route for phone review. The production bundle with synthetic
+receipts fit 4/7/8/12/12 whole cards at 382/580/669/951/1440 CSS pixels in both
+WebKit and Edge. The 320 px view also fit four. All 72 portal tests, typecheck,
+build and 24 MQTT tests passed. The scripts suite passed with one skip.
+The full Windows backend run had one connection reset in the account-creation
+test, including on isolated retry, and seven platform skips. Next is owner
+preview review before selecting production deployment and live receipt checks.
+
 ## 2026-11-17 - Deployed live field roster and Activity radio routes
 
 Merged both features through [PR #91](https://github.com/lfg-seth/snorr-meshlink/pull/91)

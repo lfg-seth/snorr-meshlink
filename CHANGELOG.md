@@ -3,6 +3,15 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.13 - 2026-11-17
+
+Node activity adds a single row of recent field-roster packets. Each card shows
+the sending node, packet type and time since first receipt. The row ages from
+green through yellow to red over one hour. The sampler supplies a bounded
+history from the existing MQTT archive. The API supplies current server time.
+Older snapshots still open with the node cards alone. Rollback restores the
+0.4.12 sampler, API hook and portal assets. No database migration is required.
+
 ## 0.4.12 - 2026-11-17
 
 The live portal and Activity sampler read the private PocketBase field roster.

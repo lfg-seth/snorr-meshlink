@@ -1,4 +1,5 @@
 import template from "./view.html?raw";
+import { mountPacketRow } from "./packet-row.js";
 
 // Shared layout and interactions from the field dashboard at 8cfd518.
 export function mountActivity(root) {
@@ -16,7 +17,9 @@ export function mountActivity(root) {
     mqttConnected:["MQTT","",0,1], wifi:["Wi-Fi signal","dBm",-100,-40], sd:["SD used","%",0,100],
   };
   const streams = {device:"Device",environment:"Environment",power:"Power",snns:"SNNS",
-    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD"};
+    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD",position:"Position",nodeinfo:"Node info",
+    neighbor_info:"Neighbors","private-other":"Private",telemetry:"Telemetry"};
+  const packetRow = mountPacketRow(root.querySelector("#recent-packets"), streamName);
   const views = new Map(), buttons = new Map();
   let filter = "all", latest;
   function el(tag, text, cls) {
@@ -33,7 +36,10 @@ export function mountActivity(root) {
     }
     return s + "s";
   }
-  function streamName(t) { return streams[t.stream] ?? t.stream.replace(/^(packet|telemetry):/, "").replace(/_/g," "); }
+  function streamName(t) {
+    return streams[t.stream] ?? t.stream.replace(/^(packet|telemetry):/, "").replace(/_app$/, "")
+      .replace(/_/g," ").replace(/^./, c => c.toUpperCase());
+  }
   function timerValue(t, precise=false) {
     if (!t.period) return t.age == null ? "Waiting" : duration(t.age,precise) + " ago";
     if (t.due == null) return "Unknown";
@@ -268,6 +274,7 @@ export function mountActivity(root) {
     setText(empty,latest?.at && !counts[filter] ? "No nodes in this view" : "");
   }
   function render(data) {
+      packetRow.render(data);
       setText(statusLine,data.status === "Live" ? "Live feed" : data.status);
       statusLine.className = "dot " + (data.status === "Live" ? "fresh" : "aging");
       setText(root.querySelector("#stamp"),data.at ? "Snapshot " + new Date(data.at).toLocaleTimeString() : "");
@@ -298,5 +305,5 @@ export function mountActivity(root) {
       statusLine.className = "dot stale";
   }
   applyFilter();
-  return {render, disconnected};
+  return {render, disconnected, destroy:packetRow.destroy};
 }

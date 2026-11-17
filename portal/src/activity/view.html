@@ -25,6 +25,35 @@ button { font:inherit; color:inherit; cursor:pointer; }
 .stat[aria-pressed=true] { border-color:var(--tone); }
 .stat:hover, summary:hover { background:var(--hover); }
 :focus-visible { outline:2px solid var(--ice); outline-offset:3px; }
+#recent-packets { margin-bottom:16px; }
+#recent-packets h2 { margin:0 0 7px; color:var(--muted); font-size:12px; font-weight:650; letter-spacing:0; }
+.packet-window { position:relative; }
+.packet-window ol { position:relative; height:6.6rem; overflow:clip; margin:0; padding:0; list-style:none; }
+.packet-window li { position:absolute; inset:0 auto 0 0; width:var(--packet-width);
+  display:flex; flex-direction:column; gap:2px; min-width:0; overflow:hidden; padding:7px clamp(5px,.65vw,10px);
+  color:var(--good-text); background:color-mix(in srgb,currentColor 8%,var(--surface));
+  border:1px solid color-mix(in srgb,currentColor 34%,var(--border)); border-top:2px solid currentColor;
+  border-radius:7px; transform:translateX(var(--left));
+  animation:packet-age 3600s linear both; transition:transform 420ms ease-out, opacity 420ms ease-out; }
+@keyframes packet-age {
+  0%,8.333333% { color:var(--good-text); }
+  25% { color:var(--warning-text); }
+  100% { color:var(--danger-text); }
+}
+@starting-style { .packet-window li { opacity:0; } }
+.packet-window li.leaving { opacity:0; translate:12px; transition:opacity 420ms ease-out,translate 420ms ease-out; }
+.packet-window strong { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
+  overflow-wrap:anywhere; color:var(--text); font-size:clamp(11px,1vw,14px); line-height:1.17; }
+.packet-window li span { margin-top:auto; overflow-wrap:anywhere; line-height:1.15;
+  color:var(--muted); font-size:clamp(10px,.8vw,12px); }
+.packet-window time { font-variant-numeric:tabular-nums; font-size:11px; font-weight:650; }
+.packet-window time::before { content:""; display:inline-block; vertical-align:.08em; margin-right:4px;
+  width:5px; height:5px; border-radius:50%; background:currentColor; }
+.packet-window p { position:absolute; inset:0; align-content:center; padding:12px;
+  color:var(--muted); border:1px dashed var(--border); border-radius:7px; font-size:12px; }
+@media (prefers-reduced-motion:reduce) {
+  .packet-window li,.packet-window li.leaving { transition:none; }
+}
 #cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,410px),1fr)); gap:12px; align-items:stretch; }
 article { min-width:0; container-type:inline-size; background:linear-gradient(130deg,color-mix(in srgb,var(--tone) 10%,var(--surface)),var(--surface) 82%);
   border:1px solid color-mix(in srgb,var(--tone) 32%,var(--border)); border-top:3px solid var(--tone); border-radius:8px;
@@ -72,6 +101,10 @@ h2 { font-size:22px; letter-spacing:-.035em; overflow-wrap:anywhere; line-height
 <div><div class="brand">SNORR MeshLink</div><h1>Node activity</h1></div></div>
 <div class="statusline"><span id="status" class="dot unknown">Connecting</span><time id="stamp"></time></div></header>
 <nav id="summary" aria-label="Filter nodes by reporting status"></nav>
+<section id="recent-packets" aria-labelledby="packet-heading" hidden>
+<h2 id="packet-heading">Recent packets</h2>
+<div class="packet-window"><ol aria-label="Packets, newest first"></ol><p hidden>No packets in the past hour</p></div>
+</section>
 <section id="cards" aria-label="Nodes"></section>
 <noscript>Enable JavaScript to see live node activity.</noscript>
 </main>

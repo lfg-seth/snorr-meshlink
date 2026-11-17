@@ -198,6 +198,56 @@ test('Activity switches views and preserves ordered readings and value bars on r
   }
 });
 
+test('Activity packet row keeps visible transmissions across refresh and expires during disconnection', async () => {
+  const { mountActivity } = await import('../src/activity/view.js');
+  const dom = new JSDOM('<div id="host"></div>');
+  globalThis.document = dom.window.document;
+  try {
+    let tick, resize, width = 300, wall = 0;
+    dom.window.Date = class extends Date { static now() { return wall; } };
+    dom.window.setInterval = fn => { tick = fn; return 1; };
+    dom.window.matchMedia = () => ({ matches:true });
+    dom.window.ResizeObserver = class {
+      constructor(fn) { resize = fn; }
+      observe() {}
+      disconnect() { resize = null; }
+    };
+    const root = document.querySelector('#host').attachShadow({mode:'open'});
+    const view = mountActivity(root);
+    const row = root.querySelector('#recent-packets ol');
+    row.getBoundingClientRect = () => ({width});
+    const now = 10000;
+    const packet = (id, age) => ({id, radio:'Source', stream:'power', received:now-age});
+    const originals = [1, 4, 5, 6, 8, 3599].map((age,i) => packet(String(i), age));
+    const render = packets => view.render({at:new Date(now*1000).toISOString(), now, status:'Live', nodes:[], packets});
+    render(originals);
+    const first = row.firstElementChild;
+    assert.equal(row.children.length, 4);
+    render([packet('new', 0), ...originals]);
+    assert.equal(row.children[1], first);
+    assert.deepEqual([...row.querySelectorAll('time')].map(node => node.textContent), ['0s ago','1s ago','4s ago','5s ago']);
+    width = 900;
+    resize();
+    assert.equal(row.children.length, 7);
+    view.disconnected();
+    wall += 2000;
+    tick();
+    assert.equal(row.children.length, 6);
+    assert.equal(row.firstElementChild.textContent, 'SourcePower2s ago');
+    wall += 3600000;
+    tick();
+    assert.equal(row.children.length, 0);
+    assert.equal(root.querySelector('.packet-window p').hidden, false);
+    render(undefined);
+    assert.equal(root.querySelector('#recent-packets').hidden, true);
+    view.destroy();
+    assert.equal(resize, null);
+  } finally {
+    dom.window.close();
+    delete globalThis.document;
+  }
+});
+
 test('production opens the isolated demo by default and live sign-in survives refresh', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://portal.example.test/' });
   globalThis.window = dom.window;
