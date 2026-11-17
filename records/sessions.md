@@ -1,5 +1,32 @@
 # Session log
 
+## 2026-11-16 - B003 ping/pong attempt to Angel Peak Vegas Side
+
+Owner connects B003 and requests Angel Vegas-side ping/pong. Identify USB
+**90:70:69:9C:2E:D8**, **!699c2ed8 / 2.7.26.7b766e6**, live/idle/recording
+survey service and sole USB owner. Use existing command API, target current
+**R005 !a65601b3** rather than R011. Three separate bounded zero-hop bench
+attempts transmit at production LongFast slot 35 / 10 dBm, with local
+utilization **6/4/5%**, measured airtime **763/764/764 ms**, and **0/3 pongs**
+within **4,500 ms**. [Measurements and limits](../docs/operations/r005-angel-vegas-deployment.md#b003-direct-pingpong-attempt---2026-11-16).
+
+Each attempt stops; independent saved/final comparisons verify exact original
+settings and idle/stopped state. Original target list empty, R005 stays selected
+because the API cannot clear it. Existing service retains serial ownership;
+no firmware, persistent mesh profile, key or other board changes. Raw events,
+GPS, request IDs and snapshots remain ignored under
+`private/bench/B003-R005-ping-20261116/`. No R005 receive/path/responder cause,
+relay or portal result inferred. Next: owner confirms R005 power/antenna and
+placement, then selects closer/known-good direct comparison.
+
+Documentation/link/whitespace check passes; all three private result/restoration
+assertions pass. Initial sandbox lacks host USB/service; authorized host access
+finds the connected board and existing service. Clean pull fails on the same
+pre-existing broken local Codex checkpoint ref; do not repair/rewrite history.
+Independent remote check finds main at `38461b1`, ahead of local `943a43c`;
+keep this result on `codex/b003-angel-vegas-ping-20261116` without changing
+main. Commit/push result reported at handoff.
+
 ## 2026-11-15 - Project and node setup consolidated for GitHub publication
 
 Owner requests saving the whole project and today's node setup to GitHub,

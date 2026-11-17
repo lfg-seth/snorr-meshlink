@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-16 - B003 to Angel Vegas R005 ping/pong gets no reply
+
+Owner-requested USB B003 **!699c2ed8 / 2.7.26.7b766e6** targets current
+Angel Peak Vegas-side **R005 !a65601b3** through the existing survey service.
+Three authenticated zero-hop attempts: **0/3 pongs**, all **4,500 ms timeouts**;
+actual local TX durations **763/764/764 ms**, utilization **6/4/5%**. Retain
+production LongFast slot 35 at 10 dBm. No remote reception, RSSI/SNR or RTT
+proven; cause unknown. Stop and independently verify original timing after
+each attempt; service keeps USB, R005 remains selected. No firmware or
+persistent mesh changes. [Evidence and next comparison](../docs/operations/r005-angel-vegas-deployment.md#b003-direct-pingpong-attempt---2026-11-16).
+
 ## 2026-11-15 - G002 Shady Hollow offline SD recording verified
 
 Owner selects **G002 / !1bbf0ab8 / Case 7 / eight cells / Muzi** for Shady

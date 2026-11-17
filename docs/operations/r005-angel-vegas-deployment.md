@@ -83,3 +83,35 @@ USB DTR gives the state without changing firmware or configuration. Its survey
 event-ring drop counter is 33; this is not a count of dropped LoRa telemetry.
 New device/environment/power/SNNS receipts close the replacement's missing-CLI-report
 symptom; sustained cadence, all-gateway receipts and field acceptance remain open.
+
+
+## B003 direct ping/pong attempt - 2026-11-16
+
+Owner connects B003 and requests a test to Angel Vegas Side. USB
+**90:70:69:9C:2E:D8 / !699c2ed8 / 2.7.26.7b766e6** is connected through
+its existing live survey service; use that service's command API without
+opening a competing serial handle. Target current Vegas-side **R005
+!a65601b3**, not the withdrawn R011 assignment.
+
+Three bounded authenticated zero-hop survey attempts in bench mode produce
+**0/3 pongs**, each timing out after **4,500 ms**. Each has a distinct session
+and request packet ID and recorded TX-start/TX-done; measured transmit times
+are **763, 764 and 764 ms**. Local utilization is **6%, 4%, 5%**. Production
+**US / LongFast / slot 35 / 10 dBm** stays selected. No reply packet ID,
+round-trip time, remote utilization or uplink/downlink RSSI/SNR is available.
+This demonstrates local transmission and no matched pong within the timeout;
+it does not establish whether R005 heard the request or identify a failure
+cause. No relay, portal or telemetry test is performed.
+
+Stop after each result and independently verify idle/stopped state and exact
+original timing/settings restoration. The original target list was empty;
+R005 remains selected because the interface cannot clear the list. The existing
+service retains USB ownership. No firmware, persistent mesh configuration,
+key, role, power or antenna changes. An accepted survey request can renew the
+900-second autonomous-report quiet period on hearing responders; no receipt
+by R005 is proven here. Raw GPS/events and before/final states stay ignored in
+`private/bench/B003-R005-ping-20261116/`, including `attempt-2/` and `attempt-3/`.
+
+Next: confirm R005 power/antenna and actual placement, then select a closer or
+known-good direct comparison to distinguish reachability from responder/path
+failure. Sustained reporting, forced relay, coverage and runtime remain open.
