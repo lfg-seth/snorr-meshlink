@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-16 - Terry Home Wi-Fi backhaul
+
+The owner selected **G006 / Terry Home** for fixed Wi-Fi backhaul with AC power
+and approved **36.26153180096932, -115.18904437592454** for GitHub and the web
+portal. Use this supplied display pin for the site. The board's fixed position
+matches it to radio precision. On-site power and uplink await confirmation.
+[G006 bench record](../docs/operations/g006-terry-home.md).
+
 ## 2026-11-15 - Field placement and access report
 
 The owner's [same-day AAR](aar/2026-11-15-mount-charleston.md) reports physical

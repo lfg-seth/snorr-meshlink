@@ -2,6 +2,14 @@
 
 [Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.
 
+## G006 at Terry Home - 2026-11-16
+
+USB readback matches **G006 / !b03d6790**, hardware
+`82575ef52d9bdfa05f26cb3d83e71348`. Owner selected this physical Heltec V3
+for fixed Wi-Fi backhaul with a Muzi antenna, 1,000 mAh battery and planned
+AC power. **Terry Home / G006**, the approved fixed position and the private
+uplink profile survived reboot. [Bench evidence and site acceptance](../docs/operations/g006-terry-home.md).
+
 ## Field placement report - 2026-11-15
 
 The owner's [same-day AAR](aar/2026-11-15-mount-charleston.md) reports physical

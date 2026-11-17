@@ -1,5 +1,12 @@
 # Hardware inventory
 
+## 2026-11-16 - G006 allocated to Terry Home
+
+Owner identifies a Muzi antenna and a 1,000 mAh battery on existing Heltec V3
+**G006** and plans to connect it to AC power at Terry Home. USB readback
+confirms the board as **!b03d6790**. Capacity is the owner's equipment rating.
+[Configuration and verification](../docs/operations/g006-terry-home.md).
+
 ## 2026-11-15 - Field condition and recovery follow-ups
 
 Owner's [Mount Charleston AAR](aar/2026-11-15-mount-charleston.md) reports the

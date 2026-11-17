@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-16 - Prepared G006 for Terry Home and updated the portal
+
+Verified the existing Heltec V3 **!b03d6790** on USB, retained gateway
+firmware **2.7.26.6fea6aa** and saved **Terry Home / G006**, the supplied
+Wi-Fi settings and approved fixed position. Full profile and key comparison
+passed after an explicit reboot. The board reported Wi-Fi and direct MQTT
+disconnected on two bench checks. Owner identifies Muzi antenna, 1,000 mAh
+battery and planned AC power. [Board and portal evidence](../docs/operations/g006-terry-home.md).
+
+The parallel portal release added G006 to the field roster. MeshLink
+**0.4.3** deployed from `31a905b` and retained the existing production device
+row and gateway/source identities. Signed-in Edge verified the map marker,
+hardware card and Activity entry. Two fresh reports from G006 arrived through
+a peer gateway. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/75).
+
+Next: power G006 at Terry Home and confirm a fresh packet arrives through
+its own Wi-Fi/MQTT uplink.
+
 ## 2026-11-16 - Deployed remembered sign-in and stable Activity rows
 
 After the owner restored the VPN, deployed MeshLink 0.4.2 at `dd1b036` with

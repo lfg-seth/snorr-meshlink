@@ -1,5 +1,10 @@
 # Board flashing and configuration handoff
 
+2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
+**heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
+Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
+[G006 bench and uplink evidence](g006-terry-home.md).
+
 2026-11-15 **deployment configuration check:** explicitly verify
 `lora.config_ok_to_mqtt=true` for project reports expected in the CLI/portal.
 R011 retained its former reference restriction and is now replaced at Angel
