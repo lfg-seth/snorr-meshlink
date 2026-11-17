@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-17 - Compared SNORR firmware with Meshtastic releases
+
+Both the project pin and published fork contain the current 2.7.26 beta. A
+direct fork-tip merge with the 2.8.2 alpha conflicts in 86 paths. Applying
+only the SNORR changes conflicts in 12. The [source comparison](../docs/research/firmware-upstream-2026-11-17.md)
+records the two dry runs, release refs and mixed-version GPS, identity and
+MQTT checks. If a port is selected, start on the bench with phone-free GPS
+through a mixed-version relay. Build and hardware acceptance remain open.
+
 ## 2026-11-16 - Deployed portal appearance and Activity scrolling
 
 Deployed MeshLink 0.4.10 at tagged main commit `dd5b65c`. All ten public
