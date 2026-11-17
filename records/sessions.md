@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-11-17 - Deployed recent Activity packets
+
+The owner approved the preview. Merged [PR #93](https://github.com/lfg-seth/snorr-meshlink/pull/93)
+and deployed MeshLink 0.4.13 at tagged main `9ff127d`. The release host
+passed all 100 backend, 72 portal and 54 script tests. The authenticated
+production view rendered twelve packet cards and advanced on a fresh
+transmission. Retained packets kept their IDs and receipt times.
+Both private backups passed checksum and isolated live/demo recovery.
+The final post-backup check passed public hashes, services and fresh packets.
+[Production verification and recovery](../docs/operations/field-portal.md#november-17-recent-packet-row).
+Release records are on `codex/activity-0413-deployment`. The remaining handset
+check is a signed-in physical fold and refresh across Readings and Timers.
+
 ## 2026-11-17 - Recent packet row preview
 
 Prepared MeshLink 0.4.13 on `codex/activity-packet-row`. Activity shows one
