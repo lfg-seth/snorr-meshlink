@@ -3,6 +3,12 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.8 - 2026-11-16
+
+Activity opens each node card on Readings, with Timers second. Polling preserves
+the selected view per card. Compatible with the existing sampler and database;
+no migration required. Restore the 0.4.7 portal assets to roll back.
+
 ## 0.4.7 - 2026-11-16
 
 Activity cards align by row and display compact Timers and Readings views.

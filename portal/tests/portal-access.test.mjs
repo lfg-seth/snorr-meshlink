@@ -61,8 +61,15 @@ test('Activity switches views and preserves ordered readings and value bars on r
       nodes:[{ radio:'!00000001', label:'R001', name:'Test node', health:'reporting', readings,
         timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}] }] });
     render(data);
+    const [readings, timers] = root.querySelectorAll('.controls button');
+    assert.deepEqual([readings.textContent, timers.textContent], ['Readings', 'Timers']);
+    assert.equal(readings.getAttribute('aria-pressed'), 'true');
+    assert.ok(root.querySelector('.tiles .metric'));
+    timers.click();
+    render(data);
+    assert.equal(timers.getAttribute('aria-pressed'), 'true');
     assert.match(root.querySelector('.timer').textContent,/Power.*2m 30s left.*every 3m/);
-    root.querySelectorAll('.controls button')[1].click();
+    readings.click();
     const tiles = () => [...root.querySelectorAll('.metric')];
     const labels = () => tiles().map(tile=>tile.firstChild.textContent);
     const tile = label => tiles().find(t=>t.firstChild.textContent===label);

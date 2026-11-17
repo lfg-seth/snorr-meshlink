@@ -114,8 +114,8 @@ export function mountActivity(root) {
   function createView() {
     const article = el("article"), face = el("div"), controls = el("div",null,"controls"), body = el("div",null,"tiles");
     const reason = el("span",null,"reason");
-    const view = {article,face,body,reason,mode:"Timers",previous:null};
-    for (const mode of ["Timers","Readings"]) {
+    const view = {article,face,body,reason,mode:"Readings",previous:null};
+    for (const mode of ["Readings","Timers"]) {
       const button = el("button",mode);
       button.type = "button";
       button.setAttribute("aria-pressed",String(mode===view.mode));
