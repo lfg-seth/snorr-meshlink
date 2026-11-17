@@ -12,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     cli = runpy.run_path(str(ROOT / "scripts/watch-nodes.py"))
     sites = {site["radio"]: site for site in json.loads((ROOT / "portal/src/placements.json").read_text())}
+    # Mobile gateways appear in Activity without a fixed deployment pin.
+    sites["!849ad7a0"] = {"shortName": "G003", "name": "Seth Mobile", "mobileGateway": True}
     labels = {radio: site["shortName"] for radio, site in sites.items()}
     dashboard = cli["Dashboard"](False, grace=3, show_inactive=True)
     target = Path("/run/meshlink-activity/snapshot.json")
@@ -19,7 +21,7 @@ def main():
     def publish(snapshot):
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
-            if site.get("stationBackhaul"):
+            if site.get("stationBackhaul") or site.get("mobileGateway"):
                 node["kind"] = "gateway"
             elif site.get("offlineRecorder"):
                 node["kind"] = "recorder"

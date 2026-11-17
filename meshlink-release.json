@@ -1,6 +1,6 @@
 {
   "product": "MeshLink",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "stage": "development",
   "components": [
     "portal",
