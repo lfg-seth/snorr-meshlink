@@ -23,7 +23,7 @@ assignments. The public demo uses its separate synthetic database.
 
 ## Updating the live field roster
 
-After the runtime-roster release is deployed, open the live PocketBase
+To update the field roster in MeshLink 0.4.12, open the live PocketBase
 `field_roster` collection through the existing private superuser connection.
 Create or edit one record per physical radio. Enter its lowercase `!xxxxxxxx`
 radio ID, short name, display name, kind and numeric sort order. Use
@@ -48,6 +48,43 @@ state refresh and Activity snapshot against the saved roster. Subsequent
 roster edits take effect while both services are running. Roster data is
 included in the normal PocketBase database backup. For rollback, preserve
 that backup and restore the previous application files and placement file.
+
+## November 17 field roster and radio routes
+
+MeshLink 0.4.12 went live at tagged main commit
+`1be8509cf54eb08befc38f3afa1041e6d20a1762`. The authenticated portal and
+Activity sampler use the same eleven roster entries. The released renderer
+verified ten fixed pins, eleven cards and route text in Readings and Timers.
+The first successful production sample contained four Direct, four Relayed
+and three gateway-local reports. [Combined PR #91](https://github.com/lfg-seth/snorr-meshlink/pull/91).
+
+The deployment host passed 99 backend tests, 71 portal tests, typecheck, the
+live build and 54 script tests on that commit. PR, main and tag CI passed.
+Edge and WebKit preserved scroll and route text across synthetic refreshes at
+382 and 740 pixels. All ten public files matched the host build. Seven services
+were active and a new MQTT receipt reached the archive.
+
+The additive migration seeded eleven rows on each database under the deployment
+lock. Existing application table counts and private configuration and queue
+hashes matched across migration. The demo worker initially started before its
+API was listening. The first promotion restored the previous application files
+and retained the migrated rows. The successful retry verified both migration
+records, reused the original rollback manifest and waited for each API's health
+endpoint before starting workers. Rollback files and original modes are at
+`/opt/meshlink-rollback-field-1be8509/files.json`. Retain roster rows and any
+later operator edits when restoring the earlier application.
+
+| Private backup on the LXC | SHA-256 |
+| --- | --- |
+| Before `meshlink-20261117T164027Z.tar.gz` | `a0174a8298c2303d24754b9becb7d854f94a022a73ecf41f771cfa07202249d1` |
+| After `meshlink-20261117T165140Z.tar.gz` | `b3a2779abecc8834a3057a106622586a333656aad687033affa4d1d972876171` |
+
+Restore the archived PocketBase data directory together with its matching
+SQLite write-ahead log. An isolated read of the post-deployment live database
+and WAL verified the migration record and all eleven roster rows, field for
+field, against the running database. Both full archives passed checksum and
+isolated live and demo recovery. After the final backup restart, the signed-in
+cards, map pins, seven services, public hashes and new receipt all passed again.
 
 ## November 16 portal appearance release
 

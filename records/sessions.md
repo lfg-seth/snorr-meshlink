@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-17 - Deployed live field roster and Activity radio routes
+
+Merged both features through [PR #91](https://github.com/lfg-seth/snorr-meshlink/pull/91)
+and deployed tagged main `1be8509`, MeshLink 0.4.12. The release host passed
+99 backend, 71 portal and 54 script tests plus typecheck and live build.
+The first promotion rolled back application files when the demo worker started
+ahead of its API. The retry verified the saved migration state and waited for
+API readiness. Both private backups passed checksum and isolated live/demo
+recovery. After the final restart all ten public file hashes, eleven signed-in
+Activity cards, ten fixed pins, seven services and fresh MQTT ingestion passed.
+The roster comparison recovered all eleven records with their SQLite WAL.
+[Deployment, backup hashes and rollback](../docs/operations/field-portal.md#november-17-field-roster-and-radio-routes).
+
+Handoff on `codex/roster-route-deployment-records`. Next is a signed-in
+physical handset check across a fold and refresh in Readings and Timers.
+
 ## 2026-11-17 - Shared runtime field roster
 
 Prepared MeshLink 0.4.12 on `codex/live-field-roster`. The authenticated portal
