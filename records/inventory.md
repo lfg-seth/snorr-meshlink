@@ -1,5 +1,9 @@
 # Hardware inventory
 
+## 2026-11-17 - Mountain study allocation estimate
+
+Owner estimates **four additional deployable repeaters on hand**. The study budgets one for Fletcher, one in place of the Shady Hollow recorder and two other relays. Case identities, exact available count and deployment readiness need a physical check. [Field study](../docs/research/mountain-siting-20261117.md)
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;

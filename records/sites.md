@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-17 - Mountain location correction and survey options
+
+Owner reports deployed Kyle Junction / R008 at **36.26489, -115.60370**. Use this for siting. The older table below preserves the radio's saved coordinates. The legacy Fletcher node is at **36.29665, -115.62654**; replacement, an intermediate point and the summit are alternatives. Lee Junction's wildlife fence is crossable per owner. Lee Fire remains the sole available mountain Wi-Fi station; Kyle Fire remains conditional. [Fresh terrain study and survey waypoints](../docs/research/mountain-siting-20261117.md)
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at

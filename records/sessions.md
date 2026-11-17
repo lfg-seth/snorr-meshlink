@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-17 - Rebuilt mountain repeater siting around the Lee Fire uplink
+
+Screened the deployed mountain geometry and fresh terrain candidates, including both sides of the Lee Junction wildlife fence, the corrected Kyle pin and three Fletcher choices. Compared routes to Lee, road gaps, resort and trailhead probes, shared viewsheds, native-terrain radio paths, mount heights and 20 m offsets. The preferred legacy-swap layout reaches 94.6% of 39.61 km of sampled highway with a modeled path from every selected relay. Field packet includes the printable atlas, an offline adjustable path viewer, GPX and CSV/GIS evidence. Next: test the northwest shoulder against Upper Bristlecone and Angel Mountain and match an end-to-end GPS packet at Lee Fire. Access, packet delivery, G001 stability, actual heights and mount suitability require field checks. [Study](../docs/research/mountain-siting-20261117.md)
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,

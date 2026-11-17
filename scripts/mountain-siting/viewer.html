@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mount Charleston radio paths</title>
+<style>
+*{box-sizing:border-box}body{font:16px system-ui;color:#173033;background:#f5f4ed;margin:0}main{max-width:1060px;margin:0 auto;padding:30px 20px}h1{font-family:Georgia,serif;font-weight:500;font-size:clamp(32px,6vw,60px);margin:0 0 10px}header p{max-width:740px}fieldset{border:1px solid #b5c1b8;background:#fff;padding:16px;display:flex;gap:18px;flex-wrap:wrap}label{display:grid;gap:5px;font-size:.9rem}select,input{font:inherit;padding:6px;max-width:100%}input{width:90px}canvas{width:100%;background:white;display:block}article{display:grid;grid-template-columns:3fr 1fr;gap:12px;margin-top:14px}#metrics{font-weight:600;line-height:1.7;margin:14px 0}.note{font-size:.87rem;line-height:1.5}#profile{height:355px}#map{height:355px}@media(max-width:650px){article{display:block}#map{height:220px}}
+</style><main><header><h1>Mountain radio paths</h1><p>Inspect a direct radio link over Mount Charleston terrain. Change either antenna height to test the proposed mount.</p></header>
+<fieldset><legend>Path endpoints</legend><label>Site A<select id="a"></select></label><label>A height above ground (m)<input id="ha" type="number" value="4" min="0" max="100" step=".5"></label><label>Site B<select id="b"></select></label><label>B height above ground (m)<input id="hb" type="number" value="4" min="0" max="100" step=".5"></label></fieldset>
+<p id="metrics" aria-live="polite"></p><article><canvas id="profile" aria-label="Terrain cross section and radio clearance"></canvas><canvas id="map" aria-label="North-up highway path locator"></canvas></article>
+<p class="note"><b>Member viewsheds on the locator</b> &nbsp; Amber = A only &nbsp; · &nbsp; Blue = B only &nbsp; · &nbsp; Teal = shared. These footprints use a 1.2 m tracker and nominal 1 m station or 4 m repeater. Height controls update the direct profile.</p>
+<p class="note"><b>Red</b> shows the direct ray. The blue band shows the inner 60% of the first Fresnel zone. Gray terrain includes effective Earth curvature. Endpoint heights are above bare ground. A visible ray can still have substantial Fresnel obstruction. Trees, structures, vehicles, snow and RF interference require a field test.</p>
+<p class="note">USGS 3DEP • © OpenStreetMap contributors • 910.625 MHz • effective Earth radius 4/3 • native 1 m profile samples with mosaic fallback • November 17, 2026.</p>
+</main><script>
+const db=PAYLOAD_HERE;
+const by=id=>document.getElementById(id);
+const list=Object.keys(db.points).sort();
+for(const id of ['a','b'])for(const name of list)by(id).add(new Option(name,name));
+[by('a').value,by('b').value]=db.start;
+function resetHeight(id){by('h'+id).value=by(id).value.endsWith('Fire')?1:4}
+function canvas(id){const el=by(id),w=el.clientWidth,h=el.clientHeight,dpr=window.devicePixelRatio||1;el.width=w*dpr;el.height=h*dpr;const c=el.getContext('2d');c.scale(dpr,dpr);c.font='12px system-ui';return {c,w,h}}
+function draw(){
+const A=by('a').value,B=by('b').value;
+const {c,w,h}=canvas('profile'),m=canvas('map');
+if(A===B){by('metrics').textContent='Select two different endpoints.';return}
+const p=db.paths.find(v=>(v.a===A&&v.b===B)||(v.a===B&&v.b===A));
+const bytes=Uint8Array.from(atob(p.data),s=>s.charCodeAt(0)),delta=new DataView(bytes.buffer),n=bytes.length/2,z=new Float64Array(n);let elev=p.z0;
+for(let i=0;i<n;i++){elev+=delta.getInt16(2*i,true)/100;z[i]=elev}
+if(p.a!==A)z.reverse();
+const ha=Number(by('ha').value),hb=Number(by('hb').value);if(!by('ha').value||!by('hb').value||Math.min(ha,hb)<0){by('metrics').textContent='Enter nonnegative antenna heights.';return}
+const a=z[0]+ha,b=z[n-1]+hb;let min=Infinity,fmin=Infinity,zmin=Infinity,zmax=-Infinity;
+const v=(i)=>{let t=i/(n-1);return [a+(b-a)*t,Math.sqrt(299.792458/910.625*p.d*t*(1-t))]};
+for(let i=0;i<n;i++){const [l,f]=v(i);zmin=Math.min(zmin,z[i],l-.6*f);zmax=Math.max(zmax,z[i],l+.6*f);if(i>0&&i<n-1){min=Math.min(min,l-z[i]);fmin=Math.min(fmin,(l-z[i])/f)}}
+by('metrics').textContent=(p.d/1000).toFixed(2)+' km   ·   minimum terrain clearance '+min.toFixed(1)+' m   ·   minimum first Fresnel clearance '+(100*fmin).toFixed(0)+'%   ·   '+(min<0?'Terrain blocks the ray':fmin<.6?'Clear ray, restricted Fresnel zone':'Inner 60% clears modeled terrain');
+const L=56,R=w-19,T=36,D=h-42,margin=Math.max(8,(zmax-zmin)*.06);zmin-=margin;zmax+=margin;
+const X=i=>L+(R-L)*i/(n-1),Y=v=>D-(D-T)*(v-zmin)/(zmax-zmin);
+c.fillStyle='#263e40';c.fillText('Elevation (m)',8,17);for(let j=0;j<=4;j++){let z=zmin+(zmax-zmin)*j/4;c.fillText(Math.round(z),4,Y(z)+4);c.strokeStyle='#e2e5df';c.beginPath();c.moveTo(L,Y(z));c.lineTo(R,Y(z));c.stroke()}
+const stride=Math.max(1,Math.floor(n/Math.max(300,w*2)));
+const ii=[];for(let i=0;i<n-1;i+=stride)ii.push(i);ii.push(n-1);
+c.beginPath();c.moveTo(L,D);for(const i of ii)c.lineTo(X(i),Y(z[i]));c.lineTo(R,D);c.fillStyle='#a1ada6';c.fill();
+c.beginPath();for(const i of ii){const [l,f]=v(i);c.lineTo(X(i),Y(l+.6*f))}for(const i of [...ii].reverse()){const [l,f]=v(i);c.lineTo(X(i),Y(l-.6*f))}c.closePath();c.fillStyle='rgba(40,135,191,.35)';c.fill();
+c.beginPath();c.moveTo(L,Y(a));c.lineTo(R,Y(b));c.strokeStyle='#b33627';c.lineWidth=2;c.stroke();
+function dot(ctx,x,y,col,txt){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillText(txt,x-4,y-9)}
+dot(c,L,Y(a),'#154f84','A');dot(c,R,Y(b),'#207450','B');for(let j=0;j<=4;j++){c.fillStyle='#233e40';c.fillText((p.d*j/4000).toFixed(1),L+(R-L)*j/4-10,D+18)}c.fillText('Distance from A (km)',(L+R)/2-55,h-5);
+const road=db.roads.flat(),xs=road.map(q=>q[0]),ys=road.map(q=>q[1]),low=Math.min(...xs),high=Math.max(...ys),scale=Math.min((m.w-28)/(Math.max(...xs)-low),(m.h-52)/(high-Math.min(...ys)));const mx=q=>14+(q[0]-low)*scale,my=q=>33+(high-q[1])*scale;
+const [vx,vy,ds,cols,rows]=db.raster,av=atob(db.views[A]),bv=atob(db.views[B]);let shared=0;
+for(let i=0;i<cols*rows;i++){const val=((av.charCodeAt(i>>3)>>(i%8))&1)+2*((bv.charCodeAt(i>>3)>>(i%8))&1);if(!val)continue;if(val===3)shared++;m.c.fillStyle=['','#e7b864','#8bb6d5','#3c9488'][val];const pt=[vx+(i%cols)*ds,vy-Math.floor(i/cols)*ds];m.c.fillRect(mx(pt),my(pt),ds*scale+.25,ds*scale+.25)}
+m.c.clearRect(0,0,m.w,25);m.c.fillText('Member viewsheds  /  N ↑',12,18);by('metrics').textContent+='   ·   shared footprint '+(shared*ds*ds/1e6).toFixed(1)+' km²';for(const pts of db.roads){m.c.beginPath();for(const q of pts)m.c.lineTo(mx(q),my(q));m.c.strokeStyle='#667673';m.c.stroke()}
+const qa=db.points[A],qb=db.points[B];m.c.beginPath();m.c.moveTo(mx(qa),my(qa));m.c.lineTo(mx(qb),my(qb));m.c.strokeStyle='#b33627';m.c.lineWidth=2;m.c.stroke();dot(m.c,mx(qa),my(qa),'#154f84','A');dot(m.c,mx(qb),my(qb),'#207450','B')}
+for(const id of ['a','b'])by(id).onchange=()=>{resetHeight(id);draw()};for(const id of ['ha','hb'])by(id).oninput=draw;window.addEventListener('resize',draw);draw()
+</script>
