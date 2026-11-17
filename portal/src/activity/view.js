@@ -147,7 +147,9 @@ export function mountActivity(root) {
     const heard = el("div",null,"heard");
     const role = {recorder: " · Offline SD recorder", gateway: " · Backhaul"}[node.kind] ?? "";
     heard.append(el("strong",node.label + role));
-    heard.append(el("span",node.seen ? "Last heard " + duration(data.now-Date.parse(node.seen)/1000,true) + " ago" : "Never heard"));
+    const age = node.seen ? duration(data.now-Date.parse(node.seen)/1000) : null;
+    const route = node.heardThrough ? " through " + node.heardThrough : "";
+    heard.append(el("span",age ? "Last heard " + age + " ago" + route : "Never heard"));
     if (received) heard.append(el("span","↳ Received","rx"));
     const measures = values(node), highlights = el("div",null,"metrics");
     const displayed = ["voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",

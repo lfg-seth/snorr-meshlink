@@ -77,6 +77,27 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(len({n["label"] for n in nodes}), 2)
         self.assertTrue(all(n["radio"][1:] in n["label"] for n in nodes))
 
+    def test_contact_keeps_gateway_and_timestamp_together(self):
+        state = sampler.Measurements([node()])
+        radio = "!12345678"
+        state.contact(radio, at(NOW))
+        db = sqlite3.connect(":memory:")
+        self.addCleanup(db.close)
+        db.execute("CREATE TABLE devices (key,lastContactAt)")
+        db.execute("INSERT INTO devices VALUES (?,?)", ("r1",at(NOW)))
+        db.execute("CREATE TABLE packet_receipts (deviceId,receivedAt,gatewayId,outcome)")
+        db.executemany("INSERT INTO packet_receipts VALUES (?,?,?,?)", [
+            ("r1",at(NOW-1),"g1","accepted"), ("r1",at(NOW),"g1","rejected"),
+            ("r1",at(NOW),"g2","duplicate")])
+        sampler.seed_gateway_receipts(db,state,{"r1":radio},{"!a":"g1","!b":"g2"})
+        state.contact(radio, at(NOW-1), "!a")
+        state.contact(radio, at(NOW))
+        self.assertEqual(state.nodes[radio]["heardThrough"], "!b")
+        state.contact(radio, at(NOW+1))
+        self.assertIsNone(state.nodes[radio]["heardThrough"])
+        state.contact(radio, at(NOW+1), "!a")
+        self.assertEqual(state.nodes[radio]["heardThrough"], "!a")
+
     def test_duplicate_transport_copy_cannot_renew_a_sample(self):
         state = sampler.Measurements([node()])
         state.put("!12345678", "voltage", 3.8, at(NOW - 100), sample="packet-a")

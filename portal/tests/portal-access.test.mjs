@@ -117,10 +117,11 @@ test('Activity switches views and preserves ordered readings and value bars on r
       charge:reading('30%'), uptime:{ ...reading('2m'), seconds:120 },
       gateway:reading({ wifiConnected:false, mqttConnected:true }), sd:reading({ usedBytes:0,totalBytes:100,dropped:1 }),
     };
-    const render = readings => view.render({ at:'2026-11-16T12:00:00Z', now:0, status:'Live',
-      nodes:[{ radio:'!00000001', label:'R001', name:'Test node', health:'reporting', readings,
+    const render = readings => view.render({ at:'2026-11-16T12:00:00Z', now:Date.parse('2026-11-16T12:00:00Z')/1000, status:'Live',
+      nodes:[{ radio:'!00000001', label:'R001', name:'Test node', seen:'2026-11-16T11:45:00Z', heardThrough:'Seth Mobile', health:'reporting', readings,
         timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}] }] });
     render(data);
+    assert.match(root.querySelector('.heard').textContent,/Last heard 15m ago through Seth Mobile/);
     const [readings, timers] = root.querySelectorAll('.controls button');
     assert.deepEqual([readings.textContent, timers.textContent], ['Readings', 'Timers']);
     assert.equal(readings.getAttribute('aria-pressed'), 'true');

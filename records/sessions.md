@@ -14,6 +14,14 @@ In the Windows backend suite, 87 checks passed, seven POSIX checks skipped and
 one PocketBase connection reset. That check passed on its isolated rerun.
 Next step is source review and a manually selected production deployment.
 
+## 2026-11-16 - Deployed last-heard MQTT gateway attribution
+
+MeshLink 0.4.9 runs tagged main commit `0685156`. All ten authenticated Activity cards rendered the gateway from the last contact. All ten public assets matched, seven services were active and the MQTT archive received a fresh packet after promotion. PR and tag CI and isolated release-host checks passed. Pre- and post-release backups passed checksum verification and isolated live and demo restores. The rollback directory is `/opt/meshlink-rollback-field-0685156`. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/87).
+
+## 2026-11-16 - Activity last-heard gateway attribution
+
+Activity pairs the contact age with the MQTT gateway from that receipt and prefers its portal long name. A read-only production sampler check attributed all 19 observed contacts, including eleven through Seth Mobile. Portal tests (70), typecheck and build passed; sampler tests passed (43 with one platform skip). Next step is including the source change in a selected portal and sampler deployment.
+
 ## 2026-11-16 - Activity opens on Readings
 
 MeshLink 0.4.8 deployed from tagged commit `45ac59d`. The release verifier rendered all ten authenticated production cards, confirmed Readings was selected first and switched each to Timers and back. All ten assets matched, seven services were active and a fresh MQTT receipt arrived. The portal regression test checked the selected view across polling. Pre- and post-release backups passed isolated live and demo restores. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/84).
