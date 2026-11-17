@@ -85,10 +85,16 @@ class Measurements:
             return
         item.update(lastReceivedAt=received, measuredAt=measured, sample=sample)
 
-    def contact(self, radio, received):
+    def contact(self, radio, received, gateway=None):
         node = self.nodes[radio]
-        if epoch(received) is not None and (not node["lastContactAt"] or epoch(received) > epoch(node["lastContactAt"])):
-            node["lastContactAt"] = received
+        timestamp = epoch(received)
+        previous = epoch(node["lastContactAt"])
+        if timestamp is None:
+            return
+        if previous is None or timestamp > previous:
+            node.update(lastContactAt=received, heardThrough=gateway)
+        elif timestamp == previous and gateway and not node.get("heardThrough"):
+            node["heardThrough"] = gateway
 
     def unique(self, fingerprint):
         if fingerprint in self.seen:
@@ -188,8 +194,11 @@ class Decoder:
         d = mesh.Data.FromString(Cipher(algorithms.AES(self.key), modes.CTR(nonce)).decryptor().update(p.encrypted))
         fingerprint = f"{radio}:{p.id}:{hashlib.sha256(p.encrypted).hexdigest()}"
         if not self.state.unique(fingerprint):
+            # A persisted device contact may correspond to this transport copy.
+            if epoch(at) == epoch(self.state.nodes[radio]["lastContactAt"]):
+                self.state.contact(radio, at, env.gateway_id)
             return
-        self.state.contact(radio, at)
+        self.state.contact(radio, at, env.gateway_id)
         if d.portnum == ports.TELEMETRY_APP:
             t = telem.Telemetry.FromString(d.payload)
             data = self.to_dict(t, preserving_proto_field_name=True)
@@ -268,6 +277,20 @@ def configured_nodes(cfg, roster):
     return list(nodes.values())
 
 
+def seed_gateway_receipts(db, state, mappings, gateways):
+    """Recover the route of a persisted contact even outside the archive replay window."""
+    radios = {key: radio for radio, key in gateways.items()}
+    rows = db.execute("""
+        SELECT r.deviceId, r.receivedAt, r.gatewayId FROM packet_receipts r
+        JOIN devices d ON d.key = r.deviceId AND d.lastContactAt = r.receivedAt
+        WHERE r.outcome IN ('accepted', 'duplicate') ORDER BY r.rowid
+    """)
+    for key, received, gateway in rows:
+        radio = mappings.get(key)
+        if radio in state.nodes and gateway in radios:
+            state.contact(radio, received, radios[gateway])
+
+
 def feed_status(db):
     row = db.execute("SELECT connected,forcedOffline,heartbeatAt FROM feed WHERE key='worker'").fetchone()
     if not row:
@@ -292,6 +315,12 @@ def run(settings, publish=None):
             db.execute("BEGIN")
             cursor = db.execute("SELECT COALESCE(MAX(rowid),0) FROM mqtt_archive").fetchone()[0]
             state.seed(db, mappings)
+            seed_gateway_receipts(db, state, mappings, cfg["gateways"])
+            gateway_names = {
+                key: (name or "").strip() or short or key
+                for key, name, short in db.execute(
+                    "SELECT key, json_extract(configuration, '$.name'), shortName FROM devices WHERE kind='backhaul'")
+            }
             cutoff = utc(time.time() - settings["hours"] * 3600)
             rows = db.execute("SELECT receivedAt,envelope,topic FROM mqtt_archive WHERE receivedAt>=? AND rowid<=? ORDER BY rowid",
                               (cutoff, cursor)).fetchall()
@@ -307,6 +336,10 @@ def run(settings, publish=None):
                     if rows:
                         consume_rows(decoder, [r[1:] for r in rows])
                         cursor = rows[-1][0]
+                    for node in state.nodes.values():
+                        gateway = node.get("heardThrough")
+                        key = cfg["gateways"].get(gateway)
+                        node["heardThroughName"] = gateway_names.get(key) or key or gateway
                     payload = {"schema": 1, "at": utc(time.time()), "feed": feed_status(db),
                                "nodes": sorted(state.nodes.values(), key=lambda n: n["label"]),
                                "skipped": state.rejected, "catchingUp": len(rows) == 2000}
