@@ -1,5 +1,15 @@
 # Hardware inventory
 
+## 2026-11-16 - Former G005 selected as the site handheld
+
+The owner repurposes the existing Heltec WiFi LoRa 32 V3, formerly G005
+`!9ea039cc`, for the standalone survey kit with an owner-specified 3000 mAh
+battery. USB identification matched the V3, saved G005 name and gateway
+image before the full 8 MiB recovery backup. The instrument uses
+`SURV / !699c2ed8` for its existing survey pairing. Original B003 is the
+separate V4 and stays off while the V3 uses that identity. Battery runtime
+remains unmeasured. [Handheld and recovery](../docs/operations/g005-site-survey.md).
+
 ## 2026-11-16 - G001 USB solar panel identified
 
 Owner confirms the battery remained connected during G001's daytime instability

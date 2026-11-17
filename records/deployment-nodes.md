@@ -4,6 +4,11 @@
 
 ## Field placement report - 2026-11-15
 
+The owner subsequently repurposed former G005 as the [V3 site survey
+handheld](../docs/operations/g005-site-survey.md) on 2026-11-16. It carries
+the existing tester's logical identity for authenticated direct surveys.
+The ten enrolled repeater labels below are its field target list.
+
 The owner's [same-day AAR](aar/2026-11-15-mount-charleston.md) reports physical
 placement of R001, R008, R005, R011, R010 and R006 at their assigned sites,
 G002 recording offline at Shady Hollow and G001 at Lee Fire. This advances

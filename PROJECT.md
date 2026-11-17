@@ -33,6 +33,9 @@ G002 / Case 7 / eight cells / Muzi is selected for Shady Hollow as an
 [offline SD recorder](docs/operations/g002-shady-hollow-deployment.md): CLIENT,
 fixed location, Wi-Fi/MQTT disabled, retained firmware and increasing synced
 SD records verified. Its G002 identity remains; direct backhaul is disabled.
+On 2026-11-16 the owner reassigned the former G005 V3 to the standalone
+site survey kit. It uses B003's enrolled tester identity while B003 is off.
+[Field controls and measurements](docs/operations/g005-site-survey.md).
 Member-node labels/identities are not reset.
 Unselected prepared boards stay **CLIENT on the bench**; switch selected repeaters to
 ROUTER during final placement and verify their report cadence/profile again.

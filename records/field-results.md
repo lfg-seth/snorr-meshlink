@@ -1,5 +1,20 @@
 # Field testing and tangible results
 
+## 2026-11-16 - G005 V3 handheld, nearby R004 and R007
+
+Measured with the deployed pairing, LongFast slot 35 and owner-reported
+CLIENT roles. Site #1 completed in 65.842 s, R004 9/10 and R007 7/10.
+Median uplink/downlink SNR was +6.5/+6.0 dB for each. Site #2 completed in
+81.225 s, R004 4/10 and R007 2/10. At round seven the owner read 1/7
+for each with +6.75 and +6.25 dB uplink, matching the exported rows.
+On the final image, site #3 used the 3 s minimum and returned 10/10 and
+5/10 in 67.557 s. Site #4 used 10 s and returned 2/10 and 5/10 in
+199.036 s. Both used a 4.5 s reply window. Slower spacing did not improve
+this bench pair. Final-image medians, RSSI, RTT and timing are in the runbook.
+R004 and R007 stayed enrolled on their original firmware. Candidate-site
+coverage, installed ROUTER performance and battery runtime await a field run.
+[Bench evidence, pacing and recovery](../docs/operations/g005-site-survey.md).
+
 ## 2026-11-16 - G001 solar power isolation plan (not run)
 
 Scope: screenless V4.3 **G001 / !1bbf0638**, retaining its Wi-Fi/MQTT, radio,

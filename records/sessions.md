@@ -1,5 +1,34 @@
 # Session log
 
+## 2026-11-16 - Built and bench-tested the G005 V3 handheld site survey
+
+Backed up the former G005, verified the October tester key against November
+enrollment and installed V3 target `heltec-v3-site-survey` at `2dbf0a65a`.
+The project pins the firmware published on `snorr/develop` and
+`codex/handheld-site-survey`. The protected configuration and recovery
+image stay private. Both deployed CLIENTs returned authenticated direct
+replies with their existing enrollment.
+
+Four complete two-repeater sites each exported 20 alternating attempts.
+The owner's physical site #2 readings at round seven matched the CSV.
+The same-image spacing comparison returned 10/10 and 5/10 at a 3 s
+minimum versus 2/10 and 5/10 at 10 s. The original adaptive pacing is
+retained. Walking kept the counter fixed, manual finish retained two rows
+and a reset during #7 kept the two prior timeouts and the pending attempt
+as unknown. Two USB CSV exports of the seven sites matched byte for byte
+(86 rows). One, Several, All, History and 150 short button pulses passed
+on G005. Native journal/protocol checks and 110 offline bench tests passed.
+
+G005 retained R004/R007 with USB-synced time. Next: mark site #8 in the
+field and measure the selected pair at its proposed antenna position.
+After the owner disconnected all power and reconnected USB, G005 reported
+no trusted time, the saved pair and counter seven. The exported 86 rows
+again matched their pre-disconnect SHA-256. USB restored the clock.
+History and the retained targets passed inspection. The single post-cycle
+walking sweep timed out once per repeater and kept the counter at seven.
+Live Wi-Fi/NTP, pack runtime and the installed ROUTER links remain open.
+[Image, field controls, RF results and recovery](../docs/operations/g005-site-survey.md).
+
 ## 2026-11-16 - Created requested portal member account
 
 Created the owner-requested additional standard member account on the live

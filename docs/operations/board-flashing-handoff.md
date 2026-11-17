@@ -1,5 +1,11 @@
 # Board flashing and configuration handoff
 
+2026-11-16 **former G005 is the V3 site survey handheld**. Its physical
+radio identity before conversion was `!9ea039cc`. The V3-compatible
+instrument uses tester `!699c2ed8` while the original B003 V4 remains off.
+Use the [handheld build, recovery, direct RF and USB export instructions](g005-site-survey.md).
+The older G005 gateway provisioning entry below is historical.
+
 2026-11-15 **deployment configuration check:** explicitly verify
 `lora.config_ok_to_mqtt=true` for project reports expected in the CLI/portal.
 R011 retained its former reference restriction and is now replaced at Angel

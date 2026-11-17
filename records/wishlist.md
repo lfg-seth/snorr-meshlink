@@ -32,7 +32,9 @@ particular relay path. Requested antenna comparisons remain unperformed:
 fiberglass versus Muzi, and short Type-N/IPEX versus 10-15-foot Type-N/SMA
 plus short SMA/IPEX feedlines, to explore height/line-of-sight tradeoffs with
 solar-panel positioning. Exact cables/connectors and test criteria remain to
-confirm. Capture only; no survey work is activated by this record.
+confirm. On 2026-11-16 the owner activated the standalone walking survey on
+the former G005 V3. The car dashboard, phone workflow and antenna/feedline
+comparisons remain deferred. [Handheld field controls](../docs/operations/g005-site-survey.md).
 
 ## Gateway SD logging
 
