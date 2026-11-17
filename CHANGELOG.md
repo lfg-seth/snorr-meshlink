@@ -3,6 +3,13 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.9 - 2026-11-16
+
+Activity identifies the MQTT gateway that delivered the last contact. Older
+contacts without a matching receipt show the age alone. The portal and sampler
+remain compatible with existing firmware and data. No migration is required.
+Restore the 0.4.8 sampler and portal files to roll back.
+
 ## 0.4.8 - 2026-11-16
 
 Activity opens each node card on Readings, with Timers second. Polling preserves
