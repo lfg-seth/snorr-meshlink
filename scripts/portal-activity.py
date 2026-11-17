@@ -22,8 +22,10 @@ def main():
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
             if site["shortName"].startswith("R"):
-                node["readings"].pop("gps", None)
-                node["watchdogs"].pop("position", None)
+                for reading in ("gps", "standardNeighbors"):
+                    node["readings"].pop(reading, None)
+                for stream in ("position", "neighbor_info", "nodeinfo"):
+                    node["watchdogs"].pop(stream, None)
             elif site.get("stationBackhaul") or site.get("mobileGateway"):
                 node["kind"] = "gateway"
             elif site.get("offlineRecorder"):

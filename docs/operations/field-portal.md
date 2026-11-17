@@ -24,8 +24,9 @@ cards visible on a disconnect.
 Activity marks a node Attention when one scheduled stream misses three consecutive
 cycles or contact misses three cycles of the shortest scheduled interval. Four
 missed contact cycles mark it Silent. Both thresholds include three seconds of
-grace. Individual timers still show earlier misses. Repeater cards omit GPS
-readings and timers. A reported Wi-Fi or MQTT Down value displays in red.
+grace. Individual timers still show earlier misses. Repeater cards omit GPS,
+NeighborInfo and NodeInfo. SNNS neighbor reports retain their own timer and
+readings. A reported Wi-Fi or MQTT Down value displays in red.
 
 Install the release's `scripts/portal-activity.py`, `scripts/watch-nodes.py`,
 `scripts/server/node_readings.py`, `scripts/node-cadence.json` and
