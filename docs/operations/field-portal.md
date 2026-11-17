@@ -13,6 +13,40 @@ watchdog. Ordinary radio observations can still arrive through another gateway.
 The live registry continues to collect the full fleet. Users retains member
 assignments. The public demo uses its separate synthetic database.
 
+## November 16 portal appearance release
+
+Production serves MeshLink 0.4.10 from tagged main commit
+`dd5b65c74b4e8ebb26aa7f728a5d8da18aa7e598`. The portal, backend and sampler
+source matched the tested desktop preview. The change installed frontend source,
+release metadata and static files. It required no database migration. The previous
+frontend and a file-by-file rollback manifest are in
+`/opt/meshlink-rollback-field-dd5b65c`. Older hashed assets remain available to open tabs.
+[Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/86).
+
+Portal and backend CI passed on main and the tag. The release host passed its
+portal, backend and sampler suites. The first promotion automatically restored
+0.4.9 when the public edge returned 403 to the Python HTTP client. The release
+host reproduced this on 0.4.9 and obtained 200 for the same files with the
+existing curl verifier. The retry confirmed that all ten files served over
+public HTTPS matched the tagged build byte for byte.
+
+The deployed renderer showed readings and timers for all ten nodes from the
+current production sampler. Anonymous HTTPS Activity returned 401. Seven
+services were active and a new MQTT receipt entered the archive. WebKit on
+Windows verified that the public portal follows the device appearance and
+remembers a Light override across reload. At 382 × 580, WebKit and Edge
+preserved the user's scroll position through four three-second production
+bundle refreshes with browser-local synthetic readings. A physical Duo fold
+and a signed-in handset scroll remain unverified.
+
+Both archive checksums and isolated live and demo restores passed. The twelve
+installed backend hooks and eight migration files matched the tagged source.
+
+| Backup | SHA-256 |
+| --- | --- |
+| Pre-release `meshlink-20261117T065201Z.tar.gz` | `3ebbb703fd1ae11ff6c107fa501cd064d535b3a80819491c2de60319839c7dc0` |
+| Post-release `meshlink-20261117T065732Z.tar.gz` | `20f7ade69b073c226ba9777d5a44c915f2a0e3ad77151d0ab7164f1a74bb5757` |
+
 ## Serving Activity
 
 The portal serves the field dashboard from the Activity tab after live sign-in.

@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-16 - Deployed portal appearance and Activity scrolling
+
+Deployed MeshLink 0.4.10 at tagged main commit `dd5b65c`. All ten public
+files matched the validated release build. All ten node cards showed readings
+and timers from the live sampler, and a fresh MQTT receipt reached the archive.
+WebKit passed device theme switching and override persistence. WebKit and Edge
+preserved scroll position across four refreshes using synthetic readings on
+the production bundle. Next is checking a live signed-in scroll and fold on
+a physical Duo. [Deployment evidence](../docs/operations/field-portal.md#november-16-portal-appearance-release).
+
 ## 2026-11-16 - Activity scrolling on desktop staging
 
 Reproduced the reported jump at 382 × 580 in Windows WebKit with ten synthetic
