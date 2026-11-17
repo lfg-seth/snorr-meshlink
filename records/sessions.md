@@ -1,5 +1,24 @@
 # Session log
 
+## 2026-11-16 - Activity scrolling on desktop staging
+
+Reproduced the reported jump at 382 × 580 in Windows WebKit with ten synthetic
+node cards. A three-second refresh on the previous preview moved the page from
+4,116 to 2,740 CSS pixels while the card list kept its height. Replacing visible
+card elements and age text discarded scroll anchors. The temporary Received
+label could also wrap and resize cards above the reader.
+
+Activity now keeps the headings, readings, timers and their text nodes in place
+between polls and reserves space for the receipt indicator. All 71 portal tests,
+typecheck and the build passed. WebKit and Edge held the same card position
+between scroll inputs on the private Tailscale preview across four normal
+three-second polls with alternating packet arrivals. Additional checks covered
+Timers at the bottom and 669 and 951 px widths. The browser checks used
+synthetic readings. The desktop serves clean 0.4.10 source `edfa7ac` from
+ignored `local-data/desktop-staging/edfa7ac/` at the existing private URL.
+Live reads still require sign-in and writes return 405. Production served
+0.4.9. Next is checking scrolling and folding with a live session on the Duo.
+
 ## 2026-11-16 - Desktop staging for iPhone review
 
 Started a private Tailscale Serve preview of MeshLink 0.4.10 on the owner's
