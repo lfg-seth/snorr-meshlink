@@ -1,5 +1,47 @@
 # Field portal and activity
 
+## November 17 compact Activity routes
+
+MeshLink 0.4.14 is deployed from tagged main commit
+`095c2c9305b71074c2285715398e1b6aae7386ea`.
+[Route and layout PR #95](https://github.com/lfg-seth/snorr-meshlink/pull/95)
+and [final alignment PR #96](https://github.com/lfg-seth/snorr-meshlink/pull/96)
+capture the owner's preview refinements. Packet cards show their first receipt's
+hop count, last identifiable relay and MQTT gateway. Long names take precedence;
+unnamed radios use full mesh IDs, and an ambiguous relay byte adds no invented
+identity. Duplicate gateway copies retain the original route. Main cards combine
+last heard and route details beside the short name.
+
+The row fits four phone, six larger portrait and eight wide-screen cards.
+Cards size to their content, with larger text, type/time at the top and routes
+at the bottom. The refreshed local/Tailscale preview was inspected. WebKit and
+Edge fit 4/4/4/6/8/8 complete cards without content or page overflow at
+320/382/580/669/951/1440 CSS pixels.
+
+The exact release commit passed all 100 backend, 72 portal and 54 script tests
+on the host, plus typecheck, clean live build and installed migration parity.
+PR, main and tag CI passed. No migration or radio protocol change was needed.
+Promotion preserved existing application table counts, private configuration
+and worker-queue hashes. Previous files and modes are retained in
+`/opt/meshlink-rollback-field-095c2c9/files.json` for rollback to 0.4.13.
+
+The first live check matched all ten public file hashes, verified anonymous
+Activity returns 401 and found all seven services active. Authenticated rendering
+showed eight packet cards from 48 unique transmissions, eleven node cards and
+ten fixed pins. It verified the compact text for Direct, relayed and Gateway
+receipts, observed a new original packet and confirmed retained packet routes
+and first receipt times stayed unchanged.
+
+| Private LXC backup | SHA-256 |
+| --- | --- |
+| Before `meshlink-20261117T182832Z.tar.gz` | `b66a793899d1b6e8f4ca4e683397c9f71e3097206edcf3cb0b7462e2ec5dfc2b` |
+| After `meshlink-20261117T183734Z.tar.gz` | `4f4b600eca2cff5aeba6e936054e8e5de504500766be518146d4e74c43da65cd` |
+
+Both archives passed checksum verification and isolated live/demo recovery.
+After the final backup restart, the public hashes, seven services, compact
+authenticated rendering and another newly received original packet passed again.
+The signed-in physical handset fold remains a separate acceptance check.
+
 ## November 17 recent packet row
 
 MeshLink 0.4.13 shipped from tagged main commit
