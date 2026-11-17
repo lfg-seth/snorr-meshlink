@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-17 - G003 Wi-Fi configuration
+
+Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;
+complete intended profile passed restart readback, with association and direct
+MQTT connected. No hardware or quantity change.
+[Evidence](../docs/operations/g003-mobile-gateway.md#2026-11-17-vehicle-wi-fi-update).
+
+
 ## 2026-11-16 - G006 allocated to Terry Home
 
 Owner identifies a Muzi antenna and a 1,000 mAh battery on existing Heltec V3

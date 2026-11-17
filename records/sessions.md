@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-17 - G003 vehicle Wi-Fi replacement
+
+Updated identity-checked G003 on COM6 with owner-supplied vehicle Wi-Fi.
+Exact credentials and complete intended owner/local/module/channel profile
+passed readback after restart. Two replies ten seconds apart reported Wi-Fi,
+assigned IP and direct MQTT connected at -28 dBm. Serial closed; raw evidence
+and credentials remain private. [Evidence](../docs/operations/g003-mobile-gateway.md#2026-11-17-vehicle-wi-fi-update).
+Next is vehicle runtime and sustained field acceptance; fresh portal receipt
+was not measured. Documentation checks passed. Published on
+`codex/g003-wifi-20261117`; see Git history for the record commit.
+
+
 ## 2026-11-16 - Deployed portal appearance and Activity scrolling
 
 Deployed MeshLink 0.4.10 at tagged main commit `dd5b65c`. All ten public

@@ -62,3 +62,17 @@ USB readback identified G003 (!849ad7a0) on COM41. The gateway initially reporte
 MeshLink 0.4.4 adds **G003 · Seth Mobile** to signed-in [Activity](https://meshlink.spp.lol/#activity) as a mobile gateway. The registry display name changed on its existing physical row. The source and gateway mappings remain `g003` for `!849ad7a0`. The nine fixed-site placements remain separate.
 
 The production sampler published ten cards. G003 reported Wi-Fi and direct MQTT connected, with fresh device, SNNS and gateway-health streams. Standard NeighborInfo was two cycles late at the check. Signed-in Edge rendered the Seth Mobile card. At 19:15:43 Pacific, the authenticated feed, ten public assets and seven services passed verification. The latest direct receipt via G003 was at 19:15:06 Pacific. [Release and CI](https://github.com/lfg-seth/snorr-meshlink/pull/77).
+
+## 2026-11-17 vehicle Wi-Fi update
+
+Identity-checked **G003 / !849ad7a0** on COM6 received the owner-supplied
+replacement vehicle Wi-Fi credentials. Wi-Fi remains enabled. Exact SSID and
+password readback passed privately after the configuration restart; complete
+owner, local configuration, module configuration and channels matched the
+intended profile. Only network credentials changed; no firmware flash.
+
+Two status replies ten seconds apart reported Wi-Fi associated, an assigned IP,
+**-28 dBm RSSI** and **direct MQTT connected**. Serial closed. Private profiles,
+credentials and logs remain ignored under `private/bench/g003-wifi-20261117/`.
+Vehicle runtime, sustained field reliability and fresh portal receipt were not
+measured in this check.
