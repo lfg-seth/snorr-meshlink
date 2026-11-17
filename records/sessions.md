@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Deployed last-heard MQTT gateway attribution
+
+MeshLink 0.4.9 runs tagged main commit `0685156`. All ten authenticated Activity cards rendered the gateway from the last contact. All ten public assets matched, seven services were active and the MQTT archive received a fresh packet after promotion. PR and tag CI and isolated release-host checks passed. Pre- and post-release backups passed checksum verification and isolated live and demo restores. The rollback directory is `/opt/meshlink-rollback-field-0685156`. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/87).
+
 ## 2026-11-16 - Activity last-heard gateway attribution
 
 Activity pairs the contact age with the MQTT gateway from that receipt and prefers its portal long name. A read-only production sampler check attributed all 19 observed contacts, including eleven through Seth Mobile. Portal tests (70), typecheck and build passed; sampler tests passed (43 with one platform skip). Next step is including the source change in a selected portal and sampler deployment.
