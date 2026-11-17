@@ -122,10 +122,10 @@ test('Activity switches views and preserves ordered readings and value bars on r
       nodes:[{ radio:'!00000001', label:'R001', name:'Test node', seen:'2026-11-16T11:45:00Z', heardThrough:'Seth Mobile', health:'reporting', readings,
         timers:[{stream:'power',age:30,period:180,due:150,state:'fresh',missed:0}], ...contact }] });
     render(data);
-    assert.match(root.querySelector('.heard').textContent,/Last heard 15m ago through Seth Mobile/);
-    const route = root.querySelector('.route');
+    assert.match(root.querySelector('.heard').textContent,/R001 Last heard 15m ago · Seth Mobile/);
+    const route = root.querySelector('.heard .contact');
     const routeText = route.firstChild;
-    const unknown = 'Reception: Unknown · Reported hops: Unknown · Last relay: Unknown';
+    const unknown = 'Last heard 15m ago · Seth Mobile';
     assert.equal(route.textContent, unknown); // snapshot from before route reporting
     const [readings, timers] = root.querySelectorAll('.controls button');
     assert.deepEqual([readings.textContent, timers.textContent], ['Readings', 'Timers']);
@@ -135,7 +135,7 @@ test('Activity switches views and preserves ordered readings and value bars on r
     assert.ok(anchors.every(Boolean));
     const age = root.querySelector('.metrics .age').firstChild;
     render({ ...data, voltage:reading('4.100',3) }, {route:{reception:'relayed', reportedHops:1, lastRelayCandidate:'Test ridge'}});
-    assert.equal(route.textContent, 'Relayed · 1 reported hop · Last relay: Test ridge (roster candidate)');
+    assert.equal(route.textContent, 'Last heard 15m ago · 1 hop · Test ridge · Seth Mobile');
     anchorSelectors.forEach((selector,i) => assert.equal(root.querySelector(selector), anchors[i], selector));
     assert.match(anchors[2].textContent, /4\.100/);
     assert.equal(root.querySelector('.metrics .age').firstChild, age);
@@ -145,15 +145,17 @@ test('Activity switches views and preserves ordered readings and value bars on r
     assert.equal(route.firstChild, routeText);
     assert.match(route.textContent, /Test ridge/);
     render(data, {heardThrough:'Test gateway', seen:'2026-11-16T11:59:00Z'});
-    assert.match(root.querySelector('.heard').textContent, /Last heard 1m ago through Test gateway/);
-    assert.equal(route.textContent, unknown);
+    assert.equal(route.textContent, 'Last heard 1m ago · Test gateway');
     render(data, {route:{reception:'direct', reportedHops:0}});
-    assert.equal(route.textContent, 'Direct · 0 reported hops · Last relay: None (direct)');
+    assert.equal(route.textContent, 'Last heard 15m ago · Direct · Seth Mobile');
     render(data, {route:{reception:'local'}});
-    assert.equal(route.textContent, 'Gateway-local report · Reported hops: Unknown · Last relay: Unknown');
+    assert.equal(route.textContent, 'Last heard 15m ago · Gateway · Seth Mobile');
     render(data, {route:{reception:'relayed', reportedHops:2}});
-    assert.equal(route.textContent, 'Relayed · 2 reported hops · Last relay: Unknown');
-    assert.equal(root.querySelector('.route').firstChild, routeText);
+    assert.equal(route.textContent, 'Last heard 15m ago · 2 hops · Seth Mobile');
+    render(data, {heardThrough:null, heardThroughRadio:'!12345678',
+      route:{reception:'relayed', reportedHops:2, lastRelayRadio:'!87654321'}});
+    assert.equal(route.textContent, 'Last heard 15m ago · 2 hops · !87654321 · !12345678');
+    assert.equal(root.querySelector('.heard .contact').firstChild, routeText);
     assert.equal(timers.getAttribute('aria-pressed'), 'true');
     assert.equal(root.querySelector('.timer'), timer);
     assert.match(root.querySelector('.timer').textContent,/Power.*2m 30s left.*every 3m/);
@@ -180,14 +182,11 @@ test('Activity switches views and preserves ordered readings and value bars on r
     assert.equal(tile('Uptime').querySelector('.track i').style.width,'100%');
     assert.equal(labels().filter(label=>label==='Battery voltage').length,1);
     assert.ok(!labels().includes('SD drops'));
-    const receipt = root.querySelector('.rx');
     const fresh = { voltage:{ ...reading('4.1'), revision:'next' } };
     render(fresh);
-    assert.equal(receipt.style.visibility, 'visible');
     assert.deepEqual(labels(), ['Device voltage']);
     render(fresh);
-    assert.equal(root.querySelector('.rx'), receipt);
-    assert.equal(receipt.style.visibility, 'hidden');
+    assert.equal(root.querySelector('.heard .contact').firstChild, routeText);
     render({});
     assert.match(root.querySelector('.metrics').textContent, /No telemetry yet/);
     render(data);
@@ -217,12 +216,15 @@ test('Activity packet row keeps visible transmissions across refresh and expires
     const row = root.querySelector('#recent-packets ol');
     row.getBoundingClientRect = () => ({width});
     const now = 10000;
-    const packet = (id, age) => ({id, radio:'Source', stream:'power', received:now-age});
+    const packet = (id, age) => ({id, radio:'Source', stream:'power', received:now-age,
+      heardThrough:'Seth Mobile', route:{reception:'relayed',reportedHops:1,lastRelayCandidate:'Sahara'}});
     const originals = [1, 4, 5, 6, 8, 3599].map((age,i) => packet(String(i), age));
     const render = packets => view.render({at:new Date(now*1000).toISOString(), now, status:'Live', nodes:[], packets});
     render(originals);
     const first = row.firstElementChild;
     assert.equal(row.children.length, 4);
+    assert.deepEqual([...first.querySelectorAll('.packet-route span')].map(el=>el.textContent),
+      ['1 Hop','Sahara >','Seth Mobile']);
     render([packet('new', 0), ...originals]);
     assert.equal(row.children[1], first);
     assert.deepEqual([...row.querySelectorAll('time')].map(node => node.textContent), ['0s ago','1s ago','4s ago','5s ago']);
@@ -233,7 +235,7 @@ test('Activity packet row keeps visible transmissions across refresh and expires
     wall += 2000;
     tick();
     assert.equal(row.children.length, 6);
-    assert.equal(row.firstElementChild.textContent, 'SourcePower2s ago');
+    assert.equal(row.firstElementChild.textContent, 'SourcePower2s ago1 HopSahara >Seth Mobile');
     wall += 3600000;
     tick();
     assert.equal(row.children.length, 0);

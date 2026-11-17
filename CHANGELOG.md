@@ -3,6 +3,17 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.14 - 2026-11-17
+
+Activity packet cards show the hop count, last identifiable relay and MQTT
+gateway from each transmission's first receipt. Long names take precedence
+over mesh IDs. Main cards combine last heard and route details beside the
+short name. Packet density reduces to four on phones, six on larger portrait
+screens and eight on wide screens. Cards fit their content with larger type
+and route text. The sampler and portal ship together.
+The database and radio protocols remain compatible. Rollback restores the
+0.4.13 sampler and portal files.
+
 ## 0.4.13 - 2026-11-17
 
 Node activity adds a single row of recent field-roster packets. Each card shows

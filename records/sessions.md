@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-17 - Compact Activity routes preview
+
+Prepared MeshLink 0.4.14 on `codex/activity-compact-routes`. Each original
+packet retains its first receipt's hop count, last identifiable relay and MQTT
+gateway. Names prefer long names, with full mesh IDs when unnamed; an ambiguous
+relay byte does not invent a node identity. Main cards combine last heard and
+route beside the short name using the owner's wording. The packet row now fits
+four phone, six larger portrait and eight wide-screen cards. The owner asked
+to remove the fixed-height gap in preview; cards now size to their content,
+with larger name, type, age and route text.
+
+The updated local/Tailscale preview is running. All 72 portal checks, typecheck,
+build, 24 MQTT tests and 54 script tests pass (one script platform skip).
+WebKit and Edge fit 4/4/4/6/8/8 complete cards without content/page overflow at
+320/382/580/669/951/1440 CSS pixels. The Windows backend suite ran 100 tests
+with seven platform skips and one HTTP connection reset in the raw MQTT archive
+integration test. Linux CI and a clean release-host run remain required before
+the authorized deployment. Next: release the exact checked main commit,
+verify backups/recovery and fresh authenticated receipt routes.
+
 ## 2026-11-17 - Deployed recent Activity packets
 
 The owner approved the preview. Merged [PR #93](https://github.com/lfg-seth/snorr-meshlink/pull/93)

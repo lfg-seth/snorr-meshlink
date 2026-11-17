@@ -48,6 +48,8 @@ class LiveRosterTests(unittest.TestCase):
                     cards = json.loads(target.read_text())["nodes"]
                     source = next(card for card in cards if card["name"] == "Source")
                     self.assertEqual(source["route"]["reportedHops"], 1)
+                    self.assertEqual(source["heardThrough"], "!00112255")
+                    self.assertEqual(source["heardThroughRadio"], "!00112255")
                     snapshots.append(([c["name"] for c in cards if c != source], source["route"].get("lastRelayCandidate")))
                     sql = next(edits, None)
                     if sql is None:

@@ -640,7 +640,8 @@ def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
         if state == "reporting" and any(t["missed"] >= 3 for t in timers):
             state = "attention"
         data["nodes"].append({"label": node["label"], "radio": node["radio"], "seen": node.get("lastContactAt"),
-                              "heardThrough": node.get("heardThroughName"), "route": node.get("route"),
+                              "heardThrough": node.get("heardThroughName"), "heardThroughRadio": node.get("heardThrough"),
+                              "route": node.get("route"),
                               "health": state, "contact": contact, "kind": node.get("kind"),
                               "linkDown": bool(link_down), "readings": readings, "timers": timers})
     return data
