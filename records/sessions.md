@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-16 - Deployed Activity alert thresholds and repeater stream selection
+
+Production runs MeshLink 0.4.6 at `06e56cd`. All ten protected Activity
+cards matched the new health rules. All six repeaters omit GPS, NeighborInfo
+and NodeInfo and retain SNNS. R010 had fresh contact with five missed power
+cycles and three missed SNNS cycles in a post-release observation. The seven
+services were active, all ten public build files matched, and a fresh MQTT
+receipt arrived. Next field check is delivery of the remaining telemetry
+streams. [Release evidence](../docs/operations/field-portal.md#november-16-activity-health-update).
+
 ## 2026-11-16 - Registered G003 as Seth Mobile on production Activity
 
 Deployed MeshLink 0.4.4 from `c9f75dd`. Updated the existing gateway display name and verified its Activity card, fresh gateway health and direct receipt. Vehicle runtime and field reliability remain open. [Evidence](../docs/operations/g003-mobile-gateway.md#2026-11-16-production-activity).

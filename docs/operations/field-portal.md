@@ -163,6 +163,33 @@ hook and portal version marker.
 | `meshlink-20261116T204952Z.tar.gz` | `c1b7a3add7d5b87ec3bac5f8f3c99d88e81352cd8ba5a782118e24b479a73198` |
 | `meshlink-20261116T205547Z.tar.gz` | `853894fdca3103327cb857406378e4c88753780f52fcf8051d77f9f6e0b8c571` |
 
+## November 16 Activity health update
+
+[Release 0.4.5](https://github.com/lfg-seth/snorr-meshlink/pull/78) changed
+the Attention and Silent thresholds, removed GPS from repeater cards and
+corrected the Wi-Fi and MQTT Down colors. [Release 0.4.6](https://github.com/lfg-seth/snorr-meshlink/pull/80)
+also excludes standard NeighborInfo and NodeInfo from repeater cards. An
+offline ten-node sampler fixture confirmed that the six repeater cards kept
+SNNS and ignored overdue excluded streams. The four gateways retained their
+stream selection. The tagged release passed portal and backend CI and the
+isolated release-host build and dashboard checks.
+
+Production serves `meshlink-v0.4.6` from `06e56cd`. The host passed 70
+portal, 95 backend and 43 dashboard tests. Public HTTPS returned the staged
+bytes for all ten build files. The authenticated endpoint returned all ten
+cards with the expected contact and stream health, and all six repeaters
+retained their SNNS timers. All seven services were active and a fresh MQTT
+receipt arrived. Promotion preserved the quiesced private state hashes.
+The rollback for this change is `/opt/meshlink-rollback-field-06e56cd`.
+
+The following 0.4.6 deployment backups passed SHA-256 verification and
+isolated live and demo recovery.
+
+| Backup | SHA-256 |
+| --- | --- |
+| `meshlink-20261117T032428Z.tar.gz` | `8d2e58f8bf88f131dcda613e93156fb748e7e2b13e2e278803a7bd737d81a7d9` |
+| `meshlink-20261117T032904Z.tar.gz` | `055c34b29dfe8f1c7deab59b636997518e78046a0077fb6b4ba9e9c1b6ac683f` |
+
 ## Terry Home gateway deployment
 
 MeshLink **0.4.3** deployed from `31a905b` on November 16 Pacific.
