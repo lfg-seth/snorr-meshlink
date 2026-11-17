@@ -52,3 +52,13 @@ and field coverage were not tested. No portal record, registry, mapping, history
 or server setting was changed; existing historical mappings may still label
 this hardware with its old identity. When the vehicle network is available,
 verify association and direct uplink if the owner selects that check.
+
+## 2026-11-16 hotspot connection test
+
+USB readback identified G003 (!849ad7a0) on COM41. The gateway initially reported Wi-Fi disconnected. After saving the owner-supplied hotspot credentials and restarting, the complete local and module configurations matched the intended values. Two gateway status replies ten seconds apart reported association, an assigned IP and −30 dBm RSSI. Direct MQTT was connected in the second reply. This verifies the exact supplied SSID by successful association. Vehicle runtime and field reliability remain unmeasured.
+
+## 2026-11-16 production Activity
+
+MeshLink 0.4.4 adds **G003 · Seth Mobile** to signed-in [Activity](https://meshlink.spp.lol/#activity) as a mobile gateway. The registry display name changed on its existing physical row. The source and gateway mappings remain `g003` for `!849ad7a0`. The nine fixed-site placements remain separate.
+
+The production sampler published ten cards. G003 reported Wi-Fi and direct MQTT connected, with fresh device, SNNS and gateway-health streams. Standard NeighborInfo was two cycles late at the check. Signed-in Edge rendered the Seth Mobile card. At 19:15:43 Pacific, the authenticated feed, ten public assets and seven services passed verification. The latest direct receipt via G003 was at 19:15:06 Pacific. [Release and CI](https://github.com/lfg-seth/snorr-meshlink/pull/77).
