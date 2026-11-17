@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-16 - iPhone Duo layout
+
+Prepared MeshLink 0.4.10 with the theme selector and the deployed 0.4.9
+gateway attribution. The touch header measured 98 CSS px in Windows WebKit
+at the 382 × 580 outer-display viewport, down from 175 px. The map gained
+77 px. At widths of 382 px and 385 px, four headline readings now form two
+rows. A synthetic −123.4 mA value and its unit fit in full. The 951 px
+inner landscape view shows two node cards across. Readings and Timers touch
+targets increased from 27 to 44 px tall.
+
+All 71 portal tests, typecheck and the production build passed. Headless WebKit
+26.5 exercised all five published Safari viewport widths at both listed heights,
+using synthetic data in light and dark modes. Edge also passed at the smaller
+heights. The selected Activity view and open map device card survived resizing.
+Next check is Safari on a physical Duo after a selected deployment.
+[WebKit viewport dimensions](https://webkit.org/blog/18486/).
+
 ## 2026-11-16 - Portal theme follows the device
 
 Prepared MeshLink 0.4.9 on `codex/portal-appearance`. The Theme selector

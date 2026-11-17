@@ -9,6 +9,9 @@ The portal follows the device's light or dark appearance. The Theme selector
 on the sign-in screen and beside the workspace sign-in or sign-out button
 remembers a Light or Dark override in this browser. The same setting covers
 Activity, device cards and map controls. Dark mode dims the topographic map.
+On touch screens, the compact navigation leaves more room for the map. Activity
+cards fit two across when space allows and arrange readings to fit each card.
+The Readings and Timers buttons have larger tap targets.
 The existing backend, database and firmware are compatible without a migration.
 Restore the 0.4.9 portal assets to roll back.
 
