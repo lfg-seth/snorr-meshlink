@@ -1,5 +1,26 @@
 # Field testing and tangible results
 
+## 2026-11-16 - Upper Bristle charging
+
+The production portal archive contains 377 distinct, source-timestamped INA219
+channel 1 current readings for **R010 at Upper Bristle** on Monday, November 16
+(00:00–24:00 Pacific). Of those, 93 showed charging. The first positive sample
+was at **08:52** and the last at **13:55**, with a peak of **+221.8 mA at
+13:07**. Overnight median draw was about **12 mA** in each hour before 06:00.
+The 389 device battery readings started at **3.702 V**, reached **3.767 V**,
+and ended at **3.710 V**.
+
+Using the source timestamps and linearly interpolating adjacent channel 1
+readings at most ten minutes apart gives **438 mAh in, 228 mAh out and
+209 mAh net gain** over **20.23 hours** (each value independently rounded).
+Five longer gaps were excluded. The longest was **06:25–08:52**, so charging
+may have started before the first positive reading. The separate environmental
+current stream peaked at **+222.9 mA at 13:07** and gave **+206 mAh** over
+20.83 covered hours using the same method. Both streams describe the sensor
+path. Whole-pack capacity, panel output and energy in uncovered intervals
+remain unknown. [Current convention](../docs/operations/radio-report-ingestion.md#fleet-current-polarity-correction---2026-10-24),
+[R010 configuration](../docs/operations/r010-upper-bristle-deployment.md).
+
 ## 2026-11-16 - G006 fixed gateway bench readback
 
 Heltec V3 **G006 / !b03d6790** retained its gateway firmware and passed complete

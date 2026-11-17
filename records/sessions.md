@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-17 - Checked Upper Bristle charging for November 16
+
+Queried R010's source-timestamped production telemetry for the Pacific calendar
+day. Channel 1 showed a +221.8 mA peak and about +209 mAh across 20.23 hours.
+Environmental current independently gave a similar estimate from its own
+sampling times. Check a subsequent full day for repeatability and coverage
+across the missing morning interval. [Power measurements and gaps](field-results.md#2026-11-16---upper-bristle-charging).
+
 ## 2026-11-16 - Deployed portal appearance and Activity scrolling
 
 Deployed MeshLink 0.4.10 at tagged main commit `dd5b65c`. All ten public
