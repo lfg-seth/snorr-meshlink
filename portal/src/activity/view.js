@@ -7,13 +7,16 @@ export function mountActivity(root) {
   const statusLine = root.querySelector("#status");
   const groups = {all:"All nodes", reporting:"Reporting", attention:"Attention", silent:"Silent", unknown:"Unknown"};
   const stateNames = {fresh:"On time", aging:"One cycle missed", stale:"Two or more cycles missed", event:"Event", unknown:"Unknown"};
-  const metrics = {voltage:["Device voltage","V"], charge:["Battery",""], inaVoltage:["INA219 voltage","V"],
-    inaCurrent:["INA219 current","mA"], envVoltage:["Sensor voltage","V"], envCurrent:["Sensor current","mA"],
-    temperature:["Temperature","°C"], humidity:["Humidity","%"], busy:["Channel use","%"], tx:["TX airtime","%"],
-    uptime:["Uptime",""], neighbors:["SNNS neighbors",""], standardNeighbors:["Standard neighbors",""]};
-  const readingOrder = [...Object.keys(metrics), "gps", "gateway", "wifi", "sd"];
-  const streams = {device:"Device",environment:"Environment",power:"Power",snns:"SNNS",position:"GPS packet",
-    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD",neighbor_info:"NeighborInfo",nodeinfo:"NodeInfo"};
+  const metrics = {
+    voltage:["Device voltage","V",3.2,4.2], charge:["Battery","",0,100],
+    batteryVoltage:["Battery voltage","V",3.2,4.2], batteryCurrent:["Battery current","mA",-100,100],
+    temperature:["Temperature","°C",-20,50], humidity:["Humidity","%",0,100],
+    busy:["Channel use","%",0,100], tx:["TX airtime","%",0,100], uptime:["Uptime","",0,3600],
+    neighbors:["SNNS neighbors","",0,12], wifiConnected:["Wi-Fi","",0,1],
+    mqttConnected:["MQTT","",0,1], wifi:["Wi-Fi signal","dBm",-100,-40], sd:["SD used","%",0,100],
+  };
+  const streams = {device:"Device",environment:"Environment",power:"Power",snns:"SNNS",
+    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD"};
   const views = new Map(), buttons = new Map();
   let filter = "all", latest;
   function el(tag, text, cls) {
@@ -41,50 +44,93 @@ export function mountActivity(root) {
     return (t.age == null ? "Awaiting first report · " : "") + stateNames[t.state] + " · " + timerValue(t,true)
       + (t.period ? " · every " + duration(t.period,true) : "");
   }
-  function row(list, label, value, state, hint, changed) {
-    const pair = el("div",null,"row" + (changed ? " incoming" : ""));
-    pair.append(el("dt",label),el("dd",value,state));
-    pair.title = hint;
-    list.append(pair);
+  function toneFor(key,n) {
+    if (!Number.isFinite(n)) return "unknown";
+    switch (key) {
+      case "voltage": case "batteryVoltage": return n < 3.5 ? "down" : n < 3.75 ? "aging" : "fresh";
+      case "charge": return n < 30 ? "down" : n <= 60 ? "aging" : "fresh";
+      case "uptime": return n <= 120 ? "down" : n < 3600 ? "aging" : "fresh";
+      case "wifi": return n < -80 ? "down" : n < -67 ? "aging" : "fresh";
+      case "busy": return n > 25 ? "aging" : "fresh";
+      case "sd": return n >= 95 ? "down" : n >= 80 ? "aging" : "fresh";
+      default: return "fresh";
+    }
   }
   function values(node) {
     const result = new Map();
-    for (const key of readingOrder) {
-      const reading = node.readings[key];
+    const readings = node.readings;
+    function add(key,source,value,numeric,tone=toneFor(key,numeric)) {
+      const [label,unit,min,max] = metrics[key];
+      const fraction = Number.isFinite(numeric) ? Math.max(0,Math.min(1,(numeric-min)/(max-min))) : 0;
+      result.set(key,{key,source,label,unit,value,tone,fraction,reading:readings[source]});
+    }
+    for (const key of Object.keys(metrics)) {
+      let source = key;
+      if (key === "batteryVoltage" || key === "batteryCurrent") {
+        const sources = key === "batteryVoltage" ? ["inaVoltage","envVoltage"] : ["inaCurrent","envCurrent"];
+        source = sources.filter(id=>readings[id] && Number.isFinite(parseFloat(readings[id].value)))
+          .sort((a,b)=>(readings[a].age ?? Infinity)-(readings[b].age ?? Infinity))[0];
+      }
+      if (key === "wifiConnected" || key === "mqttConnected") source = "gateway";
+      const reading = readings[source];
       if (!reading) continue;
       const v = reading.value;
-      const add = (id,label,value,unit="",tone=reading.state) => result.set(id,{key,label,value,unit,reading,tone});
-      if (metrics[key]) {
-        const [label,unit] = metrics[key];
-        add(key,label,v === "USB*" ? "USB*" : v,unit);
-      } else if (key === "gps") {
-        add("gps","GPS fix age",duration(reading.age));
-        if (v.satellites != null) add("sats","Satellites",v.satellites);
-        if (v.pdop != null) add("pdop","GPS PDOP",v.pdop);
-        if (v.altitude != null) add("altitude","Altitude",v.altitude,"m");
-      } else if (key === "gateway") {
-        for (const [field,label] of [["wifiConnected","Wi-Fi"],["mqttConnected","MQTT"]])
-          add(field,label,v[field] == null ? "Unknown" : v[field] ? "Up" : "Down","",
-            v[field] == null ? "unknown" : v[field] ? reading.state : "down");
-      } else if (key === "wifi" && v.rssiDbm != null) add("wifi","Wi-Fi signal",v.rssiDbm,"dBm");
-      else if (key === "sd") {
-        add("sd","SD used",v.usedBytes != null && Number(v.totalBytes)>0 ? (100*Number(v.usedBytes)/Number(v.totalBytes)).toFixed(1)+"%" : "Unknown");
-        if (v.dropped != null) add("dropped","SD drops",v.dropped);
+      if (source === "gateway") {
+        const status = v[key];
+        add(key,source,status == null ? "Unknown" : status ? "Up" : "Down",
+          status == null ? NaN : 1,status == null ? "unknown" : status ? "fresh" : "down");
+      } else if (key === "wifi") {
+        if (v.rssiDbm != null) add(key,source,v.rssiDbm,v.rssiDbm);
+      } else if (key === "sd") {
+        const used = v.usedBytes != null && v.totalBytes > 0 ? 100*v.usedBytes/v.totalBytes : NaN;
+        add(key,source,Number.isFinite(used) ? used.toFixed(1) : "Unknown",used);
+      } else if (key === "uptime") {
+        add(key,source,Number.isFinite(reading.seconds) ? duration(reading.seconds,true) : v,reading.seconds);
+      } else {
+        add(key,source,v,parseFloat(v));
       }
     }
     return result;
   }
-  function metricHint(m) {
-    return (m.value === "USB*" ? "Charging or no battery detected · " : "") +
-      "Reading age " + duration(m.reading.age,true) + " · " + stateNames[m.reading.state];
+  function bar(fraction,signed=false) {
+    const track = el("div",null,signed ? "track signed" : "track"), level = el("i");
+    const start = signed ? Math.min(.5,fraction) : 0;
+    level.style.marginLeft = 100*start+"%";
+    level.style.width = 100*(signed ? Math.abs(fraction-.5) : fraction)+"%";
+    track.setAttribute("aria-hidden","true");
+    track.append(level);
+    return track;
+  }
+  function readingTile(m,changed) {
+    const tile = el("div",null,"metric "+m.tone+(changed ? " incoming" : ""));
+    const number = el("b",m.value);
+    if (m.unit && m.value !== "Unknown") number.append(el("small",m.unit));
+    const age = m.reading.age == null ? "Age unknown" : duration(m.reading.age)+" ago";
+    tile.title = (m.value === "USB*" ? "Charging or no battery detected · " : "")+
+      age+" · "+stateNames[m.reading.state];
+    tile.append(el("span",m.label),number,el("small",age,"age"),bar(m.fraction,m.key==="batteryCurrent"));
+    return tile;
   }
   function createView() {
-    const article = el("article"), face = el("div"), details = el("details"), body = el("div");
-    const summary = el("summary","Telemetry & timer details");
-    details.append(summary,body);
-    article.append(face,details);
+    const article = el("article"), face = el("div"), controls = el("div",null,"controls"), body = el("div",null,"tiles");
+    const reason = el("span",null,"reason");
+    const view = {article,face,body,reason,mode:"Timers",previous:null};
+    for (const mode of ["Timers","Readings"]) {
+      const button = el("button",mode);
+      button.type = "button";
+      button.setAttribute("aria-pressed",String(mode===view.mode));
+      button.addEventListener("click",()=>{
+        view.mode = mode;
+        for (const other of controls.querySelectorAll("button"))
+          other.setAttribute("aria-pressed",String(other===button));
+        paint(view,view.previous,latest);
+      });
+      controls.append(button);
+    }
+    controls.append(reason);
+    article.append(face,controls,body);
     cards.append(article);
-    return {article,face,body,details,previous:null};
+    return view;
   }
   function paint(view,node,data) {
     const old = view.previous;
@@ -104,56 +150,46 @@ export function mountActivity(root) {
     heard.append(el("span",node.seen ? "Last heard " + duration(data.now-Date.parse(node.seen)/1000,true) + " ago" : "Never heard"));
     if (received) heard.append(el("span","↳ Received","rx"));
     const measures = values(node), highlights = el("div",null,"metrics");
-    const preferred = ["voltage",node.kind === "member" ? "gps" : "busy",
-      measures.has("mqttConnected") ? "mqttConnected" : "temperature","inaCurrent","busy","neighbors","charge"];
-    const displayed = [...new Set(preferred)].filter(key=>measures.has(key)).slice(0,3);
+    const displayed = ["voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",
+      "neighbors","charge"].filter(key=>measures.has(key)).slice(0,3);
+    if (measures.has("batteryCurrent")) displayed.push("batteryCurrent");
+    highlights.style.setProperty("--columns",Math.max(1,displayed.length));
     for (const key of displayed) {
       const m = measures.get(key);
-      const tile = el("div",null,"metric " + m.tone + (readChanged(m.key) ? " incoming" : ""));
-      tile.title = metricHint(m);
-      const number = el("b",m.value);
-      number.append(el("small",m.unit));
-      tile.append(el("span",m.label),number);
-      highlights.append(tile);
+      highlights.append(readingTile(m,readChanged(m.source)));
     }
-    const strip = el("div",null,"timers");
-    const periodic = node.timers.filter(t=>t.period);
-    const late = periodic.filter(t=>t.missed).length;
-    const label = el("div",null,"section-label");
-    label.append(el("span","Watchdogs"));
-    let reason = late ? late + " overdue" : "";
-    if (node.linkDown) reason = "Link down" + (reason ? " · "+reason : "");
-    else if (node.contact === "aging" && !reason) reason = "Late contact";
-    if (reason) label.append(el("span",reason,node.linkDown ? "reason down" : "reason"));
-    for (const t of periodic) {
-      const tile = el("div",null,"timer " + t.state + (timerChanged(t) ? " incoming" : ""));
-      tile.title = timerHint(t);
-      const track = el("div",null,"track"), level = el("i");
-      const fraction = t.missed ? 1 : t.age == null ? 0 : Math.max(.04,Math.min(1,t.due/t.period));
-      level.style.width = 100*fraction + "%";
-      track.append(level);
-      const countdown = t.age == null && !t.missed ? "Waiting" : timerValue(t,true);
-      tile.append(el("span",streamName(t)),el("b",countdown),track);
-      strip.append(tile);
+    const timers = node.timers.filter(t=>!["position","neighbor_info","nodeinfo"].includes(t.stream));
+    const late = timers.filter(t=>t.period && t.missed).length;
+    const reasons = [node.linkDown && "Link down",late && late+" overdue"].filter(Boolean);
+    if (!reasons.length && node.contact==="aging") reasons.push("Late contact");
+    view.reason.textContent = reasons.join(" · ");
+    view.reason.className = "reason "+(node.linkDown ? "down" : "aging");
+    heard.title = node.radio;
+    face.replaceChildren(heading,heard,displayed.length ? highlights : el("p","No telemetry yet","empty"));
+    body.replaceChildren();
+    if (view.mode==="Readings") {
+      for (const [key,m] of measures) {
+        if (!displayed.includes(key)) body.append(readingTile(m,readChanged(m.source)));
+      }
+      if (!body.childElementCount) body.append(el("p",displayed.length ? "All readings shown above" : "No readings yet","empty"));
+    } else {
+      for (const t of timers.sort((a,b)=>Number(!!b.missed)-Number(!!a.missed))) {
+        const tile = el("div",null,"timer "+t.state+(timerChanged(t) ? " incoming" : ""));
+        tile.title = timerHint(t);
+        tile.append(el("span",streamName(t)),el("b",t.age == null && !t.missed ? "Waiting" : timerValue(t,true)),
+          el("small",t.period ? "every "+duration(t.period,t.period % 60 !== 0) : "Event","age"));
+        if (t.period) tile.append(bar(t.missed ? 1 : t.age == null ? 0 : Math.max(0,Math.min(1,t.due/t.period))));
+        body.append(tile);
+      }
+      if (!body.childElementCount) body.append(el("p","No timers yet","empty"));
     }
-    face.replaceChildren(heading,heard,displayed.length ? highlights : el("p","No telemetry yet","empty"),
-      label,periodic.length ? strip : el("p","No scheduled streams","empty"));
     if (received) {
       // Restart the accent even when two consecutive polls each contain a new packet.
       for (const animation of article.getAnimations()) animation.cancel();
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) article.animate(
         [{boxShadow:"inset 0 0 0 2px #a8ecff"},{boxShadow:"inset 0 0 0 2px transparent"}],1400);
     }
-    if (view.details.open || !old) fillDetails(body,node,measures,readChanged,timerChanged);
     view.previous = node;
-  }
-  function fillDetails(body,node,measures,readChanged,timerChanged) {
-    const readings = el("dl"), timers = el("dl");
-    for (const m of measures.values()) row(readings,m.label,m.value + (m.unit ? " "+m.unit : ""),m.tone,metricHint(m),readChanged(m.key));
-    for (const t of node.timers) row(timers,streamName(t),timerHint(t),t.state,timerHint(t),timerChanged(t));
-    body.replaceChildren(el("p",node.radio,"empty"),el("h3","Telemetry"),
-      readings.childElementCount ? readings : el("p","No readings yet","empty"),el("h3","Timers"),
-      timers.childElementCount ? timers : el("p","No timers yet","empty"));
   }
   for (const [key,label] of Object.entries(groups)) {
     const button = el("button",null,"stat "+key);
@@ -188,9 +224,6 @@ export function mountActivity(root) {
         if (!views.has(node.radio)) {
           const view = createView();
           views.set(node.radio,view);
-          view.details.addEventListener("toggle",()=>{
-            if (view.details.open && view.previous) fillDetails(view.body,view.previous,values(view.previous),()=>false,()=>false);
-          });
         }
         paint(views.get(node.radio),node,data);
       }
