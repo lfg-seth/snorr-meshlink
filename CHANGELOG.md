@@ -3,6 +3,13 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.6 - 2026-11-16
+
+Repeater Activity cards omit NeighborInfo and NodeInfo when showing readings,
+listing timers and calculating health. SNNS neighbor reporting continues.
+Existing firmware and database schema are compatible. Restore the 0.4.5
+sampler and portal assets to roll back.
+
 ## 0.4.5 - 2026-11-16
 
 Activity marks Attention after three consecutive missed cycles and Silent after
