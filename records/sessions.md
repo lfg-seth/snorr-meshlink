@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Activity opens on Readings
+
+MeshLink 0.4.8 deployed from tagged commit `45ac59d`. The release verifier rendered all ten authenticated production cards, confirmed Readings was selected first and switched each to Timers and back. All ten assets matched, seven services were active and a fresh MQTT receipt arrived. The portal regression test checked the selected view across polling. Pre- and post-release backups passed isolated live and demo restores. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/84).
+
 ## 2026-11-16 - Deployed Activity reading pills
 
 MeshLink 0.4.7 is live. Timers and Readings share aligned cards, with value bars and one battery voltage/current pair per device. Eight of ten production cards supplied headline battery current. All seven services and fresh MQTT receipt passed. Next field check is sustained delivery of the remaining telemetry streams. [Deployment evidence](../docs/operations/field-portal.md#activity-reading-pills).
