@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Registered G003 as Seth Mobile on production Activity
+
+Deployed MeshLink 0.4.4 from `c9f75dd`. Updated the existing gateway display name and verified its Activity card, fresh gateway health and direct receipt. Vehicle runtime and field reliability remain open. [Evidence](../docs/operations/g003-mobile-gateway.md#2026-11-16-production-activity).
+
 ## 2026-11-16 - Verified G003 hotspot backhaul
 
 Updated the mobile gateway to the owner-supplied hotspot. G003 reported association twice at −30 dBm and a direct MQTT connection after restart. Vehicle runtime and field reliability remain open. [Bench measurements](../docs/operations/g003-mobile-gateway.md#2026-11-16-hotspot-connection-test).
