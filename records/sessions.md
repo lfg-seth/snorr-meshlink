@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-16 - Portal theme follows the device
+
+Prepared MeshLink 0.4.9 on `codex/portal-appearance`. The Theme selector
+defaults to System and remembers Light or Dark in this browser across sign-in,
+sign-out and reloads. Device sheets, Activity readings and status colors share
+the setting. Dark mode dims the topographic map and preserves aerial imagery.
+
+All 71 portal tests, TypeScript and the production build passed. Headless Edge
+with synthetic records exercised system changes, cross-tab overrides and
+navigation at 1440 px and 390 px, including sign-in, device sheets and Activity.
+In the Windows backend suite, 87 checks passed, seven POSIX checks skipped and
+one PocketBase connection reset. That check passed on its isolated rerun.
+Next step is source review and a manually selected production deployment.
+
 ## 2026-11-16 - Activity opens on Readings
 
 MeshLink 0.4.8 deployed from tagged commit `45ac59d`. The release verifier rendered all ten authenticated production cards, confirmed Readings was selected first and switched each to Timers and back. All ten assets matched, seven services were active and a fresh MQTT receipt arrived. The portal regression test checked the selected view across polling. Pre- and post-release backups passed isolated live and demo restores. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/84).

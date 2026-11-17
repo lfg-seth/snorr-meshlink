@@ -113,7 +113,7 @@ export default function CardMiniMap({ nodes: suppliedNodes, color, onNodeSelect 
   }, [coordinatesKey, ready, basemap, hasLocation]);
 
   if (!hasLocation) return <p className="small muted mini-map-missing">No recorded location for this map.</p>;
-  return <figure className="card-mini-map" aria-label={`Map of ${nodes.map(node => node.label).join(' and ')}`}>
+  return <figure className="card-mini-map" data-basemap={basemap} aria-label={`Map of ${nodes.map(node => node.label).join(' and ')}`}>
     <div ref={container} className="mini-map-canvas" />
     <figcaption className="mini-map-attribution"><a href="https://www.usgs.gov/programs/national-geospatial-program/national-map" target="_blank" rel="noreferrer">USGS · The National Map</a></figcaption>
     {error && <p className="mini-map-error" role="status">{error}</p>}

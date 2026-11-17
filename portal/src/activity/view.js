@@ -187,7 +187,7 @@ export function mountActivity(root) {
       // Restart the accent even when two consecutive polls each contain a new packet.
       for (const animation of article.getAnimations()) animation.cancel();
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) article.animate(
-        [{boxShadow:"inset 0 0 0 2px #a8ecff"},{boxShadow:"inset 0 0 0 2px transparent"}],1400);
+        [{boxShadow:"inset 0 0 0 2px var(--ice)"},{boxShadow:"inset 0 0 0 2px transparent"}],1400);
     }
     view.previous = node;
   }

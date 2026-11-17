@@ -42,6 +42,66 @@ registerHooks({
   },
 });
 
+test('theme selector and first paint agree across visits, tabs and unavailable storage', async () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const dom = new JSDOM(html, { url: 'https://portal.test', runScripts: 'outside-only' });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const { createRoot } = await import('react-dom/client');
+  const { default: ThemeSelect } = await import('../src/ThemeSelect.tsx');
+  const root = createRoot(document.querySelector('#root'));
+  const select = () => document.querySelector('select');
+  const storage = window.localStorage;
+  const bootstrap = document.querySelector('head script').textContent;
+  const reload = async (key) => {
+    delete document.documentElement.dataset.theme;
+    window.eval(bootstrap);
+    const beforeMount = document.documentElement.dataset.theme ?? 'system';
+    await act(async () => root.render(createElement(ThemeSelect, { key })));
+    assert.equal(select().value, beforeMount);
+    return beforeMount;
+  };
+  const choose = async value => act(async () => {
+    select().value = value;
+    select().dispatchEvent(new window.Event('change', { bubbles: true }));
+  });
+  const storageEvent = async key => act(async () => {
+    window.dispatchEvent(new window.StorageEvent('storage', { key, storageArea: storage }));
+  });
+  try {
+    assert.equal(await reload('first'), 'system');
+    for (const choice of ['dark', 'light']) {
+      await choose(choice);
+      assert.equal(document.documentElement.dataset.theme, choice);
+      assert.equal(storage.getItem('meshlink-theme'), choice);
+      assert.equal(await reload(choice), choice);
+    }
+    storage.setItem('meshlink-theme', 'dark');
+    await storageEvent('meshlink-theme');
+    assert.equal(select().value, 'dark');
+    await choose('system');
+    assert.equal(storage.getItem('meshlink-theme'), null);
+    assert.equal(document.documentElement.dataset.theme, undefined);
+    await choose('dark');
+    storage.clear();
+    await storageEvent(null);
+    assert.equal(select().value, 'system');
+    storage.setItem('meshlink-theme', 'invalid');
+    assert.equal(await reload('invalid'), 'system');
+    Object.defineProperty(window, 'localStorage', { get() { throw new Error('Storage disabled'); } });
+    assert.equal(await reload('blocked'), 'system');
+    await choose('light');
+    assert.equal(document.documentElement.dataset.theme, 'light');
+  } finally {
+    await act(async () => root.unmount());
+    dom.window.close();
+    delete globalThis.window;
+    delete globalThis.document;
+    delete globalThis.IS_REACT_ACT_ENVIRONMENT;
+  }
+});
+
 test('Activity switches views and preserves ordered readings and value bars on refresh', async () => {
   const { mountActivity } = await import('../src/activity/view.js');
   const dom = new JSDOM('<div id="host"></div>');

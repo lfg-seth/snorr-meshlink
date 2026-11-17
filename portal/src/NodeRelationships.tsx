@@ -13,7 +13,7 @@ export default function NodeRelationships({ nodeId, connections, onSelect }: {
       <button className="node-relationship" onClick={() => onSelect(connection.id)}
         aria-label={`${connection.relationship}, ${signalValue(connection.snrDb, 'dB SNR')}, view relationship`}>
         <span>{connection.relationship}</span>
-        <span className="signal-pill" style={{ color: connection.color, borderColor: connection.color }}>
+        <span className="signal-pill" style={{ borderColor: connection.color }}>
           {signalValue(connection.snrDb, 'dB')}
         </span>
       </button>

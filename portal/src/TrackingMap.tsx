@@ -220,7 +220,7 @@ export default function TrackingMap(props: Props) {
   }, [props.selectedId, ready]);
 
   return (
-    <div className="map-frame">
+    <div className="map-frame" data-basemap={basemap}>
       <div
         ref={container}
         className="map-canvas"
