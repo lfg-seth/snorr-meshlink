@@ -1,5 +1,21 @@
 # Field testing and tangible results
 
+## 2026-11-17 - Shady Hollow forwarding gap
+
+Read-only live archive/Activity audits at 09:51-09:53 PST reproduce missing
+R001/R008/R011 packets twice, with zero parse errors. G002's 09:45 neighbor
+report hears all three within 26-110 seconds, at -90/-97/-104 dBm respectively;
+R005's latest complete table lists only G002 and R009. G002's own packets
+reach G003 with two reported relays and R009's last-relay candidate.
+
+G002's saved CLIENT/NONE profile and exact installed-build source independently
+disable forwarding: the inherited SD compile flag makes `isRebroadcaster()`
+false regardless of role. This explains a missing bridge through G002;
+end-to-end repair is untested. Next: select a relay-capable Shady Hollow node
+or separately validated SD firmware change, then measure new original packets
+through the forced path. No radio, firmware or production configuration changed.
+[Detailed evidence and limits](../docs/operations/shady-hollow-relay-diagnosis.md).
+
 ## 2026-11-17 - G003 replacement Wi-Fi bench check
 
 G003 / !849ad7a0 passed exact credential and complete intended profile readback

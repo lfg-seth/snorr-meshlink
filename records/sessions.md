@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-17 - Shady Hollow relay diagnosis
+
+Reproduced missing R001/R008/R011 contact with two read-only archive/Activity
+audits. G002 hears all three recently; R005's latest complete neighbor table
+lists G002/R009. G002's own reports reach the uplink, but its saved NONE
+profile and exact published SD firmware independently prohibit RF relaying.
+A role-only change cannot repair this bridge. [Measurements and pinned-source
+evidence](../docs/operations/shady-hollow-relay-diagnosis.md).
+
+Both live audits fail the specific missing-contact assertion with zero parse
+errors, as expected before repair. Documentation checks pass. No firmware,
+radio/admin request, service restart or deployment change. Records isolated
+on `codex/field-relay-diagnosis-20261117`; completed commit pushed to origin.
+Next: owner selects a relay-capable node at Shady Hollow or an independently
+reviewed/validated SD firmware change, followed by forced-path packet and
+hop-budget acceptance. Existing inventory can supply a separate RAK; no purchase
+or site placement is selected by this diagnosis.
+
 ## 2026-11-17 - Recent packet row preview
 
 Prepared MeshLink 0.4.13 on `codex/activity-packet-row`. Activity shows one

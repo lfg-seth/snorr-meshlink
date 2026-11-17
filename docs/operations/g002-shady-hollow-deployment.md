@@ -1,5 +1,11 @@
 # G002 Shady Hollow offline SD recorder - 2026-11-15
 
+**Relay diagnosis, 2026-11-17:** fresh G002 neighbor reports hear
+R001/R008/R011, while their original packets do not reach the gateway archive.
+The retained NONE profile and the SD build's compiled RF-forwarding restriction
+prevent G002 from bridging them to R005. Changing role alone cannot enable
+relaying. [Measurements, exact-source verification and next action](shady-hollow-relay-diagnosis.md).
+
 **Publication update, 2026-11-15:** owner approves publishing the exact fixed
 location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
 complete profiles and raw logs remain ignored.
