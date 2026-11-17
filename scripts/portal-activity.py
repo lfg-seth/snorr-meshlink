@@ -41,12 +41,8 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
                     node["watchdogs"].pop(stream, None)
         dashboard.observe(snapshot, time.monotonic())
         cards = cli["card_snapshot"](dashboard, snapshot, time.time(), False, True, 3)
-        gateway_by_radio = {node["radio"]: node.get("heardThrough") for node in snapshot["nodes"]}
         for card in cards["nodes"]:
             card["name"] = sites[card["radio"]]["name"]
-            gateway = sites.get(gateway_by_radio[card["radio"]])
-            if gateway and gateway.get("name"):
-                card["heardThrough"] = gateway["name"]
         pending = target.with_suffix(".pending")
         pending.write_text(json.dumps(cards, allow_nan=False, separators=(",", ":")), encoding="utf-8")
         pending.replace(target)
@@ -56,6 +52,7 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
             sites = read_roster(db)
             labels = {radio: site["shortName"] for radio, site in sites.items()}
             reload_requested = run({"roster": labels, "selected": labels, "interval": 3, "hours": 24,
+                                    "siteNames": {radio: site["name"] for radio, site in sites.items()},
                                     "cadences": cli["load_cadences"](ROOT / "scripts/node-cadence.json"),
                                     "config": config, "database": str(database),
                                     "backend": str(ROOT / "backend")}, publish)

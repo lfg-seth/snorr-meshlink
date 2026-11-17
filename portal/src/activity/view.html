@@ -32,7 +32,8 @@ article { min-width:0; container-type:inline-size; background:linear-gradient(13
 h2 { font-size:22px; letter-spacing:-.035em; overflow-wrap:anywhere; line-height:1.2; }
 .badge { color:var(--tone); border:1px solid color-mix(in srgb,var(--tone) 38%,transparent);
   background:color-mix(in srgb,var(--tone) 8%,transparent); border-radius:20px; padding:2px 7px; font-size:11px; font-weight:700; white-space:nowrap; }
-.heard { flex-wrap:wrap; color:var(--muted); font-size:12px; margin:6px 0 12px; min-height:18px; }
+.heard { flex-wrap:wrap; color:var(--muted); font-size:12px; margin:6px 0 2px; min-height:18px; }
+.route { color:var(--muted); font-size:12px; overflow-wrap:anywhere; margin-bottom:12px; }
 .radio-label { display:inline-flex; align-items:center; gap:6px; }
 .rx { color:var(--ice); font-weight:650; font-size:11px; }
 .metrics,.tiles { display:grid; gap:6px; }
@@ -51,6 +52,10 @@ h2 { font-size:22px; letter-spacing:-.035em; overflow-wrap:anywhere; line-height
 .controls button[aria-pressed=true] { color:var(--text); background:var(--selected); border-color:var(--accent); }
 .reason { margin-left:auto; color:var(--tone); font-size:12px; }
 .empty { color:var(--muted); font-size:12px; grid-column:1/-1; }
+/* Reserve the wrapped route line so a different receipt above the reader cannot shift the card. */
+@container (max-width:32rem) {
+  .route { min-height:2lh; }
+}
 @container (max-width:22rem) {
   .metrics,.tiles { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .metrics .metric:only-child { grid-column:1/-1; }

@@ -13,6 +13,10 @@ and coordinate the API, frontend and sampler rollout. Restore previous
 application files for rollback and preserve roster edits in the backup.
 [Operator workflow](docs/operations/field-portal.md#updating-the-live-field-roster).
 
+Readings and Timers show reception, reported hops and a last-relay roster
+candidate for the selected gateway receipt. Gateway-local reports have their
+own label. Older snapshots display Unknown for missing route details.
+
 ## 0.4.11 - 2026-11-17
 
 Add R009 Sahara to the map, Infrastructure and Activity roster with its
