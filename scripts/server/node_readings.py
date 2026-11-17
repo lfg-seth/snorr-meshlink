@@ -5,6 +5,7 @@ does not subscribe, publish, authenticate to the portal, or write server files.
 """
 
 import base64
+from bisect import insort
 from collections import defaultdict, OrderedDict
 from datetime import datetime, timezone
 import hashlib
@@ -54,7 +55,22 @@ class Measurements:
             stream: {"cadenceSeconds": period, "lastReceivedAt": None, "sample": None, "basis": "saved-profile"}
             for stream, period in cadences.get(n["radio"], {}).items() if period is not None}} for n in nodes}
         self.seen = OrderedDict()
+        self.packets = []
         self.rejected = 0
+
+    def record_packet(self, radio, stream, at, fingerprint):
+        received = epoch(at)
+        if received is None:
+            return
+        packet = {"id": hashlib.sha256(fingerprint.encode()).hexdigest()[:24],
+                  "radio": radio, "stream": stream, "received": received}
+        # Keep the newest receipts even when archive rows arrive out of time order.
+        insort(self.packets, packet, key=lambda item: item["received"])
+        if len(self.packets) > 48:
+            self.packets.pop(0)
+
+    def recent_packets(self, now):
+        return [p for p in reversed(self.packets) if 0 <= now - p["received"] <= 3600]
 
     def put(self, radio, metric, value, received, measured=None, sample=""):
         if radio not in self.nodes or epoch(received) is None:
@@ -258,7 +274,7 @@ class Decoder:
         return packet_route(found, radio, gateway, self.by_byte, has_bitfield)
 
     def consume(self, at, raw, topic):
-        mqtt, mesh, telem, ports = self.pb
+        mqtt = self.pb[0]
         e = json.loads(raw)
         if e.get("retained") or e.get("payloadBytes", 0) > 4096:
             return
@@ -282,6 +298,12 @@ class Decoder:
             self.state.contact(radio, at, env.gateway_id, route)
         if not unique:
             return
+        stream = self.apply_readings(d, radio, at, fingerprint, topic, binary)
+        self.state.record_packet(radio, stream, at, fingerprint)
+
+    def apply_readings(self, d, radio, at, fingerprint, topic, binary):
+        """Update measurements and identify the stream of this original transmission."""
+        _, mesh, telem, ports = self.pb
         if d.portnum == ports.TELEMETRY_APP:
             t = telem.Telemetry.FromString(d.payload)
             data = self.to_dict(t, preserving_proto_field_name=True)
@@ -293,23 +315,25 @@ class Decoder:
                 self.state.watch(radio, stream, at, fingerprint, measured)
             for metric, value in telemetry_values(data):
                 self.state.put(radio, metric, value, at, measured, fingerprint)
+            return stream if group else "telemetry"
         elif d.portnum == ports.POSITION_APP:
             p = mesh.Position.FromString(d.payload)
             if not p.HasField("latitude_i") or not p.HasField("longitude_i"):
-                return
+                return "position"
             if abs(p.timestamp_millis_adjust) > 999:
-                return
+                return "position"
             measured = utc(p.timestamp + p.timestamp_millis_adjust / 1000) if p.timestamp else None
             data = {"satellites": p.sats_in_view or None, "pdop": p.PDOP / 100 if p.PDOP else None}
             if p.HasField("altitude"):
                 data["altitude"] = p.altitude
             self.state.put(radio, "gps", data, at, measured, fingerprint)
             self.state.watch(radio, "position", at, fingerprint, measured)
+            return "position"
         elif d.portnum in (ports.PRIVATE_APP, ports.NEIGHBORINFO_APP):
             report = self.adapter.decode(topic, binary, epoch(at))
             if not report:
                 self.state.watch(radio, "private-other", at, fingerprint)
-                return
+                return "private-other"
             kind, data = report["kind"], report["data"]
             measured = report.get("measuredAt")
             if kind == "neighbors":
@@ -319,6 +343,7 @@ class Decoder:
                 self.state.watch(radio, stream, at, generation, measured)
                 self.state.put(radio, "standardNeighbors" if standard else "neighbors", data.get("totalNeighbors", len(data.get("rows", []))),
                                at, measured, fingerprint)
+                return stream
             elif kind in ("gateway-health", "sd-health"):
                 # Re-sent SD generations keep their original clock/receipt.
                 metric = "gateway" if kind == "gateway-health" else "sd"
@@ -326,16 +351,19 @@ class Decoder:
                 if prior and isinstance(prior["value"], dict):
                     old = prior["value"]
                     if old.get("bootId") == data["bootId"] and old.get("sequence", -1) >= data["sequence"]:
-                        return
+                        return metric
                 self.state.put(radio, metric, data, at, measured, fingerprint)
                 self.state.watch(radio, metric, at, f"{metric}:{data['bootId']}:{data['sequence']}",
                                  measured, data.get("intervalSeconds"))
+                return metric
             elif kind in ("wifi", "wifi-signal"):
                 self.state.put(radio, "wifi", data, at, measured, fingerprint)
                 self.state.watch(radio, "wifi", at, f"wifi:{data['bootId']}:{data['sequence']}",
                                  measured, data.get("intervalSeconds"))
+                return "wifi"
             else:
                 self.state.watch(radio, "private-other", at, fingerprint)
+                return "private-other"
         else:
             # Event-driven packet types get an age timer but no invented deadline.
             try:
@@ -344,6 +372,7 @@ class Decoder:
                 packet_type = str(d.portnum)
             stream = "nodeinfo" if d.portnum == ports.NODEINFO_APP else "packet:" + packet_type
             self.state.watch(radio, stream, at, fingerprint)
+            return stream
 
 
 def configured_nodes(cfg, roster):
@@ -436,8 +465,10 @@ def run(settings, publish=None):
                                "skipped": state.rejected, "catchingUp": len(rows) == 2000}
                     if publish is None:
                         print(json.dumps(payload, allow_nan=False), flush=True)
-                    elif publish(payload) is False:
-                        return True  # Caller requested a new selection.
+                    else:
+                        payload["packets"] = state.recent_packets(epoch(payload["at"]))
+                        if publish(payload) is False:
+                            return True  # Caller requested a new selection.
                 except sqlite3.Error:
                     print(json.dumps({"error": "Database read unavailable", "at": utc(time.time())}), flush=True)
                 if settings.get("once"):

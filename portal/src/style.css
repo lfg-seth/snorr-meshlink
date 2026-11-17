@@ -319,6 +319,17 @@ nav a[aria-current] {
   min-width: 0;
   flex: 1;
 }
+/* The Activity component supplies its own inner page gutters. */
+.activity-workspace #page-content { padding-inline:0; }
+@media (min-width:851px) and (max-width:1024px) and (pointer:coarse) {
+  .activity-workspace { display:block; }
+  .activity-workspace .sidebar { position:static; width:100%; height:auto; padding:6px 16px; }
+  .activity-workspace .brand { flex-direction:row; align-items:center; padding:0; }
+  .activity-workspace .brand-logo { width:72px; }
+  .activity-workspace .sidebar nav { display:flex; flex-wrap:wrap; }
+  .activity-workspace .sidebar nav a { min-height:44px; }
+  .activity-workspace :is(.nav-label,.sidebar-bottom) { display:none; }
+}
 .demo-banner {
   background: var(--warning-bg);
   color: var(--warning-text);

@@ -321,7 +321,7 @@ function Portal() {
       </main>
     );
   return (
-    <div className={`app-shell ${page === 'Map' ? 'map-workspace' : ''}`}>
+    <div className={`app-shell ${page === 'Map' ? 'map-workspace' : page === 'Activity' ? 'activity-workspace' : ''}`}>
       <a
         className="skip-link"
         href="#page-content"

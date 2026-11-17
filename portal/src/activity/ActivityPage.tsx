@@ -28,6 +28,7 @@ export default function ActivityPage({ token }: { token: string }) {
       active = false;
       controller.abort();
       window.clearTimeout(next);
+      view.destroy();
     };
   }, [token]);
   return <div ref={host} />;

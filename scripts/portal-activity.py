@@ -43,6 +43,7 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
         cards = cli["card_snapshot"](dashboard, snapshot, time.time(), False, True, 3)
         for card in cards["nodes"]:
             card["name"] = sites[card["radio"]]["name"]
+        cards["packets"] = snapshot["packets"]
         pending = target.with_suffix(".pending")
         pending.write_text(json.dumps(cards, allow_nan=False, separators=(",", ":")), encoding="utf-8")
         pending.replace(target)

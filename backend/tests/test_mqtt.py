@@ -18,7 +18,7 @@ from client import ApiError
 from mqtt_adapter import Adapter, PacketRejected, sd_health
 from mqtt_worker import Spool, Worker
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
-from server.node_readings import Decoder, Measurements, relay_index, seed_gateway_receipts
+from server.node_readings import Decoder, Measurements, epoch, relay_index, seed_gateway_receipts
 
 CONFIG = {'host': 'mqtt.example.invalid', 'username': 'worker', 'password': 'fictional',
           'root': 'snorr/pilot', 'channel': 'Test', 'channelKey': 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -84,6 +84,21 @@ class ActivityArchiveTests(unittest.TestCase):
         self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']), (newest, self.first, None))
         self.decoder.consume(newest, *self.archive(self.first, source=self.first, hop_start=3, hop_limit=3))
         self.assertEqual(self.state.nodes[self.first]['route'], {'reception': 'local'})
+
+    def test_packet_row_keeps_originals_between_polls_and_expires_from_first_receipt(self):
+        at, later = '2026-11-17T00:00:00Z', '2026-11-17T00:00:02Z'
+        self.decoder.consume(at, *self.archive(self.first))
+        self.decoder.consume(later, *self.archive(self.second, hop_limit=1))
+        self.decoder.consume(later, *self.archive(self.first, packet_id=124))
+        self.decoder.consume(later, *self.archive(self.first, packet_id=125))
+        end = epoch(at) + 3600
+        packets = self.state.recent_packets(end)
+        self.assertEqual([p['received'] for p in packets], [epoch(later), epoch(later), epoch(at)])
+        self.assertEqual(len({p['id'] for p in packets}), 3)
+        self.assertTrue(all(p['stream'] == 'position' and p['radio'] == self.radio for p in packets))
+        self.assertEqual(set(packets[0]), {'id', 'stream', 'radio', 'received'})
+        self.assertEqual(self.state.recent_packets(end + .1), packets[:2])
+        self.assertEqual(self.state.recent_packets(end + 3), [])
 
     def test_zero_start_needs_decoded_evidence_and_has_no_usable_relay_byte(self):
         at = '2026-11-17T00:00:01.000Z'

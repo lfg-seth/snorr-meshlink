@@ -20,7 +20,10 @@ routerAdd('GET', '/api/meshlink/activity', (e) => {
   } catch {
     throw new ApiError(503, 'Waiting for the activity sampler.');
   }
-  if (Date.now() - Date.parse(snapshot.at) > 15000) snapshot.status = 'No new snapshots';
+  // A stopped sampler can leave a readable file behind. Age receipts from server time.
+  const now = Date.now();
+  snapshot.now = now / 1000;
+  if (now - Date.parse(snapshot.at) > 15000) snapshot.status = 'No new snapshots';
   return e.json(200, snapshot);
 }, $apis.requireAuth('accounts'));
 routerAdd(
