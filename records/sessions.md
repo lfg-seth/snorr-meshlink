@@ -1,5 +1,29 @@
 # Session log
 
+## 2026-11-17 - Deployed compact Activity routes
+
+Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,
+after merging [PR #95](https://github.com/lfg-seth/snorr-meshlink/pull/95)
+and the owner's final bottom-alignment refinement in
+[PR #96](https://github.com/lfg-seth/snorr-meshlink/pull/96).
+The compact preview retains larger text, type/time at the top and routes at
+the bottom. The live row now shows each original packet's first receipt route;
+main cards combine last heard, hops/Direct/Gateway, relay and MQTT node.
+
+The exact host checkout passed 100 backend, 72 portal and 54 script tests,
+typecheck, clean live build and migration parity. PR/main/tag checks passed.
+Pre/post private backups passed checksums and isolated live/demo recovery.
+The final production check verified all ten public file hashes, seven services,
+eleven node cards, ten fixed pins and eight visible packet cards from 48 unique
+transmissions. Fresh packets advanced the feed while retained routes and
+receipt times stayed unchanged. Private configuration and worker queues were
+preserved; no database migration was needed.
+[Evidence, backup hashes and rollback](../docs/operations/field-portal.md#november-17-compact-activity-routes).
+
+Handoff records are on `codex/activity-0414-deployment`. Next useful check is
+a signed-in physical handset fold and refresh across Readings and Timers;
+sustained field reception remains separate from this software release.
+
 ## 2026-11-17 - Compact Activity routes preview
 
 Prepared MeshLink 0.4.14 on `codex/activity-compact-routes`. Each original
