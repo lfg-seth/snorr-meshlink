@@ -333,8 +333,10 @@ export default function InfrastructurePage({
           <div>
             <h3>Declared hardware configuration</h3>
             <dl className="config-list">
+              {selected.deviceType && <><dt>Model</dt><dd>{selected.deviceType}</dd></>}
               <dt>Battery</dt>
               <dd>{selected.batterySetup}</dd>
+              {selected.externalPower && <><dt>External power</dt><dd>{selected.externalPower}</dd></>}
               <dt>Solar</dt>
               <dd>{selected.solarSetup}</dd>
               <dt>Antenna</dt>

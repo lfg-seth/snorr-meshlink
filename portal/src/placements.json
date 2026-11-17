@@ -5,6 +5,7 @@
   {"radio":"!120b04fd","shortName":"R008","name":"Kyle Junction","latitude":36.26259,"longitude":-115.60118},
   {"radio":"!77fdb9f1","shortName":"R010","name":"Upper Bristle","latitude":36.30648,"longitude":-115.67843},
   {"radio":"!8737c2c9","shortName":"R011","name":"Angel Peak Mountain Side","latitude":36.31879,"longitude":-115.58049},
-  {"radio":"!1bbf0638","shortName":"G001","name":"Lee Fire Station","stationBackhaul":true},
-  {"radio":"!1bbf0ab8","shortName":"G002","name":"Shady Hollow","latitude":36.27274,"longitude":-115.58430,"offlineRecorder":true}
+  {"radio":"!1bbf0638","shortName":"G001","name":"Lee Fire Station","stationBackhaul":true,"solarSetup":"Owner-reported 5 W panels via USB-C"},
+  {"radio":"!1bbf0ab8","shortName":"G002","name":"Shady Hollow","latitude":36.27274,"longitude":-115.58430,"offlineRecorder":true},
+  {"radio":"!b03d6790","shortName":"G006","name":"Terry Home","latitude":36.26153180096932,"longitude":-115.18904437592454,"stationBackhaul":true}
 ]
