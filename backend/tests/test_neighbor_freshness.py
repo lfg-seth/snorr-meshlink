@@ -1,6 +1,7 @@
 """Current neighbor evidence against the actual pinned PocketBase binary."""
 from copy import deepcopy
 from contextlib import closing
+from pathlib import Path
 import sqlite3
 import subprocess
 import unittest
@@ -209,7 +210,9 @@ class NeighborFreshnessTests(unittest.TestCase):
     def test_migration_down_up_preserves_history_and_does_not_backfill_current_state(self):
         self.report()
         self.stop()
-        reverted = subprocess.run(command(self.data) + ['migrate', 'down', '1'],
+        migrations = Path(__file__).resolve().parents[1] / 'pb_migrations'
+        count = sum(p.name >= '1792600000_current_neighbor_evidence.js' for p in migrations.glob('*.js'))
+        reverted = subprocess.run(command(self.data) + ['migrate', 'down', str(count)],
                                   input='y\n', text=True, capture_output=True)
         self.assertEqual(reverted.returncode, 0, reverted.stdout + reverted.stderr)
         with closing(sqlite3.connect(self.data / 'data.db')) as database:

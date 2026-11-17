@@ -3,17 +3,24 @@ import test from 'node:test';
 import { placedInfrastructure, placedLinks } from './placed-fleet.ts';
 import { infrastructure } from './demo.ts';
 import type { LinkObservation } from './NeighborTable';
-import placements from './placements.json' with { type: 'json' };
+import previous from './placements.json' with { type: 'json' };
+
+const placements = previous.map(site => ({...site,
+  kind: site.stationBackhaul ? 'stationBackhaul' : site.offlineRecorder ? 'offlineRecorder' : 'repeater',
+}));
 
 test('field views match physical radios and keep fixed order, pins and names across registry renames', () => {
   const registry = placements.map((site, index) => ({
     ...infrastructure[0], id: 'registry-' + index, radioNodeId: site.radio,
   }));
   const legacy = { ...registry[0], id: 'r001', radioNodeId: '!00000000' };
-  const shown = placedInfrastructure([legacy, ...registry.toReversed()]);
+  const shown = placedInfrastructure([legacy, ...registry.toReversed()], placements);
   assert.deepEqual(shown.map(device => [device.shortName, device.name, device.longitude, device.latitude]),
     placements.map(site => [site.shortName, site.name, site.longitude, site.latitude]));
-  assert.equal(shown.length, 10);
+  assert.equal(shown.length, placements.length);
+  const added = {radio: legacy.radioNodeId, shortName: 'NEW', name: 'New site', kind: 'repeater'};
+  assert.deepEqual(placedInfrastructure([legacy], [added]).map(node => node.name), ['New site']);
+  assert.deepEqual(placedInfrastructure([legacy], [{...added, kind: 'mobileGateway'}]), []);
   assert.equal(shown.find(device => device.shortName === 'G002')?.role, 'Offline SD recorder');
   assert.equal(shown.some(device => device.id === 'r001'), false);
   const link = {observerDeviceId: registry[0].id, heardDeviceId: registry[1].id, originalSourceDeviceId: null} as LinkObservation;
@@ -24,7 +31,7 @@ test('Terry Home uses the approved public pin and keeps its own power and gatewa
   const gateway = {...infrastructure[0], radioNodeId: '!b03d6790', latitude: 0, longitude: 0,
     antenna: 'Muzi', batterySetup: '1,000 mAh', externalPower: 'AC power planned', solarSetup: 'Unconfigured',
     gatewayHealth: {state: 'offline', label: 'Offline'}};
-  const [station] = placedInfrastructure([gateway]);
+  const [station] = placedInfrastructure([gateway], placements);
   assert.deepEqual([station.shortName, station.name, station.role], ['G006', 'Terry Home', 'Backhaul']);
   assert.deepEqual([station.latitude, station.longitude], [36.26153180096932, -115.18904437592454]);
   assert.equal(station.externalPower, gateway.externalPower);
@@ -37,7 +44,7 @@ test('Lee Fire Station retains gateway health and uses its owner-supplied deploy
     batterySetup: 'Verified pack', antenna: 'Verified antenna', longitude: -115, latitude: 36,
     locationLabel: 'Lee Fire Station', locationSource: 'owner-deployment-pin',
     gatewayHealth: {state: 'online', label: 'Online'}};
-  const [station] = placedInfrastructure([gateway]);
+  const [station] = placedInfrastructure([gateway], placements);
   assert.equal(station.role, 'Backhaul');
   assert.equal(station.shortName, 'G001');
   assert.equal(station.name, gateway.locationLabel);
@@ -46,6 +53,6 @@ test('Lee Fire Station retains gateway health and uses its owner-supplied deploy
   assert.equal(station.antenna, gateway.antenna);
   assert.equal(station.gatewayHealth, gateway.gatewayHealth);
   for (const stale of [{...gateway, locationLabel:'Former bench'}, {...gateway, locationSource:'old'}]) {
-    assert.equal(placedInfrastructure([stale])[0].longitude, undefined);
+    assert.equal(placedInfrastructure([stale], placements)[0].longitude, undefined);
   }
 });

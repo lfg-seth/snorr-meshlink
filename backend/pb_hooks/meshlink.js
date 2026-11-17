@@ -659,6 +659,17 @@ function state(e) {
     members,
     assignments,
     infrastructure: infra,
+    fieldRoster: c.simulation() ? [] : c.rows(app, 'field_roster', '', 'sortOrder,radio').map(row => {
+      const pin = c.object(row, 'pin');
+      const validPin = Number.isFinite(pin.latitude) && Math.abs(pin.latitude) <= 90 &&
+        Number.isFinite(pin.longitude) && Math.abs(pin.longitude) <= 180;
+      return {
+        radio: row.getString('radio'), name: row.getString('name'), shortName: row.getString('shortName'),
+        kind: row.getString('kind'), batterySetup: row.getString('batterySetup'), antenna: row.getString('antenna'),
+        solarSetup: row.getString('solarSetup'),
+        ...(validPin ? { latitude: pin.latitude, longitude: pin.longitude } : {}),
+      };
+    }),
     currentLinks: neighborCurrent.current(app),
     links: c.rows(app, 'link_observations', '', '-receivedAt,-id').map((row) => ({
       id: row.id,

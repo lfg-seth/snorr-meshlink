@@ -3,6 +3,20 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.12 - 2026-11-17
+
+The live portal and Activity sampler read the private PocketBase field roster.
+The migration seeds ten fixed placements and the mobile gateway. Operators can
+add, rename or remove roster entries while both views are running. Firmware
+and radio compatibility are unchanged. Back up the database before migration
+and coordinate the API, frontend and sampler rollout. Restore previous
+application files for rollback and preserve roster edits in the backup.
+[Operator workflow](docs/operations/field-portal.md#updating-the-live-field-roster).
+
+Readings and Timers show reception, reported hops and a last-relay roster
+candidate for the selected gateway receipt. Gateway-local reports have their
+own label. Older snapshots display Unknown for missing route details.
+
 ## 0.4.11 - 2026-11-17
 
 Add R009 Sahara to the map, Infrastructure and Activity roster with its

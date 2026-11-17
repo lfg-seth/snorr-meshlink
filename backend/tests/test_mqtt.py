@@ -1,6 +1,8 @@
 """Synthetic encrypted wire fixtures, durable retries, and broker outage semantics."""
 from datetime import datetime
 from pathlib import Path
+import json
+import sqlite3
 import struct
 import sys
 import tempfile
@@ -15,6 +17,8 @@ from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
 from client import ApiError
 from mqtt_adapter import Adapter, PacketRejected, sd_health
 from mqtt_worker import Spool, Worker
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
+from server.node_readings import Decoder, Measurements, relay_index, seed_gateway_receipts
 
 CONFIG = {'host': 'mqtt.example.invalid', 'username': 'worker', 'password': 'fictional',
           'root': 'snorr/pilot', 'channel': 'Test', 'channelKey': 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -24,13 +28,15 @@ NOW = 1792010000
 
 
 def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c2ed8,
-            port=portnums_pb2.POSITION_APP, coordinates=True, quality=None):
+            port=portnums_pb2.POSITION_APP, coordinates=True, quality=None, bitfield=None):
     position = mesh_pb2.Position(time=NOW, timestamp=measured)
     for key, value in (quality or {}).items():
         setattr(position, key, value)
     if coordinates:
         position.latitude_i, position.longitude_i = 362000000, -1156000000
     data = mesh_pb2.Data(portnum=port, payload=position.SerializeToString())
+    if bitfield is not None:
+        data.bitfield = bitfield
     packet = mesh_pb2.MeshPacket(id=packet_id)
     setattr(packet, 'from', source)
     # Known wire nonce: ID occupies 8 little-endian bytes, sender 4, counter 4.
@@ -38,6 +44,87 @@ def fixture(gateway='!9ea13cc0', measured=NOW - 30, packet_id=123, source=0x699c
     packet.encrypted = Cipher(algorithms.AES(b'\0' * 16), modes.CTR(nonce)).encryptor().update(data.SerializeToString())
     envelope = mqtt_pb2.ServiceEnvelope(packet=packet, channel_id='Test', gateway_id=gateway)
     return f'snorr/pilot/2/e/Test/{gateway}', envelope.SerializeToString()
+
+
+class ActivityArchiveTests(unittest.TestCase):
+    radio = '!699c2ed8'
+    first, second = CONFIG['gateways']
+    known_route = {'reception': 'relayed', 'reportedHops': 2, 'lastRelayCandidate': 'Test Ridge'}
+
+    def setUp(self):
+        names = {self.radio: 'Source', self.first: 'East', self.second: 'West', '!000000ab': 'Test Ridge'}
+        self.state = Measurements([{'radio': radio, 'label': name} for radio, name in names.items()])
+        self.decoder = Decoder(CONFIG, self.state, str(Path(__file__).resolve().parents[1]), relay_index(names))
+
+    def archive(self, gateway, packet_id=123, source=None, bitfield=None, **header):
+        topic, binary = fixture(gateway=gateway, packet_id=packet_id, source=int((source or self.radio)[1:], 16),
+                                bitfield=bitfield)
+        envelope = mqtt_pb2.ServiceEnvelope.FromString(binary)
+        for field, value in header.items():
+            setattr(envelope.packet, field, value)
+        binary = envelope.SerializeToString()
+        raw = json.dumps({'payloadBase64': base64.b64encode(binary).decode(), 'payloadBytes': len(binary)})
+        return raw, topic
+
+    def test_selected_transport_copy_and_newer_legacy_packet(self):
+        node = self.state.nodes[self.radio]
+        at, later, newest = ('2026-11-17T00:00:0%dZ' % n for n in (1, 2, 3))
+        direct = self.archive(self.first, hop_start=3, hop_limit=3, relay_node=0xd8, transport_mechanism=1)
+        relayed = self.archive(self.second, hop_start=2, relay_node=0xab, transport_mechanism=1)
+        self.decoder.consume(at, *direct)
+        self.decoder.consume(later, *relayed)  # A duplicate alone cannot renew contact.
+        self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']),
+                         (at, self.first, {'reception': 'direct', 'reportedHops': 0}))
+        self.state.contact(self.radio, later)  # DB contact at the duplicate's time.
+        self.decoder.consume(later, *relayed)
+        self.decoder.consume(later, *direct)
+        self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']),
+                         (later, self.second, self.known_route))
+        self.decoder.consume(newest, *self.archive(self.first, packet_id=124))
+        self.assertEqual((node['lastContactAt'], node['heardThrough'], node['route']), (newest, self.first, None))
+        self.decoder.consume(newest, *self.archive(self.first, source=self.first, hop_start=3, hop_limit=3))
+        self.assertEqual(self.state.nodes[self.first]['route'], {'reception': 'local'})
+
+    def test_zero_start_needs_decoded_evidence_and_has_no_usable_relay_byte(self):
+        at = '2026-11-17T00:00:01.000Z'
+        raw, topic = self.archive(self.first, bitfield=0, transport_mechanism=1)
+        self.decoder.consume(at, raw, topic)
+        expected = {'reception': 'unknown', 'reportedHops': 0}
+        self.assertEqual(self.state.nodes[self.radio]['route'], expected)
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        db.execute('CREATE TABLE mqtt_archive (receivedAt,envelope,topic)')
+        db.execute('INSERT INTO mqtt_archive VALUES (?,?,?)', (at, raw, topic))
+        normalized = self.decoder.adapter.decode(topic, base64.b64decode(json.loads(raw)['payloadBase64']), NOW)
+        key = '{kind}:{deviceId}:{packetId}'.format(**normalized)
+        self.assertEqual(self.decoder.persisted_route(db, self.radio, self.first, at, key), expected)
+
+    def test_saved_receipt_requires_matching_gateway_time_and_packet_content(self):
+        db = sqlite3.connect(':memory:')
+        self.addCleanup(db.close)
+        db.execute('CREATE TABLE devices (key,lastContactAt)')
+        db.execute('CREATE TABLE packet_receipts (deviceId,receivedAt,gatewayId,outcome,packetKey)')
+        db.execute('CREATE TABLE mqtt_archive (receivedAt,envelope,topic)')
+        at = '2026-11-17T00:00:01.000Z'
+        rows = [
+            self.archive(self.second, packet_id=124, hop_start=3, hop_limit=3, relay_node=0xd8, transport_mechanism=1),
+            self.archive(self.first, hop_start=3, hop_limit=3, relay_node=0xd8, transport_mechanism=1),
+            self.archive(self.second, hop_start=2, relay_node=0xab, transport_mechanism=1),
+        ]
+        db.executemany('INSERT INTO mqtt_archive VALUES (?,?,?)', [(at, *row) for row in rows])
+        raw, topic = rows[-1]
+        packet = self.decoder.adapter.decode(topic, base64.b64decode(json.loads(raw)['payloadBase64']), NOW)
+        key = '{kind}:{deviceId}:{packetId}'.format(**packet)
+        db.execute('INSERT INTO devices VALUES (?,?)', ('b001', at))
+        db.execute('INSERT INTO packet_receipts VALUES (?,?,?,?,?)', ('b001', at, 'g002', 'duplicate', key))
+        self.state.contact(self.radio, at)
+        seed_gateway_receipts(db, self.state, {'b001': self.radio}, CONFIG['gateways'], self.decoder)
+        for row in rows:
+            self.decoder.consume(at, *row)
+        node = self.state.nodes[self.radio]
+        self.assertEqual((node['heardThrough'], node['route']), (self.second, self.known_route))
+        db.execute('INSERT INTO mqtt_archive VALUES (?,?,?)', (at, *self.archive(self.second)))
+        self.assertIsNone(self.decoder.persisted_route(db, self.radio, self.second, at, key))
 
 
 class AdapterTests(unittest.TestCase):

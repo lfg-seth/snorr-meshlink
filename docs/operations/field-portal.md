@@ -14,13 +14,40 @@ owns the seven saved radio pins. G001 at Lee Fire Station uses the deployment pi
 supplied by the owner on November 15. The live registry for physical radio `!1bbf0638` stores the
 coordinates with `locationSource=owner-deployment-pin` and
 `locationLabel=Lee Fire Station`. Keep these coordinates in private backup
-and recovery data. The portal and its activity sampler share
-[the field placements](../../portal/src/placements.json). Match physical radio IDs before
+and recovery data. The release history below describes the previous bundled placements. Match physical radio IDs before
 applying site names and map pins. The map shows saved field coordinates.
 Shady Hollow records locally and has no scheduled backhaul, Wi-Fi or remote SD
 watchdog. Ordinary radio observations can still arrive through another gateway.
 The live registry continues to collect the full fleet. Users retains member
 assignments. The public demo uses its separate synthetic database.
+
+## Updating the live field roster
+
+After the runtime-roster release is deployed, open the live PocketBase
+`field_roster` collection through the existing private superuser connection.
+Create or edit one record per physical radio. Enter its lowercase `!xxxxxxxx`
+radio ID, short name, display name, kind and numeric sort order. Use
+`repeater`, `stationBackhaul`, `offlineRecorder` or `mobileGateway`.
+For a fixed site, enter the approved coordinates together in the JSON `pin`
+field as `latitude` and `longitude`. A station can keep its existing
+registry pin when its source and site label match. Mobile gateways appear
+in Activity only. Removing a roster record withdraws it from the field views
+and preserves device history.
+
+The signed-in portal reads these rows on its normal state refresh and joins
+them to registered infrastructure by radio ID. The Activity publisher checks
+the same collection each sampling cycle (three seconds) and reloads its
+selected radios and recent readings in process after an edit. A silent radio
+can have a card before it has a receipt. Provision a new physical device and
+its MQTT mappings through the existing intake process to receive telemetry.
+
+For the first rollout, take the normal private backup, apply the PocketBase
+migration and deploy the API hook, frontend and sampler together. The migration
+seeds ten fixed placements and the G003 mobile card. Verify an authenticated
+state refresh and Activity snapshot against the saved roster. Subsequent
+roster edits take effect while both services are running. Roster data is
+included in the normal PocketBase database backup. For rollback, preserve
+that backup and restore the previous application files and placement file.
 
 ## November 16 portal appearance release
 
@@ -56,6 +83,40 @@ installed backend hooks and eight migration files matched the tagged source.
 | Pre-release `meshlink-20261117T065201Z.tar.gz` | `3ebbb703fd1ae11ff6c107fa501cd064d535b3a80819491c2de60319839c7dc0` |
 | Post-release `meshlink-20261117T065732Z.tar.gz` | `20f7ade69b073c226ba9777d5a44c915f2a0e3ad77151d0ab7164f1a74bb5757` |
 
+## Activity packet routes
+
+The route line in Readings and Timers describes the receipt selected for
+**Last heard** and **through**. On a timestamp tie the first attributed gateway
+keeps its place. When recovering a saved database contact, the sampler looks
+up its gateway and receive time in the raw MQTT archive and verifies the
+original source and normalized packet key. Multiple matching envelopes leave
+the route unknown. Each newer contact replaces all route fields together.
+Reports originating at the uplinking gateway appear as **Gateway-local report**.
+
+The pinned firmware sets the original hop budget and writes the transmitter's
+relay byte. The receiver extracts both three-bit hop fields and the relay byte
+from the radio header. The gateway's encrypted MQTT envelope carries the
+received packet with the gateway's own ID. The gateway can also publish its
+own outgoing packet before radio transmission. [Transmit path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L343-L390), [radio receive path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/RadioLibInterface.cpp#L645-L654), [gateway receive path](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L732-L836), [MQTT envelope](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mqtt/MQTT.cpp#L822-L844).
+
+**Reported hops** is the starting limit minus the remaining limit, with both
+values in 0–7 and the remaining limit at most the start. A zero start requires
+the optional bitfield in the decoded payload to establish sender support. In
+that case the receiver has discarded the relay byte, so the count can be zero
+with reception still Unknown. The first forward decrements the limit. Later
+forwards can preserve it when the forwarding node and the previous relay
+have ROUTER, ROUTER_LATE or CLIENT_BASE roles and the previous relay matches
+a favorite. Physical relays can therefore exceed reported hops.
+[Firmware hop calculation](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NodeDB.cpp#L1675-L1691), [role checks](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/Router.cpp#L85-L133), [forwarding](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NextHopRouter.cpp#L135-L159).
+
+**Direct** requires RF evidence, a zero difference and a usable byte matching
+only the sender in the known roster. **Relayed** requires RF evidence and a
+positive difference. Its last relay is labeled **roster candidate** only when
+the byte matches one named radio distinct from both source and gateway. The
+lookup includes known radios outside the displayed fleet and treats IDs ending
+in `00` and `ff` as a possible collision. Unknown radios can share the same byte.
+[Packet fields](https://github.com/meshtastic/protobufs/blob/6b1ded439633cd03d4af85b44231b91d1d106278/meshtastic/mesh.proto), [byte encoding](https://github.com/lfg-seth/firmware/blob/5bd492399f5f3d4a65c01256f907f7b907b80921/src/mesh/NodeDB.h#L215), [neighbor telemetry limits](../research/node-neighbor-telemetry.md).
+
 ## Serving Activity
 
 The portal serves the field dashboard from the Activity tab after live sign-in.
@@ -71,7 +132,7 @@ grace. Individual timers still show earlier misses. Repeater cards omit GPS,
 NeighborInfo and NodeInfo. SNNS neighbor reports retain their own timer and
 readings. A reported Wi-Fi or MQTT Down value displays in red.
 
-Install the release's `scripts/portal-activity.py`, `scripts/watch-nodes.py`,
+For the original file-based release, install `scripts/portal-activity.py`, `scripts/watch-nodes.py`,
 `scripts/server/node_readings.py`, `scripts/node-cadence.json` and
 `portal/src/placements.json` under `/opt/meshlink` at the same relative paths.
 Install [the service](../../deploy/portal/meshlink-activity.service) in

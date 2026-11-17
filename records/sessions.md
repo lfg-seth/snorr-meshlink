@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-17 - Shared runtime field roster
+
+Prepared MeshLink 0.4.12 on `codex/live-field-roster`. The authenticated portal
+state and read-only Activity publisher now use a private PocketBase collection
+seeded with the ten fixed placements (including Sahara) and G003 mobile.
+Existing device and MQTT mappings continue to own telemetry identity. An
+offline publisher test exercised add, rename and removal in the same process.
+Portal tests, type checking and production build passed. Next: review the
+branch and select a backed-up production rollout with signed-in map and card
+verification. Production deployment remains pending.
+[Operator workflow](../docs/operations/field-portal.md#updating-the-live-field-roster).
+
 ## 2026-11-17 - Sahara portal and Activity deployment
 
 Owner requests the portal and Activity update after R009 configuration.
@@ -29,6 +41,24 @@ Next: fresh R009 reception and physical mount/placement confirmation, then
 sustained relay/coverage/runtime and handset visual acceptance. Documentation
 handoff is isolated on `codex/sahara-deployment-records` to preserve concurrent
 local roster implementation edits.
+
+## 2026-11-17 - Activity radio routes
+
+Pushed `c9798f5` on `codex/activity-radio-route`. Last heard, gateway,
+reception, reported hops and last-relay candidate now follow the same receipt
+in Readings and Timers. One query-only archive replay for the eleven-card
+roster returned five Direct, three Relayed with named candidates, and three
+gateway-local reports. The sampler recorded zero replay errors. [Selection rules and firmware evidence](../docs/operations/field-portal.md#activity-packet-routes).
+
+All 71 portal tests, typecheck and build passed. Windows ran 53 script tests
+with one POSIX skip. Edge and WebKit kept the route text node and scroll
+position through four synthetic refreshes in each view at 320, 382, 460 and
+740 pixels, with no horizontal overflow. The Windows backend suite encountered
+loopback resets in three existing integration tests and skipped seven POSIX
+checks. All 98 backend tests passed on the same commit in [Linux CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/44126097252).
+
+Next is branch review. Production deployment requires separate owner selection,
+followed by signed-in handset verification.
 
 ## 2026-11-17 - R009 Sahara configuration
 

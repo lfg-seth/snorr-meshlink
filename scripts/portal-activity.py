@@ -2,32 +2,38 @@
 import json
 from pathlib import Path
 import runpy
+from contextlib import closing
+import sqlite3
 import time
 
 from server.node_readings import run
 
 ROOT = Path(__file__).resolve().parents[1]
+DATABASE = Path("/var/lib/meshlink/pb_data/data.db")
 
 
-def main():
+def read_roster(db):
+    rows = db.execute("SELECT radio, shortName, name, kind FROM field_roster")
+    return {radio: {"shortName": label, "name": name, "kind": kind}
+            for radio, label, name, kind in rows}
+
+
+def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"), config="/etc/meshlink/mqtt.json"):
     cli = runpy.run_path(str(ROOT / "scripts/watch-nodes.py"))
-    sites = {site["radio"]: site for site in json.loads((ROOT / "portal/src/placements.json").read_text())}
-    # Mobile gateways appear in Activity without a fixed deployment pin.
-    sites["!849ad7a0"] = {"shortName": "G003", "name": "Seth Mobile", "mobileGateway": True}
-    labels = {radio: site["shortName"] for radio, site in sites.items()}
     dashboard = cli["Dashboard"](False, grace=3, show_inactive=True)
-    target = Path("/run/meshlink-activity/snapshot.json")
 
     def publish(snapshot):
+        if read_roster(db) != sites:
+            return False  # Reload selection and bootstrap recent readings for new radios.
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
             for reading in ("gps", "standardNeighbors"):
                 node["readings"].pop(reading, None)
             for stream in ("position", "neighbor_info", "nodeinfo"):
                 node["watchdogs"].pop(stream, None)
-            if site.get("stationBackhaul") or site.get("mobileGateway"):
+            if site["kind"] in ("stationBackhaul", "mobileGateway"):
                 node["kind"] = "gateway"
-            elif site.get("offlineRecorder"):
+            elif site["kind"] == "offlineRecorder":
                 node["kind"] = "recorder"
                 # Historical uplink readings predate the offline deployment.
                 for stream in ("gateway", "wifi", "sd"):
@@ -35,20 +41,23 @@ def main():
                     node["watchdogs"].pop(stream, None)
         dashboard.observe(snapshot, time.monotonic())
         cards = cli["card_snapshot"](dashboard, snapshot, time.time(), False, True, 3)
-        gateway_by_radio = {node["radio"]: node.get("heardThrough") for node in snapshot["nodes"]}
         for card in cards["nodes"]:
             card["name"] = sites[card["radio"]]["name"]
-            gateway = sites.get(gateway_by_radio[card["radio"]])
-            if gateway and gateway.get("name"):
-                card["heardThrough"] = gateway["name"]
         pending = target.with_suffix(".pending")
         pending.write_text(json.dumps(cards, allow_nan=False, separators=(",", ":")), encoding="utf-8")
         pending.replace(target)
 
-    run({"roster": labels, "selected": labels, "interval": 3, "hours": 24,
-         "cadences": cli["load_cadences"](ROOT / "scripts/node-cadence.json"),
-         "config": "/etc/meshlink/mqtt.json", "database": "/var/lib/meshlink/pb_data/data.db",
-         "backend": str(ROOT / "backend")}, publish)
+    with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
+        while True:
+            sites = read_roster(db)
+            labels = {radio: site["shortName"] for radio, site in sites.items()}
+            reload_requested = run({"roster": labels, "selected": labels, "interval": 3, "hours": 24,
+                                    "siteNames": {radio: site["name"] for radio, site in sites.items()},
+                                    "cadences": cli["load_cadences"](ROOT / "scripts/node-cadence.json"),
+                                    "config": config, "database": str(database),
+                                    "backend": str(ROOT / "backend")}, publish)
+            if not reload_requested:
+                break
 
 
 if __name__ == "__main__":

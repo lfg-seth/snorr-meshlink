@@ -62,16 +62,16 @@ function Portal() {
   const trackers = snapshot?.trackers ?? [];
   const members = snapshot?.members ?? [];
   const fieldView = Boolean(snapshot && !simulation && !demoMode);
-  const infrastructureNodes = fieldView ? placedInfrastructure(snapshot!.infrastructure) : snapshot?.infrastructure ?? [];
+  const infrastructureNodes = fieldView ? placedInfrastructure(snapshot!.infrastructure, snapshot!.fieldRoster ?? []) : snapshot?.infrastructure ?? [];
   const fieldIds = new Set(infrastructureNodes.map(device => device.id));
-  const recorder = infrastructureNodes.find(device => device.role === 'Offline SD recorder');
+  const recorderIds = new Set(infrastructureNodes.filter(device => device.role === 'Offline SD recorder').map(device => device.id));
   const displayedTrackers = fieldView ? [] : trackers;
   const assignments = snapshot?.assignments ?? [];
   const nameJobs = snapshot?.nameJobs ?? [];
   const messages = snapshot?.messages ?? [];
   const incidents = (snapshot?.incidents ?? []).filter(item => !fieldView || fieldIds.has(item.deviceId));
   const warnings = (snapshot?.warnings ?? []).filter(item => !fieldView || (fieldIds.has(item.deviceId)
-    && !(item.deviceId === recorder?.id && item.kind === 'backhaul')));
+    && !(recorderIds.has(item.deviceId) && item.kind === 'backhaul')));
   const events = snapshot?.events ?? [];
   const rules = snapshot?.rules ?? {};
   const links = snapshot ? currentSignalRows(snapshot) : [];
