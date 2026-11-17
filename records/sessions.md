@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-16 - Desktop staging for iPhone review
+
+Started a private Tailscale Serve preview of MeshLink 0.4.10 on the owner's
+desktop. It serves the ten verified build files from `80ad2e7`. Sign-in and
+allowlisted portal reads use the existing HTTPS API. Operational writes return
+405. Production continues to serve 0.4.9 at `0685156`.
+
+The staging URL returned the expected version. Anonymous Activity returned 401.
+The live sampler reported ten nodes with readings and timers in a two-second-old
+snapshot. Headless Edge opened the staging demo and sign-in screen and rendered
+a browser-only Activity fixture. The remaining check is signing in on the
+owner's iPhone and viewing the live cards across a fold. The staging runtime
+is in ignored `local-data/desktop-staging/80ad2e7/`; the Tailscale URL was
+shared privately with the owner.
+
 ## 2026-11-16 - iPhone Duo layout
 
 Prepared MeshLink 0.4.10 with the theme selector and the deployed 0.4.9
