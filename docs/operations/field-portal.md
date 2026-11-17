@@ -1,5 +1,14 @@
 # Field portal and activity
 
+## November 17 Sahara roster update
+
+**MeshLink 0.4.11** at tagged main commit
+`fbf161aa7bc53fd9187174ffa929daea26a421c3` adds **R009 / Sahara** to the
+map, Infrastructure and Activity. Its live registry records the supplied pin,
+Case 12, eight cells and Muzi while retaining physical identity and history.
+The live sampler and released renderer now show eleven cards.
+[Release, validation and remaining field gates](r009-sahara-deployment.md#portal-and-activity-update).
+
 The [November 15 site table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations)
 owns the seven saved radio pins. G001 at Lee Fire Station uses the deployment pin
 supplied by the owner on November 15. The live registry for physical radio `!1bbf0638` stores the

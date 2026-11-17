@@ -1,5 +1,35 @@
 # Session log
 
+## 2026-11-17 - Sahara portal and Activity deployment
+
+Owner requests the portal and Activity update after R009 configuration.
+**MeshLink 0.4.11**, [PR #89](https://github.com/lfg-seth/snorr-meshlink/pull/89),
+tagged main **fbf161aa7bc53fd9187174ffa929daea26a421c3**, is live. Sahara's
+supplied pin, Case 12/eight cells/Muzi and inventory panel description are
+recorded under the same R009 registry identity. History, monitoring policy and
+other device configurations are preserved. No further radio changes.
+
+Same-commit LXC validation passes 71 portal tests, typecheck/live build, 95
+backend tests and 44 dashboard tests; PR/main/tag CI pass. All ten public files
+match the build. The live sampler and released renderer show eleven cards,
+including R009 Sahara, with readings and timers. Seven services and new MQTT
+ingestion pass. This does not establish a new R009 RF receipt or installation.
+[Detailed evidence and rollback](../docs/operations/r009-sahara-deployment.md#portal-and-activity-update).
+
+Pre-deployment backup `meshlink-20261117T161240Z.tar.gz`, SHA-256
+`13143d190363e4f2e2503a5d8f8f0d04807a1759b3d9f931e08df3563eaa6c69`,
+passes checksum and isolated live/demo recovery. Post-deployment backup
+`meshlink-20261117T161722Z.tar.gz`, SHA-256
+`b3cce118b60005833331298b50537f5242ee9fb103402b1504697f68700977e4`,
+passes checksum and isolated live/demo recovery. Services restarted after backup,
+and the fresh Sahara snapshot check passes again. Documentation whitespace and
+local-link checks pass for all four changed records.
+
+Next: fresh R009 reception and physical mount/placement confirmation, then
+sustained relay/coverage/runtime and handset visual acceptance. Documentation
+handoff is isolated on `codex/sahara-deployment-records` to preserve concurrent
+local roster implementation edits.
+
 ## 2026-11-17 - R009 Sahara configuration
 
 Configured identity-checked **R009 / !da581e5f** on COM24 for **Sahara / Case 12 /
