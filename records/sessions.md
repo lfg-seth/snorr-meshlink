@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-17 - Activity radio routes
+
+Pushed `c9798f5` on `codex/activity-radio-route`. Last heard, gateway,
+reception, reported hops and last-relay candidate now follow the same receipt
+in Readings and Timers. One query-only archive replay for the eleven-card
+roster returned five Direct, three Relayed with named candidates, and three
+gateway-local reports. The sampler recorded zero replay errors. [Selection rules and firmware evidence](../docs/operations/field-portal.md#activity-packet-routes).
+
+All 71 portal tests, typecheck and build passed. Windows ran 53 script tests
+with one POSIX skip. Edge and WebKit kept the route text node and scroll
+position through four synthetic refreshes in each view at 320, 382, 460 and
+740 pixels, with no horizontal overflow. The Windows backend suite encountered
+loopback resets in three existing integration tests and skipped seven POSIX
+checks. All 98 backend tests passed on the same commit in [Linux CI](https://github.com/lfg-seth/snorr-meshlink/actions/runs/44126097252).
+
+Next is branch review. Production deployment requires separate owner selection,
+followed by signed-in handset verification.
+
 ## 2026-11-17 - R009 Sahara configuration
 
 Configured identity-checked **R009 / !da581e5f** on COM24 for **Sahara / Case 12 /
