@@ -1,5 +1,18 @@
 # Hardware inventory
 
+## 2026-11-17 - R002 allocated to SaharaFG
+
+Owner selects existing **R002 / !05237743 / Case 11 / four 18650 cells /
+no solar / fiberglass antenna** for SaharaFG. Retained survey firmware,
+CLIENT/fixed pin, enabled MQTT permission and complete intended profile pass
+reboot verification; serial closed. Owner plans a nearby antenna comparison
+against R009 / Muzi. Case 11 is v4 ASA with SMA/Type N ports,
+no fitted panels and two four-cell parallel holders at intake. Eight holder
+slots do not change the owner's four-cell selection. Cell capacity, wiring,
+antenna model/gain and physical installation remain unverified. No purchase
+or aggregate stock change is inferred.
+[Configuration evidence](../docs/operations/r002-saharafg-deployment.md).
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;
@@ -177,7 +190,7 @@ Each battery holder in this intake is a **four-cell 18650 parallel holder
 | Case 8 | v4 | ASA | 2 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
 | Case 9 | v4 | ASA | 1 × SMA; 1 × Type N | 2 × 200 mA | 2 × four-cell parallel | 8 | 0 | 0 | — |
 | Case 10 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
-| Case 11 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 | 0 | Pass-through for larger 5 W panels |
+| Case 11 | v4 | ASA | 1 × SMA; 1 × Type N | 0 | 2 × four-cell parallel | 8 | 0 at intake | 0 at intake | 2026-11-17: owner selects R002 / SaharaFG, four 18650 cells, no solar and fiberglass antenna; [configuration](../docs/operations/r002-saharafg-deployment.md). Installation unverified. |
 | Case 12 | v4 | PETG | 1 × SMA | 2 × 160 mA | 2 × four-cell parallel | 8 | 0 at intake | 0 at intake | 2026-11-17: owner selects R009 / Sahara, eight 18650 cells and Muzi; [configuration](../docs/operations/r009-sahara-deployment.md). Installation unverified. |
 | Case 13 | v3 | ASA | 1 × SMA | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |
 | Case 14 | v3 | ASA | 1 × Type N | 1 × 160 mA | 1 × four-cell parallel | 4 | 0 | 0 | — |

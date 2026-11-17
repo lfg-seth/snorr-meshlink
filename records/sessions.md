@@ -1,5 +1,37 @@
 # Session log
 
+## 2026-11-17 - R002 SaharaFG configuration
+
+Configured identity-checked **R002 / !05237743 / USB 397EBE4F36E1F126** on
+COM14 for **SaharaFG / Case 11 / four 18650 cells / no solar / fiberglass
+antenna** at the owner's supplied fixed pin. Retained **rak4631-survey /
+2.7.26.bcb22e0**, names, identity/admin keys and private channel. **CLIENT**,
+fixed position and enabled MQTT permission pass complete intended-profile,
+firmware/identity/channel and exact-coordinate readback before/after explicit
+reboot. Owner superseded the initial ROUTER selection with CLIENT to compare
+fiberglass against nearby R009 / Muzi. Restored CLIENT messaging availability,
+LOCAL_ONLY, 180-second device/environment/power reporting and 21,600-second
+NeighborInfo. Existing position cadence/GPS settings are preserved. Serial is
+closed; raw backups/evidence remain private.
+[Configuration and remaining acceptance](../docs/operations/r002-saharafg-deployment.md).
+
+At owner request, added R002 to the shared live field roster and updated only
+its existing registry metadata. Authenticated state and released renderers
+verify **SaharaFG / exact pin / Case 11 / four cells / fiberglass / no solar**,
+**12 Activity cards / 11 fixed pins**, timers and stable refresh. All seven
+services and anonymous Activity 401 pass. Existing identities/history, other
+device configurations and eleven previous roster rows are preserved. The
+online SQLite backup passes integrity check; before/after JSON and checksum
+are recorded in the evidence. Final checks use then-current **0.4.14 / 095c2c9**;
+this task made no application release or service restart. R002's last-contact
+value advanced to **18:41:58.358 UTC**. This is not an antenna comparison.
+
+Records are isolated on **codex/r002-saharafg-20261117** to preserve the active
+software edits. Documentation whitespace and local-link checks pass.
+Next: placement/mount confirmation and comparable antenna
+observations, then sustained relay/coverage/battery-only runtime. No flash,
+installation or new RF/sensor measurement performed.
+
 ## 2026-11-17 - Deployed recent Activity packets
 
 The owner approved the preview. Merged [PR #93](https://github.com/lfg-seth/snorr-meshlink/pull/93)

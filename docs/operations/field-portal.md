@@ -1,5 +1,17 @@
 # Field portal and activity
 
+## November 17 SaharaFG runtime roster update
+
+Owner adds **R002 / SaharaFG** with its supplied fixed pin, **Case 11 / four
+18650 cells / fiberglass / no solar**, for a nearby antenna comparison with
+R009. R002 remains **CLIENT**. The shared live roster and existing device
+metadata are updated without an application release or service restart by this
+task. Authenticated state, Activity and the released renderers verify twelve
+cards and eleven fixed pins, including SaharaFG's exact pin and equipment.
+Final checks used the then-current MeshLink 0.4.14. Existing identities/history,
+other device configurations and prior roster entries are preserved.
+[Backup, verification and remaining comparison](r002-saharafg-deployment.md#live-portal-and-activity-roster).
+
 ## November 17 recent packet row
 
 MeshLink 0.4.13 shipped from tagged main commit

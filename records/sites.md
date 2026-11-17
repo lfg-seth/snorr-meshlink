@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-11-17 - SaharaFG repeater selection
+
+Owner selects **R002 / SaharaFG / Case 11 / four 18650 cells / no solar /
+fiberglass antenna** at **36.1465262259956, -115.11054976227331**. The radio's
+fixed pin rounds to **36.1465262, -115.1105498** and passes full profile/reboot
+verification as **CLIENT**, selected for a planned nearby fiberglass-versus-Muzi
+comparison with R009. Physical installation, access/mount details, measured
+signal differences, coverage and battery-only runtime remain unverified.
+[Configuration evidence](../docs/operations/r002-saharafg-deployment.md).
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at
