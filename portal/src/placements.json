@@ -3,6 +3,7 @@
   {"radio":"!a65601b3","shortName":"R005","name":"Angel Peak Vegas Side","latitude":36.31763,"longitude":-115.57288},
   {"radio":"!638b9515","shortName":"R006","name":"Lee Junction","latitude":36.34236,"longitude":-115.65398},
   {"radio":"!120b04fd","shortName":"R008","name":"Kyle Junction","latitude":36.26259,"longitude":-115.60118},
+  {"radio":"!da581e5f","shortName":"R009","name":"Sahara","latitude":36.14484090826288,"longitude":-115.11061987480886},
   {"radio":"!77fdb9f1","shortName":"R010","name":"Upper Bristle","latitude":36.30648,"longitude":-115.67843},
   {"radio":"!8737c2c9","shortName":"R011","name":"Angel Peak Mountain Side","latitude":36.31879,"longitude":-115.58049},
   {"radio":"!1bbf0638","shortName":"G001","name":"Lee Fire Station","stationBackhaul":true,"solarSetup":"Owner-reported 5 W panels via USB-C"},

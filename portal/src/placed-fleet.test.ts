@@ -13,7 +13,7 @@ test('field views match physical radios and keep fixed order, pins and names acr
   const shown = placedInfrastructure([legacy, ...registry.toReversed()]);
   assert.deepEqual(shown.map(device => [device.shortName, device.name, device.longitude, device.latitude]),
     placements.map(site => [site.shortName, site.name, site.longitude, site.latitude]));
-  assert.equal(shown.length, 9);
+  assert.equal(shown.length, 10);
   assert.equal(shown.find(device => device.shortName === 'G002')?.role, 'Offline SD recorder');
   assert.equal(shown.some(device => device.id === 'r001'), false);
   const link = {observerDeviceId: registry[0].id, heardDeviceId: registry[1].id, originalSourceDeviceId: null} as LinkObservation;

@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-17 - G003 replacement Wi-Fi bench check
+
+G003 / !849ad7a0 passed exact credential and complete intended profile readback
+after its network configuration restart. Two USB status replies ten seconds
+apart showed association, assigned IP and direct MQTT connected at -28 dBm.
+No fresh portal receipt or vehicle endurance measurement was taken.
+[Evidence](../docs/operations/g003-mobile-gateway.md#2026-11-17-vehicle-wi-fi-update).
+
+
 ## 2026-11-16 - G006 fixed gateway bench readback
 
 Heltec V3 **G006 / !b03d6790** retained its gateway firmware and passed complete
