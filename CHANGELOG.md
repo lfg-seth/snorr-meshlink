@@ -3,6 +3,15 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.11 - 2026-11-17
+
+Add R009 Sahara to the map, Infrastructure and Activity roster with its
+owner-supplied fixed location, eight cells and Muzi antenna. The live registry
+records Case 12 and the preserved three-minute reporting profile. Existing
+backend, database and firmware remain compatible without schema migration.
+Rollback restores the 0.4.10 assets, placement list and prior R009 configuration.
+Configuration selection does not establish physical installation or reception.
+
 ## 0.4.10 - 2026-11-16
 
 The portal follows the device's light or dark appearance. The Theme selector
