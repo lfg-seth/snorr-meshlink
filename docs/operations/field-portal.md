@@ -155,3 +155,19 @@ hook and portal version marker.
 | --- | --- |
 | `meshlink-20261116T204952Z.tar.gz` | `c1b7a3add7d5b87ec3bac5f8f3c99d88e81352cd8ba5a782118e24b479a73198` |
 | `meshlink-20261116T205547Z.tar.gz` | `853894fdca3103327cb857406378e4c88753780f52fcf8051d77f9f6e0b8c571` |
+
+## Terry Home gateway deployment
+
+MeshLink **0.4.3** deployed from `31a905b` on November 16 Pacific.
+[PR #75](https://github.com/lfg-seth/snorr-meshlink/pull/75) adds physical
+radio **!b03d6790** to the field roster. The live registry retains the original
+row and source/gateway mappings. Signed-in Edge verified the approved pin,
+equipment card and Activity entry. [G006 configuration and receipts](g006-terry-home.md).
+
+Main and tag CI, type checking, the production build and the release host's
+70 portal, 95 backend and 42 dashboard tests passed. All ten public file
+hashes and seven services passed. The pre- and post-deployment archives both
+passed separate live and demo recovery checks. The restored live registry
+contained the approved G006 pin. The post-deployment archive SHA256 was
+`4e0ea7c30c461a06c1eb3c9e87c9283aeecda0d8e428da2d74951be37e5ddc38`.
+Rollback files are under `/opt/meshlink-rollback-field-31a905b`.

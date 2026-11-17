@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-16 - G006 fixed gateway bench readback
+
+Heltec V3 **G006 / !b03d6790** retained its gateway firmware and passed complete
+profile and fixed-position readback after an explicit reboot. USB reported Wi-Fi
+and direct MQTT disconnected at the bench. A separate gateway delivered fresh
+G006 health and neighbor reports to production. The site test is to power it at Terry
+Home and confirm a fresh broker receipt identifying G006 as the receiving gateway.
+[Configuration and measurements](../docs/operations/g006-terry-home.md).
+
 ## 2026-11-15 - Mount Charleston deployment AAR
 
 [Full AAR](aar/2026-11-15-mount-charleston.md) records the owner's **07:00-18:00
