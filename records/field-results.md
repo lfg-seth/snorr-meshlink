@@ -11,6 +11,11 @@ clock stayed unset, with approximate Pacific times available from four peers.
 All 25 copied segments passed hash comparison and all 69,772 event frames
 passed the reader. [Reception chart, GPS, power and card integrity](aar/2026-11-16-g002-offline-card.md).
 
+Across measured intervals, G002 showed about 2.67 Ah net draw. R005 gained
+340 mAh, R008 gained 175 mAh and R001 was close to balance at +16 mAh.
+R011 recorded discharge across 14.37 hours covered by current samples.
+[All nodes’ power readings, coverage and charging chart](aar/2026-11-16-g002-power.md).
+
 ## 2026-11-16 - G006 fixed gateway bench readback
 
 Heltec V3 **G006 / !b03d6790** retained its gateway firmware and passed complete

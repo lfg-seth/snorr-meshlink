@@ -25,6 +25,8 @@ G002 decoded **10 distinct, timestamped B002 fixes** near the beginning of the f
 
 ## Power observations
 
+The [per-node power summary](2026-11-16-g002-power.md) includes battery levels and voltages for every reporting radio, sensor current and estimated charge balance for the five field nodes with current measurements, and the earlier setup readings.
+
 - G002 recorded **348** local device-voltage readings, starting at **4.285 V** and ending at **4.022 V**. Its **347** INA219 channel 1 samples had a median **114.6 mA in the discharge direction**. The reading gap stayed below 5 min 1 s. Trapezoidal integration of the samples gives approximately **2.67 Ah net discharge across the sensor path in 28.87 hours**. Board calibration and total pack current remain unverified. End-of-battery runtime was unobserved. [Current convention](../../docs/operations/radio-report-ingestion.md#fleet-current-polarity-correction---2026-10-24).
 - R001 reached **249.2 mA in the charge direction** at approximately **08:44 Monday**. Its 20 samples during 09:00–10:00 had a median of about **+76 mA**, ranging from **−4.2 to +241.4 mA** in the project’s positive-charging convention. The earlier field observation of about 16 mA was one reading on Sunday. Panel output and the cause of the earlier low reading remain open.
 - None of the **236** received R011 channel 1 samples showed charging under that convention. They ranged from **9.5 to 38.9 mA in the discharge direction**. Only three samples arrived during Monday’s 09:00 hour. Solar performance during missing intervals is unknown.

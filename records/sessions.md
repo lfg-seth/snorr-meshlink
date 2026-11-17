@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-16 - Summarized G002 card power by node
+
+Matched all 25 files to the hash manifest and decoded 9,681 distinct telemetry
+packets with power or battery readings from 17 physical radios. Nine reported
+field battery voltage and five supplied field current. G002 drew 2.67 Ah net
+on the measured path. Vegas Side and Kyle Junction had positive balances and
+Cathedral Rock was close to even. Mountain Side's channel 1 readings were
+all discharging, with only 14.37 hours eligible for integration. Earlier
+readings remain separate. Next field evidence is a longer G002 charge balance
+and denser Mountain Side power measurements alongside its reception gaps.
+[Per-node tables, coverage, method and chart](aar/2026-11-16-g002-power.md).
+
 ## 2026-11-16 - Analyzed the G002 Shady Hollow SD card
 
 Verified 25 SML copies against the card by SHA-256. The project reader passed
