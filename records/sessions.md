@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-16 - Activity last-heard gateway attribution
+
+Activity pairs the contact age with the MQTT gateway from that receipt and prefers its portal long name. A read-only production sampler check attributed all 19 observed contacts, including eleven through Seth Mobile. Portal tests (70), typecheck and build passed; sampler tests passed (43 with one platform skip). Next step is including the source change in a selected portal and sampler deployment.
+
 ## 2026-11-16 - Activity opens on Readings
 
 MeshLink 0.4.8 deployed from tagged commit `45ac59d`. The release verifier rendered all ten authenticated production cards, confirmed Readings was selected first and switched each to Timers and back. All ten assets matched, seven services were active and a fresh MQTT receipt arrived. The portal regression test checked the selected view across polling. Pre- and post-release backups passed isolated live and demo restores. Next field check is sustained telemetry delivery. [Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/84).
