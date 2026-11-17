@@ -208,7 +208,7 @@ class Dashboard:
     def watch(self, node, stream):
         return self.watch_history.get((node["radio"], stream), node.get("watchdogs", {}).get(stream))
 
-    def metric_state(self, node, metric, item, now):
+    def metric_state(self, node, metric, item, now, *, cycles=(1, 2)):
         stream = item.get("stream") if item else None
         stream = stream or METRIC_STREAM.get(metric)
         watch = self.watch(node, stream)
@@ -219,7 +219,7 @@ class Dashboard:
         if not period:
             _, age = freshness(item, now, gps=metric == "gps")
             return "unknown", age
-        green, red = period + self.grace, 2 * period + self.grace
+        green, red = (count * period + self.grace for count in cycles)
         if metric == "gps":
             # Packet cadence never overrides the pilot's 15-minute fix-age limit.
             green, red = min(green, 900), min(red, 900)
@@ -631,12 +631,11 @@ def card_snapshot(dashboard, snapshot, now, demo, connected, interval):
                            "due": item["dueInSeconds"], "age": item["ageSeconds"], "missed": item["missedCycles"],
                            "received": item.get("lastReceivedAt")})
         seen = node.get("lastContactAt")
-        contact, _ = dashboard.metric_state(node, "contact", {"receivedAt": seen}, now)
+        contact, _ = dashboard.metric_state(node, "contact", {"receivedAt": seen}, now, cycles=(3, 4))
         state = {"fresh": "reporting", "aging": "attention", "stale": "silent", "unknown": "unknown"}[contact]
         gateway = readings.get("gateway")
         link_down = gateway and gateway["state"] == "fresh" and False in gateway["value"].values()
-        late = sum(t["missed"] > 0 for t in timers)
-        if state == "reporting" and (late or link_down):
+        if state == "reporting" and any(t["missed"] >= 3 for t in timers):
             state = "attention"
         data["nodes"].append({"label": node["label"], "radio": node["radio"], "seen": node.get("lastContactAt"),
                               "health": state, "contact": contact, "kind": node.get("kind"),

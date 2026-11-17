@@ -35,6 +35,21 @@ def node():
 
 
 class FreshnessTests(unittest.TestCase):
+    def test_portal_activity_contact_and_stream_thresholds(self):
+        def card(contact_age, stream_age):
+            n = dict(node(), lastContactAt=at(NOW - contact_age), readings={}, watchdogs={
+                "power": {"cadenceSeconds": 180, "lastReceivedAt": at(NOW - stream_age)}})
+            snapshot = {"at": at(NOW), "nodes": [n]}
+            d = watch.Dashboard(False, grace=3, show_inactive=True)
+            return watch.card_snapshot(d, snapshot, NOW, False, True, 3)["nodes"][0]
+
+        for age, expected in ((542, "reporting"), (543, "attention"), (722, "attention"), (723, "silent")):
+            with self.subTest(age=age):
+                self.assertEqual(card(age, age)["health"], expected)
+        self.assertEqual(card(0, 542)["health"], "reporting")
+        self.assertEqual(card(0, 543)["health"], "attention")
+        self.assertEqual(card(0, 723)["health"], "attention")
+
     def test_delayed_telemetry_uses_measurement_not_arrival(self):
         item = sampler.reading(3.8, at(NOW), at(NOW - 1800))
         self.assertEqual(watch.freshness(item, NOW), ("stale", 1800))

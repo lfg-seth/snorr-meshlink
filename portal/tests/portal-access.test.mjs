@@ -65,6 +65,18 @@ test('an open Activity dropdown keeps telemetry rows in place across refreshes',
     assert.deepEqual(labels(), initial);
     const gpsRow = Array.from(root.querySelectorAll('details .row')).find(row => row.firstChild.textContent === 'GPS fix age');
     assert.equal(gpsRow.lastChild.textContent, '3s');
+    const renderLinks = (wifiConnected, mqttConnected) => render({
+      gateway: { state: 'fresh', age: 0, value: { wifiConnected, mqttConnected } },
+    });
+    const detailsTone = label => [...root.querySelectorAll('details .row')]
+      .find(row => row.firstChild.textContent === label).lastChild.className;
+    renderLinks(false, true);
+    assert.equal(detailsTone('Wi-Fi'), 'down');
+    assert.equal(detailsTone('MQTT'), 'fresh');
+    renderLinks(null, false);
+    assert.equal(detailsTone('Wi-Fi'), 'unknown');
+    assert.equal(detailsTone('MQTT'), 'down');
+    assert.equal(root.querySelector('.metric.down b').textContent, 'Down');
   } finally {
     dom.window.close();
     delete globalThis.document;

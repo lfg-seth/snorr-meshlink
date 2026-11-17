@@ -53,7 +53,7 @@ export function mountActivity(root) {
       const reading = node.readings[key];
       if (!reading) continue;
       const v = reading.value;
-      const add = (id,label,value,unit="") => result.set(id,{key,label,value,unit,reading});
+      const add = (id,label,value,unit="",tone=reading.state) => result.set(id,{key,label,value,unit,reading,tone});
       if (metrics[key]) {
         const [label,unit] = metrics[key];
         add(key,label,v === "USB*" ? "USB*" : v,unit);
@@ -64,7 +64,8 @@ export function mountActivity(root) {
         if (v.altitude != null) add("altitude","Altitude",v.altitude,"m");
       } else if (key === "gateway") {
         for (const [field,label] of [["wifiConnected","Wi-Fi"],["mqttConnected","MQTT"]])
-          add(field,label,v[field] == null ? "Unknown" : v[field] ? "Up" : "Down");
+          add(field,label,v[field] == null ? "Unknown" : v[field] ? "Up" : "Down","",
+            v[field] == null ? "unknown" : v[field] ? reading.state : "down");
       } else if (key === "wifi" && v.rssiDbm != null) add("wifi","Wi-Fi signal",v.rssiDbm,"dBm");
       else if (key === "sd") {
         add("sd","SD used",v.usedBytes != null && Number(v.totalBytes)>0 ? (100*Number(v.usedBytes)/Number(v.totalBytes)).toFixed(1)+"%" : "Unknown");
@@ -108,7 +109,7 @@ export function mountActivity(root) {
     const displayed = [...new Set(preferred)].filter(key=>measures.has(key)).slice(0,3);
     for (const key of displayed) {
       const m = measures.get(key);
-      const tile = el("div",null,"metric " + m.reading.state + (readChanged(m.key) ? " incoming" : ""));
+      const tile = el("div",null,"metric " + m.tone + (readChanged(m.key) ? " incoming" : ""));
       tile.title = metricHint(m);
       const number = el("b",m.value);
       number.append(el("small",m.unit));
@@ -123,7 +124,7 @@ export function mountActivity(root) {
     let reason = late ? late + " overdue" : "";
     if (node.linkDown) reason = "Link down" + (reason ? " · "+reason : "");
     else if (node.contact === "aging" && !reason) reason = "Late contact";
-    if (reason) label.append(el("span",reason,"reason"));
+    if (reason) label.append(el("span",reason,node.linkDown ? "reason down" : "reason"));
     for (const t of periodic) {
       const tile = el("div",null,"timer " + t.state + (timerChanged(t) ? " incoming" : ""));
       tile.title = timerHint(t);
@@ -148,7 +149,7 @@ export function mountActivity(root) {
   }
   function fillDetails(body,node,measures,readChanged,timerChanged) {
     const readings = el("dl"), timers = el("dl");
-    for (const m of measures.values()) row(readings,m.label,m.value + (m.unit ? " "+m.unit : ""),m.reading.state,metricHint(m),readChanged(m.key));
+    for (const m of measures.values()) row(readings,m.label,m.value + (m.unit ? " "+m.unit : ""),m.tone,metricHint(m),readChanged(m.key));
     for (const t of node.timers) row(timers,streamName(t),timerHint(t),t.state,timerHint(t),timerChanged(t));
     body.replaceChildren(el("p",node.radio,"empty"),el("h3","Telemetry"),
       readings.childElementCount ? readings : el("p","No readings yet","empty"),el("h3","Timers"),

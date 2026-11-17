@@ -16,7 +16,7 @@ h1 { font-size:clamp(25px,3vw,34px); line-height:1.15; letter-spacing:-.04em; }
 #status { color:var(--tone); font-weight:650; }
 .dot::before { content:""; display:inline-block; width:.57em; height:.57em; border-radius:50%; background:var(--tone); margin-right:.5em; vertical-align:.1em; }
 .all { --tone:#c2dcec; } .reporting,.fresh { --tone:var(--green); } .attention,.aging { --tone:var(--amber); }
-.silent,.stale { --tone:var(--red); } .unknown,.event { --tone:var(--gray); }
+.silent,.stale,.down { --tone:var(--red); } .unknown,.event { --tone:var(--gray); }
 #summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-bottom:22px; }
 button { font:inherit; color:inherit; cursor:pointer; }
 .stat { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:3px 8px; text-align:left;

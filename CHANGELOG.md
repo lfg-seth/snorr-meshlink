@@ -3,6 +3,13 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.5 - 2026-11-16
+
+Activity marks Attention after three consecutive missed cycles and Silent after
+four cycles without contact. Repeater cards omit GPS. Wi-Fi and MQTT Down
+readings display in red. Radio protocols and the database schema remain
+compatible. Rollback restores the 0.4.4 sampler and portal assets.
+
 ## 0.4.4 - 2026-11-16
 
 Activity includes G003 as Seth Mobile using its existing physical gateway identity. Mobile monitoring requires no fixed map pin. Firmware and schema remain compatible. Restore the 0.4.3 sampler and prior display name to roll back.
