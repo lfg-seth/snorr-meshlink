@@ -12,6 +12,8 @@ Activity, device cards and map controls. Dark mode dims the topographic map.
 On touch screens, the compact navigation leaves more room for the map. Activity
 cards fit two across when space allows and arrange readings to fit each card.
 The Readings and Timers buttons have larger tap targets.
+Live Activity refreshes update readings and timers in place to preserve the
+card being read while scrolling.
 The existing backend, database and firmware are compatible without a migration.
 Restore the 0.4.9 portal assets to roll back.
 

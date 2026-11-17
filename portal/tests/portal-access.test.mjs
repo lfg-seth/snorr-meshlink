@@ -105,6 +105,7 @@ test('theme selector and first paint agree across visits, tabs and unavailable s
 test('Activity switches views and preserves ordered readings and value bars on refresh', async () => {
   const { mountActivity } = await import('../src/activity/view.js');
   const dom = new JSDOM('<div id="host"></div>');
+  dom.window.matchMedia = () => ({ matches:true });
   globalThis.document = dom.window.document;
   try {
     const root = document.querySelector('#host').attachShadow({ mode: 'open' });
@@ -125,10 +126,20 @@ test('Activity switches views and preserves ordered readings and value bars on r
     const [readings, timers] = root.querySelectorAll('.controls button');
     assert.deepEqual([readings.textContent, timers.textContent], ['Readings', 'Timers']);
     assert.equal(readings.getAttribute('aria-pressed'), 'true');
-    assert.ok(root.querySelector('.tiles .metric'));
+    const anchorSelectors = ['h2', '.heard strong', '.metrics .metric b', '.tiles .metric .age'];
+    const anchors = anchorSelectors.map(selector => root.querySelector(selector));
+    assert.ok(anchors.every(Boolean));
+    const age = root.querySelector('.metrics .age').firstChild;
+    render({ ...data, voltage:reading('4.100',3) });
+    anchorSelectors.forEach((selector,i) => assert.equal(root.querySelector(selector), anchors[i], selector));
+    assert.match(anchors[2].textContent, /4\.100/);
+    assert.equal(root.querySelector('.metrics .age').firstChild, age);
+    assert.equal(age.data, '3s ago');
     timers.click();
+    const timer = root.querySelector('.timer');
     render(data);
     assert.equal(timers.getAttribute('aria-pressed'), 'true');
+    assert.equal(root.querySelector('.timer'), timer);
     assert.match(root.querySelector('.timer').textContent,/Power.*2m 30s left.*every 3m/);
     readings.click();
     const tiles = () => [...root.querySelectorAll('.metric')];
@@ -153,6 +164,18 @@ test('Activity switches views and preserves ordered readings and value bars on r
     assert.equal(tile('Uptime').querySelector('.track i').style.width,'100%');
     assert.equal(labels().filter(label=>label==='Battery voltage').length,1);
     assert.ok(!labels().includes('SD drops'));
+    const receipt = root.querySelector('.rx');
+    const fresh = { voltage:{ ...reading('4.1'), revision:'next' } };
+    render(fresh);
+    assert.equal(receipt.style.visibility, 'visible');
+    assert.deepEqual(labels(), ['Device voltage']);
+    render(fresh);
+    assert.equal(root.querySelector('.rx'), receipt);
+    assert.equal(receipt.style.visibility, 'hidden');
+    render({});
+    assert.match(root.querySelector('.metrics').textContent, /No telemetry yet/);
+    render(data);
+    assert.deepEqual(labels(),initial);
   } finally {
     dom.window.close();
     delete globalThis.document;
