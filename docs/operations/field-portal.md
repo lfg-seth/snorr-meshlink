@@ -5,13 +5,40 @@ owns the seven saved radio pins. G001 at Lee Fire Station uses the deployment pi
 supplied by the owner on November 15. The live registry for physical radio `!1bbf0638` stores the
 coordinates with `locationSource=owner-deployment-pin` and
 `locationLabel=Lee Fire Station`. Keep these coordinates in private backup
-and recovery data. The portal and its activity sampler share
-[the field placements](../../portal/src/placements.json). Match physical radio IDs before
+and recovery data. The release history below describes the previous bundled placements. Match physical radio IDs before
 applying site names and map pins. The map shows saved field coordinates.
 Shady Hollow records locally and has no scheduled backhaul, Wi-Fi or remote SD
 watchdog. Ordinary radio observations can still arrive through another gateway.
 The live registry continues to collect the full fleet. Users retains member
 assignments. The public demo uses its separate synthetic database.
+
+## Updating the live field roster
+
+After the runtime-roster release is deployed, open the live PocketBase
+`field_roster` collection through the existing private superuser connection.
+Create or edit one record per physical radio. Enter its lowercase `!xxxxxxxx`
+radio ID, short name, display name, kind and numeric sort order. Use
+`repeater`, `stationBackhaul`, `offlineRecorder` or `mobileGateway`.
+For a fixed site, enter the approved coordinates together in the JSON `pin`
+field as `latitude` and `longitude`. A station can keep its existing
+registry pin when its source and site label match. Mobile gateways appear
+in Activity only. Removing a roster record withdraws it from the field views
+and preserves device history.
+
+The signed-in portal reads these rows on its normal state refresh and joins
+them to registered infrastructure by radio ID. The Activity publisher checks
+the same collection each sampling cycle (three seconds) and reloads its
+selected radios and recent readings in process after an edit. A silent radio
+can have a card before it has a receipt. Provision a new physical device and
+its MQTT mappings through the existing intake process to receive telemetry.
+
+For the first rollout, take the normal private backup, apply the PocketBase
+migration and deploy the API hook, frontend and sampler together. The migration
+seeds ten fixed placements and the G003 mobile card. Verify an authenticated
+state refresh and Activity snapshot against the saved roster. Subsequent
+roster edits take effect while both services are running. Roster data is
+included in the normal PocketBase database backup. For rollback, preserve
+that backup and restore the previous application files and placement file.
 
 ## November 16 portal appearance release
 
@@ -62,7 +89,7 @@ grace. Individual timers still show earlier misses. Repeater cards omit GPS,
 NeighborInfo and NodeInfo. SNNS neighbor reports retain their own timer and
 readings. A reported Wi-Fi or MQTT Down value displays in red.
 
-Install the release's `scripts/portal-activity.py`, `scripts/watch-nodes.py`,
+For the original file-based release, install `scripts/portal-activity.py`, `scripts/watch-nodes.py`,
 `scripts/server/node_readings.py`, `scripts/node-cadence.json` and
 `portal/src/placements.json` under `/opt/meshlink` at the same relative paths.
 Install [the service](../../deploy/portal/meshlink-activity.service) in

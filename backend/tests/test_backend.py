@@ -679,6 +679,25 @@ class BackendTests(unittest.TestCase):
             client.request(method, path, body)
         self.assertEqual(raised.exception.status, status)
 
+    def test_live_roster_edits_visible_on_next_state_request(self):
+        self.assertEqual(self.state()['fieldRoster'], [])
+        self.stop()
+        self.process = subprocess.Popen(command(self.data) + ['serve', '--http=' + self.url.split('//')[1]],
+                                        env={**os.environ, 'MESHLINK_SIMULATION': '0'}, stdout=self.log, stderr=self.log)
+        wait_ready(self.url, self.process)
+        records = '/api/collections/field_roster/records'
+        roster = self.state()['fieldRoster']
+        self.assertEqual(len(roster), 11)
+        self.assertEqual([r['shortName'] for r in roster if r['kind'] == 'mobileGateway'], ['G003'])
+        new = self.superuser.request('POST', records, {
+            'radio': '!00000001', 'name': 'Test site', 'shortName': 'TEST',
+            'kind': 'repeater', 'pin': {'latitude': 0, 'longitude': 0}, 'sortOrder': 20,
+        })
+        added = self.state()['fieldRoster'][-1]
+        self.assertEqual((added['name'], added['latitude'], added['longitude']), ('Test site', 0, 0))
+        self.superuser.request('PATCH', records + '/' + new['id'], {'name': 'Renamed'})
+        self.assertEqual(self.state()['fieldRoster'][-1]['name'], 'Renamed')
+
     def test_remembered_password_login_lifetime_and_revocation(self):
         def sign_in(key, expected_seconds=3600, remember=True):
             creds = self.credentials[key]

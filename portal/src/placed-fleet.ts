@@ -1,26 +1,35 @@
-import placements from './placements.json' with { type: 'json' };
 import type { Infrastructure } from './demo';
 import type { LinkObservation } from './NeighborTable';
 
-export function placedInfrastructure(devices: Infrastructure[]): Infrastructure[] {
+export type FieldPlacement = {
+  radio: string; shortName: string; name: string;
+  kind: string; latitude?: number; longitude?: number; solarSetup?: string;
+  batterySetup?: string; antenna?: string;
+};
+
+export function placedInfrastructure(devices: Infrastructure[], placements: FieldPlacement[]): Infrastructure[] {
   const byRadio = new Map(devices.map(device => [device.radioNodeId, device]));
   return placements.flatMap<Infrastructure>(site => {
     const device = byRadio.get(site.radio);
-    if (!device) return [];
-    if (site.stationBackhaul) {
+    if (!device || site.kind === 'mobileGateway') return [];
+    const equipment = {
+      batterySetup: site.batterySetup || device.batterySetup || 'Unverified',
+      antenna: site.antenna || device.antenna || 'Unverified',
+      solarSetup: site.solarSetup || device.solarSetup,
+    };
+    if (site.kind === 'stationBackhaul') {
       const stationPin = device.locationSource === 'owner-deployment-pin' && device.locationLabel === site.name;
       return [{
         ...device, name: site.name, shortName: site.shortName, role: 'Backhaul',
         deploymentStatus: 'station', latitude: site.latitude ?? (stationPin ? device.latitude : undefined),
         longitude: site.longitude ?? (stationPin ? device.longitude : undefined),
-        batterySetup: device.batterySetup || 'Unverified', antenna: device.antenna || 'Unverified',
-        solarSetup: site.solarSetup || device.solarSetup,
+        ...equipment,
       }];
     }
     return [{
       ...device, name: site.name, shortName: site.shortName, latitude: site.latitude, longitude: site.longitude,
-      role: site.offlineRecorder ? 'Offline SD recorder' : 'Repeater', deploymentStatus: 'placed',
-      batterySetup: 'Eight cells', antenna: 'Muzi',
+      role: site.kind === 'offlineRecorder' ? 'Offline SD recorder' : 'Repeater', deploymentStatus: 'placed',
+      ...equipment,
     }];
   });
 }

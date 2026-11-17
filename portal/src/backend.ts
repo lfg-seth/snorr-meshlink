@@ -26,6 +26,7 @@ export type BackendState = {
   nameJobs: NameJob[];
   messages: Message[];
   infrastructure: Infrastructure[];
+  fieldRoster?: import('./placed-fleet').FieldPlacement[];
   links: LinkObservation[];
   currentLinks?: LinkObservation[];
   incidents: Incident[];

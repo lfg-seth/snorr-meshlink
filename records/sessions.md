@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-17 - Shared runtime field roster
+
+Prepared MeshLink 0.4.12 on `codex/live-field-roster`. The authenticated portal
+state and read-only Activity publisher now use a private PocketBase collection
+seeded with the ten fixed placements (including Sahara) and G003 mobile.
+Existing device and MQTT mappings continue to own telemetry identity. An
+offline publisher test exercised add, rename and removal in the same process.
+Portal tests, type checking and production build passed. Next: review the
+branch and select a backed-up production rollout with signed-in map and card
+verification. Production deployment remains pending.
+[Operator workflow](../docs/operations/field-portal.md#updating-the-live-field-roster).
+
 ## 2026-11-17 - R009 Sahara configuration
 
 Configured identity-checked **R009 / !da581e5f** on COM24 for **Sahara / Case 12 /

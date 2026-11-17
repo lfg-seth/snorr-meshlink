@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from contextlib import closing
 import sqlite3
 import struct
 import sys
@@ -155,7 +156,8 @@ def telemetry_values(data):
 
 class Decoder:
     def __init__(self, cfg, state, backend):
-        sys.path.insert(0, backend)
+        if backend not in sys.path:
+            sys.path.insert(0, backend)
         from mqtt_adapter import Adapter
         from meshtastic.protobuf import mqtt_pb2, mesh_pb2, telemetry_pb2, portnums_pb2
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -309,7 +311,7 @@ def run(settings, publish=None):
         decoder = Decoder(cfg, state, settings["backend"])
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
-        with sqlite3.connect(database, uri=True, timeout=2) as db:
+        with closing(sqlite3.connect(database, uri=True, timeout=2)) as db:
             db.execute("PRAGMA query_only=ON")
             # One consistent startup snapshot, then short incremental reads.
             db.execute("BEGIN")
@@ -345,8 +347,8 @@ def run(settings, publish=None):
                                "skipped": state.rejected, "catchingUp": len(rows) == 2000}
                     if publish is None:
                         print(json.dumps(payload, allow_nan=False), flush=True)
-                    else:
-                        publish(payload)
+                    elif publish(payload) is False:
+                        return True  # Caller requested a new selection.
                 except sqlite3.Error:
                     print(json.dumps({"error": "Database read unavailable", "at": utc(time.time())}), flush=True)
                 if settings.get("once"):
