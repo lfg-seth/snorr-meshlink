@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-11-18 - Reconciled historical project spending
+
+Matched the December 2025 Amazon receipt's merchandise, 19 shipment totals
+and three card charges. Booked $1,682.07 after excluding the camera card and
+allocating its share of shipping. Recorded the owner's provisional $158.31
+battery cost. Identified spending reaches $1,840.38 if the battery purchase
+was separate. Next, match the battery, screenless gateway and T-Deck receipts
+and check any later charges, refunds or reimbursements. The underlying Amazon
+receipt contains private payment and shipping details.
+[Financial review](finances.md#2026-11-18---spending-review).
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,
