@@ -53,9 +53,25 @@ The Escarpment placemark is about 1 m from a 4.67 km mapped footway. We used tha
 
 In the 33.2% layout use one additional assembly at Mack’s, move R006 to the Lee offset and trial R005 at the supplied Vegas alternative. Keep R010, R001, R011 and R008 at their supplied locations. Five of seven relay positions can serve as a member’s first hop to Lee. This layout reaches **13.14 km** of highway versus 4.49 km deployed. The longest contiguous gap on a mapped part is 6.94 km on SR 157, followed by 6.51 km on SR 158. The resort approach reaches 88.7%, the mapped resort parking lot 31.8% and the outdoor lodge/base probes 28.6%. Trailhead and other parking scores are 26.7% and 29.4%. The hypothetical addition of Kyle Fire Wi-Fi raises the highway result to 50.4%. Kyle Fire has no confirmed uplink in this study.
 
+## Using the field atlas
+
+For a six-assembly alternative, vacate Kyle Junction and reuse that radio. The other six relay positions give the same 33.2% modeled highway result. The seven-relay layout retains Kyle Junction for field comparisons.
+
+| Pages | What to find |
+| --- | --- |
+| 1–4 | Executive summary, side-by-side deployed and proposed network viewsheds, routing reliability and the Angel Vegas comparison across four northwest Las Vegas sectors. |
+| 5–9 | First portable trial, hardware assignments, routes to Lee, road and facility results, longest highway gaps, and all 21 reported layouts. |
+| 10–15 | Angel and Shady comparison, navigation coordinates, high-resolution Angel Peak and Escarpment maps, resort detail, assumptions and field acceptance. |
+| 16–32 | Select a pair on the index to open its page. Each of the 32 sites has a full-area viewshed, antenna height, visible terrain area and directly visible highway length. |
+| 33–44 | Twelve field-priority links with viewshed overlap, direct terrain profiles, antenna heights and Fresnel clearance. |
+
+Across the 265.32 km² mountain study area, the deployed radios give a member a modeled route to Lee from 16.49 km². The reachable plan increases that to 64.61 km². Of that area, 48.61 km² has a route whose backbone legs all clear 60% of the first Fresnel zone. A further 20.67 km² can see a selected radio that cannot get the packet to Lee within the forwarding budget. Area totals count 35 m grid cells by center inside the study boundary. The highway scores use separate distance-weighted road samples.
+
+The valley page compares deployed R005 with the owner's alternative. It shows visibility to outdoor receivers at 4 m on a 60 m grid, using the regional 20 m elevation model. The circles locate the 36 comparison probes. Matched packets at Shady and the fixed valley receiver remain the field test.
+
 ## Inputs and reproduction
 
-The 19-page atlas draws contours, roads, trails and waypoint labels as PDF vectors. The Angel Peak and Escarpment pages each have a 4,212 × 2,988 PNG in the packet. Angel Peak uses 1 m USGS elevation samples with a 10 m contour interval. Escarpment includes the complete mapped footway and a 2 m contour inset around the two survey pins. The offline viewer carries a 6 m regional relief layer and 47 local 1 m tiles with vector contours and mapped ways. The colored member viewsheds retain their modeled 35 m cells. [USGS northern tile](https://www.sciencebase.gov/catalog/item/69685cb7d4be021259f1fbe8), [USGS southern tile](https://www.sciencebase.gov/catalog/item/69685cb7d4be021259f1fbea), [OpenStreetMap attribution](https://www.openstreetmap.org/copyright)
+The 44-page atlas draws contours, roads, trails and waypoint labels as PDF vectors. The Angel Peak and Escarpment pages each have a 4,212 × 2,988 PNG in the packet. Angel Peak uses 1 m USGS elevation samples with a 10 m contour interval. Escarpment includes the complete mapped footway and a 2 m contour inset around the two survey pins. The offline viewer carries a 6 m regional relief layer and 47 local 1 m tiles with vector contours and mapped ways. The colored member viewsheds retain their modeled 35 m cells. [USGS northern tile](https://www.sciencebase.gov/catalog/item/69685cb7d4be021259f1fbe8), [USGS southern tile](https://www.sciencebase.gov/catalog/item/69685cb7d4be021259f1fbea), [OpenStreetMap attribution](https://www.openstreetmap.org/copyright)
 
 All 17 owner placemarks supplied the exact horizontal position. Antenna height comes from the study assumptions and ground elevation from USGS terrain. The KML’s altitude field is unused. The additional candidate searches screened 31 eligible offsets at Lee on a 5 m lattice, 272 at Showgirl on a 10 m lattice, 349 beside the mapped Escarpment footway and 908 at Angel. Escarpment offsets are 10 m either side of the trail at 25 m stations. Angel offsets are 10 or 20 m from mapped ways at 20 m stations within 500 m of one of the three owner Angel points. The physical screen removes steep ground and mapped road, building, parking and landing surfaces. Placement on a suitable tree, conditions and access remain on-site observations.
 

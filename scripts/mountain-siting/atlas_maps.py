@@ -50,9 +50,13 @@ for k in display:
 c1,c2,both="#ef9b19","#3f94dd","#13866e"
 path_color="#ab0755"
 fig=None
-pdf=PdfPages(OUT/"mountain-field-atlas.pdf")
+page_index=[]
+atlas_path=OUT/"mountain-field-atlas.pdf"
+render_path=atlas_path.with_suffix(".building.pdf") if "source_pins" in search else atlas_path
+pdf=PdfPages(render_path)
 def page(section,title,sub):
     global fig
+    page_index.append((section,title,pdf.get_pagecount()+1))
     fig=plt.figure(figsize=(11.7,8.3),facecolor="#faf9f4")
     fig.text(.045,.952,section.upper(),fontsize=10,color="#19736b",weight="bold")
     fig.text(.045,.897,title,fontsize=23,fontfamily="DejaVu Serif")
@@ -65,6 +69,21 @@ def save(image_name=None):
     if image_name:
         fig.savefig(OUT/image_name,dpi=360)
     plt.close(fig)
+def field_table(rect, columns, rows, widths, size=9):
+    ax=axis(rect)
+    ax.axis("off")
+    table=ax.table(cellText=rows,colLabels=columns,cellLoc="left",colLoc="left",
+                   colWidths=widths,bbox=[0,0,1,1])
+    table.auto_set_font_size(False)
+    table.set_fontsize(size)
+    for (row,col),cell in table.get_celld().items():
+        cell.set_edgecolor("#c2cec7")
+        cell.set_linewidth(.55)
+        cell.set_facecolor("#d8eae2" if row==0 else ("#ffffff" if row%2 else "#f1f4ef"))
+        if row==0:
+            cell.set_text_props(weight="bold",color="#254e49")
+
+
 def axis(rect):
     return fig.add_axes(rect)
 @lru_cache(maxsize=4)

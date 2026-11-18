@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-17 - Completed the printable repeater coverage study
+
+Added maps of direct terrain visibility for all 17 supplied pins and 15 derived survey points. The atlas compares deployed and proposed routes to Lee, distinguishes isolated coverage and compares the Angel Vegas sites across four valley sectors. Its summary now reports all 21 layouts, roads, facilities, equipment assignments and field criteria. Checked the individual map footprints and both network footprints against the GIS output. Next, test Mack’s at 4 m and match a fresh member GPS packet at Lee Fire before relocating a radio. [Atlas page guide and results](../docs/research/mountain-siting-reachable-20261117.md#using-the-field-atlas)
+
 ## 2026-11-17 - Redrew the reachable study maps for field zoom and print
 
 The Angel Peak inset had enlarged roughly 145 pixels of a regional raster. Rebuilt the topographic maps from the cached USGS elevation tiles and mapped ways. Angel Peak and Escarpment each have a full atlas page and a 360 dpi PNG. Inspected the rendered atlas and the offline viewer at 3× phone pixel density. Next, use the field packet for the attended Mack’s link and GPS receipt checks. [Map sources and field study](../docs/research/mountain-siting-reachable-20261117.md#inputs-and-reproduction)

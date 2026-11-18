@@ -1,21 +1,9 @@
 """Print the access-constrained field atlas using the same map and profile scales."""
 from atlas_maps import *
 from reachable_search import ANGEL, ESC, LEE, MACK, SHOW, VEGAS
-
-
-def field_table(rect, columns, rows, widths, size=9):
-    ax=axis(rect)
-    ax.axis("off")
-    table=ax.table(cellText=rows,colLabels=columns,cellLoc="left",colLoc="left",
-                   colWidths=widths,bbox=[0,0,1,1])
-    table.auto_set_font_size(False)
-    table.set_fontsize(size)
-    for (row,col),cell in table.get_celld().items():
-        cell.set_edgecolor("#c2cec7")
-        cell.set_linewidth(.55)
-        cell.set_facecolor("#d8eae2" if row==0 else ("#ffffff" if row%2 else "#f1f4ef"))
-        if row==0:
-            cell.set_text_props(weight="bold",color="#254e49")
+from summary_pages import executive_summary, facility_results, method_and_acceptance, plan_and_routes, scenario_results
+from viewshed_pages import angel_valley_viewshed, individual_viewsheds, network_spreads
+import pymupdf
 
 
 def pair(a,b):
@@ -90,6 +78,38 @@ def waypoint_maps(scout,trail):
     save("escarpment-trail-map.png")
 
 
+def finish_atlas():
+    pdf.close()
+    output=atlas_path.with_suffix(".indexed.pdf")
+    with pymupdf.open(render_path) as doc:
+        toc=[]
+        groups={}
+        for section,title,number in page_index:
+            if section not in groups:
+                groups[section]=number
+                toc.append([1,section,number])
+            toc.append([2,title,number])
+        doc.set_toc(toc)
+        jumps={"Network viewsheds":"Network viewsheds","Full layout results":"All layout results",
+               "Site viewshed index":"Individual site viewsheds","Direct link profiles":"Viewshed and direct path"}
+        for text,section in jumps.items():
+            where,=doc[0].search_for(text)
+            doc[0].insert_link({"kind":pymupdf.LINK_GOTO,"from":where,"page":groups[section]-1})
+        index=doc[groups["Individual site viewsheds"]-1]
+        words=index.get_text("words")
+        for section,title,number in page_index:
+            if section=="Individual site viewsheds" and number>index.number+1:
+                # The printed page number starts each two-site entry on the index.
+                where,=(pymupdf.Rect(word[:4]) for word in words if word[4]==str(number) and word[1]<index.rect.height*.8)
+                where.x1+=index.rect.width*.42
+                index.insert_link({"kind":pymupdf.LINK_GOTO,"from":where,"page":number-1})
+        doc.set_metadata({**doc.metadata,"title":"Mount Charleston repeater study | Coverage and viewshed atlas",
+                          "subject":"Reachable survey waypoints, member GPS coverage and field trials"})
+        doc.save(output,garbage=4,deflate=True,use_objstms=1)
+    output.replace(atlas_path)
+    render_path.unlink()
+
+
 def main():
     offset_lee=next(k for k in plan if k in search["families"][LEE])
     scout=next(k for k in D["Map-only Angel comparison"]["layout"] if k in search["families"][ANGEL])
@@ -97,6 +117,9 @@ def main():
     trail=min((k for k in search["families"][ESC] if all(pair(k,b)["clear"]>0 for b in
               ("Shady Hollow","Kyle Junction","Angel Vegas","Angel Mountain"))),
               key=lambda k:math.dist(xy[k],xy[ESC]))
+    executive_summary()
+    network_spreads()
+    angel_valley_viewshed()
     fig=page("Return survey  /  Lee Fire uplink","Start at Mack’s alternative",
              "Compare the new pins against the deployed radios with a 1.2 m member tracker and the existing three-forwarder limit.")
     ax=axis([.035,.15,.55,.65])
@@ -119,27 +142,9 @@ def main():
     fig.text(.05,.095,"Green road   modeled member delivery       Red road   gap       Magenta   trial relay path",size=9)
     save()
 
-    fig=page("Layouts  /  same 39.61 km of highway","What each change buys",
-             "Every percentage requires a path to Lee Fire. Strict reach also requires 60% first-Fresnel clearance on every backbone link.")
-    variants=[("Deployed","Deployed"),("Move R006 to Lee Alternative","Move R006 to Lee Alternative center"),
-              ("Move R006 to Mack","Move R006 to Mack’s"),("Keep deployed + Mack","Keep all deployed + Mack’s"),
-              ("Hold deployed Angel Vegas","Mack’s + Lee offset, keep R005"),
-              ("Owner pins only","Mack’s + Lee center + new Vegas pin"),
-              ("Reachable plan","Mack’s + Lee offset + new Vegas pin"),
-              ("Keep R005 + Angel scout","Mack’s + Lee offset + Angel scout, keep R005")]
-    rows=[]
-    for k,title in variants:
-        v=D[k]
-        rows.append([title,*[f"{v['scores'][g]:.1f}%" for g in ("Highway","SR 156","SR 157","SR 158")],
-                     f"{v['robust']['Highway']:.1f}%"])
-    field_table([.045,.41,.91,.39],["Trial","All roads","SR 156","SR 157","SR 158","Strict roads"],
-                rows,[.42,.115,.11,.11,.11,.135])
-    fig.text(.047,.336,"What limits the south side",size=12,weight="bold",color="#185c53")
-    fig.text(.047,.303,"From a member heard at Angel Mountain, Angel → Mack’s → Upper Bristlecone already uses all three forwarders. A tracker\nfirst heard by another relay behind Angel needs an extra forwarder. A two-radio ping can succeed while that tracker still misses Lee.",
-             va="top",size=10,linespacing=1.5)
-    fig.text(.047,.168,"The previous 94.6% layout used ridge sites outside this KML. The map-only Angel scout needs access confirmation.\nA regular Shady repeater and each of the three Fletcher choices individually add zero highway reach on the revised backbone.",
-             va="top",size=10,linespacing=1.5)
-    save()
+    plan_and_routes()
+    facility_results()
+    scenario_results()
 
     fig=page("Angel Peak  /  R005 comparison","Can one Vegas site reach all three?",
              "Mack’s and Shady columns show native mountain terrain clearance. Valley columns count clear rays to nine 4 m probes per sector.")
@@ -174,12 +179,14 @@ def main():
 
     waypoint_maps(scout,trail)
     resort_page()
+    method_and_acceptance()
+    individual_viewsheds()
     pairs=[(MACK,"Upper Bristlecone"),(MACK,"Angel Mountain"),(MACK,VEGAS),(MACK,"Lee Fire"),
            ("Upper Bristlecone","Lee Fire"),(offset_lee,"Upper Bristlecone"),(VEGAS,"Shady Hollow"),
            (scout,MACK),(scout,ESC),(trail,"Shady Hollow"),(trail,"Kyle Junction"),(SHOW,"Angel Mountain")]
     for a,b in pairs:
         direct_page(a,b)
-    pdf.close()
+    finish_atlas()
     offsets=[]
     for a,b in pairs:
         for dx,dy in [(0,0),(-20,0),(20,0),(0,-20),(0,20)]:

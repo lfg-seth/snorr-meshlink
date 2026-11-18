@@ -49,6 +49,9 @@ if "source_pins" in search:
         assert any(l<=x<r and b<=y<t for l,b,r,t in (tile["bounds"] for tile in sheets))
     assert payload["topo"]["vectors"]["road"] and payload["topo"]["vectors"]["trail"]
     with pymupdf.open(OUT/"mountain-field-atlas.pdf") as atlas:
+        from verify_coverage import verify_coverage
+        checked=verify_coverage(atlas,OUT/"viewsheds",search["display"],D,boundary,key)
+        print(f"PASS: {len(atlas)} PDF pages; {checked} individual viewsheds and two network maps sampled against GIS masks")
         for filename,heading in [("angel-peak-map.png","WGS84 waypoints"),
                                  ("escarpment-trail-map.png","Waypoint detail")]:
             matches=[page for page in atlas if heading in page.get_text()]
