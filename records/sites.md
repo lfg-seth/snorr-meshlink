@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-11-18 - SaharaFG replacement
+
+R004 `!49ac6d7f` replaces R002 `!05237743` at SaharaFG after the owner
+reports R002's torn wire. The existing assignment is Case 11, four 18650
+cells, fiberglass antenna and battery-only power. The existing saved pin
+passes R004 USB readback through reboot in CLIENT and appears on the
+signed-in portal under R004. Physical installation and reception at the
+site await confirmation.
+[Radio and portal verification](sessions.md#2026-11-18---replaced-r002-with-r004-at-saharafg).
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at

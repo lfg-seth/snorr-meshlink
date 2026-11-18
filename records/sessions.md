@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-18 - Replaced R002 with R004 at SaharaFG
+
+Owner reports R002 `!05237743` needs torn-wire rework and selects R004
+`!49ac6d7f`. On R004, saved the existing SaharaFG fixed position and verified
+CLIENT, retained `2.7.26.bcb22e0`, enabled MQTT permission and the complete
+intended profile before and after reboot. Serial closed.
+
+Updated the live registry and field roster with the same pin and equipment.
+Authenticated portal state and Activity show R004 at SaharaFG, with twelve
+Activity cards. R002 is held and retains its own packet history. The scoped
+portal rollback is retained privately on the host. The remaining checks are
+physical installation, fresh R004 delivery at SaharaFG and rework of R002.
+[Hardware and site assignment](sites.md#2026-11-18---saharafg-replacement).
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,

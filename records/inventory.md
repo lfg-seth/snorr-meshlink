@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-18 - R002 wire rework and R004 allocation
+
+Owner reports a torn wire on R002 `!05237743` and holds it for rework.
+Existing R004 `!49ac6d7f` is assigned to the SaharaFG setup of Case 11,
+four 18650 cells, fiberglass antenna and battery-only power. Physical
+transfer and repair await confirmation.
+[Current radio assignments](deployment-nodes.md#r004-replaces-r002-at-saharafg---2026-11-18).
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;

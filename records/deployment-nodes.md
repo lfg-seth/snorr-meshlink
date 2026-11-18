@@ -2,6 +2,16 @@
 
 [Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.
 
+## R004 replaces R002 at SaharaFG - 2026-11-18
+
+The owner reports a torn wire on **R002 / !05237743** and holds it for rework.
+**R004 / !49ac6d7f** takes the SaharaFG assignment in **CLIENT**. USB,
+radio and hardware IDs matched. The existing SaharaFG fixed position and
+R004's complete intended profile passed readback before and after reboot
+on retained `2.7.26.bcb22e0`. MQTT permission was already enabled. Serial is
+closed. The live portal shows R004 at the existing pin and keeps each radio's
+telemetry history. [Site and equipment assignment](sites.md#2026-11-18---saharafg-replacement).
+
 ## G006 at Terry Home - 2026-11-16
 
 USB readback matches **G006 / !b03d6790**, hardware
@@ -46,9 +56,9 @@ Portal registry/history has not been reassigned by this board-preparation step.
 | Fresh label / radio name | Physical identity | Assembly | Firmware / completed bench scope | Remaining deployment setup |
 | --- | --- | --- | --- | --- |
 | **R001 / SNORR Repeater 001** | USB **E93C5FF0F97DD76B**; radio **!f95b5501**; hardware **6bd77df9f05f3ce901555bf96d5ed7fc** | Owner-confirmed **RAK19007**, RAK4631 core, INA219/AHT21; **Case 01, eight cells, Muzi antenna**, Cathedral Rock selected 2026-11-15 | Retained **2.7.26.bcb22e0 / rak4631-survey**; **ROUTER**, owner-supplied fixed coordinates and complete intended profile verified through reboot; device/environment/power **180 s**, saved-baseline SNNS retained. No flash. [Deployment configuration](../docs/operations/r001-cathedral-deployment.md); [earlier CLIENT bench](../docs/operations/r001-commissioning-20261112.md). | Placement owner-reported; inspect low charging, document mount and obtain fresh reporting/forced-relay field evidence. Saved cadence is not measured delivery/runtime. |
-| **R002 / SNORR Repeater 002** | USB **397EBE4F36E1F126**; radio **!05237743**; hardware `26f1e1364fbe7e3943772305d079efb7` | RAK4631; INA219 owner-confirmed; AHT21 detected | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R002 / SNORR Repeater 002** | USB **397EBE4F36E1F126**; radio **!05237743**; hardware `26f1e1364fbe7e3943772305d079efb7` | RAK4631; INA219 owner-confirmed; AHT21 previously detected. Owner reports torn wire. | Former SaharaFG CLIENT; **HOLD for rework**. [Earlier board acceptance](../docs/operations/rak-batch-20261112.md). | Repair the wire and verify board/sensor operation before reuse. |
 | **R003 / SNORR Repeater 003** | USB **1E1F729F05162A2E**; radio **!b4d6bc9f**; hardware `2e2a16059f721f1e9fbcd6b4f61e1bbc` | RAK4631; INA219 CH1 received; AHT21 not detected/unverified | **4c96b9b / CLIENT**, complete profile pass. Known-good cable keeps the session alive but direct RF remains **0/3 TX, 0/3 RX**; USB-closed radio queries also give no matched reply. **HOLD**; cause unisolated. [Retest](../docs/operations/rak-repair-retest-20261112.md). | Owner explicitly sets aside; diagnosis parked. Keep out of accepted deployment pile. |
-| **R004 / SNORR Repeater 004** | USB **BEF65915B4E4F06C**; radio **!49ac6d7f**; hardware `6cf0e4b41559f6be7f6dac493cfb81d1` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
+| **R004 / SNORR Repeater 004** | USB **BEF65915B4E4F06C**; radio **!49ac6d7f**; hardware `6cf0e4b41559f6be7f6dac493cfb81d1` | RAK4631; INA219 owner-confirmed; AHT21 unverified. Assigned **SaharaFG / Case 11 / four cells / fiberglass / battery only**. | Retained **2.7.26.bcb22e0 / CLIENT** and enabled MQTT permission. Exact fixed pin and full intended profile pass through reboot. [Earlier RF and power checks](../docs/operations/rak-batch-20261112.md). | Confirm physical placement and fresh portal reception after installation. |
 | **R005 / SNORR Repeater 005** | USB **AA474A4710B85C2C**; radio **!a65601b3**; hardware `2c5cb810474a47aab30156a671567827` | RAK4631; INA219 owner-confirmed, AHT21 unverified. **Angel Peak Vegas Side**, replacing R011; **unnumbered ASA case / eight cells / one SMA Muzi / two 160 mA panels** | Retained **2.7.26.bcb22e0 / rak4631-survey**, **ROUTER**, exact fixed coordinates and full profile pass reboot; 180 s settings retained, own keys/channel preserved, **OK to MQTT enabled**. New CLI device/environment/power/SNNS/position pass. No flash. [Replacement](../docs/operations/r005-angel-vegas-deployment.md). | Placement owner-reported; deduce case number later and verify sustained telemetry, sensors, mount details, relay/coverage/runtime. |
 | **R006 / SNORR Repeater 006** | USB **76642362C6FCE382**; radio **!638b9515**; hardware `82e3fcc66223647615958b63dd296ca1` | RAK4631; INA219/AHT21 previously measured. Owner selects **Lee Junction / Case 3 / eight cells / Muzi**. Case 3 intake ASA/one SMA/two 160 mA panels. | Retained **2.7.26.bcb22e0 / rak4631-survey**, **ROUTER**, exact fixed location and complete intended profile pass reboot; own keys/channels, enabled MQTT permission and 180 s reporting preserved. No flash. [Deployment](../docs/operations/r006-lee-junction-deployment.md); [prior bench](../docs/operations/rak-batch-20261112.md). | Placement owner-reported; reception lost while hiking. Relocate/verify intended links, new receipts, sustained cadence and runtime. |
 | **R007 / SNORR Repeater 007** | USB **BADB1E79E9739FC4**; radio **!b456f760**; hardware `c49f73e9791edbba60f756b42c43bbf3` | RAK4631; INA219 owner-confirmed; AHT21 not detected / unverified | **4c96b9b / CLIENT**, complete reboot/profile pass; RF **3/3 TX, 3/3 RX**; CH1 voltage/current received. Board bench pass; assembly/site pending. [Batch evidence](../docs/operations/rak-batch-20261112.md). | Owner's Sunday case/power/location/ROUTER + cadence readback; holds must clear first. |
@@ -60,7 +70,7 @@ Portal registry/history has not been reassigned by this board-preparation step.
 **Survey firmware update, 2026-11-14.** R001, R002 and R004 through R011 run `rak4631-survey / 2.7.26.bcb22e0` on LongFast slot 35. R004, R005 and R007 returned direct survey PONGs. R001, R002, R006, R008, R009, R010 and R011 received USB reboot and profile verification. All seven subsequently saved the original tester’s pairing and verified it after reboot. RF tests for these seven remain deferred. R009 retained enabled GPS at a 120-second interval. Earlier ordinary-image results in these rows remain historical. The Heltec tester (`2.7.26.7b766e6`) retained G002 and accepted the ten RAKs in one USB selection after reboot.
 
 Prior ordinary-image board-level passes: **R001, R002, R004, R005, R006, R007, R008,
-R009 and R010**. **R003 alone remains held** for radio/connection acceptance.
+R009 and R010**. **R003 remains held** for radio/connection acceptance.
 R008 is now configured and accepted; R010 passes after owner solder rework.
 All eleven repeater numbers are assigned. The next unused number is **R012**.
 
