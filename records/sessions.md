@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-11-18 - Prepared the SNORR budget packet
+
+Recorded the owner's $5,000 original budget and prepared a one-page summary
+and a 79-line itemized CSV for SNORR. Verified 41 direct-purchase lines, 33
+personal-purchase lines and three proposed cart lines against the reconciled
+totals. The reported battery cost and T-Deck reference remain outside the
+projection. Confirmed payments leave $3,317.93 against the budget. The
+provisional reimbursement and proposed cart would leave $2,154.51 before
+checkout tax or shipping. Next, confirm the reimbursement amount and resolve
+the direct purchase approval. [Financial review](finances.md#2026-11-18---spending-review).
+
 ## 2026-11-18 - Reviewed personal purchases and the proposed SNORR order
 
 Reconciled 18 personal Amazon orders to a $708.81 provisional reimbursement

@@ -4,6 +4,13 @@ Updated 2026-11-18. All amounts are in USD.
 
 ## 2026-11-18 - Spending review
 
+The owner supplied an original project budget of **$5,000.00** for the
+SNORR review. The confirmed direct payment leaves **$3,317.93** against that
+budget. The $708.81 provisional reimbursement and $454.61 proposed cart would
+bring total charges against the budget to **$2,845.49**, leaving **$2,154.51**
+before checkout tax or shipping. The reported $158.31 battery cost awaits
+documentation and is outside this projection.
+
 | Spending or request | Amount USD | Status |
 | --- | ---: | --- |
 | December 2025 Amazon hardware and supplies | $1,682.07 | Paid directly by Southern Nevada Off Road Recovery |
@@ -174,6 +181,7 @@ Track donated or already-owned hardware separately from project cash expenditure
 
 | Item | Status |
 | --- | --- |
+| Original project budget | $5,000.00, supplied by the owner for the November 2026 review |
 | Available project cash | Unknown |
 | Approved spending ceiling | Not set |
 | Historical expenses | December 2025 SNORR-paid order reconciled. Personal reimbursement awaits approval. |
