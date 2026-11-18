@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-11-18 - Reviewed personal purchases and the proposed SNORR order
+
+Reconciled 18 personal Amazon orders to a $708.81 provisional reimbursement
+estimate after excluding the car shade, phone case and screen protector.
+Allocated tax and the mixed-order coupon by merchandise value. The $24.92
+refund matches the value of the excluded screen protector with tax and awaits
+item-level confirmation. Recorded the separate $454.61 proposed cart for a
+direct SNORR purchase subject to approval. The earlier $1,682.07 purchase
+was paid by SNORR. Approval, final reimbursement and any payment remain open.
+[Financial review](finances.md#2026-11-18---spending-review).
+
 ## 2026-11-18 - Reconciled historical project spending
 
 Matched the December 2025 Amazon receipt's merchandise, 19 shipment totals
