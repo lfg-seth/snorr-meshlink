@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-18 - Nine-site favorite-router study
+
+The owner selected a study layout with a RAK router at Shady Hollow and G002 at Kyle Fire as a forwarding CLIENT. Lee Fire remains the sole uplink. The layout retains Angel Vegas and road survey 5 and omits Kyle Junction, Showgirl and road surveys 1 and 3. Site access, station mount and radio changes await field verification. The earlier deployments remain documented below. [Favorite-router field study](../docs/research/mountain-favorite-router-study-20261118.md)
+
 ## 2026-11-18 - Angel road comparison and Shady forwarding trial
 
 The owner narrowed the Angel road comparison to surveys 1, 3 and 5 against deployed Angel Vegas. Each shoulder needs an access and mount check. Keep the Shady Hollow G002 recorder as the deployed reference. Its direct receptions from Kyle Junction and Cathedral Rock are field examples for the marginal-link screen. Lee Fire remains the modeled uplink. [Node report and scenario results](../docs/research/mountain-node-study-20261118.md)

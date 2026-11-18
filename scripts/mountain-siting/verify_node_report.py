@@ -65,7 +65,7 @@ def agreement(page,box,mask,eligible=None,with_neighbors=False):
 
 def check_valley(doc):
     from model import grid as local_dem,meta as local_transform
-    with rasterio.open(CACHE/"vegas-henderson-20m.tif") as ds:
+    with rasterio.open(VALLEY_CACHE/"vegas-henderson-20m.tif") as ds:
         regiondem=ds.read(1);aff=ds.transform
         assert np.isfinite(regiondem).all() and regiondem.min()>-500 and aff.a==20
         for name,lon,lat in [("Southern Henderson",-115.105,35.913),("Eastern Henderson",-114.923,36.105),
@@ -74,9 +74,9 @@ def check_valley(doc):
             assert ds.bounds.left<x<ds.bounds.right and ds.bounds.bottom<y<ds.bounds.top,name
     def sample(dem,x0,y0,res,xx,yy):
         return map_coordinates(dem,[(y0-yy)/res-.5,(xx-x0)/res-.5],order=1,prefilter=False,output=np.float64)
-    for i,k in enumerate(REGIONAL,9):
+    for i,k in enumerate(REGIONAL,6):
         page=doc[i]
-        with rasterio.open(CACHE/(k+"-valley.tif")) as ds:
+        with rasterio.open(VALLEY_CACHE/(k+"-valley.tif")) as ds:
             mask=ds.read(1).astype(bool);tr=ds.transform;assert tr.a==120 and tr.e==-120
         displayed_mask(page,mask)
         rr,cc=np.mgrid[8:mask.shape[0]:61,8:mask.shape[1]:53]
@@ -127,26 +127,71 @@ def check_close_profiles(doc):
     return count
 
 
+def check_angel_inset(doc):
+    from node_cartography import extent_for
+    from node_front import INSET
+    from model import grid,meta
+    l,b,r,t=extent_for([xy[k] for k in REGIONAL],INSET[2]/INSET[3],.38)
+    spacing=2.5
+    width,height=int(np.ceil((r-l)/spacing)),int(np.ceil((t-b)/spacing))
+    item,=(im for im in doc[2].get_images() if im[2:4]==(width,height))
+    alpha=np.asarray(Image.open(BytesIO(doc.extract_image(item[1])["image"])))>0
+    def terrain(x,y):
+        return map_coordinates(grid,[(meta[1]-y)/meta[2]-.5,(x-meta[0])/meta[2]-.5],order=1,
+                               prefilter=False,output=np.float64)
+    for row in range(3,height,17):
+        for col in range(2,width,17):
+            x,y=l+(col+.5)*spacing,t-(row+.5)*spacing
+            visible=False
+            for k in SITES:
+                xx,yy=xy[k]
+                distance=np.hypot(x-xx,y-yy)
+                frac=np.linspace(0,1,max(2,int(np.ceil(distance/5)))+1)
+                z=terrain(xx+frac*(x-xx),yy+frac*(y-yy))
+                ray=z[0]+wh(k)+(z[-1]+1.2-z[0]-wh(k))*frac
+                if np.all((ray-z-distance**2*frac*(1-frac)/(2*6371000*4/3))[1:-1]>=0):
+                    visible=True
+                    break
+            assert visible==alpha[row,col],(row,col)
+
+
 def check_network(doc,records):
-    def recalc(relays,obs):
-        graph0=nx.Graph(); selected=[LEE,*relays];graph0.add_nodes_from(selected)
-        for a,b in combinations(selected,2):
-            row=records[frozenset((a,b))]
-            if float(row["native LOS clearance m"])>=0 or obs and observed(a,b):graph0.add_edge(a,b)
-        reach=nx.single_source_shortest_path_length(graph0,LEE,cutoff=3)
-        return list(reach)
-    inputs=[(baseline,False,DEPLOYED)]
-    for s in SCOUTS:
-        inputs.extend([([*ROLE_RELAY,s],False,CASES[s]),([*ROLE_RELAY,s,SHADY],True,TRIALS[s])])
-    for layout,obs,case in inputs:
-        reach=recalc(layout,obs)
-        assert set(case["routes"])==set(reach)
-        mask=footprint(reach);assert np.array_equal(mask,case["zone"])
-        assert np.isclose(roadkm(np.logical_or.reduce([masks[ix[k]] for k in reach])),case["km"])
-    for page,scenarios in [(doc[6],[DEPLOYED,CASES[SCOUTS[2]]]),(doc[7],[CASES[SCOUTS[2]],TRIALS[SCOUTS[2]]])]:
-        images=sorted([im for im in page.get_image_info() if (im["height"],im["width"])==SHAPE],key=lambda im:im["bbox"][0])
-        assert len(images)==2
-        for im,case in zip(images,scenarios):agreement(page,im["bbox"],case["zone"],INSIDE)
+    # Traverse packet states independently of the report's simple-path enumeration.
+    for first in SITES:
+        stack=[(first,None,3)]
+        seen=set()
+        costs=[]
+        while stack:
+            current,prev,remaining=stack.pop()
+            state=(current,prev,remaining)
+            if state in seen:
+                continue
+            seen.add(state)
+            if current==LEE:
+                costs.append(3-remaining)
+                continue
+            if not remaining:
+                continue
+            consumed=int(prev is None or current==KYLE_FIRE or prev==KYLE_FIRE)
+            for nxt in SITES:
+                if nxt in (prev,current):
+                    continue
+                edge=frozenset((current,nxt))
+                if float(records[edge]["native LOS clearance m"])>=0 or edge in OBSERVED:
+                    stack.append((nxt,current,remaining-consumed))
+        assert costs and min(costs)==ROUTES[first][1],first
+    union=footprint(SITES)
+    assert set(ROUTES)==set(SITES)
+    assert ROUTES[KYLE_FIRE][1]==2 and all(ROUTES[k][1]==1 for k in ROUTERS)
+    with rasterio.open(REPORT/"combined-mountain-viewshed.tif") as ds:
+        assert ds.nodata==255 and np.array_equal(ds.read(1),np.where(INSIDE,union,255))
+        assert ds.transform==GEO
+    displayed_mask(doc[2],union,INSIDE,with_neighbors=True)
+    assert sorted(im["bbox"] for im in doc[1].get_image_info() if im["width"]>=1400)==sorted(
+        im["bbox"] for im in doc[2].get_image_info() if im["width"]>=1400)
+    assert f"{union.sum()*AREA:.2f} km²" in compact(doc[2].get_text())
+    target_mask=masks[[ix[k] for k in SITES]].any(axis=0)
+    assert f"{roadkm(target_mask):.2f} of " in compact(doc[2].get_text())
 
 
 def check_neighbors_on_map(page,site,sisters):
@@ -177,20 +222,20 @@ def verify():
     with (OUT/"pair-overlap.csv").open(encoding="utf-8-sig") as f:
         records={frozenset((row["site A"],row["site B"])):row for row in csv.DictReader(f)}
     with pymupdf.open(PDF) as doc:
-        assert len(doc)==79 and "Codex" in doc.metadata["author"]
+        assert len(doc)==46 and "Codex" in doc.metadata["author"]
         pages=[compact(p.get_text()) for p in doc]
-        assert all("Vegas alternative" not in t and "Lone Mountain foothills" not in t and "survey 6" not in t.lower() for t in pages)
+        assert all(name not in t for t in pages for name in ("Vegas alternative","Kyle Junction","Showgirl","Angel road survey 1","Angel road survey 3","Angel road survey 6","Three separate Angel scout trials","Executive summary"))
         links=lambda p:{d["page"]+1 for d in doc[p-1].get_links() if d["kind"]==pymupdf.LINK_GOTO}
-        assert set(psite(k) for k in SITES)<=links(4)&links(5)
-        assert set(range(10,14))<=links(4)
-        examples=[records[frozenset((SHADY,b))] for b in (CAT,KYLE)]
+        assert set(psite(k) for k in SITES)<=links(5)&links(6)
+        assert {2,3,4,6,7,8}<=links(5)
+        examples=[records[frozenset((SHADY,b))] for b in (CAT,"Kyle Junction")]
         thresholds={key:min(float(r[key]) for r in examples) for key in ("native LOS clearance m","min first Fresnel fraction")}
         expected={pair for pair,r in records.items() if pair<=set(SITES) and (
             all(float(r[key])>=lo for key,lo in thresholds.items()) or pair in OBSERVED)}
-        assert frozenset((UP,SHOW)) not in expected and len(expected)==21
+        assert expected==KEPT_PAIRS and len(expected)==10
         physical=Counter()
         for k in SITES:
-            for text in (pages[1],pages[2],pages[4]):
+            for text in (pages[0],pages[1],pages[2],pages[3],pages[5]):
                 assert k.replace("’","'") in text.replace("’","'"),k
             sisters={b for b in SITES if frozenset((k,b)) in expected}
             assert set(neighbors(k))==sisters
@@ -205,9 +250,9 @@ def verify():
                 row=records[frozenset((k,b))]
                 value=float(row["native LOS clearance m"])
                 assert f"{value:+.2f} m" in text and f"{wh(k)} m at A / {wh(b)} m at B" in text,(n,k,b)
-                assert ("Field record: Shady received" in text)==observed(k,b)
+                assert ("Historical field record: G002 at Shady" in text)==observed(k,b)
                 if value<0:
-                    label=("Marginal · recorded" if {k,b} in ({SHADY,CAT},{SHADY,KYLE}) else
+                    label=("Marginal · recorded" if {k,b} == {SHADY,CAT} else
                            "Recorded" if observed(k,b) else "Marginal · unverified")
                     assert label in text and "Blocked / recorded" not in text,(k,b)
                 assert ("Terrain intersects the ray." in text)==(value<0)
@@ -215,12 +260,12 @@ def verify():
                 physical[frozenset((k,b))]+=1
         assert set(physical)==expected and set(physical.values())=={2}
         assert all(all(link["kind"]==pymupdf.LINK_URI or 0<=link.get("page",-1)<len(doc) for link in p.get_links()) for p in doc)
-        assert len([link for link in doc[8].get_links() if link["kind"]==pymupdf.LINK_URI])==3
-        check_network(doc,records);check_valley(doc)
+        assert all({5,6}<=links(i) for i in range(2,len(doc)+1))
+        check_network(doc,records);check_valley(doc);check_angel_inset(doc)
         close_count=check_close_profiles(doc)
-    with zipfile.ZipFile(REPORT/"node-field-packet.zip") as ar:
-        assert len(ar.namelist())==20 and ar.testzip() is None and ar.read(PDF.name)==PDF.read_bytes()
-        assert all("survey 6" not in name.lower() for name in ar.namelist())
+    with zipfile.ZipFile(REPORT/"favorite-router-field-packet.zip") as ar:
+        assert len(ar.namelist())==16 and ar.testzip() is None and ar.read(PDF.name)==PDF.read_bytes()
+        assert set(n for n in ar.namelist() if n.endswith(".tif")) == {"mountain-viewsheds/"+s+".tif" for s in SITES} | {"valley-viewsheds/"+s+".tif" for s in REGIONAL} | {"mountain-viewsheds/combined-mountain-viewshed.tif"}
         for filename in ("node-waypoints.kml","node-waypoints.gpx"):
             root=ET.fromstring(ar.read(filename));tag="Placemark" if filename.endswith("kml") else "wpt"
             assert {p.findtext("{*}name") for p in root.findall(".//{*}"+tag)}==set(SITES)
@@ -228,7 +273,7 @@ def verify():
         assert set(viewer["points"])==set(viewer["views"])==set(SITES)
         assert {frozenset((p["a"],p["b"])) for p in viewer["paths"]}==expected
         assert all(p["fieldClass"]==status(p["a"],p["b"]) for p in viewer["paths"])
-    print(f"Verified 79 pages, 42 oriented profiles ({close_count} fine-grid overlays), 12 neighbor overlays, four network map panels, four regional rasters and the 20-file packet.")
+    print(f"Verified 46 pages, 20 oriented profiles ({close_count} fine-grid overlays), nine annotated viewsheds, the combined mountain map, favorite-router paths, two valley maps and the 16-file packet.")
 
 
 if __name__=="__main__":

@@ -43,7 +43,7 @@ def para(c,x,y,text,width,size=10,leading=15,color=INK,font="Sans"):
     return y
 
 def psite(k):
-    return 10+len(REGIONAL)+sum(2+len(neighbors(site)) for site in SITES[:SITES.index(k)])
+    return 7+len(REGIONAL)+sum(2+len(neighbors(site)) for site in SITES[:SITES.index(k)])
 
 def chapter_end(k):
     return psite(k)+1+len(neighbors(k))
@@ -64,8 +64,8 @@ def start(c,number,section,title,sub=""):
     txt(c,810,19,str(number),8.2,"Bold",INK,True)
 
 def nav(c,links,left=560):
-    txt(c,left,19,"Contents",8.2,"Bold",TEAL);link(links,left,12,45,17,4)
-    txt(c,left+62,19,"Node directory",8.2,"Bold",TEAL);link(links,left+62,12,70,17,5)
+    txt(c,left,19,"Contents",8.2,"Bold",TEAL);link(links,left,12,45,17,5)
+    txt(c,left+62,19,"Node directory",8.2,"Bold",TEAL);link(links,left+62,12,70,17,6)
 
 def table(c,cols,widths,rows,x,y,rowheight=22,size=9):
     """Return the vertical midlines for linked body rows."""

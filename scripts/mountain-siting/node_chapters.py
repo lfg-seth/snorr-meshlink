@@ -17,7 +17,7 @@ def region(rect):
 
 
 def source(k):
-    return "Generated road shoulder" if k in SCOUTS else "Supplied survey waypoint"
+    return "Generated road shoulder" if k == A5 else "Station study pin" if k == KYLE_FIRE else "Supplied survey waypoint"
 
 
 def summary(c,k,links):
@@ -45,7 +45,14 @@ def summary(c,k,links):
         rows.append([b,f"{math.dist(xy[k],xy[b])/1000:.2f}",status(k,b),str(ppath(k,b))])
     mids=table(c,["Sister B","km","Field classification","Page"],[142,42,151,60],rows,390,445,23,8.6)
     for b,y in zip(neighbors(k),mids):link(links,390,y-6,395,21,ppath(k,b))
-    para(c,392,136,"Strong clears 60% of the first Fresnel zone. Marginal paths have restricted clearance or a terrain profile comparable to the Shady references. Recorded identifies a direct field reception.",385,8.8,13)
+    txt(c,392,161,"Member GPS route to Lee Fire",11,"Bold",TEAL)
+    if k in ROUTES:
+        route,cost=ROUTES[k]
+        para(c,392,143," → ".join(CODE[s] for s in route),385,10,14,font="Bold")
+        txt(c,392,123,f"{len(route)-1} radio legs after first reception  ·  {cost} of 3 budgeted hops used",9.1)
+    else:
+        txt(c,392,143,"No eligible modeled route to Lee Fire",10)
+    txt(c,392,98,"The node directory lists the codes. A field receipt verifies delivery.",8.7,"Sans",SOFT)
     txt(c,392,69,f"Open single-site viewshed   →   p. {n+1}",10,"Bold",TEAL)
     link(links,390,62,240,19,n+1)
     nav(c,links)
@@ -78,8 +85,8 @@ def overlay_neighbors(c,k,rect,bounds):
     p=project(xy[k],bounds,rect)
     angels=[s for s in REGIONAL if s==k or s in sisters]
     zoom=len(angels)>1
-    offsets={KYLE:(-9,-12,"right"),ESC:(8,-15,"left"),SHADY:(8,8,"left"),
-             UP:(-6,-13,"right"),LEE:(-6,9,"right"),MACK:(0,10,"center"),SHOW:(-7,-13,"right")}
+    offsets={KYLE_FIRE:(7,11,"left"),ESC:(8,-15,"left"),SHADY:(8,8,"left"),
+             UP:(-6,-13,"right"),LEE:(-6,9,"right"),MACK:(0,10,"center")}
     for b in sisters:
         q=project(xy[b],bounds,rect)
         neighbor_line(c,k,b,p,q)
@@ -88,6 +95,9 @@ def overlay_neighbors(c,k,rect,bounds):
         mark(c,q,"#627476",radius=2.7)
         if zoom and b in REGIONAL:continue
         dx,dy,align=offsets.get(b,(6,9,"left"))
+        if {k,b}=={KYLE_FIRE,CAT}:
+            dx,dy,align=(12,22,"left") if b==KYLE_FIRE else (-12,-12,"right")
+            line(c,q,(q[0]+dx,q[1]+dy+2),"#627476",.6)
         tag(c,q[0]+dx,q[1]+dy,b,align,7.1,"#495C5D")
     if zoom and k not in REGIONAL:
         q=project(xy[angels[0]],bounds,rect)
@@ -105,7 +115,7 @@ def overlay_neighbors(c,k,rect,bounds):
         if b!=k:neighbor_line(c,k,b,project(xy[k],bounds,inset),project(xy[b],bounds,inset))
     c.restoreState()
     # Names occupy distinct slots while each leader terminates at the real survey pin.
-    positions={SCOUTS[0]:(.23,.13),SCOUTS[1]:(.64,.84),SCOUTS[2]:(.17,.76),ANGEL:(.84,.39)}
+    positions={A5:(.28,.74),ANGEL:(.76,.21)}
     for s in sorted(angels,key=lambda site:site==k):
         q=project(xy[s],bounds,inset);u,v=positions[s]
         x,y=inset[0]+u*inset[2],inset[1]+v*inset[3]
@@ -213,7 +223,7 @@ def direct(c,a,b,links):
     txt(c,460,221,f"Minimum terrain clearance {clear:+.2f} m at {at:.2f} km from A.",9.6)
     txt(c,460,203,("Terrain intersects the ray." if f1<0 else f"Minimum first Fresnel clearance {100*f1:.0f}%."),9.6)
     if observed(a,b):
-        msg="Field record: Shady received this sister radio directly; the sister also reported hearing G002. Forwarding remains a trial."
+        msg="Historical field record: G002 at Shady heard this radio directly. The sister also reported G002. Repeat the test at the replacement RAK."
     elif status(a,b)=="Marginal · unverified":
         msg="Field-test candidate: terrain and Fresnel intrusion fall within the recorded Shady examples. Direct reception still needs a field test."
     else:

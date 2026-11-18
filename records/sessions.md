@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-18 - Built the separate nine-site favorite-router field package
+
+Built a new 46-page report and offline packet. The combined map uses the union of all nine mountain viewsheds and the same frame as the site map. Seven favorite-linked routers, a forwarding CLIENT at Kyle Fire and the Lee Fire uplink give 95.77 km² of modeled member visibility and 24.88 km of sampled highway. Verified both directions of ten pairs, all nine site viewsheds, the valley maps, routing costs, exports and the archived PDF. Rechecked the preceding PDF and ZIP hashes. Next, verify the Shady RAK, G002 CLIENT forwarding and a matched member GPS receipt at Lee Fire. [Scoped study, sources and page guide](../docs/research/mountain-favorite-router-study-20261118.md)
+
 ## 2026-11-18 - Added neighbor overlays and shortened the node field report
 
 Removed Angel road survey 6 and omitted 45 pairs outside the field screen. Each of the 12 single-site viewsheds now emphasizes its selected radio and overlays the retained direct neighbors. The recorded Shady–Kyle and Shady–Cathedral links anchor the marginal classification. Four comparable unverified pairs are listed for field testing and excluded from modeled coverage. The field packet contains 42 directional profiles across 79 pages. Next, test Mack’s at 4 m and use Shady’s recorded paths as controls for the marginal trials. [Revised study and field evidence](../docs/research/mountain-node-study-20261118.md)

@@ -9,38 +9,37 @@ import numpy as np
 import rasterio
 from shapely import contains_xy
 
-from node_valley import ANGELS, CACHE, REPORT
+from node_valley import CACHE as VALLEY_CACHE
+
+REPORT = VALLEY_CACHE.parent.with_name("mountain-node-study-20261118-favorites")
+CACHE = REPORT / "cache"
+CACHE.mkdir(parents=True, exist_ok=True)
 
 UP="Upper Bristlecone"
 LEE="Lee Fire"
 MACK="Mack's alternative"
-SHOW="Showgirl"
 SHADY="Shady Hollow"
 ESC="Escarpment trail"
 CAT="Cathedral Rock"
 ANGEL="Angel Vegas"
-KYLE="Kyle Junction"
-SCOUTS=ANGELS[1:]
-SITES=[UP,LEE,MACK,SHOW,SHADY,ESC,CAT,SCOUTS[2],ANGEL,KYLE,SCOUTS[0],SCOUTS[1]]
-CODE=dict(zip(SITES,("UB","LF","MA","SG","SH","ES","CR","A5","AV","KJ","A1","A3")))
-# November study records G002 direct packets and reciprocal neighbor reports. G002 is a passive recorder.
-OBSERVED={frozenset((SHADY,k)) for k in (CAT,ANGEL,KYLE,"Angel Mountain")}
+KYLE_FIRE="Kyle Fire"
+A5="Angel road survey 5"
+REGIONAL=[ANGEL,A5]
+SITES=[UP,LEE,MACK,SHADY,ESC,CAT,A5,ANGEL,KYLE_FIRE]
+CODE=dict(zip(SITES,("UB","LF","MA","SH","ES","CR","A5","AV","KF")))
+ROUTERS=set(SITES)-{LEE,KYLE_FIRE}
+OBSERVED={frozenset((SHADY,k)) for k in (CAT,ANGEL)}
 SITE_INFO={
-    UP:("R010 · deployed repeater","Lee Canyon backbone","Upper is the western anchor for the proposed Mack’s link. The model connects it directly to Lee Fire.","Test reciprocal packet IDs from Mack’s, then match the member fix time at Lee Fire."),
-    LEE:("G001 · gateway","Lee Fire uplink","This is the report’s only dispatch gateway. A member transmission can arrive directly or through up to three forwarders.","Confirm gateway power and uplink before a trial. Match tracker ID, fix time and gateway receipt time."),
-    MACK:("Owner waypoint · proposed repeater","Bridge into Lee Canyon","This supplied pin can join the Angel-side sites to Upper Bristlecone. Direct terrain toward Lee Fire is obstructed.","Set the portable at the intended 4 m. Repeat the Upper link at 2 m to measure mount sensitivity."),
-    SHOW:("Owner waypoint · former site","Southern mountain coverage","Use the supplied Showgirl pin. Its direct terrain ray to deployed Angel Vegas has limited Fresnel clearance.","Compare Angel Vegas and the Angel road scouts at equal antenna height. Record both directions."),
-    SHADY:("G002 · offline recorder","Witness receiver and relay trial","The recovered SD record includes direct packets from Cathedral, Angel Vegas and Kyle Junction. G002 currently has forwarding disabled.","For the forwarding trial, use the same site and log the relay identity plus a matched GPS receipt at Lee."),
-    ESC:("Owner waypoint · proposed repeater","Escarpment footway","The supplied pin sits beside the mapped footway. Its near neighbors include Shady and the Kyle side of the network.","Keep the portable at the supplied pin first. Compare the Angel and south-side links with the same antenna."),
-    CAT:("R001 · deployed repeater","Cathedral Rock control","Cathedral is an installed south-side control. Shady’s recorder provides evidence of a direct radio reception.","Use numbered packets toward Shady and Escarpment. Verify a gateway receipt separately."),
-    ANGEL:("R005 · deployed repeater","Valley-facing Angel control","This is the installed Vegas-side radio. It provides a fixed reference for each separate road-scout trial and was heard at Shady.","Keep R005 operating and compare a fixed valley receiver with each candidate during the same test window."),
-    KYLE:("R008 · deployed repeater","Kyle Canyon control","Use the corrected Kyle Junction position. Shady recorded direct packets from this radio despite the terrain obstruction.","Compare the Shady and Escarpment paths from the installed antenna. Check member GPS delivery separately."),
-    SCOUTS[0]:("Road scout · access unconfirmed","Showgirl and Escarpment option","Survey 1 cleared Showgirl and Escarpment in the native-terrain screen. Its valley footprint is compared with the other Angel sites.","Confirm access and stand location. Test both mountain links and compare the same fixed valley receiver."),
-    SCOUTS[1]:("Road scout · access unconfirmed","Mack’s and valley option","Survey 3 clears Mack’s and offers a valley-facing position. Survey 2 was about 20 m away and duplicated that role in the earlier screen.","Confirm access, compare the Mack’s link with survey 5 and repeat the valley test at the same receiver."),
-    SCOUTS[2]:("Road scout · access unconfirmed","Mountain-facing Angel option","Survey 5 clears Mack’s, Showgirl and the supplied Escarpment pin. Its whole-valley page shows the trade-off at a fixed 4 m receiver.","Confirm access. Favor the Mack’s and Escarpment tests and keep deployed Angel Vegas as the control."),
+    UP:("R010 · deployed router","Lee Canyon backbone","Upper is the western anchor for the proposed Mack’s link. The model connects it directly to Lee Fire.","Test reciprocal packet IDs from Mack’s, then match the member fix time at Lee Fire."),
+    LEE:("G001 · gateway","Lee Fire uplink","Lee Fire is the sole dispatch uplink. A tracker can reach the gateway directly or through the favorite-router chain.","Check gateway power and uplink. Match the member ID, GPS fix time and gateway receipt time."),
+    MACK:("Owner waypoint · proposed router","Bridge into Lee Canyon","This supplied pin connects the Angel road site to Upper Bristlecone. Both modeled links are needed to carry south-side traffic to Lee.","Set the portable at the intended 4 m. Repeat the Upper link at 2 m to measure mount sensitivity."),
+    SHADY:("RAK · proposed router","Shady Hollow relay","A RAK router takes the former recorder position. G002 heard Cathedral Rock and Angel Vegas here before its proposed move. These receptions belong to the original hardware and mount.","At the RAK, repeat the Cathedral and Angel tests and check the Escarpment link. Match a member GPS fix at Lee Fire."),
+    ESC:("Owner waypoint · proposed router","Escarpment footway","The supplied pin sits beside the mapped footway. It joins the southern sites to Angel road survey 5.","Keep the portable at the supplied pin first. Compare the Angel and south-side links with the same antenna."),
+    CAT:("R001 · deployed router","Cathedral Rock control","Cathedral has a terrain-clear path to Kyle Fire and Escarpment. The historical Shady recorder heard Cathedral across a marginal terrain profile.","Test G002 at the station, then verify the new RAK at Shady with numbered packets in both directions."),
+    A5:("Road scout · proposed router","Mountain-facing Angel relay","Survey 5 clears Mack’s and Escarpment. It operates alongside Angel Vegas in this plan. Their valley maps use the same 4 m receiver.","Confirm access and the 4 m mount. Test Mack’s and Escarpment, then compare valley reception against Angel Vegas."),
+    ANGEL:("R005 · deployed router","Valley-facing Angel control","This installed Vegas-side radio has a clear path to Escarpment. G002 at the former Shady recording position also heard it directly.","Keep R005 operating. Compare against road survey 5 at the same fixed valley receiver and repeat the Shady test."),
+    KYLE_FIRE:("G002 · forwarding CLIENT","Kyle Canyon station","G002 moves to the station pin as a forwarding CLIENT with local SD recording. Its modeled neighbor is Cathedral Rock. Backhaul remains at Lee Fire.","Check the actual antenna height and CLIENT rebroadcast setting. Log direct Cathedral packets and match a tracker fix at Lee Fire."),
 }
-REGIONAL=ANGELS
-ROLE_RELAY=[UP,MACK,SHOW,ESC,CAT,ANGEL,KYLE]
 COLORS={"Strong":"#08776F","Marginal":"#A36406","Blocked":"#68757B","Recorded":"#973B72"}
 
 
@@ -53,7 +52,7 @@ def rating(a,b):
     return "Blocked" if v["clear"]<0 else "Strong" if v["f1"]>=.6 else "Marginal"
 
 
-FIELD_EXAMPLES=(KYLE,CAT)
+FIELD_EXAMPLES=("Kyle Junction",CAT)
 CLEARANCE_FLOOR=min(graph[SHADY][k]["clear"] for k in FIELD_EXAMPLES)
 FRESNEL_FLOOR=min(graph[SHADY][k]["f1"] for k in FIELD_EXAMPLES)
 
@@ -108,25 +107,37 @@ def roadkm(mask):
     return weights[(groups=="Highway") & mask].sum()/1000
 
 
-def radio_network(relays,allow_recorded=False):
-    selected=[LEE,*relays]
-    g=nx.Graph()
-    g.add_nodes_from(selected)
-    for a,b in combinations(selected,2):
-        if rating(a,b)!="Blocked" or (allow_recorded and observed(a,b)):
-            g.add_edge(a,b)
-    routes=nx.single_source_shortest_path(g,LEE,cutoff=3)
-    serving=list(routes)
-    targets=masks[[ix[s] for s in serving]].any(axis=0)
-    footprint_mask=footprint(serving)
-    scores={}
-    for n in ["Highway","SR 156","SR 157","SR 158"]:
-        take=(groups=="Highway") if n=="Highway" else (groups=="Highway")&(names==n)
-        scores[n]=100*weights[take&targets].sum()/weights[take].sum()
-    return dict(relays=relays,routes=routes,zone=footprint_mask,area=footprint_mask.sum()*AREA,
-                km=roadkm(targets),scores=scores)
+def charged_forwards(route, budget=3):
+    """Charge each rebroadcast at the receiving relay. Lee is the destination."""
+    charged = 0
+    for i, site in enumerate(route[:-1]):
+        if charged == budget:
+            return None
+        if i == 0 or site not in ROUTERS or route[i-1] not in ROUTERS:
+            charged += 1
+    return charged
 
 
-DEPLOYED=radio_network(baseline)
-CASES={s:radio_network([*ROLE_RELAY,s]) for s in SCOUTS}
-TRIALS={s:radio_network([*ROLE_RELAY,s,SHADY],True) for s in SCOUTS}
+def favorite_routes():
+    network = nx.Graph()
+    network.add_nodes_from(SITES)
+    for a,b in combinations(SITES,2):
+        if rating(a,b) != "Blocked" or observed(a,b):
+            network.add_edge(a,b)
+    routes = {LEE: ([LEE], 0)}
+    for site in SITES:
+        if site == LEE:
+            continue
+        choices = []
+        for route in nx.all_simple_paths(network,site,LEE):
+            cost = charged_forwards(route)
+            if cost is not None:
+                historical = sum(observed(a,b) for a,b in zip(route,route[1:]))
+                choices.append((cost,historical,len(route),route))
+        if choices:
+            cost,_,_,route = min(choices)
+            routes[site] = (route,cost)
+    return routes
+
+
+ROUTES = favorite_routes()

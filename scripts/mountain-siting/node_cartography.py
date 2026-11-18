@@ -12,7 +12,7 @@ from reportlab.lib.colors import HexColor, Color, white
 from reportlab.lib.utils import ImageReader
 from shapely.geometry import LineString
 
-from node_model import CACHE, GEO, EXTENT, INSIDE, SITES, ANGEL, SCOUTS, CODE, features, xy
+from node_model import CACHE, GEO, EXTENT, INSIDE, SITES, ANGEL, VALLEY_CACHE, CODE, features, xy
 from terrain_maps import landscape, contour_lines, contour_interval, feature_paths, relief
 
 
@@ -54,6 +54,8 @@ def base_path(bounds,wpx,mode):
 def topo(bounds,wpx=1650,mode="detail"):
     path=base_path(bounds,wpx,mode)
     if path.is_file(): return path
+    previous=VALLEY_CACHE/"maps"/path.name
+    if previous.is_file(): return previous
     path.parent.mkdir(exist_ok=True,parents=True)
     l,b,r,t=bounds
     res=max(1,(r-l)/wpx)
@@ -147,7 +149,7 @@ def clipped_overlay(classes,bounds,palette):
     return overlay_file("pair",sub,palette),(x0,y0,x1,y1)
 
 
-def close_pair_overlay(a,b,bounds,palette):
+def local_member_masks(sites,bounds):
     from model import grid,meta,wave,radius
     from survey import wh
     from terrain import points,sight
@@ -158,11 +160,16 @@ def close_pair_overlay(a,b,bounds,palette):
     ends=points(grid,meta,np.column_stack((gx.ravel(),gy.ravel())),1.2)
     assert np.isfinite(ends).all()
     masks=[]
-    for site in (a,b):
+    for site in sites:
         origin=points(grid,meta,[xy[site]],wh(site))[0]
         masks.append(sight(grid,meta,origin,ends,5,wave,radius).reshape(rows,cols))
+    return masks,(l,t-rows*spacing,l+cols*spacing,t),spacing
+
+
+def close_pair_overlay(a,b,bounds,palette):
+    masks,extent,spacing=local_member_masks((a,b),bounds)
     classes=masks[0]+2*masks[1]
-    return overlay_file("local-pair",classes,palette),(l,t-rows*spacing,l+cols*spacing,t),spacing
+    return overlay_file("local-pair",classes,palette),extent,spacing
 
 
 def mountain(c,rect,bounds,overlay=None,wpx=1650,mode="detail",overlay_bounds=EXTENT):
@@ -231,9 +238,11 @@ def city_layers():
 @lru_cache(1)
 def metro_base():
     path=CACHE/"metro-relief-roads.jpg"
-    with rasterio.open(CACHE/"vegas-henderson-20m.tif") as ds:
+    with rasterio.open(VALLEY_CACHE/"vegas-henderson-20m.tif") as ds:
         bounds=tuple(ds.bounds)
         if path.exists(): return path,bounds
+        previous=VALLEY_CACHE/path.name
+        if previous.exists(): return previous,bounds
         w=2700
         h=round(w*ds.height/ds.width)
         z=ds.read(1,out_shape=(h,w),resampling=Resampling.bilinear)
