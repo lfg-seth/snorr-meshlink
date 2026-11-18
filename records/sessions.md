@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-17 - Updated the repeater study with the owner's reachable waypoints
+
+Rebuilt the labeled-topo atlas, offline path viewer, KML, GPX and evidence packet around all 17 supplied points. The access-constrained screen identified Mack’s as the first trial and a conditional mountain-facing Angel scout. Independently checked 21 reported layouts, 496 direct profiles and 8,185 height combinations. The earlier packet also passed its verifier. Next, compare reciprocal Mack’s links at actual mount height and a fresh member GPS receipt at Lee Fire. Compare Shady’s SD and a valley receiver before moving either Angel radio. [Study and reproduction steps](../docs/research/mountain-siting-reachable-20261117.md)
+
 ## 2026-11-17 - Replaced field-packet maps with labeled USGS topography
 
 Rebuilt the printable atlas and offline viewer with geographically labeled terrain, focused link extents, cased radio paths and distinct A/B endpoints. The resort sheet maps the approach and labels the lodge, Ponderosa probes and mapped parking on a dated aerial detail. Recomputed member viewsheds at 35 m spacing. Field verification of the northwest shoulder is the next step. [Study and map sources](../docs/research/mountain-siting-20261117.md)

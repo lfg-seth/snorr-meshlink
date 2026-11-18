@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-17 - Reachable repeater survey sites
+
+The owner supplied reachable pins at Mack’s, Lee Alternative, Angel Vegas alternative, the Escarpment trail and legacy Showgirl. The supplied Lee and Showgirl search radii are 20 m and 100 m. A map-derived Angel shoulder remains conditional on local access. The first proposed attended trial adds a portable at Mack’s with the deployed sites as controls. G002 is the offline Shady receiver and Lee Fire is the working study uplink. [Reachable-waypoint field study](../docs/research/mountain-siting-reachable-20261117.md)
+
 ## 2026-11-17 - Mountain location correction and survey options
 
 Owner reports deployed Kyle Junction / R008 at **36.26489, -115.60370**. Use this for siting. The older table below preserves the radio's saved coordinates. The legacy Fletcher node is at **36.29665, -115.62654**; replacement, an intermediate point and the summit are alternatives. Lee Junction's wildlife fence is crossable per owner. Lee Fire remains the sole available mountain Wi-Fi station; Kyle Fire remains conditional. [Fresh terrain study and survey waypoints](../docs/research/mountain-siting-20261117.md)

@@ -31,7 +31,9 @@ const ha=Number(by('ha').value),hb=Number(by('hb').value);if(!by('ha').value||!b
 const a=z[0]+ha,b=z[n-1]+hb;let min=Infinity,fmin=Infinity,zmin=Infinity,zmax=-Infinity;
 const v=(i)=>{let t=i/(n-1);return [a+(b-a)*t,Math.sqrt(299.792458/910.625*p.d*t*(1-t))]};
 for(let i=0;i<n;i++){const [l,f]=v(i);zmin=Math.min(zmin,z[i],l-.6*f);zmax=Math.max(zmax,z[i],l+.6*f);if(i>0&&i<n-1){min=Math.min(min,l-z[i]);fmin=Math.min(fmin,(l-z[i])/f)}}
-by('metrics').textContent=(p.d/1000).toFixed(2)+' km   ·   minimum terrain clearance '+min.toFixed(1)+' m   ·   minimum first Fresnel clearance '+(100*fmin).toFixed(0)+'%   ·   '+(min<0?'Terrain blocks the ray':fmin<.6?'Clear ray, restricted Fresnel zone':'Inner 60% clears modeled terrain');
+const short=p.d<100;
+const separation=short?p.d.toFixed(1)+' m':(p.d/1000).toFixed(2)+' km';
+by('metrics').textContent=separation+'   ·   minimum terrain clearance '+min.toFixed(1)+' m   ·   minimum first Fresnel clearance '+(100*fmin).toFixed(0)+'%   ·   '+(min<0?'Terrain blocks the ray':fmin<.6?'Clear ray, restricted Fresnel zone':'Inner 60% clears modeled terrain');
 const L=56,R=w-19,T=36,D=h-42,margin=Math.max(8,(zmax-zmin)*.06);zmin-=margin;zmax+=margin;
 const X=i=>L+(R-L)*i/(n-1),Y=v=>D-(D-T)*(v-zmin)/(zmax-zmin);
 c.fillStyle='#263e40';c.fillText('Elevation (m)',8,17);for(let j=0;j<=4;j++){let z=zmin+(zmax-zmin)*j/4;c.fillText(Math.round(z),4,Y(z)+4);c.strokeStyle='#e2e5df';c.beginPath();c.moveTo(L,Y(z));c.lineTo(R,Y(z));c.stroke()}
@@ -40,13 +42,13 @@ const ii=[];for(let i=0;i<n-1;i+=stride)ii.push(i);ii.push(n-1);
 c.beginPath();c.moveTo(L,D);for(const i of ii)c.lineTo(X(i),Y(z[i]));c.lineTo(R,D);c.fillStyle='#a1ada6';c.fill();
 c.beginPath();for(const i of ii){const [l,f]=v(i);c.lineTo(X(i),Y(l+.6*f))}for(const i of [...ii].reverse()){const [l,f]=v(i);c.lineTo(X(i),Y(l-.6*f))}c.closePath();c.fillStyle='rgba(40,135,191,.35)';c.fill();
 pathStroke(c,L,Y(a),R,Y(b));
-endpoint(c,L,Y(a),'A');endpoint(c,R,Y(b),'B');for(let j=0;j<=4;j++){c.fillStyle='#233e40';c.fillText((p.d*j/4000).toFixed(p.d<500?2:1),L+(R-L)*j/4-10,D+18)}c.fillText('Distance from A (km)',(L+R)/2-55,h-5);
+endpoint(c,L,Y(a),'A');endpoint(c,R,Y(b),'B');for(let j=0;j<=4;j++){c.fillStyle='#233e40';c.fillText(short?(p.d*j/4).toFixed(1):(p.d*j/4000).toFixed(p.d<500?2:1),L+(R-L)*j/4-10,D+18)}c.fillText(short?'Distance from A (m)':'Distance from A (km)',(L+R)/2-55,h-5);
 const full=by('fullMap').checked;
 const qa=db.points[A],qb=db.points[B],mid=[(qa[0]+qb[0])/2,(qa[1]+qb[1])/2];
 const jb=db.topo.junction.bounds;
 const local=!full&&p.d<1300&&[qa,qb].every(([x,y])=>x>jb[0]+400&&x<jb[2]-400&&y>jb[1]+400&&y<jb[3]-400);
 const base=full?'regional':local?'junction':'detail';
-const minimum=Math.min(2300,Math.max(600,p.d*5));
+const minimum=short?Math.max(35,p.d*3):Math.min(2300,Math.max(600,p.d*5));
 const [west,south,east,north]=db.topo[base].bounds;
 const spanX=full?east-west:Math.max(minimum,Math.abs(qa[0]-qb[0])*1.45);
 const spanY=full?north-south:Math.max(minimum,Math.abs(qa[1]-qb[1])*1.45);
@@ -79,7 +81,7 @@ for(const [name,point,above] of [[A,qa,qa[1]>=qb[1]],[B,qb,qa[1]<qb[1]]]){
     ctx.fillStyle='#64163c';ctx.fillText(name,x,y);ctx.restore();
 }
 ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(8,8,36,22);ctx.fillStyle='#213637';ctx.font='bold 13px system-ui';ctx.fillText('N ↑',15,24);
-const bar=[5000,2000,1000,500,200,100,50,20,10].find(d=>d*scale<m.w*.23);
+const bar=[5000,2000,1000,500,200,100,50,20,10,5,2,1].find(d=>d*scale<m.w*.23);
 ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(8,m.h-31,Math.max(50,bar*scale+12),25);ctx.fillStyle='#213637';ctx.fillText(bar>=1000?(bar/1000)+' km':bar+' m',14,m.h-17);ctx.fillRect(14,m.h-12,bar*scale,2);
 by('sites').textContent='A  '+A+'     ↔     B  '+B;
 by('metrics').textContent+='   ·   shared footprint '+(view.shared*ds*ds/1e6).toFixed(1)+' km²';

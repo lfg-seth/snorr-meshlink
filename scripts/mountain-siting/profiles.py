@@ -27,7 +27,7 @@ def build():
                           data=base64.b64encode(raw.tobytes()).decode("ascii")))
     write_csv("height-sweep.csv",["site A","site B","A m AGL","B m AGL","minimum terrain clearance m","min first Fresnel fraction"],sensitivity)
     payload=dict(paths=paths,points={label(k):xy[k] for k in sites},roads=[list(line.simplify(25).coords) for line,_ in road_inventory],
-                 start=[label("C16"),"Angel Mountain"])
+                 start=search.get("start",[label("C16"),"Angel Mountain"]))
     packed_views={}
     for k in sites:
         with rasterio.open(OUT/"viewsheds"/(label(k)+".tif")) as ds:

@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 DATA = ROOT / "private/winter-siting"
-OUT = ROOT / "private/mountain-siting-final-20261117"
+OUT = Path(os.environ.get("MOUNTAIN_STUDY_OUTPUT", ROOT / "private/mountain-siting-final-20261117"))
 OUT.mkdir(exist_ok=True)
 sys.path[:0] = [str(DATA / "envpkgs"), str(Path(__file__).resolve().parents[1] / "winter-siting")]
 os.environ.setdefault("NUMBA_NUM_THREADS", "6")

@@ -1,5 +1,7 @@
 # Mount Charleston repeater field study · November 17, 2026
 
+The owner's revised 17-point KML supersedes this unrestricted placement plan for the return visit. The updated terrain study recommends testing Mack’s alternative first. [Reachable-waypoint field study](mountain-siting-reachable-20261117.md)
+
 ## First outing
 
 Test R006 at **Lee Junction northwest shoulder, 36.34460, -115.65631**, 325 m northwest of the deployed pin. The owner confirms the wildlife fence can be crossed. The nearest passing point in the finer 35 m search was **36.34432, -115.65551**, 257 m from the pin. Both are worth checking on the same outing. Use the shoulder as the first choice for the complete layout. From the nearest mapped lot center it is about 737 m straight-line and 241 m higher. This is terrain context, not a surveyed hiking route.

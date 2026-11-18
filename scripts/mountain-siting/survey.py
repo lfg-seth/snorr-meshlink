@@ -3,7 +3,7 @@ from layouts import *
 import xml.etree.ElementTree as ET
 
 D=read(OUT/"layouts.json")
-key="Legacy Fletcher"
+key=search.get("primary", "Legacy Fletcher")
 plan=D[key]["layout"]
 labels={"C01":"Upper Lee south ridge","C04":"Lee Meadows east ridge","C10":"Lower Bristlecone east spur",
         "C16":"Lee Junction northwest shoulder","C24":"Kyle Junction south ridge","C35":"Kyle Junction north ridge",
@@ -49,14 +49,14 @@ def reference_labels():
     return labels
 
 def export():
-    display=list(dict.fromkeys(["Lee Fire",*existing,"Shady Hollow",*fletcher,"Kyle Fire"]+
+    display=search.get("display") or list(dict.fromkeys(["Lee Fire",*existing,"Shady Hollow",*fletcher,"Kyle Fire"]+
                               [k for v in D.values() for k in v["layout"]]))
     root=ET.Element("gpx",version="1.1",creator="SNORR MeshLink",xmlns="http://www.topografix.com/GPX/1/1")
     for k in display:
         lat,lon=lonlat(k)
         wp=ET.SubElement(root,"wpt",lat=f"{lat:.7f}",lon=f"{lon:.7f}")
         ET.SubElement(wp,"name").text=label(k)
-        ET.SubElement(wp,"desc").text=f"{k}. Survey point. Verify access and actual antenna position on site."
+        ET.SubElement(wp,"desc").text=search.get("descriptions",{}).get(k, f"{k}. Survey point. Verify access and actual antenna position on site.")
     ET.ElementTree(root).write(OUT/"survey-waypoints.gpx",encoding="utf-8",xml_declaration=True)
     write_csv("candidates.csv",["key","field name","latitude","longitude","ground m","highway offset m","direct highway km","selected in"],(
         [k,label(k),*lonlat(k),round(elevation(grid,meta,*xy[k])),round(roads.distance(Point(xy[k]))),
@@ -71,7 +71,9 @@ def export():
     rows=[]
     for scenario,v in D.items():
         for site in v["layout"]:
-            p=route(site,v["layout"],.6) or route(site,v["layout"])
+            p=route(site,v["layout"],.6)
+            if not p or len(p)>4:
+                p=route(site,v["layout"]) or p
             rows.append([scenario,label(site)," > ".join(map(label,p)),len(p)-1 if p else "",site in v["reach"]])
     write_csv("station-routes.csv",["scenario","origin","route (60% preferred)","radio links","member path within 3 repeats"],rows)
     reach=D[key]["reach"]
