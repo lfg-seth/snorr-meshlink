@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-18 - Rebuilt the mountain study around 13 node chapters
+
+Published the report tools and study record for the owner’s ten nodes plus Angel road surveys 1, 3 and 6. The private field report includes full-page site/link maps, five 4 m viewsheds spanning Mount Charleston through Henderson, and 156 A-first profiles. The separate Shady-forwarding estimate admits recorded direct receptions and adds zero eligible highway within three forwarders. Survey 5 leads the one-scout layouts at 32.3% of sampled highway. Next, test Mack’s at 4 m against Upper, verify an ordinary member GPS receipt at Lee and compare accessible Angel shoulders against R005 at a fixed receiver. [Results, report guide and verification](../docs/research/mountain-node-study-20261118.md)
+
 ## 2026-11-17 - Completed the printable repeater coverage study
 
 Added maps of direct terrain visibility for all 17 supplied pins and 15 derived survey points. The atlas compares deployed and proposed routes to Lee, distinguishes isolated coverage and compares the Angel Vegas sites across four valley sectors. Its summary now reports all 21 layouts, roads, facilities, equipment assignments and field criteria. Checked the individual map footprints and both network footprints against the GIS output. Next, test Mack’s at 4 m and match a fresh member GPS packet at Lee Fire before relocating a radio. [Atlas page guide and results](../docs/research/mountain-siting-reachable-20261117.md#using-the-field-atlas)

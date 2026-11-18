@@ -1,5 +1,9 @@
 # Candidate sites and backhaul
 
+## 2026-11-18 - Angel road comparison and Shady forwarding trial
+
+The owner selected Angel road surveys 1, 3, 5 and 6 for individual comparison against deployed Angel Vegas. Each shoulder needs an access and mount check. No installation was selected. Keep the Shady Hollow G002 recorder role as the deployed reference; the forwarding case is a field hypothesis. Lee Fire remains the modeled uplink. [Node report and scenario results](../docs/research/mountain-node-study-20261118.md)
+
 ## 2026-11-17 - Reachable repeater survey sites
 
 The owner supplied reachable pins at Mack’s, Lee Alternative, Angel Vegas alternative, the Escarpment trail and legacy Showgirl. The supplied Lee and Showgirl search radii are 20 m and 100 m. A map-derived Angel shoulder remains conditional on local access. The first proposed attended trial adds a portable at Mack’s with the deployed sites as controls. G002 is the offline Shady receiver and Lee Fire is the working study uplink. [Reachable-waypoint field study](../docs/research/mountain-siting-reachable-20261117.md)
