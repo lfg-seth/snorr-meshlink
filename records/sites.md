@@ -2,7 +2,7 @@
 
 ## 2026-11-18 - Angel road comparison and Shady forwarding trial
 
-The owner selected Angel road surveys 1, 3, 5 and 6 for individual comparison against deployed Angel Vegas. Each shoulder needs an access and mount check. No installation was selected. Keep the Shady Hollow G002 recorder role as the deployed reference; the forwarding case is a field hypothesis. Lee Fire remains the modeled uplink. [Node report and scenario results](../docs/research/mountain-node-study-20261118.md)
+The owner narrowed the Angel road comparison to surveys 1, 3 and 5 against deployed Angel Vegas. Each shoulder needs an access and mount check. Keep the Shady Hollow G002 recorder as the deployed reference. Its direct receptions from Kyle Junction and Cathedral Rock are field examples for the marginal-link screen. Lee Fire remains the modeled uplink. [Node report and scenario results](../docs/research/mountain-node-study-20261118.md)
 
 ## 2026-11-17 - Reachable repeater survey sites
 

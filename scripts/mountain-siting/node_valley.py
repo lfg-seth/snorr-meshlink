@@ -1,4 +1,4 @@
-"""Build the five full-valley 4 m line-of-sight rasters from USGS 3DEP terrain."""
+"""Build the full-valley 4 m line-of-sight rasters from USGS 3DEP terrain."""
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -13,7 +13,7 @@ DATA = ROOT / "private/winter-siting"
 REPORT = ROOT / "private/mountain-node-study-20261118"
 CACHE = REPORT / "cache"
 TILES = {"n37w115":445709830, "n36w115":432922435, "n36w116":417100345}
-ANGELS = ["Angel Vegas", *[f"Angel road survey {i}" for i in (1,3,5,6)]]
+ANGELS = ["Angel Vegas", *[f"Angel road survey {i}" for i in (1,3,5)]]
 # The mountain and metro margins include North Las Vegas, Lake Las Vegas and southern Henderson.
 WSEN = (-115.745,35.865,-114.84,36.445)
 SPACING = 120

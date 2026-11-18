@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-18 - Added neighbor overlays and shortened the node field report
+
+Removed Angel road survey 6 and omitted 45 pairs outside the field screen. Each of the 12 single-site viewsheds now emphasizes its selected radio and overlays the retained direct neighbors. The recorded Shady–Kyle and Shady–Cathedral links anchor the marginal classification. Four comparable unverified pairs are listed for field testing and excluded from modeled coverage. The field packet contains 42 directional profiles across 79 pages. Next, test Mack’s at 4 m and use Shady’s recorded paths as controls for the marginal trials. [Revised study and field evidence](../docs/research/mountain-node-study-20261118.md)
+
 ## 2026-11-18 - Rebuilt the mountain study around 13 node chapters
 
 Published the report tools and study record for the owner’s ten nodes plus Angel road surveys 1, 3 and 6. The private field report includes full-page site/link maps, five 4 m viewsheds spanning Mount Charleston through Henderson, and 156 A-first profiles. The separate Shady-forwarding estimate admits recorded direct receptions and adds zero eligible highway within three forwarders. Survey 5 leads the one-scout layouts at 32.3% of sampled highway. Next, test Mack’s at 4 m against Upper, verify an ordinary member GPS receipt at Lee and compare accessible Angel shoulders against R005 at a fixed receiver. [Results, report guide and verification](../docs/research/mountain-node-study-20261118.md)

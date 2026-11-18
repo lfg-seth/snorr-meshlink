@@ -1,8 +1,8 @@
-"""Each chapter keeps its own site at A, including every blocked and reciprocal path."""
+"""Each chapter keeps its own site at A in every retained reciprocal profile."""
 import json
 import math
 from node_model import *
-from node_cartography import (clipped_overlay,close_pair_overlay,detail_labels,extent_for,frame,line,mark,mountain,overlay_file,
+from node_cartography import (clip,clipped_overlay,close_pair_overlay,detail_labels,extent_for,frame,line,mark,mountain,overlay_file,
                              project,study_edge,tag)
 from node_drawing import *
 from reportlab.lib.colors import HexColor
@@ -14,11 +14,6 @@ PAIR_PALETTE=[(0,0,0,0),(224,144,36,131),(65,139,191,132),(22,125,100,175)]
 def region(rect):
     l,b,r,t=EXTENT
     return extent_for([(l,b),(r,t)],rect[2]/rect[3],0)
-
-
-def status(a,b):
-    if observed(a,b) and rating(a,b)=="Blocked":return "Blocked / recorded"
-    return rating(a,b)
 
 
 def source(k):
@@ -48,13 +43,78 @@ def summary(c,k,links):
     rows=[]
     for b in neighbors(k):
         rows.append([b,f"{math.dist(xy[k],xy[b])/1000:.2f}",status(k,b),str(ppath(k,b))])
-    mids=table(c,["Sister B","km","Terrain / evidence","Page"],[142,42,151,60],rows,390,445,23,8.6)
+    mids=table(c,["Sister B","km","Field classification","Page"],[142,42,151,60],rows,390,445,23,8.6)
     for b,y in zip(neighbors(k),mids):link(links,390,y-6,395,21,ppath(k,b))
-    txt(c,392,118,"Strong ≥60% first Fresnel clearance. Marginal = positive terrain",8.8)
-    txt(c,392,104,"clearance below 60%. Recorded = direct reception in the field.",8.8)
+    para(c,392,136,"Strong clears 60% of the first Fresnel zone. Marginal paths have restricted clearance or a terrain profile comparable to the Shady references. Recorded identifies a direct field reception.",385,8.8,13)
     txt(c,392,69,f"Open single-site viewshed   →   p. {n+1}",10,"Bold",TEAL)
     link(links,390,62,240,19,n+1)
     nav(c,links)
+
+
+NEIGHBOR_STROKES={"Strong":("#536F74",None),"Marginal":("#856B4E",[4,2.5]),"Recorded":("#845D79",[1,2])}
+FOCUS="#462E4A"
+
+
+def selected_marker(c,pos,site):
+    c.setFillColor(HexColor("#FFFDF5"));c.setStrokeColor(HexColor(FOCUS));c.setLineWidth(1.5)
+    c.circle(*pos,7.3,fill=1,stroke=1)
+    mark(c,pos,FOCUS,"diamond" if site==LEE else "circle",5.1)
+
+
+def selected_label(c,x,y,site,size=9.3):
+    width=c.stringWidth(site,"Bold",size)
+    c.setFillColor(HexColor(FOCUS));c.roundRect(x-width/2-4,y-3,width+8,size+7,3,fill=1,stroke=0)
+    txt(c,x-width/2,y,site,size,"Bold","#FFFFFF")
+
+
+def neighbor_line(c,k,b,p,q):
+    color,dash=NEIGHBOR_STROKES[line_class(k,b)]
+    line(c,p,q,"#F6F5EB",1.65)
+    line(c,p,q,color,.85,dash)
+
+
+def overlay_neighbors(c,k,rect,bounds):
+    sisters=neighbors(k)
+    p=project(xy[k],bounds,rect)
+    angels=[s for s in REGIONAL if s==k or s in sisters]
+    zoom=len(angels)>1
+    offsets={KYLE:(-9,-12,"right"),ESC:(8,-15,"left"),SHADY:(8,8,"left"),
+             UP:(-6,-13,"right"),LEE:(-6,9,"right"),MACK:(0,10,"center"),SHOW:(-7,-13,"right")}
+    for b in sisters:
+        q=project(xy[b],bounds,rect)
+        neighbor_line(c,k,b,p,q)
+    for b in sisters:
+        q=project(xy[b],bounds,rect)
+        mark(c,q,"#627476",radius=2.7)
+        if zoom and b in REGIONAL:continue
+        dx,dy,align=offsets.get(b,(6,9,"left"))
+        tag(c,q[0]+dx,q[1]+dy,b,align,7.1,"#495C5D")
+    if zoom and k not in REGIONAL:
+        q=project(xy[angels[0]],bounds,rect)
+        tag(c,q[0]+6,q[1]+9,"Angel Peak detail","left",7.1,"#495C5D")
+    selected_marker(c,p,k)
+    selected_label(c,p[0],p[1]+13,k)
+    if not zoom:return
+
+    inset=(575,145,224,85)
+    bounds=extent_for([xy[s] for s in REGIONAL],inset[2]/inset[3],.42,min_span=350)
+    mountain(c,inset,bounds,wpx=790)
+    c.setStrokeColor(HexColor("#BAC5BC"));c.setLineWidth(.5);c.rect(*inset)
+    clip(c,inset)
+    for b in angels:
+        if b!=k:neighbor_line(c,k,b,project(xy[k],bounds,inset),project(xy[b],bounds,inset))
+    c.restoreState()
+    # Names occupy distinct slots while each leader terminates at the real survey pin.
+    positions={SCOUTS[0]:(.23,.13),SCOUTS[1]:(.64,.84),SCOUTS[2]:(.17,.76),ANGEL:(.84,.39)}
+    for s in sorted(angels,key=lambda site:site==k):
+        q=project(xy[s],bounds,inset);u,v=positions[s]
+        x,y=inset[0]+u*inset[2],inset[1]+v*inset[3]
+        line(c,q,(x,y),"#697778",.55)
+        if s==k:
+            selected_marker(c,q,k);selected_label(c,x,y,k,7.3)
+        else:
+            mark(c,q,"#627476",radius=2.6);tag(c,x,y,s,size=6.7,color="#495C5D")
+    txt(c,575,236,"Angel Peak detail",8.5,"Bold",SOFT)
 
 
 def single(c,k,links):
@@ -66,17 +126,22 @@ def single(c,k,links):
     ov=overlay_file("site-"+CODE[k],mask.astype("uint8"),SHED_PALETTE)
     mountain(c,rect,bounds,ov,wpx=1950,mode="shade")
     study_edge(c,rect,bounds)
-    detail_labels(c,rect,bounds);pos=project(xy[k],bounds,rect)
-    mark(c,pos,shape="diamond" if k==LEE else "circle",radius=4.5)
-    tag(c,pos[0],pos[1]+10,k,size=8,strong=True);frame(c,rect,bounds)
+    detail_labels(c,rect,bounds)
+    overlay_neighbors(c,k,rect,bounds)
+    frame(c,rect,bounds)
     summary_stat(c,575,444,f"{mask.sum()*AREA:.2f} km²","Directly visible mountain terrain")
     summary_stat(c,575,369,f"{roadkm(masks[ix[k]]):.2f} km","Directly visible sampled highway")
     fillbox(c,575,303,13,10,"#177F75");txt(c,596,303,"Visible to the marked site",9.8)
     fillbox(c,575,278,13,10,"#D8DCD2");txt(c,596,278,"Terrain shadow within study area",9.8)
-    para(c,575,232,"The map shows a member’s first hop. Delivery to dispatch also requires an eligible forwarding route to Lee Fire.",226,10.1,15.5)
+    for i,(label,(color,dash)) in enumerate(NEIGHBOR_STROKES.items()):
+        x=575+75*i
+        line(c,(x,260),(x+12,260),color,.85,dash)
+        txt(c,x+15,257,label,7.6,"Sans",SOFT)
+    if len(set(REGIONAL).intersection([k,*neighbors(k)]))<2:
+        para(c,575,222,"The shaded area belongs to the selected site. Thin lines connect its direct neighbors. Delivery to Lee Fire also requires an eligible forwarding route.",226,10.1,15.5)
     lat,lon=lonlat(k)
-    txt(c,575,145,f"{lat:.5f}, {lon:.5f}",11,"Bold")
-    txt(c,575,123,f"Site antenna {wh(k)} m AGL   ·   map cells 35 m",9.1)
+    txt(c,575,123,f"{lat:.5f}, {lon:.5f}",11,"Bold")
+    txt(c,575,104,f"Site antenna {wh(k)} m AGL   ·   map cells 35 m",9.1)
     txt(c,575,80,f"Site brief  p. {n-1}    /    First path  p. {n+1}",9,"Bold",TEAL)
     link(links,573,72,85,21,n-1);link(links,662,72,92,21,n+1)
     nav(c,links)
@@ -143,12 +208,14 @@ def direct(c,a,b,links):
     txt(c,802,475,"Elevation (m)",8,"Sans",SOFT,True)
     clear,f1,at=chart(c,(486,331,309,120),a,b)
     txt(c,460,281,"Direct antenna path",12,"Bold",TEAL)
-    txt(c,460,260,status(a,b),13,"Bold",COLORS["Recorded" if observed(a,b) else rating(a,b)])
+    txt(c,460,260,status(a,b),13,"Bold",COLORS[line_class(a,b)])
     txt(c,460,239,f"{math.dist(xy[a],xy[b])/1000:.2f} km   ·   {wh(a)} m at A   /   {wh(b)} m at B",9.6)
     txt(c,460,221,f"Minimum terrain clearance {clear:+.2f} m at {at:.2f} km from A.",9.6)
     txt(c,460,203,("Terrain intersects the ray." if f1<0 else f"Minimum first Fresnel clearance {100*f1:.0f}%."),9.6)
     if observed(a,b):
         msg="Field record: Shady received this sister radio directly; the sister also reported hearing G002. Forwarding remains a trial."
+    elif status(a,b)=="Marginal · unverified":
+        msg="Field-test candidate: terrain and Fresnel intrusion fall within the recorded Shady examples. Direct reception still needs a field test."
     else:
         msg="Evidence: terrain model. No direct field receipt is cited for this pair in the study record."
     para(c,460,180,msg,338,9,12.7)

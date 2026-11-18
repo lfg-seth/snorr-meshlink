@@ -11,10 +11,10 @@ NETRECT=(26,75,499,416)
 INSET=(535,146,278,293)
 NAMES={UP:"Upper Bristlecone",MACK:"Mack’s alternative",ESC:"Escarpment trail"}
 OFF={UP:(-4,-18),LEE:(-9,11),MACK:(-8,12),SHOW:(-8,-16),SHADY:(15,5),ESC:(23,-17),CAT:(-4,-18),KYLE:(-19,11)}
-ANG_POS={SCOUTS[3]:(.27,.91),SCOUTS[1]:(.67,.74),SCOUTS[2]:(.23,.57),SCOUTS[0]:(.26,.26),ANGEL:(.77,.095)}
+ANG_POS={SCOUTS[1]:(.48,.82),SCOUTS[2]:(.22,.56),SCOUTS[0]:(.26,.24),ANGEL:(.74,.12)}
 TOC_FRONT=[("All study nodes",2),("Potential links and field evidence",3),("Coordinate and purpose directory",5),
            ("Executive summary",6),("Deployed and shortlist coverage",7),("Shady forwarding trial",8),
-           ("Four separate scout scenarios",9)]
+           ("Three separate scout scenarios",9)]
 OV_COLORS={"Strong":"#00786A","Marginal":"#AE6A13","Recorded":"#A52670"}
 
 
@@ -38,7 +38,7 @@ def cover(c,links):
     txt(c,35,88,"Codex for SNORR MeshLink",12,"Sans","#FFFDF1")
     txt(c,35,54,"18 November 2026   ·   Survey waypoints dated 17 November",9,"Sans","#E0EEDC")
     fillbox(c,433,25,367,53,"#FBFAF2")
-    txt(c,446,55,"13 study sites   /   78 physical links   /   156 directional profiles",10,"Bold",TEAL)
+    txt(c,446,55,f"{len(SITES)} study sites   /   {len(KEPT_PAIRS)} field links   /   {2*len(KEPT_PAIRS)} directional profiles",10,"Bold",TEAL)
     txt(c,446,37,"Open contents  p. 4                  Open executive summary  p. 6",9,"Sans",INK)
     link(links,441,28,142,20,4);link(links,608,28,178,20,6)
 
@@ -46,8 +46,7 @@ def cover(c,links):
 def draw_edges(c,rect,bounds,sites,valid=None):
     for typ in ("Strong","Marginal","Recorded"):
         for a,b in combinations(sites,2):
-            group=rating(a,b)
-            if group=="Blocked" and observed(a,b):group="Recorded"
+            group=line_class(a,b)
             if group!=typ:continue
             p,q=project(xy[a],bounds,rect),project(xy[b],bounds,rect)
             line(c,p,q,"#FAFAF1",2.9)
@@ -62,7 +61,7 @@ def labelsite(c,xy0,end,name,anch="center",size=8.3):
 def overview(c,links,showlinks):
     n=3 if showlinks else 2
     start(c,n,"Study maps   /   Mountain network","Potential direct links" if showlinks else "All study nodes",
-          "The inset separates five closely spaced Angel Peak sites. Page 5 lists their coordinates, purposes and chapters.")
+          "The inset separates four closely spaced Angel Peak sites. Page 5 lists their coordinates, purposes and chapters.")
     bounds=extent_for([xy[s] for s in SITES],NETRECT[2]/NETRECT[3],.17)
     mountain(c,NETRECT,bounds,wpx=2150)
     if showlinks:draw_edges(c,NETRECT,bounds,SITES)
@@ -84,7 +83,7 @@ def overview(c,links,showlinks):
     tag(c,center[0]-18,center[1]+15,"Angel Peak  →  inset","right",7.8,strong=True)
     frame(c,NETRECT,bounds)
     txt(c,535,473,"Angel Peak detail",15,"Serif")
-    txt(c,535,453,"One deployed radio and four road scouts",9,"Sans",SOFT)
+    txt(c,535,453,"One deployed radio and three road scouts",9,"Sans",SOFT)
     bounds=extent_for([xy[k] for k in REGIONAL],INSET[2]/INSET[3],.38)
     mountain(c,INSET,bounds,wpx=1410)
     if showlinks:draw_edges(c,INSET,bounds,REGIONAL)
@@ -95,11 +94,11 @@ def overview(c,links,showlinks):
         mark(c,p,"#153D40" if k==ANGEL else "#846627",radius=3.8)
     frame(c,INSET,bounds)
     if showlinks:
-        for i,(kind,label) in enumerate([("Strong","At least 60% first Fresnel clearance"),("Marginal","Terrain clear, less than 60% Fresnel"),("Recorded","Observed through terrain obstruction")]):
+        for i,(kind,label) in enumerate([("Strong","Strong · at least 60% Fresnel clearance"),("Marginal","Marginal · restricted clearance or field test"),("Recorded","Recorded · direct reception at Shady")]):
             y=124-i*19
             line(c,(536,y+2),(563,y+2),OV_COLORS[kind],2,{"Strong":None,"Marginal":[6,3],"Recorded":[1.7,3]}[kind])
             txt(c,572,y,label,8.6)
-        txt(c,30,55,"Each remaining blocked pair has a profile in both directions. Inter-scout lines describe portable tests between alternative sites.",8.8)
+        txt(c,30,55,"Each mapped link has a profile in both directions. Inter-scout lines describe portable tests between alternative sites.",8.8)
     else:
         para(c,535,122,"The road sites are alternative survey positions. Access and usable antenna mounts need on-site confirmation.",266,9.2,14)
         txt(c,30,54,"Diamond = Lee Fire gateway. Mountain site names refer to the supplied pins. The road sites were derived from the terrain search.",8.7)
@@ -107,7 +106,7 @@ def overview(c,links,showlinks):
 
 
 def contents(c,links):
-    start(c,4,"Report navigation","Table of contents","Select a chapter or section. Each node chapter starts with its brief, then its viewshed and twelve direct path profiles.")
+    start(c,4,"Report navigation","Table of contents","Select a chapter or section. Each node chapter starts with its brief, then its viewshed and direct profiles for the mapped neighbors.")
     txt(c,33,470,"Study maps and findings",14,"Bold",TEAL)
     rows=TOC_FRONT+[(f"Valley viewshed · {k}",i) for i,k in enumerate(REGIONAL,10)]
     for i,(s,p) in enumerate(rows):
@@ -116,7 +115,7 @@ def contents(c,links):
     for i,k in enumerate(SITES):
         y=437-i*28;startp=psite(k)
         txt(c,409,y,CODE[k],9.5,"Bold",TEAL);txt(c,447,y,k,10.5)
-        txt(c,803,y,f"{startp}–{startp+13}",10.2,"Bold",TEAL,True);rule(c,408,y-8,804);link(links,407,y-7,397,23,startp)
+        txt(c,803,y,f"{startp}–{chapter_end(k)}",10.2,"Bold",TEAL,True);rule(c,408,y-8,804);link(links,407,y-7,397,23,startp)
     nav(c,links)
 
 
@@ -124,14 +123,14 @@ def directory(c,links):
     start(c,5,"Report navigation","Node directory","WGS84 decimal degrees. Select a row to open the chapter. AGL heights are model inputs above local ground.")
     purpose=["Lee Canyon relay","Dispatch gateway","Lee backbone trial","South-side trial","Recorder / relay trial",
              "Footway trial","South-side control","Mountain-facing trial","Valley-side control","Kyle-side control",
-             "Showgirl / Escarpment trial","Mack’s / valley trial","Mack’s / A5 trial"]
+             "Showgirl / Escarpment trial","Mack’s / valley trial"]
     notes=["Deployed R010","G001 · 1 m AGL","Owner pin · 4 m","Owner pin · 4 m","G002 · offline",
            "Owner pin · 4 m","Deployed R001","Access unconfirmed","Deployed R005","Deployed R008",
-           "Access unconfirmed","Access unconfirmed","Access unconfirmed"]
+           "Access unconfirmed","Access unconfirmed"]
     rows=[]
     for k,p,note in zip(SITES,purpose,notes):
         a,b=lonlat(k);pn=psite(k)
-        rows.append([CODE[k],k,f"{a:.5f}, {b:.5f}",p,note,f"{pn}–{pn+13}"])
+        rows.append([CODE[k],k,f"{a:.5f}, {b:.5f}",p,note,f"{pn}–{chapter_end(k)}"])
     mids=table(c,["ID","Node","Latitude, longitude","Purpose","Field note","Pages"],[38,150,139,164,157,88],rows,32,481,26,9.1)
     for k,y in zip(SITES,mids):link(links,31,y-7,737,23,psite(k))
     txt(c,33,90,"Every non-gateway site uses a nominal 4 m antenna. Coordinates locate the study pin; record the actual test position and mount height.",9.1)
@@ -148,8 +147,8 @@ def executive(c,links):
     def section(x,y,h,body):
         txt(c,x,y,h,13,"Bold",TEAL);para(c,x,y-23,body,353,10.7,16)
     section(34,372,"First field decision","Test a 4 m portable at Mack’s against Upper Bristlecone, then have a member tracker send an ordinary GPS packet. Match its fix and receipt at Lee before relying on the mountain route.")
-    section(422,372,"Which Angel scout to carry","Survey 5 provides the largest modeled member highway reach of the four one-scout cases. Surveys 1, 3 and 6 have different mountain neighbors and fixed-radio valley footprints. Deployed Angel Vegas stays in every scout case.")
-    section(34,232,"What Shady changes","G002 heard Cathedral, Angel Vegas and Kyle directly through modeled obstructions. Enabling forwarding and admitting all three links adds zero eligible highway in these four cases. Shady still needs more forwarding steps to reach Lee, or a new link.")
+    section(422,372,"Which Angel scout to carry","Survey 5 provides the largest modeled member highway reach of the three one-scout cases. Surveys 1 and 3 have different mountain neighbors and fixed-radio valley footprints. Deployed Angel Vegas stays in every scout case.")
+    section(34,232,"What Shady changes","G002 heard Cathedral, Angel Vegas and Kyle through modeled obstructions. The Kyle and Cathedral paths are recorded marginal references. In all three scout cases, enabling Shady forwarding and admitting the recorded links adds zero highway within three forwarders.")
     section(422,232,"Where coverage still falls short",f"Survey 5 reaches {case['scores']['SR 156']:.1f}% of SR 156, {case['scores']['SR 157']:.1f}% of SR 157 and {case['scores']['SR 158']:.1f}% of SR 158. Whole-valley maps assume a fixed outdoor receiver at 4 m. A field receipt is needed to establish radio delivery.")
     rule(c,34,118,807)
     areas=[]
@@ -157,9 +156,9 @@ def executive(c,links):
         with rasterio.open(CACHE/(k+"-valley.tif")) as ds:
             areas.append(f"{CODE[k]}  {ds.read(1).sum()*abs(ds.transform.a*ds.transform.e)/1e6:,.0f}")
     txt(c,34,139,"Fixed-radio area across the full regional map (km²)     "+"     ·     ".join(areas),9.0,"Bold",TEAL)
-    txt(c,34,92,"78 physical pairs",11,"Bold")
-    count=Counter(rating(a,b) for a,b in combinations(SITES,2))
-    txt(c,163,92,f"{count['Strong']} strong   ·   {count['Marginal']} marginal   ·   {count['Blocked']} terrain-blocked, including three directly recorded Shady links",10)
+    txt(c,34,92,f"{len(KEPT_PAIRS)} retained links",11,"Bold")
+    count=Counter(status(a,b) for a,b in KEPT_PAIRS)
+    txt(c,163,92,f"{count['Strong']} strong   ·   {count['Marginal']} terrain-clear marginal   ·   {count['Marginal · unverified']} marginal field tests   ·   3 recorded (2 marginal)",10)
     txt(c,34,62,"Scouts are candidate test positions. The source waypoint set is dated 17 November 2026; deployment and SD evidence are identified in the chapters.",8.6)
     nav(c,links)
 
@@ -195,13 +194,14 @@ def comparison(c,links,shady):
 
 
 def scenario_table(c,links):
-    start(c,9,"Network comparison","Four separate Angel scout trials",
+    start(c,9,"Network comparison","Three separate Angel scout trials",
           "Each row gives one scout with the seven common relays. Shady is an offline receiver until the separate forwarding trial.")
     arr=[]
     for k in SCOUTS:
         rec=CASES[k];trial=TRIALS[k];sc=rec["scores"]
         arr.append([k,f"{rec['area']:.2f}",f"{rec['km']:.2f}",*[f"{sc[road]:.1f}%" for road in ("Highway","SR 156","SR 157","SR 158")],f"{trial['scores']['Highway']:.1f}%"])
     table(c,["Scout","Area km²","Road km","All roads","SR 156","SR 157","SR 158","Shady trial¹"],[151,79,77,90,80,80,80,118],arr,32,467,31,9.5)
+    para(c,33,324,f"Marginal field tests meet both Shady reference limits: terrain obstruction up to {-CLEARANCE_FLOOR:.2f} m and Fresnel intrusion up to {-FRESNEL_FLOOR:.2f} first-zone radii. Unverified paths are survey targets. Only terrain-clear links and, in the Shady trial, recorded links count toward coverage.",755,9.3,13)
     txt(c,33,281,"Common relays and equipment assumptions",12,"Bold",TEAL)
     para(c,33,259,"Upper Bristlecone, Mack’s alternative, Showgirl, Escarpment trail, Cathedral Rock, deployed Angel Vegas and Kyle Junction are present in each shortlist case. One road scout gives eight relay positions. The Shady trial adds a ninth forwarding position; installed G002 currently records offline.",755,10.3,15)
     txt(c,33,189,"Reading the estimates",12,"Bold",TEAL)
@@ -219,7 +219,7 @@ def scenario_table(c,links):
 
 def valley(c,links,k,n):
     start(c,n,"Regional viewsheds   /   Fixed outdoor receiver",k+"   /   Las Vegas Valley",
-          "Same full-valley frame on all five maps. Both ends use 4 m above ground. Color shows direct bare-earth visibility to this Angel site.")
+          "Same full-valley frame on all four maps. Both ends use 4 m above ground. Color shows direct bare-earth visibility to this Angel site.")
     path,bb=metro_base()
     width=431*(bb[2]-bb[0])/(bb[3]-bb[1])
     rect=(27+(625-width)/2,66,width,431)

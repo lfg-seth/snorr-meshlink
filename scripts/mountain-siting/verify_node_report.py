@@ -15,23 +15,41 @@ from node_report import PDF
 from node_chapters import region
 from node_drawing import psite,ppath
 from scipy.ndimage import binary_erosion, map_coordinates
-from PIL import Image
+from PIL import Image, ImageDraw
 
 def compact(value):
     return " ".join(value.split())
 
 
-def displayed_mask(page,mask,eligible=None):
+def displayed_mask(page,mask,eligible=None,with_neighbors=False):
     images=[im for im in page.get_image_info() if (im["height"],im["width"])==mask.shape]
     assert len(images)==1,(page.number,len(images))
     box=images[0]["bbox"]
-    agreement(page,box,mask,eligible)
+    if with_neighbors:
+        image,=(im for im in page.get_images() if (im[3],im[2])==mask.shape)
+        alpha=Image.open(BytesIO(page.parent.extract_image(image[1])["image"]))
+        assert np.array_equal(np.asarray(alpha)>0,mask),page.number+1
+    agreement(page,box,mask,eligible,with_neighbors)
 
 
-def agreement(page,box,mask,eligible=None):
+def agreement(page,box,mask,eligible=None,with_neighbors=False):
     pix=page.get_pixmap(matrix=pymupdf.Matrix(1.3,1.3),alpha=False)
     pixels=np.frombuffer(pix.samples,"uint8").reshape(pix.height,pix.width,3).astype("int16")
     teal=(pixels[:,:,1]-pixels[:,:,0]>35)&(pixels[:,:,2]-pixels[:,:,0]>19)
+    # Text badges, pin symbols and link strokes intentionally cover some visible cells.
+    # Verify unobscured printed pixels separately from the full embedded alpha mask.
+    occluded=Image.new("1",(pix.width,pix.height))
+    if with_neighbors:
+        pen=ImageDraw.Draw(occluded)
+        for path in page.get_drawings():
+            rect=path["rect"]
+            if path.get("fill") is not None and rect.width<142 and rect.height<24:
+                pen.rectangle((rect.x0*1.3-2,rect.y0*1.3-2,rect.x1*1.3+2,rect.y1*1.3+2),fill=1)
+            if any(abs((path.get("width") or 0)-width)<.01 for width in (1.65,.85)):
+                for item in path["items"]:
+                    if item[0]=="l":
+                        pen.line([tuple(np.asarray(pt)*1.3) for pt in item[1:3]],fill=1,width=5)
+    occluded=np.asarray(occluded)
     l,t,r,b=np.array(box)*1.3
     if eligible is None:eligible=np.ones_like(mask,dtype=bool)
     for val in [False,True]:
@@ -40,6 +58,8 @@ def agreement(page,box,mask,eligible=None):
         py=((rr[::step]+.5)*(b-t)/mask.shape[0]+t).astype(int)
         px=((cc[::step]+.5)*(r-l)/mask.shape[1]+l).astype(int)
         valid=(px>=0)&(px<teal.shape[1])&(py>=0)&(py<teal.shape[0])
+        inside=np.flatnonzero(valid)
+        valid[inside]=~occluded[py[inside],px[inside]]
         assert valid.sum()>5 and (teal[py[valid],px[valid]]==val).mean()>.86,(page.number+1,val)
 
 
@@ -54,7 +74,8 @@ def check_valley(doc):
             assert ds.bounds.left<x<ds.bounds.right and ds.bounds.bottom<y<ds.bounds.top,name
     def sample(dem,x0,y0,res,xx,yy):
         return map_coordinates(dem,[(y0-yy)/res-.5,(xx-x0)/res-.5],order=1,prefilter=False,output=np.float64)
-    for k,page in zip(REGIONAL,list(doc)[9:14]):
+    for i,k in enumerate(REGIONAL,9):
+        page=doc[i]
         with rasterio.open(CACHE/(k+"-valley.tif")) as ds:
             mask=ds.read(1).astype(bool);tr=ds.transform;assert tr.a==120 and tr.e==-120
         displayed_mask(page,mask)
@@ -79,6 +100,7 @@ def check_close_profiles(doc):
     colors=np.asarray(PAIR_PALETTE)[:,:3]
     count=0
     for a,b in permutations(SITES,2):
+        if b not in neighbors(a):continue
         l,bottom,r,t=extent_for([xy[a],xy[b]],398/383,.23,min_span=120)
         if r-l>=1500:continue
         count+=1
@@ -127,24 +149,55 @@ def check_network(doc,records):
         for im,case in zip(images,scenarios):agreement(page,im["bbox"],case["zone"],INSIDE)
 
 
+def check_neighbors_on_map(page,site,sisters):
+    from node_cartography import project
+    rect=(32,58,520,436)
+    bounds=region(rect)
+    def pdf_point(k):
+        x,y=project(xy[k],bounds,rect)
+        return np.array((x,page.rect.height-y))
+    focal=pdf_point(site)
+    segments=[]
+    focal_rings=[]
+    for path in page.get_drawings():
+        if abs((path.get("width") or 0)-.85)<.01:
+            segments.extend((np.array(item[1]),np.array(item[2])) for item in path["items"] if item[0]=="l")
+        box=path["rect"]
+        if abs(box.width-14.6)<.05 and abs(box.height-14.6)<.05:
+            focal_rings.append(np.array(((box.x0+box.x1)/2,(box.y0+box.y1)/2)))
+    assert any(np.linalg.norm(at-focal)<.03 for at in focal_rings),site
+    drawn={other for other in SITES if other!=site and any(
+        np.linalg.norm(p-focal)<.03 and np.linalg.norm(q-pdf_point(other))<.03 for p,q in segments)}
+    assert drawn==sisters,(site,drawn,sisters)
+    for b in sisters:
+        assert b in page.get_text(),(site,b)
+
+
 def verify():
     with (OUT/"pair-overlap.csv").open(encoding="utf-8-sig") as f:
         records={frozenset((row["site A"],row["site B"])):row for row in csv.DictReader(f)}
     with pymupdf.open(PDF) as doc:
-        assert len(doc)==196 and "Codex" in doc.metadata["author"]
+        assert len(doc)==79 and "Codex" in doc.metadata["author"]
         pages=[compact(p.get_text()) for p in doc]
-        assert all("Vegas alternative" not in t and "Lone Mountain foothills" not in t for t in pages)
+        assert all("Vegas alternative" not in t and "Lone Mountain foothills" not in t and "survey 6" not in t.lower() for t in pages)
         links=lambda p:{d["page"]+1 for d in doc[p-1].get_links() if d["kind"]==pymupdf.LINK_GOTO}
         assert set(psite(k) for k in SITES)<=links(4)&links(5)
-        assert set(range(10,15))<=links(4)
+        assert set(range(10,14))<=links(4)
+        examples=[records[frozenset((SHADY,b))] for b in (CAT,KYLE)]
+        thresholds={key:min(float(r[key]) for r in examples) for key in ("native LOS clearance m","min first Fresnel fraction")}
+        expected={pair for pair,r in records.items() if pair<=set(SITES) and (
+            all(float(r[key])>=lo for key,lo in thresholds.items()) or pair in OBSERVED)}
+        assert frozenset((UP,SHOW)) not in expected and len(expected)==21
         physical=Counter()
         for k in SITES:
             for text in (pages[1],pages[2],pages[4]):
                 assert k.replace("’","'") in text.replace("’","'"),k
-            assert len(neighbors(k))==12
+            sisters={b for b in SITES if frozenset((k,b)) in expected}
+            assert set(neighbors(k))==sisters
             assert set(ppath(k,b) for b in neighbors(k))<=links(psite(k))
             with rasterio.open(OUT/"viewsheds"/(k+".tif")) as ds:vis=ds.read(1).astype(bool)
-            displayed_mask(doc[psite(k)],vis&INSIDE,INSIDE)
+            displayed_mask(doc[psite(k)],vis&INSIDE,INSIDE,with_neighbors=True)
+            check_neighbors_on_map(doc[psite(k)],k,sisters)
             for b in neighbors(k):
                 n=ppath(k,b);text=pages[n-1]
                 assert compact(f"{k} to {b}") in text,(n,k,b)
@@ -153,22 +206,29 @@ def verify():
                 value=float(row["native LOS clearance m"])
                 assert f"{value:+.2f} m" in text and f"{wh(k)} m at A / {wh(b)} m at B" in text,(n,k,b)
                 assert ("Field record: Shady received" in text)==observed(k,b)
+                if value<0:
+                    label=("Marginal · recorded" if {k,b} in ({SHADY,CAT},{SHADY,KYLE}) else
+                           "Recorded" if observed(k,b) else "Marginal · unverified")
+                    assert label in text and "Blocked / recorded" not in text,(k,b)
                 assert ("Terrain intersects the ray." in text)==(value<0)
                 assert f"Reverse profile p. {ppath(b,k)}" in text
                 physical[frozenset((k,b))]+=1
-        assert len(physical)==78 and set(physical.values())=={2}
+        assert set(physical)==expected and set(physical.values())=={2}
         assert all(all(link["kind"]==pymupdf.LINK_URI or 0<=link.get("page",-1)<len(doc) for link in p.get_links()) for p in doc)
         assert len([link for link in doc[8].get_links() if link["kind"]==pymupdf.LINK_URI])==3
         check_network(doc,records);check_valley(doc)
         close_count=check_close_profiles(doc)
     with zipfile.ZipFile(REPORT/"node-field-packet.zip") as ar:
-        assert len(ar.namelist())==22 and ar.testzip() is None and ar.read(PDF.name)==PDF.read_bytes()
+        assert len(ar.namelist())==20 and ar.testzip() is None and ar.read(PDF.name)==PDF.read_bytes()
+        assert all("survey 6" not in name.lower() for name in ar.namelist())
         for filename in ("node-waypoints.kml","node-waypoints.gpx"):
             root=ET.fromstring(ar.read(filename));tag="Placemark" if filename.endswith("kml") else "wpt"
             assert {p.findtext("{*}name") for p in root.findall(".//{*}"+tag)}==set(SITES)
         viewer=json.loads(re.search(r"^const db=(.*);\r?$",ar.read("radio-paths.html").decode("utf8"),re.M)[1])
-        assert set(viewer["points"])==set(viewer["views"])==set(SITES) and len(viewer["paths"])==78
-    print(f"Verified 196 pages, 156 oriented profiles ({close_count} fine-grid overlays), 13 single-site maps, four network map panels, five regional rasters and the 22-file packet.")
+        assert set(viewer["points"])==set(viewer["views"])==set(SITES)
+        assert {frozenset((p["a"],p["b"])) for p in viewer["paths"]}==expected
+        assert all(p["fieldClass"]==status(p["a"],p["b"]) for p in viewer["paths"])
+    print(f"Verified 79 pages, 42 oriented profiles ({close_count} fine-grid overlays), 12 neighbor overlays, four network map panels, four regional rasters and the 20-file packet.")
 
 
 if __name__=="__main__":

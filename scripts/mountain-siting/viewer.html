@@ -56,6 +56,15 @@ const by=id=>document.getElementById(id);
 const list=Object.keys(db.points).sort();
 for(const id of ['a','b'])for(const name of list)by(id).add(new Option(name,name));
 [by('a').value,by('b').value]=db.start;
+function updateNeighbors(){
+    if(!db.paths[0]?.fieldClass)return;
+    const a=by('a').value,select=by('b'),previous=select.value;
+    const neighbors=db.paths.filter(p=>p.a===a||p.b===a).map(p=>p.a===a?p.b:p.a).sort();
+    select.replaceChildren(...neighbors.map(name=>new Option(name,name)));
+    if(neighbors.includes(previous))select.value=previous;
+    if(previous!==select.value)resetHeight('b');
+}
+updateNeighbors();
 function resetHeight(id){by('h'+id).value=by(id).value.endsWith('Fire')?1:4}
 function canvas(id){const el=by(id),w=el.clientWidth,h=el.clientHeight,dpr=window.devicePixelRatio||1;el.width=w*dpr;el.height=h*dpr;const c=el.getContext('2d');c.scale(dpr,dpr);c.font='12px system-ui';return {c,w,h}}
 function draw(){
@@ -73,6 +82,7 @@ for(let i=0;i<n;i++){const [l,f]=v(i);zmin=Math.min(zmin,z[i],l-.6*f);zmax=Math.
 const short=p.d<100;
 const separation=short?p.d.toFixed(1)+' m':(p.d/1000).toFixed(2)+' km';
 by('metrics').textContent=separation+'   ·   minimum terrain clearance '+min.toFixed(1)+' m   ·   minimum first Fresnel clearance '+(100*fmin).toFixed(0)+'%   ·   '+(min<0?'Terrain blocks the ray':fmin<.6?'Clear ray, restricted Fresnel zone':'Inner 60% clears modeled terrain');
+if(p.fieldClass)by('metrics').textContent+='   ·   Field classification at study heights: '+p.fieldClass;
 const L=56,R=w-19,T=36,D=h-42,margin=Math.max(8,(zmax-zmin)*.06);zmin-=margin;zmax+=margin;
 const X=i=>L+(R-L)*i/(n-1),Y=v=>D-(D-T)*(v-zmin)/(zmax-zmin);
 c.fillStyle='#263e40';c.fillText('Elevation (m)',8,17);for(let j=0;j<=4;j++){let z=zmin+(zmax-zmin)*j/4;c.fillText(Math.round(z),4,Y(z)+4);c.strokeStyle='#e2e5df';c.beginPath();c.moveTo(L,Y(z));c.lineTo(R,Y(z));c.stroke()}
@@ -168,5 +178,5 @@ function endpoint(ctx,x,y,letter){
     ctx.fillStyle='white';ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(letter,0,.5);ctx.restore();
 }
 for(const id of ['showViews','fullMap'])by(id).onchange=draw;
-for(const id of ['a','b'])by(id).onchange=()=>{resetHeight(id);draw()};for(const id of ['ha','hb'])by(id).oninput=draw;window.addEventListener('resize',draw);draw()
+for(const id of ['a','b'])by(id).onchange=()=>{resetHeight(id);if(id==='a')updateNeighbors();draw()};for(const id of ['ha','hb'])by(id).oninput=draw;window.addEventListener('resize',draw);draw()
 </script>

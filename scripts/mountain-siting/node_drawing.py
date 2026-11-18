@@ -1,11 +1,11 @@
-"""Typography, page geometry and stable page destinations for the 13-node atlas."""
+"""Typography, page geometry and stable page destinations for the node atlas."""
 from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab import rl_config
-from node_model import SITES, neighbors
+from node_model import REGIONAL, SITES, neighbors
 
 # Embed compressed binary images directly, preserving the native map resolution.
 rl_config.useA85=0
@@ -43,7 +43,10 @@ def para(c,x,y,text,width,size=10,leading=15,color=INK,font="Sans"):
     return y
 
 def psite(k):
-    return 15+SITES.index(k)*(len(SITES)+1)
+    return 10+len(REGIONAL)+sum(2+len(neighbors(site)) for site in SITES[:SITES.index(k)])
+
+def chapter_end(k):
+    return psite(k)+1+len(neighbors(k))
 
 def ppath(a,b):
     return psite(a)+2+neighbors(a).index(b)

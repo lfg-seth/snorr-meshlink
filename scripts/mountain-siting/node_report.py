@@ -6,8 +6,8 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 import pymupdf
-from node_model import SITES, CODE, REGIONAL, UP, MACK, OUT, REPORT, CACHE, lonlat
-from node_drawing import H, psite, ppath
+from node_model import SITES, CODE, REGIONAL, KEPT_PAIRS, UP, MACK, OUT, REPORT, CACHE, lonlat, status
+from node_drawing import H, psite, ppath, chapter_end
 from node_chapters import chapter
 from node_model import neighbors
 from node_front import front
@@ -21,7 +21,7 @@ def assemble():
     for file in [CACHE/"front.pdf",*[CACHE/"chapters"/(CODE[k]+".pdf") for k in SITES]]:
         with pymupdf.open(file) as section:result.insert_pdf(section)
         annotations+=json.loads(file.with_suffix(".json").read_bytes())
-    assert len(result)==len(annotations)==196
+    assert len(result)==len(annotations)==chapter_end(SITES[-1])
     toc=[[1,"Mount Charleston repeater study",1],[2,"All study nodes",2],[2,"Potential direct links",3],
          [2,"Table of contents",4],[2,"Node directory",5],[1,"Executive summary",6],
          [2,"Deployed and shortlist coverage",7],[2,"Shady forwarding trial",8],[2,"Scout scenarios",9],
@@ -38,7 +38,7 @@ def assemble():
         for x,y,w,h,number in page_links:
             p.insert_link({"kind":pymupdf.LINK_GOTO,"from":pymupdf.Rect(x,H-y-h,x+w,H-y),"page":number-1})
     result.set_metadata({"title":"Mount Charleston repeater study | Node coverage and direct radio paths",
-                         "author":"Codex for SNORR MeshLink","subject":"13 sites, 156 directional profiles and five Las Vegas Valley viewsheds",
+                         "author":"Codex for SNORR MeshLink","subject":f"{len(SITES)} sites, {2*len(KEPT_PAIRS)} directional profiles and {len(REGIONAL)} Las Vegas Valley viewsheds",
                          "creationDate":"D:20261118080000-08'00'"})
     temp=PDF.with_suffix(".building.pdf")
     result.save(temp,garbage=4,deflate=True,use_objstms=1);result.close();temp.replace(PDF)
@@ -51,17 +51,19 @@ def packet():
     match=re.search(r"^const db=(.*);$",source,re.M)
     data=json.loads(match[1])
     for key in ("views","points"):data[key]={k:data[key][k] for k in SITES}
-    data["paths"]=[v for v in data["paths"] if v["a"] in SITES and v["b"] in SITES]
+    data["paths"]=[dict(v,fieldClass=status(v["a"],v["b"])) for v in data["paths"]
+                   if frozenset((v["a"],v["b"])) in KEPT_PAIRS]
     data["start"]=[MACK,UP]
-    assert len(data["paths"])==78
-    viewer=source[:match.start(1)]+json.dumps(data,separators=(",",":"))+source[match.end(1):]
+    assert len(data["paths"])==len(KEPT_PAIRS)
+    template=Path(__file__).with_name("viewer.html").read_text(encoding="utf8")
+    viewer=template.replace("PAYLOAD_HERE",json.dumps(data,separators=(",",":")))
     (REPORT/"radio-paths.html").write_text(viewer,encoding="utf8")
     gpx=ET.parse(OUT/"survey-waypoints.gpx").getroot()
     for element in list(gpx):
         if element.findtext("{*}name") not in SITES:gpx.remove(element)
     ET.ElementTree(gpx).write(REPORT/"node-waypoints.gpx",encoding="utf-8",xml_declaration=True)
     kml=ET.Element("kml",xmlns="http://www.opengis.net/kml/2.2");doc=ET.SubElement(kml,"Document")
-    ET.SubElement(doc,"name").text="Mount Charleston • 13 study nodes"
+    ET.SubElement(doc,"name").text=f"Mount Charleston • {len(SITES)} study nodes"
     for k in SITES:
         p=ET.SubElement(doc,"Placemark");ET.SubElement(p,"name").text=k
         pt=ET.SubElement(p,"Point");lat,lon=lonlat(k);ET.SubElement(pt,"coordinates").text=f"{lon:.8f},{lat:.8f},0"

@@ -9,7 +9,7 @@ import numpy as np
 import rasterio
 from shapely import contains_xy
 
-from node_valley import CACHE, REPORT
+from node_valley import ANGELS, CACHE, REPORT
 
 UP="Upper Bristlecone"
 LEE="Lee Fire"
@@ -20,9 +20,9 @@ ESC="Escarpment trail"
 CAT="Cathedral Rock"
 ANGEL="Angel Vegas"
 KYLE="Kyle Junction"
-SCOUTS=[f"Angel road survey {i}" for i in (1,3,5,6)]
-SITES=[UP,LEE,MACK,SHOW,SHADY,ESC,CAT,SCOUTS[2],ANGEL,KYLE,SCOUTS[0],SCOUTS[1],SCOUTS[3]]
-CODE=dict(zip(SITES,("UB","LF","MA","SG","SH","ES","CR","A5","AV","KJ","A1","A3","A6")))
+SCOUTS=ANGELS[1:]
+SITES=[UP,LEE,MACK,SHOW,SHADY,ESC,CAT,SCOUTS[2],ANGEL,KYLE,SCOUTS[0],SCOUTS[1]]
+CODE=dict(zip(SITES,("UB","LF","MA","SG","SH","ES","CR","A5","AV","KJ","A1","A3")))
 # November study records G002 direct packets and reciprocal neighbor reports. G002 is a passive recorder.
 OBSERVED={frozenset((SHADY,k)) for k in (CAT,ANGEL,KYLE,"Angel Mountain")}
 SITE_INFO={
@@ -38,10 +38,8 @@ SITE_INFO={
     SCOUTS[0]:("Road scout · access unconfirmed","Showgirl and Escarpment option","Survey 1 cleared Showgirl and Escarpment in the native-terrain screen. Its valley footprint is compared with the other Angel sites.","Confirm access and stand location. Test both mountain links and compare the same fixed valley receiver."),
     SCOUTS[1]:("Road scout · access unconfirmed","Mack’s and valley option","Survey 3 clears Mack’s and offers a valley-facing position. Survey 2 was about 20 m away and duplicated that role in the earlier screen.","Confirm access, compare the Mack’s link with survey 5 and repeat the valley test at the same receiver."),
     SCOUTS[2]:("Road scout · access unconfirmed","Mountain-facing Angel option","Survey 5 clears Mack’s, Showgirl and the supplied Escarpment pin. Its whole-valley page shows the trade-off at a fixed 4 m receiver.","Confirm access. Favor the Mack’s and Escarpment tests and keep deployed Angel Vegas as the control."),
-    SCOUTS[3]:("Road scout · access unconfirmed","Mack’s and survey 5 link option","Survey 6 clears Mack’s and survey 5 at the 60% Fresnel threshold. The network comparisons place one scout at a time.","Confirm access and test Mack’s first. A separate portable can test the inter-scout path without assuming two installations."),
 }
-BASE_LINKS=[frozenset((a,b)) for a,b in combinations(SITES,2)]
-REGIONAL=[ANGEL,SCOUTS[0],SCOUTS[1],SCOUTS[2],SCOUTS[3]]
+REGIONAL=ANGELS
 ROLE_RELAY=[UP,MACK,SHOW,ESC,CAT,ANGEL,KYLE]
 COLORS={"Strong":"#08776F","Marginal":"#A36406","Blocked":"#68757B","Recorded":"#973B72"}
 
@@ -55,12 +53,36 @@ def rating(a,b):
     return "Blocked" if v["clear"]<0 else "Strong" if v["f1"]>=.6 else "Marginal"
 
 
+FIELD_EXAMPLES=(KYLE,CAT)
+CLEARANCE_FLOOR=min(graph[SHADY][k]["clear"] for k in FIELD_EXAMPLES)
+FRESNEL_FLOOR=min(graph[SHADY][k]["f1"] for k in FIELD_EXAMPLES)
+
+
+def status(a,b):
+    """Field classification at nominal mounts. Routing still uses the modeled terrain rating."""
+    terrain=rating(a,b)
+    if terrain!="Blocked":
+        return terrain
+    path=graph[a][b]
+    comparable=path["clear"]>=CLEARANCE_FLOOR and path["f1"]>=FRESNEL_FLOOR
+    if observed(a,b):
+        return "Marginal · recorded" if comparable else "Recorded"
+    return "Marginal · unverified" if comparable else "Blocked"
+
+
+def line_class(a,b):
+    if observed(a,b):
+        return "Recorded"
+    return "Marginal" if status(a,b).startswith("Marginal") else status(a,b)
+
+
+KEPT_PAIRS={frozenset((a,b)) for a,b in combinations(SITES,2) if status(a,b)!="Blocked"}
+
+
 def neighbors(site):
-    order={"Strong":0,"Marginal":1,"Recorded":2,"Blocked":3}
-    def sort(k):
-        rank="Recorded" if observed(site,k) and rating(site,k)=="Blocked" else rating(site,k)
-        return order[rank],dist(xy[site],xy[k])
-    return sorted((k for k in SITES if k!=site),key=sort)
+    order={"Strong":0,"Marginal":1,"Marginal · recorded":2,"Recorded":3,"Marginal · unverified":4}
+    eligible=(k for k in SITES if frozenset((site,k)) in KEPT_PAIRS)
+    return sorted(eligible,key=lambda k:(order[status(site,k)],dist(xy[site],xy[k])))
 
 
 @lru_cache(None)
