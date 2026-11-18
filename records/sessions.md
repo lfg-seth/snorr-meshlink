@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-18 - Revised the SNORR budget packet
+
+Included the owner-reported $158.31 battery cost in the December 2025 budget
+group, now $1,840.38. Projected costs total $3,003.80 and leave $1,996.20
+before checkout tax or shipping. Updated the one-page PDF and verified that
+all 79 line totals and budget formulas in the Excel workbook reconcile. The
+battery receipt, exact purchase date and payer remain pending. Next, confirm
+the reimbursement amount and the proposed direct purchase approval.
+[Financial review](finances.md#2026-11-18---spending-review).
+
 ## 2026-11-18 - Prepared the SNORR budget packet
 
 Recorded the owner's $5,000 original budget and prepared a one-page summary

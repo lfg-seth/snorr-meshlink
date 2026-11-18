@@ -5,17 +5,16 @@ Updated 2026-11-18. All amounts are in USD.
 ## 2026-11-18 - Spending review
 
 The owner supplied an original project budget of **$5,000.00** for the
-SNORR review. The confirmed direct payment leaves **$3,317.93** against that
-budget. The $708.81 provisional reimbursement and $454.61 proposed cart would
-bring total charges against the budget to **$2,845.49**, leaving **$2,154.51**
-before checkout tax or shipping. The reported $158.31 battery cost awaits
-documentation and is outside this projection.
+SNORR review. The December 2025 budget group is **$1,840.38**, including
+the **$1,682.07** SNORR-paid Amazon order and the **$158.31** owner-reported
+battery cost. Including the $708.81 provisional reimbursement and $454.61
+proposed cart gives a projected total of **$3,003.80** and a projected balance
+of **$1,996.20** before checkout tax or shipping.
 
 | Spending or request | Amount USD | Status |
 | --- | ---: | --- |
-| December 2025 Amazon hardware and supplies | $1,682.07 | Paid directly by Southern Nevada Off Road Recovery |
+| December 2025 hardware, supplies and batteries | $1,840.38 | $1,682.07 paid directly by SNORR and $158.31 reported by the owner |
 | October-November 2026 personal Amazon orders | $708.81 | Provisional reimbursement estimate. Approved amount and payment pending. |
-| Loose-cell battery purchase reported by the owner | $158.31 | Provisional amount. Receipt, payer and reimbursement eligibility pending. |
 | Proposed member-node equipment | $454.61 | Cart subtotal. Awaits approval for direct purchase by SNORR. |
 
 ### Personal purchases pending reimbursement
@@ -59,8 +58,7 @@ Amazon summaries numbered 1-18.
   detail. Both $31.97 RAK lines are included in the merchandise subtotal and
   the replacement status creates no additional charge in this review.
 - The two screenless Heltec V4 orders show four boards for $112.68 including
-  tax. Board-to-order assignments remain unknown. The $158.31 loose-cell
-  figure is tracked separately pending its receipt and payer confirmation.
+  tax. Board-to-order assignments remain unknown.
 
 ### Proposed direct SNORR purchase
 
@@ -125,10 +123,10 @@ packs) as well as 18650 holders. No loose 18650 cells appear on it.
 
 - On 2026-11-18 the owner recalled **$158.31** for batteries. The review
   provisionally treats this as the separate loose-cell purchase associated with
-  HW-002. The receipt, product, quantity, date, payer and any overlap with
-  Amazon's LiPo lines need confirmation. The owner report is the evidence for
-  the amount. The [inventory](inventory.md#first-confirmation-pass) records
-  on-hand cells and does not establish a purchase quantity.
+  HW-002 and includes the amount in the December 2025 budget group at the
+  owner's direction. The receipt, product, quantity, exact purchase date and
+  payer need confirmation. The [inventory](inventory.md#first-confirmation-pass)
+  records on-hand cells.
 - Receipt gaps include the two T-Decks, other orders outside the supplied
   summaries, mounting and field expenses, and any project-billed hosting or
   backhaul. Reused equipment and hosting are documented in
