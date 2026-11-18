@@ -6,12 +6,51 @@
 <p id="metrics" aria-live="polite"></p><article><section><h2>Elevation profile</h2><canvas id="profile" aria-label="Terrain cross section and radio clearance"></canvas></section><section><h2>Topographic map</h2><canvas id="map" aria-label="North-up highway path locator"></canvas><div class="maptools"><label><input id="showViews" type="checkbox" checked>Show viewsheds</label><label><input id="fullMap" type="checkbox">Full mountain</label></div><p id="sites"></p></section></article>
 <p class="note"><b>Member viewsheds on the locator</b> &nbsp; Amber = A only &nbsp; · &nbsp; Blue = B only &nbsp; · &nbsp; Teal = shared. These footprints use a 1.2 m tracker and nominal 1 m station or 4 m repeater. Height controls update the direct profile.</p>
 <p class="note"><b>Magenta</b> shows the direct ray. The blue band shows the inner 60% of the first Fresnel zone. Gray terrain includes effective Earth curvature. Endpoint heights are above bare ground. A visible ray can still have substantial Fresnel obstruction. Trees, structures, vehicles, snow and RF interference require a field test.</p>
-<p class="note">USGS The National Map topography • USGS 3DEP • © OpenStreetMap contributors • 910.625 MHz • effective Earth radius 4/3 • native 1 m profile samples with mosaic fallback • November 17, 2026.</p>
+<p class="note">Relief and contours from USGS 3DEP elevation • roads and trails • © OpenStreetMap contributors • 910.625 MHz • effective Earth radius 4/3 • native 1 m profile samples with mosaic fallback • November 17, 2026.</p>
 </main><script>
 const db=PAYLOAD_HERE;
-const topo={};
-for(const [name,entry] of Object.entries(db.topo)){
-    const img=new Image();topo[name]=img;img.onload=()=>draw();img.src='data:image/jpeg;base64,'+entry.image;
+const decoded=new WeakMap();
+const strokes=new Map();
+function vector(path){
+    if(!strokes.has(path))strokes.set(path,new Path2D(path));
+    return strokes.get(path);
+}
+function drawTerrain(ctx,sheet,mx,my,scale,interval){
+    if(!decoded.has(sheet)){
+        const image=new Image();
+        decoded.set(sheet,image);
+        image.onload=()=>requestAnimationFrame(draw);
+        image.src='data:image/jpeg;base64,'+sheet.image;
+    }
+    const img=decoded.get(sheet),[l,b,r,t]=sheet.bounds;
+    if(!img.naturalWidth)return;
+    ctx.save();
+    ctx.imageSmoothingEnabled=true;
+    ctx.drawImage(img,mx(l),my(t),(r-l)*scale,(t-b)*scale);
+    ctx.translate(mx(l),my(b));ctx.scale(scale,-scale);
+    for(const [height,path] of Object.entries(sheet.contours)){
+        if(Number(height)%interval)continue;
+        const major=Number(height)%(interval*5)===0;
+        ctx.strokeStyle=major?'#8a775f':'#b1a28e';
+        ctx.lineWidth=(major ? .96 : .51)/scale;
+        ctx.stroke(vector(path));
+    }
+    ctx.restore();
+}
+function drawWays(ctx,mx,my,scale){
+    const [l,b]=db.topo.regional.bounds;
+    const ways=db.topo.vectors;
+    ctx.save();ctx.translate(mx(l),my(b));ctx.scale(scale,-scale);ctx.lineJoin='round';
+    for(const [kind,color] of [['parking','#e1ded4'],['building','#9fa7a3']]){
+        if(ways[kind]){ctx.fillStyle=color;ctx.fill(vector(ways[kind]));}
+    }
+    for(const [kind,color,width] of [['stream','#6b9ba5',.8],['trail','#796448',1.0],
+        ['road','#6e756e',2.8],['highway','#7a674c',4.1],['road','#fffdf2',1.45],['highway','#f6d496',2.65]]){
+        if(!ways[kind])continue;
+        ctx.setLineDash(kind==='trail'?[4/scale,2.5/scale]:[]);
+        ctx.strokeStyle=color;ctx.lineWidth=width/scale;ctx.stroke(vector(ways[kind]));
+    }
+    ctx.restore();
 }
 const by=id=>document.getElementById(id);
 const list=Object.keys(db.points).sort();
@@ -45,32 +84,33 @@ pathStroke(c,L,Y(a),R,Y(b));
 endpoint(c,L,Y(a),'A');endpoint(c,R,Y(b),'B');for(let j=0;j<=4;j++){c.fillStyle='#233e40';c.fillText(short?(p.d*j/4).toFixed(1):(p.d*j/4000).toFixed(p.d<500?2:1),L+(R-L)*j/4-10,D+18)}c.fillText(short?'Distance from A (m)':'Distance from A (km)',(L+R)/2-55,h-5);
 const full=by('fullMap').checked;
 const qa=db.points[A],qb=db.points[B],mid=[(qa[0]+qb[0])/2,(qa[1]+qb[1])/2];
-const jb=db.topo.junction.bounds;
-const local=!full&&p.d<1300&&[qa,qb].every(([x,y])=>x>jb[0]+400&&x<jb[2]-400&&y>jb[1]+400&&y<jb[3]-400);
-const base=full?'regional':local?'junction':'detail';
 const minimum=short?Math.max(35,p.d*3):Math.min(2300,Math.max(600,p.d*5));
-const [west,south,east,north]=db.topo[base].bounds;
+const [west,south,east,north]=db.topo.regional.bounds;
 const spanX=full?east-west:Math.max(minimum,Math.abs(qa[0]-qb[0])*1.45);
 const spanY=full?north-south:Math.max(minimum,Math.abs(qa[1]-qb[1])*1.45);
 const scale=Math.min((m.w-24)/spanX,(m.h-24)/spanY);
 const center=full?[(east+west)/2,(north+south)/2]:mid;
 const mx=x=>m.w/2+(x-center[0])*scale,my=y=>m.h/2-(y-center[1])*scale;
-const ctx=m.c,img=topo[base];
+const ctx=m.c;
 ctx.fillStyle='#edeae1';ctx.fillRect(0,0,m.w,m.h);
-if(img.complete&&img.naturalWidth){
-    if(local&&topo.detail.complete&&topo.detail.naturalWidth){
-        const [l,b,r,t]=db.topo.detail.bounds;
-        ctx.drawImage(topo.detail,mx(l),my(t),(r-l)*scale,(t-b)*scale);
+const span=Math.max(spanX,spanY);
+const interval=span<250?5:span<2600?10:span<9000?20:40;
+drawTerrain(ctx,db.topo.regional,mx,my,scale,Math.max(20,interval));
+if(span<=3200){
+    for(const sheet of db.topo.tiles){
+        const [l,b,r,t]=sheet.bounds;
+        if(mx(r)>0&&mx(l)<m.w&&my(b)>0&&my(t)<m.h)drawTerrain(ctx,sheet,mx,my,scale,interval);
     }
-    ctx.drawImage(img,mx(west),my(north),(east-west)*scale,(north-south)*scale);
 }
 const [vx,vy,ds,cols,rows]=db.raster;
 const view=footprint(A,B);
 if(by('showViews').checked){
-    ctx.imageSmoothingEnabled=false;ctx.globalAlpha=.53;
+    ctx.imageSmoothingEnabled=false;ctx.globalAlpha=.39;
     ctx.drawImage(view.image,mx(vx),my(vy),cols*ds*scale,rows*ds*scale);ctx.globalAlpha=1;
 }
-mapLabels(ctx,db.referenceLabels,mx,my,m.w,m.h,[mx(qa[0]),my(qa[1])],[mx(qb[0]),my(qb[1])]);
+drawWays(ctx,mx,my,scale);
+const labels=span<=5000?db.referenceLabels.concat(db.topo.streetLabels):db.referenceLabels;
+mapLabels(ctx,labels,mx,my,m.w,m.h,[mx(qa[0]),my(qa[1])],[mx(qb[0]),my(qb[1])]);
 pathStroke(ctx,mx(qa[0]),my(qa[1]),mx(qb[0]),my(qb[1]));
 endpoint(ctx,mx(qa[0]),my(qa[1]),'A');endpoint(ctx,mx(qb[0]),my(qb[1]),'B');
 for(const [name,point,above] of [[A,qa,qa[1]>=qb[1]],[B,qb,qa[1]<qb[1]]]){

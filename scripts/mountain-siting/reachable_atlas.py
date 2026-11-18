@@ -31,6 +31,65 @@ def signed(a,b):
     return f"{pair(a,b)['clear']:+.1f} m"
 
 
+def marked_site(ax,k,title,at,color):
+    ax.scatter(*xy[k],s=46,color=color,edgecolor="white",linewidth=1.4,zorder=9)
+    ax.annotate(title,xy[k],xytext=at,textcoords="axes fraction",fontsize=9,weight="bold",
+                color=color,ha="center",va="center",zorder=10,
+                bbox=dict(boxstyle="round,pad=.34",fc="#fffef8",ec=color,lw=.7),
+                arrowprops=dict(arrowstyle="-",color=color,lw=1,shrinkA=2,shrinkB=4,
+                                path_effects=[pe.withStroke(linewidth=2.7,foreground="white")]))
+
+
+def waypoint_maps(scout,trail):
+    fig=page("Survey waypoints  /  Angel Peak","Angel Peak",
+             "Four survey positions on the summit ridge. The proposed Vegas site and the conditional road scout are 154 m apart.")
+    ax=axis([.045,.155,.635,.635])
+    x,y=xy[VEGAS]
+    mapbase(ax,(x-735,y-480,x+405,y+335))
+    deployed="#15585a"
+    proposed="#8a304f"
+    marked_site(ax,"Angel Mountain","Deployed Angel Mountain",(.21,.71),deployed)
+    marked_site(ax,"Angel Vegas","Deployed Angel Vegas",(.80,.19),deployed)
+    marked_site(ax,VEGAS,"Vegas alternative",(.79,.78),proposed)
+    marked_site(ax,scout,"Road scout",(.40,.33),proposed)
+    fig.text(.71,.755,"WGS84 waypoints",fontsize=12,weight="bold",color="#185c53")
+    for i,(title,k) in enumerate([("Deployed Angel Mountain","Angel Mountain"),("Deployed Angel Vegas","Angel Vegas"),
+                                  ("Vegas alternative",VEGAS),("Road scout",scout)]):
+        y=.70-i*.085
+        fig.text(.71,y,title,fontsize=10,weight="bold",color=deployed if i<2 else proposed)
+        fig.text(.71,y-.029,coord(k),fontsize=9)
+    fig.text(.71,.327,"Check before the visit",fontsize=11,weight="bold",color="#185c53")
+    fig.text(.71,.296,"Confirm access to the road scout.\nThe mapped road passes through\nthe Angel Peak facility area.",
+             va="top",fontsize=9.5,linespacing=1.45)
+    fig.text(.045,.100,"Contours every 10 m  •  Index contours every 50 m  •  Elevation in metres above sea level",fontsize=9)
+    save("angel-peak-map.png")
+
+    fig=page("Survey waypoints  /  Kyle Canyon","Escarpment trail",
+             "The trail map shows the 4.67 km mapped footway. The enlargement locates the supplied pin and its nearby survey offset.")
+    line=next(g for g,p in features if p.get("osm_id")==search["trail_id"])
+    l,b,r,t=line.bounds
+    ax=axis([.045,.235,.555,.50])
+    mapbase(ax,(l-120,b-160,r+115,t+160))
+    ax.plot(*line.xy,color="#176f67",lw=1.9,path_effects=[pe.withStroke(linewidth=3.4,foreground="white")],zorder=5)
+    x,y=xy[ESC]
+    close=(x-73,y-75,x+98,y+65)
+    ax.add_patch(Rectangle(close[:2],close[2]-close[0],close[3]-close[1],fill=False,ec=proposed,
+                           lw=1.6,zorder=7,path_effects=[pe.withStroke(linewidth=3,foreground="white")]))
+    ax.annotate("Survey area",(x,y),xytext=(22,-19),textcoords="offset points",weight="bold",
+                color=proposed,fontsize=9,bbox=dict(fc="white",ec="none",pad=2),zorder=8)
+    ax=axis([.625,.235,.33,.50])
+    mapbase(ax,close)
+    ax.plot(*line.xy,color="#176f67",lw=1.9,path_effects=[pe.withStroke(linewidth=3.4,foreground="white")],zorder=5)
+    marked_site(ax,ESC,"Supplied pin",(.28,.73),deployed)
+    marked_site(ax,trail,"Survey 3",(.73,.24),proposed)
+    fig.text(.045,.763,"Trail overview",fontsize=12,weight="bold",color="#185c53")
+    fig.text(.625,.763,"Waypoint detail",fontsize=12,weight="bold",color="#185c53")
+    fig.text(.045,.166,"Teal   mapped Escarpment footway     •     10 m contours",fontsize=9)
+    fig.text(.625,.166,"2 m contours     •     Pins about 21 m apart",fontsize=9)
+    fig.text(.045,.103,"Supplied pin   "+coord(ESC)+"       Survey 3   "+coord(trail),fontsize=10)
+    save("escarpment-trail-map.png")
+
+
 def main():
     offset_lee=next(k for k in plan if k in search["families"][LEE])
     scout=next(k for k in D["Map-only Angel comparison"]["layout"] if k in search["families"][ANGEL])
@@ -113,28 +172,7 @@ def main():
         "Record the sender, packet ID, send count, GPS fix time, Lee receipt time and antenna heights. Repeat the existing control before\nand after each trial. Inspect Shady’s offline SD card. Compare body-worn and in-vehicle results against the 15-minute freshness limit.")],.16)
     save()
 
-    fig=page("Waypoint detail  /  USGS topography","Angel Peak and the Escarpment trail",
-             "Compare the three owner-supplied Angel pins with the optional shoulder. The traced footway anchors the Escarpment search.")
-    ax=axis([.046,.26,.43,.51])
-    x,y=xy[VEGAS]
-    mapbase(ax,(x-680,y-550,x+480,y+480),"detail")
-    for n,(k,disp) in enumerate([("Angel Vegas",(6,-13)),("Angel Mountain",(5,-13)),(VEGAS,(5,7)),(scout,(-12,-12))],1):
-        pin(ax,k,str(n),disp)
-    fig.text(.045,.788,"Angel Peak",weight="bold",size=12)
-    fig.text(.048,.214,"1   Deployed Angel Vegas       2   Deployed Angel Mountain",size=8.6)
-    fig.text(.048,.178,"3   Owner’s Vegas alternative   4   Conditional road scout",size=8.6)
-    fig.text(.048,.126,"Confirm access to the scout. The mapped road passes\nthrough the Angel Peak facility area.",size=9,linespacing=1.45)
-    ax=axis([.522,.26,.43,.51])
-    line=next(g for g,p in features if p.get("osm_id")==search["trail_id"])
-    l,b,r,t=line.bounds
-    mapbase(ax,(l-200,b-200,r+200,t+200),"detail")
-    ax.plot(*line.xy,color="#176f67",lw=2,path_effects=[pe.withStroke(linewidth=4,foreground="white")])
-    pin(ax,ESC,"Owner pin",(-55,8))
-    pin(ax,trail,"Survey 3",(8,-14))
-    fig.text(.522,.788,"Escarpment trail",weight="bold",size=12)
-    fig.text(.523,.214,"Teal   mapped footway     •     OSM way "+search["trail_id"][1:],size=8.6)
-    fig.text(.523,.162,"The supplied point lies about 1 m from the mapped way.\nThe trial offset is about 21 m from the supplied pin.",size=9,linespacing=1.45)
-    save()
+    waypoint_maps(scout,trail)
     resort_page()
     pairs=[(MACK,"Upper Bristlecone"),(MACK,"Angel Mountain"),(MACK,VEGAS),(MACK,"Lee Fire"),
            ("Upper Bristlecone","Lee Fire"),(offset_lee,"Upper Bristlecone"),(VEGAS,"Shady Hollow"),

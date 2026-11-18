@@ -35,6 +35,30 @@ for scenario,v in D.items():
     assert round(100*weights[rows & served].sum()/weights[rows].sum(),1)==v["scores"]["Highway"]
 if "source_pins" in search:
     from reachable_search import ANGEL, ESC, LEE, SHOW, load_waypoints
+    from io import BytesIO
+    from PIL import Image
+    import pymupdf
+
+    sheets=payload["topo"]["tiles"]
+    for sheet in sheets:
+        l,b,r,t=sheet["bounds"]
+        with Image.open(BytesIO(base64.b64decode(sheet["image"]))) as tile:
+            assert tile.size==(r-l,t-b) and sheet["resolution"]==1
+        assert any(sheet["contours"].values())
+    for x,y in payload["points"].values():
+        assert any(l<=x<r and b<=y<t for l,b,r,t in (tile["bounds"] for tile in sheets))
+    assert payload["topo"]["vectors"]["road"] and payload["topo"]["vectors"]["trail"]
+    with pymupdf.open(OUT/"mountain-field-atlas.pdf") as atlas:
+        for filename,heading in [("angel-peak-map.png","WGS84 waypoints"),
+                                 ("escarpment-trail-map.png","Waypoint detail")]:
+            matches=[page for page in atlas if heading in page.get_text()]
+            assert len(matches)==1,heading
+            page=matches[0]
+            assert len(page.get_drawings())>40,heading
+            for img in page.get_image_info():
+                assert img["width"]*72/(img["bbox"][2]-img["bbox"][0])>=350,heading
+            with Image.open(OUT/filename) as export:
+                assert export.width>=4000 and export.height>=2900
     owner=load_waypoints(OUT/"owner-waypoints.kml")
     assert set(owner)==set(search["source_pins"])
     kml={p.findtext("{*}name"):p.findtext("{*}Point/{*}coordinates") for p in

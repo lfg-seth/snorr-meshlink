@@ -1,6 +1,7 @@
 """Produce the offline field atlas, geographic view rasters and micro-site checks."""
 from survey import *
 from basemaps import CACHE, MAPS
+from terrain_maps import pdf_topography
 from PIL import Image
 from functools import lru_cache
 from textwrap import fill
@@ -57,10 +58,12 @@ def page(section,title,sub):
     fig.text(.045,.897,title,fontsize=23,fontfamily="DejaVu Serif")
     fig.text(.045,.855,sub,fontsize=10,color="#42535a")
     return fig
-def save():
-    fig.text(.045,.035,"SNORR MeshLink   /   Mount Charleston     •     17 November 2026     •     Topography: USGS The National Map",fontsize=8,color="#465254")
+def save(image_name=None):
+    fig.text(.045,.035,"SNORR MeshLink   /   Mount Charleston     •     17 November 2026     •     USGS 3DEP terrain  /  © OpenStreetMap contributors",fontsize=8,color="#465254")
     fig.text(.955,.035,str(pdf.get_pagecount()+1),ha="right",fontsize=8)
-    pdf.savefig(fig,dpi=190)
+    pdf.savefig(fig,dpi=360)
+    if image_name:
+        fig.savefig(OUT/image_name,dpi=360)
     plt.close(fig)
 def axis(rect):
     return fig.add_axes(rect)
@@ -72,8 +75,11 @@ def basemap(name):
 
 def mapbase(ax,bounds=None,name="regional"):
     l,b,r,t=bounds or (L,B,R,T)
-    west,south,east,north=MAPS[name][0]
-    ax.imshow(basemap(name),extent=(west,east,south,north),interpolation="lanczos",zorder=0)
+    if name=="aerial":
+        west,south,east,north=MAPS[name][0]
+        ax.imshow(basemap(name),extent=(west,east,south,north),interpolation="antialiased",zorder=0)
+    else:
+        pdf_topography(ax,(l,b,r,t),features)
     ax.set(xlim=(l,r),ylim=(b,t),aspect="equal",xticks=[],yticks=[])
     ax.tick_params(length=0)
     for spine in ax.spines.values():
@@ -89,7 +95,7 @@ def mapbase(ax,bounds=None,name="regional"):
 
 def link_bounds(a,b):
     x1,y1=xy[a]; x2,y2=xy[b]
-    span=max(abs(x2-x1),abs(y2-y1),2800)*1.60
+    span=max(abs(x2-x1),abs(y2-y1),850)*1.60
     cx,cy=(x1+x2)/2,(y1+y2)/2
     return cx-span*.55,cy-span*.50,cx+span*.55,cy+span*.50
 
@@ -163,7 +169,7 @@ def lineplot(ax,a,b):
     ax.set(xlabel="Distance from A (km)",ylabel="Elevation (m)",xlim=(-d[-1]*.00006,d[-1]*.00106))
     return (l-z)[1:-1].min(),((l-z)[1:-1]/f[1:-1]).min()
 def overlay(ax,arr,colors):
-    ax.imshow(np.ma.masked_equal(arr,0),extent=extent,cmap=ListedColormap(colors),interpolation="nearest",vmin=.5,vmax=len(colors)+.5,alpha=.52,zorder=2)
+    ax.imshow(np.ma.masked_equal(arr,0),extent=extent,cmap=ListedColormap(colors),interpolation="nearest",vmin=.5,vmax=len(colors)+.5,alpha=.39,zorder=1.1)
 
 
 def direct_page(a,b):

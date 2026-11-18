@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-17 - Redrew the reachable study maps for field zoom and print
+
+The Angel Peak inset had enlarged roughly 145 pixels of a regional raster. Rebuilt the topographic maps from the cached USGS elevation tiles and mapped ways. Angel Peak and Escarpment each have a full atlas page and a 360 dpi PNG. Inspected the rendered atlas and the offline viewer at 3× phone pixel density. Next, use the field packet for the attended Mack’s link and GPS receipt checks. [Map sources and field study](../docs/research/mountain-siting-reachable-20261117.md#inputs-and-reproduction)
+
 ## 2026-11-17 - Updated the repeater study with the owner's reachable waypoints
 
 Rebuilt the labeled-topo atlas, offline path viewer, KML, GPX and evidence packet around all 17 supplied points. The access-constrained screen identified Mack’s as the first trial and a conditional mountain-facing Angel scout. Independently checked 21 reported layouts, 496 direct profiles and 8,185 height combinations. The earlier packet also passed its verifier. Next, compare reciprocal Mack’s links at actual mount height and a fresh member GPS receipt at Lee Fire. Compare Shady’s SD and a valley receiver before moving either Angel radio. [Study and reproduction steps](../docs/research/mountain-siting-reachable-20261117.md)

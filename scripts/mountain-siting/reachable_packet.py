@@ -68,9 +68,10 @@ def pack():
         return "](https://github.com/lfg-seth/snorr-meshlink/blob/codex/mountain-siting-nov17/"+target+")"
     brief=re.sub(r"\]\((?!https?://)([^)]+)\)",repo_link,source.read_text(encoding="utf8"))
     title,body=brief.split("\n",1)
-    field_files="[Field atlas](mountain-field-atlas.pdf) · [Adjustable paths](radio-paths.html) · [Google Earth waypoints](survey-waypoints.kml) · [GPX](survey-waypoints.gpx)"
+    field_files="[Field atlas](mountain-field-atlas.pdf) · [Angel Peak map](angel-peak-map.png) · [Escarpment trail map](escarpment-trail-map.png) · [Adjustable paths](radio-paths.html) · [Google Earth waypoints](survey-waypoints.kml) · [GPX](survey-waypoints.gpx)"
     (OUT/"study-brief.md").write_text(title+"\n\n"+field_files+"\n"+body,encoding="utf8")
-    names=["mountain-field-atlas.pdf","radio-paths.html","survey-waypoints.kml","survey-waypoints.gpx",
+    names=["mountain-field-atlas.pdf","angel-peak-map.png","escarpment-trail-map.png",
+           "radio-paths.html","survey-waypoints.kml","survey-waypoints.gpx",
            "study-brief.md","owner-waypoints.kml","angel-valley.csv","candidates.csv","height-sweep.csv",
            "highway-gaps.csv","member-probes.csv","mount-offsets.csv","pair-overlap.csv","station-routes.csv",
            "search-screen.csv","layouts.json"]
