@@ -9,9 +9,11 @@ intended profile before and after reboot. Serial closed.
 
 Updated the live registry and field roster with the same pin and equipment.
 Authenticated portal state and Activity show R004 at SaharaFG, with twelve
-Activity cards. R002 is held and retains its own packet history. The scoped
-portal rollback is retained privately on the host. The remaining checks are
-physical installation, fresh R004 delivery at SaharaFG and rework of R002.
+Activity cards. At 07:54:25 Pacific, G003 delivered fresh R004 telemetry and
+the signed-in card's last-heard time matched the accepted receipt. R002 is
+held and retains its own packet history. The scoped portal rollback is
+retained privately on the host. Physical installation, reception at the
+site and R002 rework await confirmation.
 [Hardware and site assignment](sites.md#2026-11-18---saharafg-replacement).
 
 ## 2026-11-17 - Deployed compact Activity routes
