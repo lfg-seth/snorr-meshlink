@@ -1,5 +1,8 @@
 """Write the self-contained path viewer and exact critical-link height sweep."""
 import base64
+from io import BytesIO
+from PIL import Image
+from basemaps import CACHE, MAPS
 from survey import *
 import rasterio
 
@@ -32,6 +35,13 @@ def build():
             packed_views[label(k)]=base64.b64encode(np.packbits(data,bitorder="little").tobytes()).decode("ascii")
             raster=[ds.bounds.left,ds.bounds.top,ds.transform.a,ds.width,ds.height]
     payload.update(views=packed_views,raster=raster)
+    payload["referenceLabels"]=reference_labels()
+    payload["topo"]={}
+    for name in ("regional","detail","junction"):
+        with Image.open(CACHE/(name+".png")) as image:
+            buf=BytesIO()
+            image.convert("RGB").save(buf,"JPEG",quality=91,optimize=True)
+            payload["topo"][name]=dict(bounds=MAPS[name][0],image=base64.b64encode(buf.getvalue()).decode("ascii"))
     template=Path(__file__).with_name("viewer.html").read_text(encoding="utf8")
     (OUT/"radio-paths.html").write_text(template.replace("PAYLOAD_HERE",json.dumps(payload,separators=(",",":"))),encoding="utf8")
 if __name__=="__main__":

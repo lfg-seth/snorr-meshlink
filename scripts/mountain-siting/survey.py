@@ -33,6 +33,21 @@ def write_csv(name,header,rows):
         w=csv.writer(file)
         w.writerow(header)
         w.writerows(rows)
+def reference_labels():
+    """Named features and highway shield anchors in the same CRS as the path maps."""
+    wanted=["Lee Canyon","Desert View Overlook","Fletcher Peak","Mummy Mountain",
+            "The Sisters","Upper Bristlecone Trailhead","Harris Mountain","Stanley B Springs"]
+    labels=[]
+    for name in wanted:
+        point=next((g for g,p in features if g.geom_type=="Point" and p.get("name")==name),None)
+        if point is not None:
+            labels.append((name,*point.coords[0],"landmark"))
+    for ref in ("SR 156","SR 157","SR 158"):
+        line=max((g for g,n in road_inventory if n==ref),key=lambda g:g.length)
+        for distance in (.6,.27,.83):
+            labels.append((ref,*line.interpolate(distance,normalized=True).coords[0],"road"))
+    return labels
+
 def export():
     display=list(dict.fromkeys(["Lee Fire",*existing,"Shady Hollow",*fletcher,"Kyle Fire"]+
                               [k for v in D.values() for k in v["layout"]]))

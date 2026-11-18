@@ -4,7 +4,7 @@ import re
 from survey import *
 
 html=(OUT/"radio-paths.html").read_text(encoding="utf8")
-payload=json.loads(re.search(r"const db=(.*);\nconst by=",html).group(1))
+payload=json.loads(re.search(r"^const db=(.*);$",html,re.MULTILINE).group(1))
 gpx=ET.parse(OUT/"survey-waypoints.gpx")
 waypoints={w.find("{*}name").text for w in gpx.getroot()}
 assert waypoints==set(payload["points"])==set(payload["views"])
