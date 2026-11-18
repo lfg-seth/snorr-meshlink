@@ -7,24 +7,30 @@ Updated 2026-11-18. All amounts are in USD.
 The owner supplied an original project budget of **$5,000.00** for the
 SNORR review. The December 2025 budget group is **$1,840.38**, including
 the **$1,682.07** SNORR-paid Amazon order and the **$158.31** owner-reported
-battery cost. Including the $708.81 provisional reimbursement and $454.61
-proposed cart gives a projected total of **$3,003.80** and a projected balance
-of **$1,996.20** before checkout tax or shipping.
+battery cost. Including the **$427.91** reimbursement request and **$454.61**
+proposed cart gives a projected total of **$2,722.90** and a projected balance
+of **$2,277.10** before checkout tax or shipping.
 
 | Spending or request | Amount USD | Status |
 | --- | ---: | --- |
 | December 2025 hardware, supplies and batteries | $1,840.38 | $1,682.07 paid directly by SNORR and $158.31 reported by the owner |
-| October-November 2026 personal Amazon orders | $708.81 | Provisional reimbursement estimate. Approved amount and payment pending. |
+| Reimbursement for selected personal purchases | $427.91 | Twelve line items selected. Approval and payment pending. |
 | Proposed member-node equipment | $454.61 | Cart subtotal. Awaits approval for direct purchase by SNORR. |
 
-### Personal purchases pending reimbursement
+### Personal purchases and reimbursement request
 
 The project owner confirms paying personally for 18 Amazon orders placed
 from 2026-10-19 through 2026-11-17. The order summaries total $779.00 with
 listed tax and discounts. The owner excludes a car shade, phone case and
-screen protector. These purchases are tracked as a provisional reimbursement
-estimate while the approved amount and payment are pending. See the private
-Amazon summaries numbered 1-18.
+screen protector. The project share of the 18 orders is $708.81. The owner
+selected **12 workbook rows totaling $427.91** for reimbursement. The other
+21 line items total **$280.90** and are owner-paid. The SNORR budget projection
+uses the requested amount. See the private Amazon summaries numbered 1-18.
+
+| Selected workbook rows | Stable line IDs |
+| --- | --- |
+| 57, 58, 69, 75, 78, 81 | `R26-01-01`, `R26-01-02`, `R26-05-01`, `R26-10-01`, `R26-11-02`, `R26-11-05` |
+| 82, 83, 86, 87, 88, 89 | `R26-12-01`, `R26-13-01`, `R26-16-01`, `R26-17-01`, `R26-18-01`, `R26-18-02` |
 
 | Receipt | Date placed | Merchandise | Order total | Provisional project share |
 | --- | --- | --- | ---: | ---: |

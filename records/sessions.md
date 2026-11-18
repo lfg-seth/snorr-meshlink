@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-18 - Limited the reimbursement request to selected purchases
+
+Matched the owner's 12 worksheet rows to stable purchase line IDs and totaled
+the request at $427.91. The other 21 personal purchase lines total $280.90
+and are owner-paid. Checked the workbook selections, line totals and one-page
+PDF. Projected total is $2,722.90 and projected balance is $2,277.10 before
+checkout tax or shipping. The request awaits submission and approval.
+[Financial review](finances.md#2026-11-18---spending-review).
+
 ## 2026-11-18 - Revised the SNORR budget packet
 
 Included the owner-reported $158.31 battery cost in the December 2025 budget
