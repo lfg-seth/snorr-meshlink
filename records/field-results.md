@@ -1,5 +1,30 @@
 # Field testing and tangible results
 
+## 2026-11-16 - G002 copied offline logs: sustained recording, UTC absent
+
+Owner supplies 25 copied SML1 segments from **G002 !1bbf0ab8**. Existing reader
+and independent CRC/frame/footer audit agree: **69,772 valid events / 20 boots**,
+24 closed segments and one intact open tail; no missing/repeated sequence numbers,
+corruption, recorded loss or eviction. Historical commissioning remains separate.
+Latest offline boot spans **28 h 55 min**, **29,334 events / 13,158 raw RX /
+7,010 decoded**, with no intervening boot or MQTT activity. **UTC remains unknown
+throughout**; sender-time alignment only suggests Nov 15 16:57–Nov 16 21:52 Pacific.
+
+R001/R008/R005/R011 persist through the final six hours. After the first hour,
+direct-indicated median RSSI/SNR: **−86/+4, −97/−4.5, −103/−10, −105/−12.5**
+(dBm/dB); R011 device gap reaches **72.1 min**. **1,152 raw reads / 8.76%** have
+radio CRC errors, separate from SD integrity. B002 supplies ten GPS-timestamped
+fixes in the first half-hour and none afterward; sustained tracking is unproven.
+G002 ends at reported **85% / 4.022 V**; 347 INA219 samples hold approximately
+300-second cadence. No remaining-runtime/solar-balance claim. One earlier
+panic reset and two unmatched TX starts have unisolated causes.
+
+[Full measurements, method and limits](../docs/operations/g002-shady-hollow-deployment.md#copied-card-analysis---2026-11-16).
+Raw decoded payloads, coordinates, hashes and scripts stay ignored under
+`private/analysis/G002-offline-20261116/`. No hardware, profile, portal or server
+changes. Next: selected cold-start clock test, R011 link comparison and agreed
+sustained member GPS run; controlled power-loss and field/power gates remain open.
+
 ## 2026-11-16 - R005 repeat stopped; latest MQTT gateways identified
 
 Owner requests 30 five-second B003-to-R005 attempts, then stops the run.

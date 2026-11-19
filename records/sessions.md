@@ -1,5 +1,37 @@
 # Session log
 
+## 2026-11-16 - G002 copied offline SD logs analyzed
+
+Owner requests analysis of `/home/setheth/Desktop/SN1BBF0AB8/`. Read files only;
+25 consecutive G002 SML1 segments contain **6,612,854 bytes / 69,772 valid
+frames / 20 boot IDs**. Existing reader and independent struct/zlib audit agree
+on CRCs, boot ownership, all closed counts and complete per-boot sequences.
+24 valid closed segments; last ends on a valid frame without close marker.
+No detected corruption or recorded loss/eviction; do not infer no RF loss or
+controlled power-loss acceptance. Earlier commissioning/networked runs remain
+separate from latest **9b841cdf / 28 h 55 min / 29,334 events**.
+
+[Detailed evidence](../docs/operations/g002-shady-hollow-deployment.md#copied-card-analysis---2026-11-16)
+records absent UTC throughout the latest boot, approximate sender-time alignment,
+13,158 raw radio reads (1,152 CRC errors), 7,010 decoded observations, sustained
+R001/R008/R005/R011 reception and sparse R011 telemetry. B002 ten GPS fixes only
+in first half-hour; B003 survey context preserved. Own G002 device/INA219 trends,
+300-second power cadence, two unmatched TX starts and one older panic-reset
+reason are bounded findings, without root-cause/runtime/installation claims.
+Record results and update the G002 Verify follow-up. Raw payloads/coordinates,
+SHA-256 manifest and audit/analysis scripts stay ignored in
+`private/analysis/G002-offline-20261116/`; source copies remain unchanged.
+
+Validation: SD-reader suite, independent all-file CRC/sequence audit, all 25
+unchanged input hashes and four-file Markdown link/whitespace checks pass.
+Commit/push reported at handoff.
+No code/firmware, board/USB, profile, portal or server change. Clean-branch
+`git pull --ff-only` fails on the pre-existing broken Codex checkpoint ref;
+leave refs/history and main unchanged. Work stays on short-lived
+`codex/g002-offline-analysis-20261116`. Next: owner-selected clock cold-start,
+R011 matched link comparison and sustained member GPS test; controlled power-loss,
+calibration, installation and power/coverage/relay acceptance remain open.
+
 ## 2026-11-16 - Owner stops R005 repeat; latest MQTT origins verified
 
 Owner requests 30 ping attempts at five-second intervals, then explicitly stops
