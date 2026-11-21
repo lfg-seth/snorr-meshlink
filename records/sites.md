@@ -1,5 +1,12 @@
 # Candidate sites and backhaul
 
+## 2026-11-21 - Three radios on the shelf
+
+**G002**, **R006** and **R004** are on the shelf per the owner. Shady Hollow,
+Lee Junction and SaharaFG have been withdrawn from the live field roster.
+Earlier site selections below are historical.
+[Live roster verification](../docs/operations/field-portal.md#november-21-shelf-devices-withdrawn).
+
 ## 2026-11-21 - R009 Mack’s Canyon
 
 Owner selects **Mack’s Canyon / R009** at **36.35033, -115.64726**, superseding

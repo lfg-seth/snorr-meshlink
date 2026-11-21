@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-21 - Three shelf devices withdrawn from the live portal
+
+Owner confirms G002, R006 and R004 are on the shelf. Removed their live
+field-roster entries and verified their absence from authenticated map state
+and Activity. Nine entries remain and all three device identities remain in
+the registry. Next: restore a roster entry only when the owner selects the
+radio for deployment again.
+[Live roster verification](../docs/operations/field-portal.md#november-21-shelf-devices-withdrawn).
+
 ## 2026-11-21 - Mack's Canyon and Escarpment Trail live roster
 
 Updated the production portal and Activity roster for **R009 / Mack's Canyon**

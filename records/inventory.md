@@ -1,5 +1,11 @@
 # Hardware inventory
 
+## 2026-11-21 - Shelf status for G002, R006 and R004
+
+Owner confirms existing **G002 (!1bbf0ab8)**, **R006 (!638b9515)** and
+**R004 (!49ac6d7f)** are on the shelf. No equipment recount was supplied.
+[Live roster verification](../docs/operations/field-portal.md#november-21-shelf-devices-withdrawn).
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;

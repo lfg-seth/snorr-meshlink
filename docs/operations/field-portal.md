@@ -1,5 +1,16 @@
 # Field portal and activity
 
+## November 21 shelf devices withdrawn
+
+Owner confirms **G002 (!1bbf0ab8)**, **R006 (!638b9515)** and
+**R004 (!49ac6d7f)** are on the shelf. Removed their Shady Hollow,
+Lee Junction and SaharaFG rows from the live field roster. Authenticated
+map state and Activity each returned the nine remaining entries. The remaining
+roster rows matched the previous snapshot, and the infrastructure registry
+retained all device identities. The roster-only edit needed no build.
+Prior row values are saved at `/root/meshlink-shelf-roster-20261121T233910Z/`
+on the portal host for rollback.
+
 ## November 21 Mack's Canyon and Escarpment Trail
 
 The production `field_roster` now shows **R009 / Mack's Canyon**

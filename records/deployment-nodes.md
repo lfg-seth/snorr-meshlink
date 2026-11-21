@@ -1,5 +1,13 @@
 # Current deployment node labels
 
+## 2026-11-21 shelf status
+
+**G002 (!1bbf0ab8)**, **R006 (!638b9515)** and **R004 (!49ac6d7f)** are on the
+shelf per the owner. Their field-roster entries were withdrawn. The prior
+configurations and measurements below record the last known bench and field
+evidence.
+[Live roster verification](../docs/operations/field-portal.md#november-21-shelf-devices-withdrawn).
+
 [Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.
 
 ## G006 at Terry Home - 2026-11-16
