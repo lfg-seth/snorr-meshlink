@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-21 - Built the GPS-timed OLED Heltec V4 survey handheld
+
+Published firmware `93f80a1` on `snorr/develop` and pinned it on
+`codex/v4-gps-site-survey`. The new target uses UTC from the local GPS for
+survey readiness and RF timestamps. The remote PlatformIO build passed and
+all four packaged artifacts passed SHA-256 verification after copying them
+back. The factory partition table contains the 128-sector survey journal.
+Native controller, responder and journal sanitizer tests, a clock-source
+gating fixture and three USB export-tool tests passed.
+
+Next: select and back up the physical V4, verify enrollment, then check
+battery-only GPS cold start, direct replies and journal export. No board
+was flashed. [V4 setup](../docs/operations/g005-site-survey.md#oled-heltec-v4-handheld-with-gps-time).
+
 ## 2026-11-21 - G005 site survey handheld ready at the bench
 
 Owner plugs in the site survey tester for readiness. Identify the former G005

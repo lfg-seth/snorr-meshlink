@@ -1,5 +1,25 @@
 # G005 handheld site survey
 
+## OLED Heltec V4 handheld with GPS time
+
+Build `heltec-v4-site-survey` for the original 16 MB OLED Heltec WiFi LoRa 32
+V4 with the L76K GPS attached. The target enables GPS in a fresh configuration.
+For a previously configured board, verify that GPS is enabled and uses the
+V4 variant's default pins. Keep the V3 powered off if the V4 will use the
+same enrolled tester identity.
+
+Power up outdoors on battery. The home screen shows **Waiting for GPS time**
+until the local receiver supplies valid UTC, then **Clock ready**. Walk and
+numbered tests use that clock for survey packets. USB clock writes are
+disabled for this target. The USB status and export commands below still
+work, and the journal and CSV keep elapsed milliseconds per attempt.
+
+The V4 partition table reserves 512 KiB for the 128-site journal at
+`0xc10000`. An application-only update from the standard V4 layout lacks
+this partition. The V3 installer and V3 flash backup are specific to G005.
+Before field use, verify a V4 battery cold start without USB or Wi-Fi,
+clock readiness, an authenticated direct reply and a numbered-site export.
+
 ## 2026-11-21 - Pre-field readiness
 
 USB identifies **SNORR Site Survey / SURV**, the former G005 Heltec V3,
