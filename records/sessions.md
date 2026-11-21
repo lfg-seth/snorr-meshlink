@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-21 - Transferred ten survey enrollments and verified R008
+
+The V3 backup passed its device digest. The V4 rebooted as the enrolled
+SURV identity with the old tester's full ten-peer roster and acquired GPS
+UTC. R008 returned a direct walking reply (+6.25 dB up, +6 dB down); a
+later attempt missed. USB monitoring closed. Keep the V3 and original
+B003 offline while using this V4. Next: check remaining links from the
+field and capture a numbered-site export.
+[Verification](../records/field-results.md#2026-11-21---v4-gps-handheld-direct-r008-reply).
+
 ## 2026-11-21 - Backed up and flashed B002 with GPS survey firmware
 
 Verified B002's complete 16 MiB recovery backup against the board before

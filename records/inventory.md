@@ -1,5 +1,12 @@
 # Hardware inventory
 
+## 2026-11-21 - V4 takes over the enrolled survey identity
+
+Physical B002 now operates as **SURV / !699c2ed8** with the old tester's
+ten responders. The V3 is the offline former tester. The B002 member/admin
+identity and its pre-conversion image are backed up privately.
+[Transfer evidence](../docs/operations/g005-site-survey.md#v4-survey-identity-and-ten-responder-transfer).
+
 ## 2026-11-21 - B002 OLED V4 GPS survey handheld
 
 Installed the handheld survey build on the existing B002 `!699ca878`.

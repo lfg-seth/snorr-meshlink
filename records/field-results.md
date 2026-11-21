@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-21 - V4 GPS handheld direct R008 reply
+
+After the enrollment transfer, the V4's local walking sweep showed R008
+**1/1**, uplink SNR **+6.25 dB** and downlink SNR **+6 dB**. A subsequent
+single-attempt sweep showed **0/1**. The counter remained zero during those
+walking checks. The other nine IDs passed enrollment comparison; their
+direct reception was not measured in this check.
+[Hardware and enrollment](../docs/operations/g005-site-survey.md#v4-survey-identity-and-ten-responder-transfer).
+
 ## 2026-11-21 - G005 handheld readiness
 
 Bench USB check confirms the installed survey firmware, enrolled profile and

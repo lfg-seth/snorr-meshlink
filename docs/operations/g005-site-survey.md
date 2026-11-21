@@ -20,6 +20,23 @@ this partition. The V3 installer and V3 flash backup are specific to G005.
 Before field use, verify a V4 battery cold start without USB or Wi-Fi,
 clock readiness, an authenticated direct reply and a numbered-site export.
 
+## V4 survey identity and ten-responder transfer
+
+On November 21 the owner selected the V4 to take over the old handheld's
+survey identity. The V3's complete 8 MiB recovery image matched its onboard
+flash digest. Both saved enrollment records passed their integrity checks,
+and the newest held exactly R001, R002 and R004 through R011. A verified
+pre-transfer copy of the V4 filesystem accompanies the original B002 backup.
+
+After the transfer and reboot, the physical B002 V4 reported logical
+**SURV / !699c2ed8**, firmware **2.7.26.93f80a1**, enrolled, US LongFast
+slot 35 at 10 dBm and **Clock ready** from GPS. The V4 retained its physical
+hardware identity, GPS configuration, module settings and channels. Its
+active mesh keypair now belongs to SURV. Keep the old V3 and original B003
+offline while using the V4 with this identity. The B002 administrative
+identity is available in its original backup. Private transfer evidence is
+in `private/bench/v4-survey-transfer-20261121/`.
+
 ## B002 V4 installation and GPS clock check
 
 On November 21 the connected board identified as B002, original OLED

@@ -39,10 +39,11 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
-B002 OLED V4 runs GPS survey build `93f80a1`. Backup, profile/keys,
-journal and GPS UTC passed. Next: pair the intended responders with B002
-and verify a battery cold start, direct reply and numbered-site export.
-[Installation evidence](../docs/operations/g005-site-survey.md#b002-v4-installation-and-gps-clock-check).
+The OLED V4 runs GPS survey build `93f80a1` with the enrolled SURV
+identity and all ten targets. GPS UTC and a direct R008 reply passed. Keep
+the former V3 and original B003 offline. Next: battery-only cold start and
+numbered-site export; measure other links at the selected survey positions.
+[R008 measurement](../records/field-results.md#2026-11-21---v4-gps-handheld-direct-r008-reply).
 
 The former G005 V3 handheld has **Clock ready**, verified enrollment and
 production radio settings and **R004/R007** selected. The owner reset the
