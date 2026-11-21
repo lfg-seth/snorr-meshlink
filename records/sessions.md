@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-21 - Mack's Canyon and Escarpment Trail live roster
+
+Updated the production portal and Activity roster for **R009 / Mack's Canyon**
+and **R008 / Escarpment Trail** using their existing radio IDs. The signed-in
+state returned the exact pins and the 12-card Activity snapshot included both
+new labels. The rest of the roster matched the pre-edit snapshot. The update
+ran on the portal host and required no build. Next: verify on-site reception
+and sustained operation after installation.
+[Verification and rollback](../docs/operations/field-portal.md#november-21-macks-canyon-and-escarpment-trail).
+
 ## 2026-11-21 - R009 Mack’s Canyon
 
 Reassigned USB-identified R009 **!da581e5f** from Sahara to Mack’s Canyon.

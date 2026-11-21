@@ -5,7 +5,10 @@
 Owner selects **Mack’s Canyon / R009** at **36.35033, -115.64726**, superseding
 the Sahara radio configuration. USB readback confirms the fixed pin. Physical
 placement, site access, mounting and on-site reception await confirmation.
-The live portal assignment still shows Sahara.
+The live portal and Activity now show Mack's Canyon. The same roster update
+lists **R008 / Escarpment Trail** at **36.26491, -115.59496**, using its saved
+November 21 radio pin.
+[Live roster verification](../docs/operations/field-portal.md#november-21-macks-canyon-and-escarpment-trail).
 [Bench readback](field-results.md#2026-11-21---r009-macks-canyon-fixed-position).
 
 ## 2026-11-17 - Sahara repeater selection

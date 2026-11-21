@@ -1,5 +1,18 @@
 # Field portal and activity
 
+## November 21 Mack's Canyon and Escarpment Trail
+
+The production `field_roster` now shows **R009 / Mack's Canyon**
+(**36.35033, -115.64726**) and **R008 / Escarpment Trail**
+(**36.26491, -115.59496**). Both edits matched existing repeater records by
+physical radio ID. Only the two display names and pins changed. A complete
+roster readback preserved the other rows and roster fields.
+
+Authenticated live state returned the exact map coordinates and Activity
+returned both names in its 12-card snapshot. The running services picked up the
+data edits without a build or application deployment. Root-private previous
+row values for rollback are in `/root/meshlink-roster-20261121T233715Z/`.
+
 ## November 17 compact Activity routes
 
 MeshLink 0.4.14 is deployed from tagged main commit
