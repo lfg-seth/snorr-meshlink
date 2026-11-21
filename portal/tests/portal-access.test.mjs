@@ -396,6 +396,23 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.equal(window.localStorage.getItem('meshlink-session-token'), 'test-token');
     assert.ok(requests.some(r => !r.url.startsWith('/demo-api/') && r.url.endsWith('/auth-with-password')
       && JSON.parse(r.options.body).rememberDevice === true));
+    const measuredAt = new Date().toISOString();
+    emptyState.trackers.push(
+      { id: 'live-tracker', number: '902', shortName: 'T902', history: [],
+        position: { latitude: 36.1, longitude: -115.1, measuredAt, receivedAt: measuredAt } },
+      { id: 'waiting', number: '903', shortName: 'T903', history: [], position: null },
+    );
+    emptyState.members.push({ id: 'member', name: 'Test Member', shortName: 'TEST' });
+    emptyState.assignments.push({ deviceId: 'live-tracker', memberId: 'member', startedAt: measuredAt, endedAt: null });
+    await act(async () => root.render(createElement(App, { key: 'live-member-map' })));
+    await navigate('#map');
+    const pins = document.querySelectorAll('.map-canvas .map-pin');
+    assert.equal(pins.length, 1);
+    assert.equal(pins[0].textContent, 'TEST');
+    const canvas = document.querySelector('.map-canvas');
+    assert.deepEqual(JSON.parse(canvas.dataset.options).bounds, [-115.1, 36.1, -115.1, 36.1]);
+    await act(async () => button('Fit area').click());
+    assert.deepEqual(JSON.parse(canvas.dataset.camera).bounds, JSON.parse(canvas.dataset.options).bounds);
     await navigate('#activity');
     const activity = document.querySelector('#page-content > div').shadowRoot;
     assert.equal(activity.querySelector('article h2').textContent, 'Cathedral Rock');

@@ -3,6 +3,14 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.15 - 2026-11-21
+
+The signed-in main map includes member trackers with recorded positions alongside
+placed infrastructure. Opening the map and choosing Fit area include both.
+Trackers awaiting their first position remain visible under Users. This portal
+fix uses the existing API and radio protocols and requires no database migration.
+Rollback restores the 0.4.14 application files.
+
 ## 0.4.14 - 2026-11-17
 
 Activity packet cards show the hop count, last identifiable relay and MQTT

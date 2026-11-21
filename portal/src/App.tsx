@@ -65,7 +65,6 @@ function Portal() {
   const infrastructureNodes = fieldView ? placedInfrastructure(snapshot!.infrastructure, snapshot!.fieldRoster ?? []) : snapshot?.infrastructure ?? [];
   const fieldIds = new Set(infrastructureNodes.map(device => device.id));
   const recorderIds = new Set(infrastructureNodes.filter(device => device.role === 'Offline SD recorder').map(device => device.id));
-  const displayedTrackers = fieldView ? [] : trackers;
   const assignments = snapshot?.assignments ?? [];
   const nameJobs = snapshot?.nameJobs ?? [];
   const messages = snapshot?.messages ?? [];
@@ -472,7 +471,7 @@ function Portal() {
               online={feedOnline}
               key={session?.account.id ?? 'demo'}
               assignments={assignments}
-              trackers={displayedTrackers}
+              trackers={trackers}
               members={members}
               now={now}
               selectedId={selectedId}
@@ -534,7 +533,7 @@ function Portal() {
               now={now}
               infrastructureNodes={infrastructureNodes}
               links={currentLinks}
-              trackers={displayedTrackers}
+              trackers={fieldView ? [] : trackers}
               warnings={warnings}
               onAckWarning={
                 session
