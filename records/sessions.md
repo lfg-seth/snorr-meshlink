@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-21 - B003 faster position reporting
+
+Enabled smart position on B003 at 20 m displacement and a 15-second
+minimum interval. Set periodic broadcasts to 60 seconds and GPS acquisition
+attempts to 15 seconds. A fresh USB connection after an explicit reboot
+verified the entire intended profile on `2.7.26.5bd4923`. Next: measure
+stationary and moving packet gaps and battery runtime.
+[Radio readback](../docs/operations/b003-v4-client.md#november-21-faster-position-reporting).
+
 ## 2026-11-21 - Three shelf devices withdrawn from the live portal
 
 Owner confirms G002, R006 and R004 are on the shelf. Removed their live

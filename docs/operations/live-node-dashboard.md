@@ -58,7 +58,8 @@ watchdog where supplied (gateway health, Wi-Fi and SD).
 | R001-R011 device, environment and INA219 power | 180 seconds / 3 minutes each |
 | RAK passive SNNS | 180-second baseline; scheduling/jitter/airtime can defer |
 | B002/B003 device and SNNS | 180 seconds / 3 minutes |
-| B002/B003 GPS position packets | 120 seconds / 2 minutes |
+| B002 GPS position packets | 120 seconds / 2 minutes |
+| B003 GPS position packets | 60-second periodic baseline; smart reports can occur earlier |
 | G001 screenless device, INA219 power, SNNS, backhaul and Wi-Fi | 300-second / 5-minute baseline |
 | Other inventoried V3 gateways' device, SNNS and backhaul | 180-second / 3-minute baseline |
 | R005 fixed-position packets (Angel Peak replacement) | 21,600 seconds / 6 hours |

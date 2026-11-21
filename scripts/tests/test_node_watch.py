@@ -310,7 +310,7 @@ class WatchdogTests(unittest.TestCase):
         data = watch.load_cadences(ROOT / "scripts/node-cadence.json")
         self.assertEqual(data["!da581e5f"]["position"], 3600)
         self.assertEqual(data["!1bbf0638"]["sd"], 86400)
-        self.assertEqual(data["!699c2ed8"]["position"], 120)
+        self.assertEqual(data["!699c2ed8"]["position"], 60)
         self.assertNotIn("environment", data["!699c2ed8"])
         self.assertNotIn("neighbor_info", data["!1bbf0638"])
 

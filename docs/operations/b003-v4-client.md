@@ -164,3 +164,28 @@ assignment. This check did not inspect or change other radios.
 The private recovery and serial evidence are in
 `private/bench/b003-member-20261121/`. No raw positions, member roster or keys
 are included here.
+
+## November 21 faster position reporting
+
+USB serial, hardware ID, mesh ID and firmware matched the commissioned OLED
+Heltec V4 before the position settings were updated.
+
+| Setting | Before | After reboot |
+| --- | --- | --- |
+| Smart position | Off | On |
+| Minimum displacement from last transmitted position | 100 m | 20 m |
+| Minimum time since last position send for a smart report | 300 s | 15 s |
+| Periodic position broadcast | 120 s | 60 s |
+| GPS acquisition attempt interval | 60 s | 15 s |
+
+The pinned firmware applies the longer position minimums to default channels.
+B003 reports on its private primary channel. The 20 m / 15 s thresholds also
+match the pinned firmware's fast-tracker defaults. At 15 seconds, GPS
+acquisition can support the faster reporting and the receiver can still
+enter its normal sleep path when time permits.
+
+The entire intended radio profile matched after the write and again after an
+explicit reboot on `2.7.26.5bd4923`. USB was closed. The private before and
+rebooted readbacks are under `private/bench/b003-smart-20261121/`.
+This check verified saved settings. Stationary and moving delivery, airtime
+and battery runtime remain to be measured with the new profile.
