@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-21 - R009 Mack’s Canyon
+
+Reassigned USB-identified R009 **!da581e5f** from Sahara to Mack’s Canyon.
+The fixed pin **36.35033, -115.64726** and full preserved ROUTER profile passed
+an independent serial reconnect. The radio retains `2.7.26.bcb22e0` and enabled
+MQTT permission. Snapshots are private and serial is closed. Portal still
+lists Sahara. Next: confirm placement and a fresh gateway receipt, then
+verify sustained relay and power at the site.
+[Bench readback](field-results.md#2026-11-21---r009-macks-canyon-fixed-position).
+
 ## 2026-11-21 - Returned B003 to member duty
 
 Replaced the GPS-suppressing survey application with the pinned OLED V4

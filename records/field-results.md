@@ -1,5 +1,19 @@
 # Field testing and tangible results
 
+## 2026-11-21 - R009 Mack’s Canyon fixed position
+
+USB serial **E9B12C5CA98FBCB8**, radio **!da581e5f** and the saved hardware ID
+matched R009. The radio accepted the new fixed pin, **36.3503300, -115.6472600**.
+An independent serial reconnect returned both exact integer coordinates,
+`363503300` and `-1156472600`, with matching altitude, complete local/module/channel
+profile, owner identity and firmware metadata. R009 retains ROUTER,
+`2.7.26.bcb22e0` and enabled MQTT permission. Serial is closed.
+
+The before and readback snapshots are in ignored
+`private/bench/r009-macks-canyon-20261121T222336Z/`. Verification covered a
+serial reconnect. The next field check is to confirm placement and a fresh
+gateway receipt, followed by sustained relay and power operation.
+
 ## 2026-11-21 - B003 member GPS to production
 
 The USB-identified OLED V4 B003 emitted a fresh GPS packet measured at

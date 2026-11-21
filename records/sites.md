@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-21 - R009 Mack’s Canyon
+
+Owner selects **Mack’s Canyon / R009** at **36.35033, -115.64726**, superseding
+the Sahara radio configuration. USB readback confirms the fixed pin. Physical
+placement, site access, mounting and on-site reception await confirmation.
+The live portal assignment still shows Sahara.
+[Bench readback](field-results.md#2026-11-21---r009-macks-canyon-fixed-position).
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at
