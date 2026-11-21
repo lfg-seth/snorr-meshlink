@@ -20,6 +20,26 @@ this partition. The V3 installer and V3 flash backup are specific to G005.
 Before field use, verify a V4 battery cold start without USB or Wi-Fi,
 clock readiness, an authenticated direct reply and a numbered-site export.
 
+## B002 V4 installation and GPS clock check
+
+On November 21 the connected board identified as B002, original OLED
+Heltec V4 `!699ca878`, running `2.7.26.a56466d`. Before writing, the
+full 16 MiB flash backup matched the board's flash digest. The snapshot,
+recovery image and SHA-256 manifest are private under
+`private/bench/B002-v4-gps-survey-20261121/`.
+
+The application and partition table matched the built images on readback.
+After reboot B002 reported **2.7.26.93f80a1**, the original user identity,
+and byte-identical local, module and channel configurations. The journal
+reported 128 slots, counter zero. The OLED advanced from **Waiting for GPS
+time** to **Clock ready** and GPS UTC was within two seconds of the host.
+The check used USB power and read-only clock queries.
+
+The survey protocol reported production US LongFast slot 35 at 10 dBm,
+idle and **unenrolled**. Authenticated field tests require pairing B002's
+identity with the intended responders. Battery-only acquisition, a direct
+reply and numbered-site export on this board remain pending.
+
 ## 2026-11-21 - Pre-field readiness
 
 USB identifies **SNORR Site Survey / SURV**, the former G005 Heltec V3,

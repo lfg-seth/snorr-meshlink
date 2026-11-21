@@ -39,9 +39,10 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
-The OLED Heltec V4 GPS survey target is built at `93f80a1`. Next: select the
-physical V4 and verify battery-only GPS UTC from cold boot, direct response
-and numbered-site export. [V4 setup](../docs/operations/g005-site-survey.md#oled-heltec-v4-handheld-with-gps-time).
+B002 OLED V4 runs GPS survey build `93f80a1`. Backup, profile/keys,
+journal and GPS UTC passed. Next: pair the intended responders with B002
+and verify a battery cold start, direct reply and numbered-site export.
+[Installation evidence](../docs/operations/g005-site-survey.md#b002-v4-installation-and-gps-clock-check).
 
 The former G005 V3 handheld has **Clock ready**, verified enrollment and
 production radio settings and **R004/R007** selected. The owner reset the

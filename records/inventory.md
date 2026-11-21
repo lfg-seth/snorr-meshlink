@@ -1,5 +1,12 @@
 # Hardware inventory
 
+## 2026-11-21 - B002 OLED V4 GPS survey handheld
+
+Installed the handheld survey build on the existing B002 `!699ca878`.
+B002 retains its identity, keys and saved profile. The journal initialized
+and the local GPS supplied UTC. B002 still needs survey enrollment.
+[Backup and installed verification](../docs/operations/g005-site-survey.md#b002-v4-installation-and-gps-clock-check).
+
 ## 2026-11-16 - Former G005 selected as the site handheld
 
 The owner repurposes the existing Heltec WiFi LoRa 32 V3, formerly G005

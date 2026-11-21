@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-21 - Backed up and flashed B002 with GPS survey firmware
+
+Verified B002's complete 16 MiB recovery backup against the board before
+writing. Image readback and reboot into `2.7.26.93f80a1` passed, with
+unchanged identity, keys and configuration. The journal initialized and the
+screen reached **Clock ready** with GPS UTC within two seconds of the host.
+B002 reports no survey enrollment. Next: pair the intended responders and
+check battery-only cold start, direct RF reply and numbered-site export.
+[Bench and recovery evidence](../docs/operations/g005-site-survey.md#b002-v4-installation-and-gps-clock-check).
+
 ## 2026-11-21 - Built the GPS-timed OLED Heltec V4 survey handheld
 
 Published firmware `93f80a1` on `snorr/develop` and pinned it on
