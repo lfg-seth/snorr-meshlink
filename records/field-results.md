@@ -1,5 +1,14 @@
 # Field testing and tangible results
 
+## 2026-11-21 - G005 handheld readiness
+
+Bench USB check confirms the installed survey firmware, enrolled profile and
+idle home screen. UTC sync restores **Clock ready**. Export reads **166
+attempts across 11 saved bench sites**. The owner then requested a fresh
+journal for field work. Post-reset readback confirms **counter 0 / next #1**,
+empty history, R004/R007 selected and **Clock ready**. Field replies and battery-only runtime await
+measurement. [Readiness evidence](../docs/operations/g005-site-survey.md#2026-11-21---pre-field-readiness).
+
 ## 2026-11-16 - G005 V3 handheld, nearby R004 and R007
 
 Measured with the deployed pairing, LongFast slot 35 and owner-reported

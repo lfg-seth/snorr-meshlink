@@ -1,5 +1,35 @@
 # G005 handheld site survey
 
+## 2026-11-21 - Pre-field readiness
+
+USB identifies **SNORR Site Survey / SURV**, the former G005 Heltec V3,
+running **2.7.26.2dbf0a6** with survey ID **!699c2ed8**. The survey module
+reports enrollment, no active run and a verified **US LongFast / slot 35 /
+10 dBm** production profile. Mesh role is CLIENT and MQTT is disabled.
+
+The home screen initially requested time. USB sync brought its clock within
+two seconds of the host and the display state changed to **Clock ready**.
+Storage reported 128 slots, with **11 saved sites** and **#12 next**. The
+read-only export recovered **166 attempts**, with the same counter and saved
+R004/R007 selection before and after. A private copy of the exporter needed
+the normal Meshtastic serial wake sequence to obtain a response on this host.
+The profile, USB evidence and CSV are in
+`private/bench/B003-survey-ready-20261121/`.
+
+The owner then requested a clean start for the first actual survey. The USB
+clear command preserves numbering. After backing up the raw journal and NVS,
+a verified write changed only the survey reservation in one NVS sector and
+let the installed firmware clear the journal at boot. Readback confirmed
+empty history, zero attempts, counter **0**, and **#1** next. The complete
+radio profile and firmware matched the pre-reset readback. R004/R007 remain
+selected, and USB time sync restored **Clock ready**. The backup still holds
+the 11 bench sites and their 166 exported attempts.
+
+Keep the battery connected before removing USB to carry the clock into the
+field. Keep the original B003 V4 off while the handheld uses the shared
+survey identity. Battery-only runtime, Wi-Fi time acquisition and a new
+field RF result remain unverified.
+
 The owner selected the Heltec WiFi LoRa 32 V3 formerly configured as G005.
 Its radio ID before conversion was `!9ea039cc`. The handheld uses the
 November 14 tester's enrolled LoRa identity `!699c2ed8` and the display name

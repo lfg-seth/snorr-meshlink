@@ -39,12 +39,13 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
-The former G005 V3 is the handheld tester. The next numbered site is **#8**
-after the seven retained bench sites. Next field check: use a selected pair
-at a marked candidate antenna position, record the antenna setup and export
-the attempts. Battery runtime, Wi-Fi time acquisition and a deployed ROUTER
-link remain open. Keep original B003 powered off while the V3 uses the
-enrolled identity. [Bench evidence and controls](../docs/operations/g005-site-survey.md).
+The former G005 V3 handheld has **Clock ready**, verified enrollment and
+production radio settings and **R004/R007** selected. The owner reset the
+backed-up bench journal to zero. The next actual numbered site is **#1**.
+Next: record selected targets and
+antenna setup at a marked field position, then export the attempts. Battery
+runtime and Wi-Fi time acquisition remain open. Keep the original B003 off
+while the V3 uses the survey identity. [Readiness evidence](../docs/operations/g005-site-survey.md#2026-11-21---pre-field-readiness).
 
 Keep implementation, release, native presentation, live delivery and field acceptance separate. Imported open criteria remain pending unless later evidence is recorded.
 

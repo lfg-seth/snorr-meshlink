@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-21 - G005 site survey handheld ready at the bench
+
+Owner plugs in the site survey tester for readiness. Identify the former G005
+Heltec V3 and confirm **2.7.26.2dbf0a6**, **!699c2ed8**, stored enrollment,
+idle state and active production US LongFast slot 35 at 10 dBm. Sync UTC over
+USB and verify **Clock ready**. Export 166 attempts across 11 bench sites.
+At the owner's request, also save a raw journal backup and reset only the
+survey history and counter. Complete radio profile and firmware match across
+reboot. Empty history, zero attempts, **#1 next**, R004/R007 selected and
+**Clock ready** pass final readback. Serial closed.
+[Readiness evidence](../docs/operations/g005-site-survey.md#2026-11-21---pre-field-readiness).
+
+Next: keep the pack connected during USB removal and run the selected field
+targets at a marked antenna position. Wi-Fi clock acquisition and runtime
+remain separate checks. Publish on `codex/g005-survey-ready-20261121`.
+
 ## 2026-11-16 - Built and bench-tested the G005 V3 handheld site survey
 
 Backed up the former G005, verified the October tester key against November
