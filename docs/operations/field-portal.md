@@ -1,5 +1,31 @@
 # Field portal and activity
 
+## November 21 member map restoration
+
+MeshLink 0.4.15 ships [PR #98](https://github.com/lfg-seth/snorr-meshlink/pull/98)
+at tagged main commit `b94fc05bb91f2bafcadb495b62562d23ff7b8c56`.
+The November 15 field-placement view had passed an empty tracker list to the
+signed-in map. The live map now plots trackers with recorded positions and
+includes those positions in both its opening bounds and Fit area.
+
+A signed-in Edge check reproduced the missing markers on 0.4.14. The same check
+on the served 0.4.15 map found both positioned member trackers alongside eleven
+infrastructure pins and opened the reported member's pin. The regression test
+covers the assigned map label, initial bounds, Fit area and a tracker awaiting
+its first position. PR, main and tag CI passed, as did the exact release-host
+portal, backend, dashboard and migration-parity checks. All ten public files
+matched the build. Seven services were active, and fresh archive and Activity
+receipts arrived. The previous application files are retained under
+`/opt/meshlink-rollback-field-b94fc05`.
+
+Both release backups passed SHA-256 and isolated live/demo restores. The signed-in
+map check passed again after the post-release backup restarted the services.
+
+| Backup (UTC) | SHA-256 |
+| --- | --- |
+| 20261121T211912Z | `dddad652cb8d4eec06a52068af120b033fa7b00002d9aed2b85e26bf45ab62d0` |
+| 20261121T212511Z | `63a9dcdbd32210e347812f5b813258b26b9e037933a8b3fa8866006c80772f3b` |
+
 ## November 17 compact Activity routes
 
 MeshLink 0.4.14 is deployed from tagged main commit

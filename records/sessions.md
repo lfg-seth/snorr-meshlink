@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-21 - Restored member trackers on the main map
+
+Deployed MeshLink 0.4.15 at tagged main commit `b94fc05`. Signed-in Edge verification found both positioned member trackers and eleven infrastructure pins and opened the reported pin. The initial view and Fit area include member locations. Next field check is ordinary handset use as positions update. [Release evidence](../docs/operations/field-portal.md#november-21-member-map-restoration).
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,
