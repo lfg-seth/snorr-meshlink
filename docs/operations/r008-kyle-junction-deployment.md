@@ -1,4 +1,29 @@
-# R008 Kyle Junction deployment configuration
+# R008 deployment configuration
+
+## 2026-11-21 - Escarpment Trail reassignment
+
+The owner reassigns **R008 / !120b04fd** from Kyle Junction to **Escarpment
+Trail (36.26491, -115.59496)**. Bench USB serial **F4D0968336047CA0** and
+hardware ID **a07c04368396d0f4fd040b12638298d4** identify the RAK4631.
+The starting readback and private backup confirm **ROUTER**, fixed position and
+**OK to MQTT enabled** (`lora.config_ok_to_mqtt=true`).
+
+The only write was the new fixed position. Independent USB sessions read back
+the exact integer coordinates **362649100 / -1155949600** before and after an
+explicit reboot with observed USB disconnect and re-enumeration. Altitude,
+owner and complete local, module and channel configuration matched the backup,
+including firmware **2.7.26.bcb22e0**, keys and 180-second telemetry settings.
+Serial is closed. Private backup and readbacks are in
+`private/bench/R008-escarpment-20261121/`.
+
+The read-only MQTT archive shows three fresh, non-retained packets from R008
+via **G003 / !849ad7a0** after reboot. Node info arrived at **10:30:57 Pacific**,
+the exact new fixed position at **10:30:58**, and device telemetry at
+**10:31:13**. The fixed position packet had no GPS measurement timestamp.
+Physical installation, receipt from Escarpment Trail, sustained reporting,
+portal display, coverage and runtime remain pending.
+
+## 2026-11-15 - Kyle Junction configuration history
 
 **Publication update, 2026-11-15:** owner approves publishing the exact fixed
 location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;

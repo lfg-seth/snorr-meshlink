@@ -1,5 +1,14 @@
 # Candidate sites and backhaul
 
+## 2026-11-21 - R008 reassigned to Escarpment Trail
+
+| Node / radio ID | Selected site | Latitude | Longitude | Case | Saved role / MQTT permission | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| R008 / !120b04fd | Escarpment Trail | 36.26491 | -115.59496 | 8 | ROUTER / OK to MQTT enabled | [Reboot readback](../docs/operations/r008-kyle-junction-deployment.md#2026-11-21---escarpment-trail-reassignment) |
+
+This saved pin supersedes the historical Kyle Junction pin below. Physical
+placement and installation remain unverified.
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at

@@ -12,9 +12,9 @@ inputs. The first fresh **R001** is RAK19007/4631 **!f95b5501**, USB
 eight cells and Muzi antenna; retained `2.7.26.bcb22e0` is configured **ROUTER**
 with fixed coordinates and preserved 180-second telemetry.
 [Deployment configuration](docs/operations/r001-cathedral-deployment.md).
-R008 is selected for Kyle Junction, Case 8, eight cells and Muzi antenna on
-2026-11-15; [ROUTER/fixed-position configuration](docs/operations/r008-kyle-junction-deployment.md)
-retains its survey firmware and 180-second telemetry.
+R008 / Case 8 / eight cells / Muzi is reassigned from Kyle Junction to
+Escarpment Trail on 2026-11-21. [Reboot readback](docs/operations/r008-kyle-junction-deployment.md#2026-11-21---escarpment-trail-reassignment)
+confirms ROUTER, the new fixed pin and enabled MQTT permission.
 R005 replaces R011 at Angel Peak Vegas Side: unnumbered ASA case, eight cells,
 one SMA Muzi antenna and two 160 mA panels.
 [Replacement configuration](docs/operations/r005-angel-vegas-deployment.md)

@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-11-21 - R008 configured for Escarpment Trail
+
+The owner reassigns **R008 / !120b04fd** from Kyle Junction to Escarpment Trail.
+USB verified the new fixed pin **36.26491, -115.59496**, **ROUTER** and
+**OK to MQTT enabled** across an observed reboot. The complete retained profile
+and firmware match the private backup. Serial closed. The read-only MQTT archive
+confirmed fresh node info, the exact new pin and device telemetry through G003
+from the bench. [Evidence](../docs/operations/r008-kyle-junction-deployment.md#2026-11-21---escarpment-trail-reassignment).
+
+Update the site, roster, inventory, field and tracker records. Next: confirm
+installation and gateway/portal reception from Escarpment Trail, then field
+coverage and runtime. Publish the records on `codex/r008-escarpment-20261121`.
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,

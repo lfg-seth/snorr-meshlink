@@ -1,5 +1,13 @@
 # Field testing and tangible results
 
+## 2026-11-21 - R008 Escarpment Trail bench verification
+
+Readback before and after reboot matches the owner-selected fixed pin,
+**ROUTER** and **OK to MQTT enabled** for **!120b04fd**. During bench testing,
+G003 forwarded the exact new position and a device telemetry report to the
+MQTT archive. Physical installation, coverage and runtime at Escarpment Trail
+remain pending. [Bench evidence](../docs/operations/r008-kyle-junction-deployment.md#2026-11-21---escarpment-trail-reassignment).
+
 ## 2026-11-17 - G003 replacement Wi-Fi bench check
 
 G003 / !849ad7a0 passed exact credential and complete intended profile readback

@@ -106,6 +106,9 @@ intake below predates Case 01/8/6 allocations. [Configuration](../docs/operation
 
 ## 2026-11-15 - R008 / Case 8 deployment allocation
 
+On 2026-11-21 this assembly is reassigned to **Escarpment Trail**.
+[Configuration evidence](../docs/operations/r008-kyle-junction-deployment.md#2026-11-21---escarpment-trail-reassignment).
+
 Owner assigns existing **R008 / !120b04fd**, RAK4631 with previously detected
 INA219/AHT21, to **Case 8**, **eight cells**, **one Muzi antenna**, Kyle Junction.
 Case 8 intake: v4 ASA, two SMA ports, two 160 mA panels and two four-cell
