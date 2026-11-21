@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-11-21 - Remote firmware builder for the laptop
+
+Provisioned the owner-selected Ubuntu 24.04 builder with a dedicated
+`snorr-build` account, PlatformIO 6.1.19 and a checkout of the published
+firmware fork. The laptop selects its builder through local Git configuration.
+Cold builds of `rak4631` and `heltec-v4-sd-gateway` passed at the MeshLink
+firmware pin `5bd492399f5f3d4a65c01256f907f7b907b80921`. Invoking the
+laptop helper for each target also passed. Each run saves a log and a
+SHA-256 manifest with its artifacts. The laptop verified all eight entries
+after copying RAK run `run.LRunCJbG` and Heltec run `run.qsR2PkIq`
+into ignored `local-data/firmware-builds/`. Next firmware change can use the [remote build command](../docs/operations/board-flashing-handoff.md#remote-firmware-development-builds)
+with the selected target and published pin.
+
 ## 2026-11-17 - Deployed compact Activity routes
 
 Deployed MeshLink 0.4.14 from `meshlink-v0.4.14`, main commit `095c2c9`,

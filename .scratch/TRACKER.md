@@ -10,6 +10,8 @@ Fresh repeater/gateway numbering starts 2026-11-12. The [current physical roster
 
 Exact fixed deployment locations are [published with owner approval](../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) on 2026-11-15. Node configuration/bench evidence is saved. The [same-day AAR](../records/aar/2026-11-15-mount-charleston.md) adds owner-reported placements; sustained operation, mount details and field acceptance remain open.
 
+Firmware development builds from this laptop use the [remote builder](../docs/operations/board-flashing-handoff.md#remote-firmware-development-builds). Select the target and published source pin for the next build.
+
 ## Current
 
 | Task | Lane | Handoff / next action |

@@ -1,5 +1,36 @@
 # Board flashing and configuration handoff
 
+## Remote firmware development builds
+
+Run firmware compilation on the SSH builder. From the laptop checkout, run
+`scripts/build-firmware-remote.sh rak4631` or substitute a firmware PlatformIO
+environment such as `heltec-v4-sd-gateway`. The helper reads the firmware pin
+from the current MeshLink commit. Publish development source and select its
+gitlink before using this workflow for a new revision.
+
+The destination is stored in the checkout's local `meshlink.buildHost` Git
+setting. On another checkout, set it with `git config --local meshlink.buildHost
+root@HOST`, replacing HOST with the internal builder. SSH uses the laptop's
+existing login. Builds run as `snorr-build` in `/srv/snorr-build/firmware`
+with PlatformIO 6.1.19 under `/srv/snorr-build/venv`. The builder fetches the
+published fork and nested submodules over HTTPS and serializes builds with
+`flock`.
+
+The final output line gives the remote result directory containing the build
+log, images and SHA256SUMS. To copy a run to the laptop and verify it, use:
+
+```sh
+host=$(git config --get meshlink.buildHost)
+mkdir -p local-data/firmware-builds
+read -r -p "Remote result directory: " result
+scp -r "$host:$result" local-data/firmware-builds/
+(cd "local-data/firmware-builds/${result##*/}" && sha256sum -c SHA256SUMS)
+```
+
+Use the selected board's release and configuration handoff for flashing.
+
+## Board handoffs
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
