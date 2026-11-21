@@ -30,12 +30,14 @@ type Props = {
   selectedSignalId: string | null;
   onSignalSelect: (id: string) => void;
 };
-function placedBounds(nodes: Infrastructure[] = []): [number, number, number, number] | undefined {
+function mapBounds(trackers: Tracker[], nodes: Infrastructure[] = []): [number, number, number, number] | undefined {
   const placed = nodes.filter(node => (node.deploymentStatus === 'placed' || node.deploymentStatus === 'station')
     && Number.isFinite(node.longitude) && Number.isFinite(node.latitude));
-  if (!placed.length) return undefined;
-  const lng = placed.map(node => node.longitude!);
-  const lat = placed.map(node => node.latitude!);
+  const positions = trackers.flatMap(tracker => tracker.position ? [tracker.position] : []);
+  const points = [...placed, ...positions];
+  if (!points.length) return undefined;
+  const lng = points.map(node => node.longitude!);
+  const lat = points.map(node => node.latitude!);
   return [Math.min(...lng), Math.min(...lat), Math.max(...lng), Math.max(...lat)];
 }
 export default function TrackingMap(props: Props) {
@@ -60,7 +62,7 @@ export default function TrackingMap(props: Props) {
         style: mapStyle(basemap),
         center: [-115.656, 36.278],
         zoom: 12,
-        bounds: placedBounds(current.current.infrastructureNodes),
+        bounds: mapBounds(current.current.trackers, current.current.infrastructureNodes),
         fitBoundsOptions: { padding: 45, maxZoom: 14 },
         maxZoom: 17,
         attributionControl: false,
@@ -224,7 +226,7 @@ export default function TrackingMap(props: Props) {
       <div
         ref={container}
         className="map-canvas"
-        aria-label={placedBounds(props.infrastructureNodes) ? 'Map of placed devices' : 'Map with recorded tracker positions'}
+        aria-label="Map of member trackers and infrastructure"
       />
       <div className="map-tools">
         <div className="segmented">
@@ -241,7 +243,7 @@ export default function TrackingMap(props: Props) {
         <button
           onClick={() =>
             map.current?.fitBounds(
-              placedBounds(props.infrastructureNodes) ?? [
+              mapBounds(props.trackers, props.infrastructureNodes) ?? [
                 [-115.705, 36.239],
                 [-115.6, 36.324],
               ],
