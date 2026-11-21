@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-21 - B003 member GPS to production
+
+The USB-identified OLED V4 B003 emitted a fresh GPS packet measured at
+**21:06:24 UTC**. Packet ID matched the G003 uplink accepted at
+**21:06:25.866 UTC**. Production attributed it to the new active member
+assignment and the signed-in HTTPS tracker response returned the same position
+timestamp. This USB-powered spot check did not measure battery-only runtime,
+sustained cadence or coverage.
+[Bench evidence](../docs/operations/b003-v4-client.md#november-21-member-commissioning).
+
 ## 2026-11-17 - G003 replacement Wi-Fi bench check
 
 G003 / !849ad7a0 passed exact credential and complete intended profile readback

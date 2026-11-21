@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-21 - Returned B003 to member duty
+
+Replaced the GPS-suppressing survey application with the pinned OLED V4
+`2.7.26.5bd4923` application after a verified 16 MiB backup. App-only flash
+digest and rebooted profile verification passed. B003 retained its private
+identity and channel, runs CLIENT, acquires GPS at the 60-second setting and
+broadcasts position at the 120-second setting. The laptop survey service
+bound to B003 was retired.
+
+Transferred the portal assignment from B002 to B003, preserving assignment
+history. A new B003 GPS packet measured at 21:06:24 UTC matched the G003
+receipt by packet ID and appeared in the signed-in production response under
+the new assignment. Mark battery-only runtime and sustained freshness as
+future field acceptance. Keep any other unit with the copied survey identity
+off the mesh until it has a distinct identity. Publish the sanitized handoff
+on `codex/b003-member-tracker`.
+[Bench and portal evidence](../docs/operations/b003-v4-client.md#november-21-member-commissioning).
+
 ## 2026-11-21 - Remote firmware builder for the laptop
 
 Provisioned the owner-selected Ubuntu 24.04 builder with a dedicated

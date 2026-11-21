@@ -113,3 +113,54 @@ Fresh GPS fix, phone-free behavior/time bootstrap, native phone acceptance,
 battery/runtime, sustained cadence and field coverage remain separate gates.
 Raw keys, old credentials, backups, serial/MQTT logs and any GPS locations remain
 under ignored `private/bench/b003-client-20261025/` and the private server audit.
+
+## November 21 member commissioning
+
+The connected original OLED Heltec V4 matched B003 by USB serial, physical
+hardware ID and mesh ID. The installed survey target `2.7.26.7b766e6`
+reported a fresh local GPS fix, and G003 delivered current telemetry, while
+the live portal's latest position still dated to November 14. The installed
+firmware classified the survey client's own position packets for suppression,
+including during idle survey operation. The owner retired this unit from
+survey duty and authorized transferring the portal assignment from B002.
+
+The B003-specific laptop survey service was disabled and stopped. A fresh
+16 MiB recovery image passed the board's flash digest and has SHA-256
+`11266c04ff78060537faf4a8a06f0ae1432bda729f49d24b57d1e4c3ba53ea52`.
+The remote builder compiled the OLED `heltec-v4-gateway` application from
+`5bd492399f5f3d4a65c01256f907f7b907b80921`; all four packaged artifacts
+passed SHA-256 on the builder and laptop. The app is 2,120,256 bytes with
+SHA-256 `789871d31d3ae8b5ee2a12b6253a106b48cd7f04624d7e1bc5165c6073e2bbae`.
+The backup and factory image agreed on the partition layout. Only app0 at
+`0x10000` was written. Independent onboard digest verification and
+post-reboot readback of `2.7.26.5bd4923` passed with the same identity,
+private channel, keys, local settings and module settings.
+
+The member profile retains CLIENT, automatic dynamic GPS, a 120-second
+position broadcast interval, the private primary channel and permission for
+gateways to relay to MQTT. The GPS receiver interval was restored from
+one second to the established 60 seconds. Wi-Fi and direct MQTT are disabled
+on B003. The firmware target name identifies the build and does not select
+the device's role. Signed-in public HTTPS verified the normal portal transfer,
+which closed B002's assignment and preserved history. The existing B003
+registry and MQTT mapping were sufficient.
+
+Independent USB readback after the settings restart verified the intended
+profile with only the receiver interval changed. The B003 position packet
+observed over USB had a GPS measurement time of **21:06:24 UTC** and matched
+G003's accepted production receipt at **21:06:25.866 UTC** by packet ID.
+Production stored the fix under the new member assignment, and the signed-in
+public tracker response showed that same valid measurement. Both the radio
+and portal checks passed with no change to the worker mapping or application.
+Serial was closed. Battery-only operation, sustained cadence and field
+coverage remain outside this bench check.
+
+The [survey transfer record](https://github.com/lfg-seth/snorr-meshlink/blob/0530cc5/docs/operations/g005-site-survey.md#v4-survey-identity-and-ten-responder-transfer)
+documents a separate physical V4 provisioned with the same on-air identity.
+Production saw no B003 receipts during the plugged-in unit's flash backup.
+Keep any survey unit with that copied identity off the mesh pending a unique
+assignment. This check did not inspect or change other radios.
+
+The private recovery and serial evidence are in
+`private/bench/b003-member-20261121/`. No raw positions, member roster or keys
+are included here.

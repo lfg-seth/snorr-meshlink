@@ -436,6 +436,14 @@ Evidence: owner conversation 2026-10-31; [LOCAL-10](../.scratch/pilot/issues/29-
 No existing device assignment/configuration changed or new costs inferred.
 
 
+## 2026-11-21 - B003 returned to member duty
+
+The existing OLED Heltec V4 B003 `!699c2ed8` is a member tracker again.
+Production lists B003 with an active member assignment and closed the
+previous B002 assignment. B003 uses its existing GPS receiver and saved
+private pilot identity. Quantity and battery capacity were not rechecked.
+[Commissioning and recovery evidence](../docs/operations/b003-v4-client.md#november-21-member-commissioning).
+
 ## 2026-10-25 - Former G004 V4 reassigned to client B003
 
 Owner requests overwriting the connected V4 as a new client. Existing OLED V4
