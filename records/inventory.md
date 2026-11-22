@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-21 - G001 failure and G002 replacement
+
+Owner reports G001 **!1bbf0638** failed and selects existing G002
+**!1bbf0ab8** as the replacement. USB confirmed the same screenless Heltec V4
+previously assigned to Shady Hollow. Case, battery and antenna transfers are
+unconfirmed.
+[Bench configuration and receipt](field-results.md#2026-11-21---g002-lee-fire-station-replacement-bench-check).
+
 ## 2026-11-21 - Shelf status for G002, R006 and R004
 
 Owner confirms existing **G002 (!1bbf0ab8)**, **R006 (!638b9515)** and

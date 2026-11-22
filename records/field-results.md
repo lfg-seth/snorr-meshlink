@@ -1,5 +1,27 @@
 # Field testing and tangible results
 
+## 2026-11-21 - G002 Lee Fire Station replacement bench check
+
+USB identified the screenless Heltec V4 G002 **!1bbf0ab8** with
+`heltec-v4-sd-gateway-survey / 2.7.26.f6cdbeb`. A private before snapshot and
+an independent connection after explicit reboot verified the complete intended
+profile and exact owner-supplied fixed position. CLIENT, rebroadcast ALL,
+pilot-channel uplink and downlink, and acceptance of MQTT-origin packets are
+saved. Wi-Fi associated to Station856 with an assigned IP and direct MQTT
+reported connected. Keys, channel identity, firmware and recorder settings
+match the intended profile. USB serial is closed.
+
+The read-only broker subscription saw a fresh non-retained `TELEMETRY_APP`
+envelope at **16:58:01 PST**, from R009 **!da581e5f** through G002
+**!1bbf0ab8**. This verifies RF reception and MQTT uplink. Source inspection of
+the installed firmware finds unconditional SD-build guards in
+`FloodingRouter::isRebroadcaster` and `MQTT::onReceive`. Both requested
+forwarding paths remain blocked in this build despite the saved settings. The
+owner selected retaining the verified profile and existing firmware.
+Before/after profiles, serial logs and the broker receipt are in ignored
+`private/bench/G002-lee-fire-20261121/`. Field placement and power remain
+unverified.
+
 ## 2026-11-21 - R009 Mack’s Canyon fixed position
 
 USB serial **E9B12C5CA98FBCB8**, radio **!da581e5f** and the saved hardware ID

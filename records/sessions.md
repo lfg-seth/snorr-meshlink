@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-11-21 - G002 replacement gateway configuration
+
+USB-identified G002 **!1bbf0ab8** saves the owner-supplied fixed position,
+Station856 Wi-Fi, CLIENT / ALL and private-channel MQTT uplink/downlink.
+Complete profile passes after reboot. Wi-Fi and direct MQTT connect and a
+fresh R009 telemetry packet reaches the broker through G002. Installed SD
+firmware hard-disables RF rebroadcast and MQTT receive. Owner opts to keep
+the verified profile as-is. Next: confirm installation, field power and
+the live field-roster handoff when selected.
+[Bench evidence](field-results.md#2026-11-21---g002-lee-fire-station-replacement-bench-check).
+
 ## 2026-11-21 - B003 faster position reporting
 
 Enabled smart position on B003 at 20 m displacement and a 15-second

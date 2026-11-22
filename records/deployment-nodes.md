@@ -1,5 +1,13 @@
 # Current deployment node labels
 
+## 2026-11-21 - G002 selected to replace G001 at Lee Fire Station
+
+G001 **!1bbf0638** failed per the owner. The replacement retains G002
+**!1bbf0ab8** and its own keys. Fixed position and backhaul settings pass USB
+reboot readback and a live uplink receipt. RF rebroadcast and
+MQTT-to-mesh are blocked by the installed SD firmware.
+[Bench evidence](field-results.md#2026-11-21---g002-lee-fire-station-replacement-bench-check).
+
 ## 2026-11-21 shelf status
 
 **G002 (!1bbf0ab8)**, **R006 (!638b9515)** and **R004 (!49ac6d7f)** are on the

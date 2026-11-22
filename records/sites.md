@@ -1,5 +1,13 @@
 # Candidate sites and backhaul
 
+## 2026-11-21 - Lee Fire Station gateway replacement
+
+Owner selects **G002 / !1bbf0ab8** to replace failed G001 at Lee Fire Station
+and supplies its fixed position and Station856 Wi-Fi. The exact saved device
+pin is in private bench evidence. Wi-Fi and MQTT uplink pass at the bench.
+Installation and the live field-roster handoff remain open.
+[Bench evidence](field-results.md#2026-11-21---g002-lee-fire-station-replacement-bench-check).
+
 ## 2026-11-21 - Three radios on the shelf
 
 **G002**, **R006** and **R004** are on the shelf per the owner. Shady Hollow,
