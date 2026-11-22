@@ -1,5 +1,17 @@
 # Field portal and activity
 
+## November 21 Lee Fire Station gateway replacement
+
+The live field roster lists **G002 (!1bbf0ab8) / Lee Fire Station** in the
+former G001 station slot, using G002's verified fixed device pin. The old
+station equipment descriptions were cleared pending confirmation on G002.
+Authenticated production map state and Activity both show G002 under the
+transferred name and omit G001 (!1bbf0638). Nine field-roster entries remain,
+all other roster rows match the pre-edit readback, and both infrastructure
+identities remain registered. The running services picked up the roster edit.
+Previous values for rollback are in the root-private
+`/root/meshlink-lee-fire-roster-20261122T010125Z/` directory on the portal host.
+
 ## November 21 shelf devices withdrawn
 
 Owner confirms **G002 (!1bbf0ab8)**, **R006 (!638b9515)** and
@@ -108,8 +120,9 @@ The live sampler and released renderer now show eleven cards.
 [Release, validation and remaining field gates](r009-sahara-deployment.md#portal-and-activity-update).
 
 The [November 15 site table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations)
-owns the seven saved radio pins. G001 at Lee Fire Station uses the deployment pin
-supplied by the owner on November 15. The live registry for physical radio `!1bbf0638` stores the
+records the seven saved radio pins from that deployment. G001 previously used
+the Lee Fire Station deployment pin supplied by the owner on November 15.
+The live registry for physical radio `!1bbf0638` stores the
 coordinates with `locationSource=owner-deployment-pin` and
 `locationLabel=Lee Fire Station`. Keep these coordinates in private backup
 and recovery data. The release history below describes the previous bundled placements. Match physical radio IDs before

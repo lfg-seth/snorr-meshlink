@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-21 - Lee Fire Station live portal handoff
+
+Moved the live Lee Fire Station roster entry from failed G001 **!1bbf0638**
+to G002 **!1bbf0ab8** and saved G002's verified device pin. Authenticated map
+state and Activity both show G002 under the transferred name. G001 is off
+the roster, both registry identities are preserved, and the other eight
+roster rows match readback. Next: confirm field installation and power.
+[Portal verification and rollback](../docs/operations/field-portal.md#november-21-lee-fire-station-gateway-replacement).
+
 ## 2026-11-21 - G002 replacement gateway configuration
 
 USB-identified G002 **!1bbf0ab8** saves the owner-supplied fixed position,
