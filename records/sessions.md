@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-23 - Showed survey site names and the reply watchdog
+
+Deployed survey source `9b949f1` to the field laptop. The selector now shows
+known sites by name with their short radio names, such as Cathedral Rock
+(R001), and the live map labels those pins by site. The target card shows the
+radio's long name and elapsed time since that repeater's last recorded
+successful reply. The watchdog restores from recorder history after a restart.
+
+All 17 survey checks passed. The timer handled target changes, timeouts, late
+and duplicate events, successful replies and recorder restart. Both live URLs
+served the updated app and matched the watchdog to saved history. The browser
+showed Cathedral Rock and the live timer advancing from 00:00 to 00:01.
+Backed up the private recorder database before deployment. Next: continue the
+drive survey and assess coverage from recorded replies.
+[Laptop handoff](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
 ## 2026-11-23 - Added Field Survey target names and map pins
 
 Deployed survey source `159b571` to the field laptop with its existing

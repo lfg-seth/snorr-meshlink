@@ -45,8 +45,11 @@ recorder. Update its address and subnet if the laptop moves networks or
 receives a different address. Stop the relay to withdraw the Wi-Fi endpoint.
 
 The laptop recorder loads radio names and fixed site defaults from
-`/var/lib/meshlink-survey/target-roster.json`. The target list shows both radio
-names. Pins use the short name, and **Show target** locates the selected site.
+`/var/lib/meshlink-survey/target-roster.json`. The target list shows the site
+name and short radio name when a site is known. The target card also shows
+the long radio name. Pins use site names where available, and **Show target**
+locates the selected site. **Last reply** on the live map counts from the
+selected repeater's last recorded successful reply and survives restarts.
 Update the roster from the verified deployment records when assignments move,
 then restart the recorder while idle. Saved site edits take precedence over
 the roster's default coordinates. [Current site records](../../records/sites.md).
