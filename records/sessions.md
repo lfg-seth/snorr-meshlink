@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-23 - Checked receiver gain across the numbered RAKs
+
+R011 inherited disabled SX126x RX boost from its pre-deployment profile.
+All ten other numbered repeaters have boost-on verification in deployment
+readbacks or the November 12 batch record. The laptop SURV, B003 and G002
+also have boost on. Checked the seven locally available RAK deployment
+profiles and the driver in the installed source. Next R011 service can
+measure the effect with a fixed-position comparison and reboot readback.
+[Audit and limits](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-receiver-gain-audit).
+
 ## 2026-11-23 - Verified laptop USB survey contact with Angel Peak
 
 Matched recorded direct replies to physical RX packet IDs for Mountain Side
