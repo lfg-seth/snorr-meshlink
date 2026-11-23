@@ -679,6 +679,10 @@ main {
   font-size: 12px;
   color: #665338;
 }
+#replyWatchdog {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
 #locateTarget {
   margin-left: auto;
   padding-inline: 10px;

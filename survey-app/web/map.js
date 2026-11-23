@@ -462,7 +462,7 @@ export class SurveyMap {
     }
     for (const [id, p] of Object.entries(this.sites)) {
       if (!hasPosition(p) || id === this.target) continue;
-      const name = this.targetNames[id]?.short_name || id;
+      const name = p.site_name || this.targetNames[id]?.short_name || id;
       const [x, y] = ll(p.lon_deg, p.lat_deg);
       g.beginPath();
       g.moveTo(x, y - 7);
@@ -504,11 +504,16 @@ export class SurveyMap {
       g.closePath();
       g.fillStyle = "#492d0e";
       g.fill();
-      const label =
-        "TARGET · " + (this.targetNames[this.target]?.short_name || this.target);
+      const name =
+        targetSite.site_name || this.targetNames[this.target]?.short_name || this.target;
+      const label = "TARGET · " + name;
       g.font = "bold 12px system-ui";
       const width = g.measureText(label).width + 12;
-      const left = x + 16 + width < w ? x + 16 : x - 16 - width;
+      const left = clamp(
+        x + 16 + width < w ? x + 16 : x - 16 - width,
+        0,
+        Math.max(0, w - width),
+      );
       g.fillRect(left, y - 11, width, 22);
       g.fillStyle = "#fff4d6";
       g.fillText(label, left + 6, y + 4);

@@ -79,7 +79,9 @@ The simulation supplies two preset repeater IDs and coordinates. In live mode, `
 }
 ~~~
 
-Omit `site` when the target has no current fixed location. The selector shows both radio names, map pins use short names, and **Show target** locates the selected pin. The mesh ID still identifies the target in commands and recordings. Enter or import additional fixed coordinates under **Setup → Fixed repeater locations**. A saved site for the same ID takes precedence over roster coordinates. Replay uses the positions stored with the recording.
+Omit `site` when the target has no current fixed location. The selector uses the site name and the radio's short name when a site is known. The map labels known pins by site and the selected card shows the radio's long name. **Show target** locates the selected pin. The mesh ID still identifies the target in commands and recordings. Enter or import additional fixed coordinates under **Setup → Fixed repeater locations**. A saved site for the same ID takes precedence over roster coordinates. Replay uses the positions stored with the recording.
+
+**Last reply** on the live target card counts from the last recorded successful reply for the selected repeater, including replies from earlier sessions. Timeouts, late or duplicate replies and replies from other repeaters leave that repeater's timer running. The card shows **No reply yet** until the recorder has a successful result for the selected repeater.
 
 ## Recording and recovery
 

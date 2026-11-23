@@ -90,6 +90,11 @@ class Recorder:
             i: {"lat_deg": a, "lon_deg": b}
             for i, a, b in self.db.execute("SELECT * FROM sites")
         }
+        self.last_replies = {}
+        for received_ms, payload in self.db.execute(
+            "SELECT received_ms,payload FROM events WHERE name='result' ORDER BY cursor"
+        ):
+            self.remember_reply(json.loads(payload)["data"], received_ms)
         self.error = self.adapter_error = None
         self.needs_snapshot = False
         self.recording = True
@@ -126,10 +131,11 @@ class Recorder:
             and event["name"] not in ("result", "fault", "host_command", "site_record")
         ):
             session = None
+        received_ms = int(time.time() * 1000)
         row = self.db.execute(
             "INSERT INTO events(received_ms,boot,seq,name,session,payload) VALUES(?,?,?,?,?,?)",
             (
-                int(time.time() * 1000),
+                received_ms,
                 event["boot_id"],
                 event["seq"],
                 event["name"],
@@ -138,6 +144,18 @@ class Recorder:
             ),
         )
         self.cursor = row.lastrowid
+        if event["name"] == "result":
+            self.remember_reply(d, received_ms)
+
+    def remember_reply(self, data, received_ms):
+        target = data.get("target_id")
+        if (
+            isinstance(target, str)
+            and target
+            and data.get("status") == "success"
+            and not data.get("duplicate")
+        ):
+            self.last_replies[target] = received_ms
 
     def accept(self, e):
         if (
@@ -387,6 +405,7 @@ class Recorder:
 
     def snapshot(self, token):
         with self.lock:
+            reply_ms = self.last_replies.get(self.state.get("target_id"))
             return {
                 "host_id": self.host_id,
                 "cursor": self.cursor,
@@ -395,6 +414,11 @@ class Recorder:
                 "state": self.state,
                 "hello": self.hello,
                 "sites": self.hello.get("targets", {}) | self.fixed_sites(),
+                "last_reply_age_ms": (
+                    max(0, int(time.time() * 1000) - reply_ms)
+                    if reply_ms is not None
+                    else None
+                ),
                 "revision": self.revision,
                 "has_control": self.controller in (None, token),
                 "recording": self.recording,

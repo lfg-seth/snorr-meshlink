@@ -29,6 +29,7 @@ let playback = null,
   replayVersion = 0,
   playTimer = null;
 let pendingAck = null;
+let replySampleAt = 0;
 const options = (sel, values, chosen) => {
   const keys = values.map((v) => (Array.isArray(v) ? v : [v, v]));
   if (JSON.stringify(keys) !== sel.dataset.keys) {
@@ -126,14 +127,18 @@ document
 const unit = (v, s) => (Number.isFinite(v) ? v + " " + s : "—");
 const readings = (d) =>
   d ? unit(d.rssi_dbm, "dBm") + " / " + unit(d.snr_db, "dB") : "—";
-const targetLabel = (id) => {
+const targetLabel = (id, site = host?.sites?.[id]) => {
   const names = host?.target_names?.[id];
+  if (site?.site_name) return `${site.site_name} (${names?.short_name || id})`;
   return names ? `${names.short_name} · ${names.long_name}` : id;
 };
 const describe = (r) => {
   const d = r.event.data;
   return [
-    targetLabel(d.target_id),
+    targetLabel(
+      d.target_id,
+      r.event.host_context?.fixed_sites?.[d.target_id] || null,
+    ),
     d.status,
     d.reason,
     d.uplink && "↑ " + readings(d.uplink),
@@ -261,7 +266,7 @@ function isTargetResult(row, state) {
 }
 function targetSummary(state, site, result, isReplay) {
   const id = state.target_id;
-  $("mapTargetId").textContent = targetLabel(id) || "Unselected";
+  $("mapTargetId").textContent = targetLabel(id, site || null) || "Unselected";
   $("mapTargetId").title = id || "";
   $("locateTarget").disabled = !hasPosition(site);
   if (!id) {
@@ -269,7 +274,7 @@ function targetSummary(state, site, result, isReplay) {
   } else if (!hasPosition(site)) {
     $("siteOrigin").textContent = "Site position unknown";
   } else if (site.site_name) {
-    $("siteOrigin").textContent = site.site_name;
+    $("siteOrigin").textContent = host.target_names?.[id]?.long_name || "";
   } else if (isReplay) {
     $("siteOrigin").textContent = "Recorded site position";
   } else {
@@ -297,6 +302,22 @@ function targetSummary(state, site, result, isReplay) {
             : status || "Result") +
         " · " +
         when;
+}
+function renderReplyWatchdog() {
+  const timer = $("replyWatchdog");
+  timer.hidden = !!playback || !host?.state.target_id;
+  if (timer.hidden) return;
+  const age = host.last_reply_age_ms;
+  if (!Number.isFinite(age)) {
+    timer.textContent = "No reply yet";
+    return;
+  }
+  const seconds = Math.floor((age + performance.now() - replySampleAt) / 1000);
+  const hours = Math.floor(seconds / 3600);
+  const parts = [Math.floor(seconds / 60) % 60, seconds % 60];
+  if (hours) parts.unshift(hours);
+  const elapsed = parts.map((part) => String(part).padStart(2, "0")).join(":");
+  timer.textContent = `Last reply · ${elapsed} ago`;
 }
 function render() {
   const s = host.state,
@@ -446,6 +467,7 @@ function render() {
     }),
   );
   if (!playback) fieldMap.update(rows, host);
+  renderReplyWatchdog();
   renderRun();
   alerts();
   renderSettings();
@@ -728,6 +750,7 @@ $("replay").onclick = async () => {
     };
     $("replaybar").hidden = false;
     $("pick").hidden = true;
+    renderReplyWatchdog();
     selectView("field");
     await replayStep();
   } catch (e) {
@@ -760,6 +783,7 @@ async function sync() {
   syncing = (async () => {
     try {
       const next = await api("/api/state"),
+        sampledAt = performance.now(),
         s = next.state;
       const reset =
         !host ||
@@ -815,6 +839,7 @@ async function sync() {
         cursor = next.cursor;
       }
       host = next;
+      replySampleAt = sampledAt;
       lastSession = s.session_id;
       connected = true;
       render();
@@ -852,6 +877,7 @@ async function loop() {
   setTimeout(loop, 950);
 }
 loop();
+setInterval(renderReplyWatchdog, 1000);
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) sync();
 });

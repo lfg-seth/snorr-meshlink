@@ -156,6 +156,42 @@ class DesktopRecorder(unittest.TestCase):
         self.assertGreaterEqual(len(self.host.history(names=["result"])), 2)
         self.assertTrue(self.host.state["heartbeat_ok"])
 
+    def test_watchdog_keeps_last_success_by_target_across_restart(self):
+        def result(sequence, target, status, received, **fields):
+            with patch("recorder.time.time", return_value=received):
+                self.host.accept({
+                    "v": 1,
+                    "kind": "event",
+                    "boot_id": "watchdog-fixture",
+                    "seq": sequence,
+                    "name": "result",
+                    "data_source": "simulation",
+                    "event_stream": "adapter-host",
+                    "data": {"target_id": target, "status": status} | fields,
+                })
+
+        self.assertIsNone(self.host.snapshot(None)["last_reply_age_ms"])
+        result(1, "SIM-R01", "success", 100)
+        result(2, "SIM-R01", "timeout", 103)
+        result(3, "SIM-R01", "late", 104)
+        result(4, "SIM-R01", "success", 105, duplicate=True)
+        result(1, "SIM-R01", "success", 106)
+        result(5, "SIM-R02", "success", 107)
+        with patch("recorder.time.time", return_value=110):
+            self.assertEqual(self.host.snapshot(None)["last_reply_age_ms"], 10000)
+            self.send("set_target", {"target_id": "SIM-R02"})
+            self.assertEqual(self.host.snapshot(None)["last_reply_age_ms"], 3000)
+            result(6, "SIM-R02", "success", 110)
+            self.assertEqual(self.host.snapshot(None)["last_reply_age_ms"], 0)
+
+        self.host.close()
+        self.host = Recorder(Simulator(), self.temp.name)
+        self.host.poll()
+        with patch("recorder.time.time", return_value=114):
+            self.assertEqual(self.host.snapshot(None)["last_reply_age_ms"], 14000)
+            self.send("set_target", {"target_id": "SIM-R02"})
+            self.assertEqual(self.host.snapshot(None)["last_reply_age_ms"], 4000)
+
     def test_disk_failure_stops_rf_and_refuses_start(self):
         self.send("start", {"mode": "survey"})
         with patch.object(
