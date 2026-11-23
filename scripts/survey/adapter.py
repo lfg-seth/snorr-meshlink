@@ -110,9 +110,10 @@ class Decoder:
 
 def gps_data(values):
     session, attempt, valid, lat, lon, alt, has_alt, epoch, frac, age, quality, has_sats, sats = map(
-        int, values
+        int, values[:13]
     )
     return dict(
+        source="laptop" if values[13:] == ["1"] else "heltec",
         session_id=session,
         attempt_id=attempt,
         valid=bool(valid),
@@ -124,6 +125,42 @@ def gps_data(values):
         quality=quality if valid else None,
         satellites=sats if valid and has_sats else None,
     )
+
+
+def laptop_heartbeat_args(params):
+    fix = params.get("laptop_fix")
+    if not isinstance(fix, dict) or not fix.get("valid"):
+        return []
+    try:
+        age = fix["fix_age_ms"]
+        sampled = params["sampled_ms"]
+        stamp = fix["fix_utc_ms"]
+        if any(type(value) is not int for value in (age, sampled, stamp)):
+            return []
+        delay = int(time.monotonic() * 1000) - sampled
+        if age < 0 or delay < 0 or age + delay > 3000:
+            return []
+        epoch, millis = divmod(stamp, 1000)
+        lat, lon = round(fix["lat_deg"] * 1e7), round(fix["lon_deg"] * 1e7)
+        altitude, sats = fix.get("altitude_m"), fix.get("satellites")
+        height = round(altitude) if altitude is not None else 0
+        quality = fix["quality"]
+        if (
+            not 1700000000 <= epoch <= 0xFFFFFFFF
+            or not -900000000 <= lat <= 900000000
+            or not -1800000000 <= lon <= 1800000000
+            or not -2**31 <= height < 2**31
+            or quality not in (1, 2, 4, 5)
+            or (sats is not None and (type(sats) is not int or not 0 <= sats <= 255))
+        ):
+            return []
+        flags = int(altitude is not None) | (int(sats is not None) << 1)
+        return [
+            age + delay, epoch, millis, lat & 0xFFFFFFFF, lon & 0xFFFFFFFF,
+            height & 0xFFFFFFFF, flags, quality, sats or 0,
+        ]
+    except (KeyError, ValueError, TypeError, OverflowError):
+        return []
 
 
 class SurveyAdapter:
@@ -263,7 +300,7 @@ class SurveyAdapter:
         self.last_event = seq
         base = dict(v=1, kind="event", boot_id=f"{boot:08x}", seq=seq, data_source="live", firmware_ms=clock)
         if name == "hello":
-            n, build, client, hw, region, preset, channel, power, use_preset, tx, serial, enrolled = a
+            n, build, client, hw, region, preset, channel, power, use_preset, tx, serial, enrolled = a[:12]
             if node_id(int(n)) != self.expected_id:
                 raise ConnectionError("unexpected physical node ID")
             self.boot = boot
@@ -292,6 +329,7 @@ class SurveyAdapter:
                     "radio_profile_control": ["production", "experimental_medium_fast"],
                     "quiet_duration_s": 900,
                     "gps_source": "local_gnss",
+                    "laptop_gps": a[12:] == ["1"],
                 },
             )
             data = dict(self.hello)
@@ -317,7 +355,9 @@ class SurveyAdapter:
                 "heartbeat_healthy",
                 "command_sequence",
             )
-            self.state = dict(zip(keys, vals, strict=True))
+            self.state = dict(zip(keys, vals[:18], strict=True))
+            if len(vals) == 19:
+                self.state["laptop_fix_fresh"] = bool(vals[18])
             self.state.update(
                 run_state=("idle", "running", "paused")[vals[0]],
                 mode="bench" if vals[1] else "survey",
@@ -577,6 +617,11 @@ class SurveyAdapter:
                         raise ValueError(sub["error"])
                 args = [int(mode == "bench")]
                 applied = {"mode": mode, "target_ids": list(self.targets)}
+            elif name == "heartbeat":
+                if self.hello.get("capabilities", {}).get("laptop_gps"):
+                    args = laptop_heartbeat_args(params)
+            elif name == "hello" and not params:
+                args = [1]
             elif params:
                 raise ValueError("unexpected parameters")
             result = self._exchange(name, args)
@@ -609,7 +654,7 @@ class SurveyAdapter:
                 acknowledged = False
                 while not self.closed.is_set() and time.monotonic() < deadline:
                     if time.monotonic() >= next_hello:
-                        self.serial.write(payload(0, handshake_serial, "hello"))
+                        self.serial.write(payload(0, handshake_serial, "hello", [1]))
                         next_hello = time.monotonic() + 1
                     for event in self._next():
                         data = event["data"]

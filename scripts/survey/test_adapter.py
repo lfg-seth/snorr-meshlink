@@ -18,7 +18,7 @@ def frame(s):
 class Device:
     """Wire peer for testing the actual serial worker and its exclusive controller session."""
 
-    def __init__(self):
+    def __init__(self, laptop_gps=False):
         self.stream = bytearray()
         self.lock = threading.Lock()
         self.seq = self.command_serial = self.starts = 0
@@ -27,6 +27,8 @@ class Device:
         self.epoch = 44
         self.hello_serials = []
         self.settings = [v[2] for v in LIMITS.values()]
+        self.laptop_gps = laptop_gps
+        self.beats = []
 
     @property
     def in_waiting(self):
@@ -46,9 +48,12 @@ class Device:
             err = 0
             if name == "hello":
                 self.hello_serials.append(serial)
-                self.emit("hello", 2, "test", 1, 110, 1, 0, 35, 10, 1, 1, self.command_serial, 1)
+                extension = [1] if self.laptop_gps and args == [1] else []
+                self.emit("hello", 2, "test", 1, 110, 1, 0, 35, 10, 1, 1, self.command_serial, 1, *extension)
             elif boot != self.epoch:
                 err = 1
+            elif name == "heartbeat":
+                self.beats.append(args)
             elif name == "start":
                 if self.running:
                     err = 3
@@ -80,6 +85,7 @@ class Device:
                     0,
                     1,
                     self.command_serial,
+                    *([int(bool(self.beats and self.beats[-1]))] if self.laptop_gps else []),
                 )
                 self.emit("profile", 0, 0, 1)
                 self.emit("settings", *self.settings)
@@ -132,7 +138,7 @@ class AdapterTests(unittest.TestCase):
                 with dev.lock:
                     dev.emit("sendfix", 37, 1, 0, 0, 0, 0, 0, 0, 0, 0xFFFFFFFF, 0, 0, 0)
                     dev.emit("attempt", 37, 1, 1, 3, 1, 1000, 2000, 45)
-                    dev.emit("txfix", 37, 1, 1, 0, 0, 0, 1, 1700000000, 100, 30, 1, 1, 6)
+                    dev.emit("txfix", 37, 1, 1, 0, 0, 0, 1, 1700000000, 100, 30, 1, 1, 6, 1)
                     dev.emit(
                         "result",
                         37,
@@ -170,6 +176,7 @@ class AdapterTests(unittest.TestCase):
                 self.assertEqual(received["uplink"], {"rssi_dbm": -84, "snr_db": -1.75})
                 self.assertEqual(received["downlink"]["snr_db"], 0)
                 self.assertEqual(received["gps"]["lat_deg"], 0)
+                self.assertEqual(received["gps"]["source"], "laptop")
                 self.assertIsNone(received["enqueue_gps"]["lat_deg"])
                 self.assertEqual(received["measured_tx_ms"], 600)
                 self.assertEqual(received["rtt_ms"], 1400)
@@ -179,6 +186,35 @@ class AdapterTests(unittest.TestCase):
                 self.assertEqual(dev.starts, 1)
                 self.assertFalse(dev.running)
             self.assertTrue((root / "first.jsonl").stat().st_size > 0)
+
+    def test_laptop_heartbeat_extension_and_old_firmware(self):
+        for supported in (True, False):
+            with self.subTest(supported=supported), tempfile.TemporaryDirectory() as t:
+                dev = Device(laptop_gps=supported)
+                with SurveyAdapter("fake", "!00000002", Path(t) / "events.jsonl",
+                                   serial_factory=lambda **_: dev) as adapter:
+                    adapter.auto_heartbeat = False
+                    self.assertEqual(adapter.hello["capabilities"]["laptop_gps"], supported)
+                    sampled = int(time.monotonic() * 1000)
+                    fix = dict(valid=True, fix_age_ms=50, fix_utc_ms=1800000022120, lat_deg=36.25,
+                               lon_deg=-115.65, altitude_m=2250, satellites=12, quality=1)
+                    command = dict(v=1, kind="command", id="fresh", name="heartbeat",
+                                   params=dict(laptop_fix=fix, sampled_ms=sampled))
+                    self.assertTrue(adapter.command(command)["data"]["ok"])
+                    args = dev.beats[-1]
+                    if supported:
+                        self.assertGreaterEqual(args[0], 50)
+                        self.assertEqual(args[1:], [1800000022, 120, 362500000, (-1156500000) & 0xFFFFFFFF,
+                                                   2250, 3, 1, 12])
+                    else:
+                        self.assertEqual(args, [])
+                    snapshot = dict(v=1, kind="command", id="state", name="get_state", params={})
+                    info = adapter.command(snapshot)["data"]["applied"]
+                    self.assertEqual(info.get("laptop_fix_fresh"), True if supported else None)
+                    command["id"] = "expired"
+                    command["params"]["sampled_ms"] -= 3001
+                    self.assertTrue(adapter.command(command)["data"]["ok"])
+                    self.assertEqual(dev.beats[-1], [])
 
     def test_wrong_identity_rejects_before_writes(self):
         with tempfile.TemporaryDirectory() as t:
