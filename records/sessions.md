@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-23 - Planned migration to owner-hosted MQTT
+
+Prepared a staged migration that preserves the current gateway endpoint and
+account settings, tests real GPS delivery and reconnects, and keeps a
+bounded rollback to the prior broker. The owned Proxmox host is the first
+candidate. Next: confirm capacity, recovery and DNS control, then choose
+a public TCP ingress under the recorded no-forwarding preference.
+[Migration plan](../docs/operations/mqtt-broker-migration.md).
+
 ## 2026-11-23 - Bounded the MQTT interruption timeline
 
 The portal worker briefly lost its subscription at 04:43 Pacific, followed

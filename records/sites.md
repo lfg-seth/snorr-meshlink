@@ -291,6 +291,15 @@ Create a separate entry when a specific site is identified. Record hardware IDs,
 
 Local admin/member login, service restart persistence, proxy restrictions, independent client throttling and isolated backup restore pass. Public HTTPS/certificate checks pass with public DNS, but LAN DNS retained an old negative IPv4 answer, preventing desktop browser review during setup. Public authenticated sign-in remains owner verification; no admin credentials were sent through Cloudflare by the agent. Daily 02:30 Pacific backups retain 14 private archives on the same container disk; off-host backup destination/Proxmox backup setup remain outstanding. This deployment serves fictional simulation data, not live member tracks. [Setup and evidence](../docs/operations/portal-lxc.md).
 
+### Proposed owner-hosted MQTT broker
+
+2026-11-23 — The owner requests a migration plan. A dedicated guest on the
+existing Proxmox host is the first candidate. Confirm spare capacity, power
+and off-host recovery, then select a public raw TCP route that reaches the
+guest while honoring the recorded preference against inbound forwarding.
+The plan keeps the gateway endpoint and account settings and stages a
+verified rollback. [Migration plan](../docs/operations/mqtt-broker-migration.md).
+
 ### Historical hosting notes
 
 2026-10-13 — Owner brings portal hosting setup forward after the desktop handoff hold and chooses an Ubuntu LXC on the owned Proxmox host, superseding the VM plan for this portal. Container creation and allocated resources are not yet confirmed. Recommended starting configuration: Ubuntu 24.04 LTS amd64 template, unprivileged container, 2 CPU cores, 2048 MiB RAM, 512 MiB swap allowance (requires host swap), and 32 GiB SSD-backed root disk. Use the appropriate LAN bridge with a reserved/static private address and start at boot. Run the static frontend server, PocketBase, Python worker and eventual cloudflared directly as services; nesting is unnecessary for this proposed deployment. Keep the database on backed-up container storage and plan daily backups to separate storage; database restore still needs verification. Sizing is an estimate for the pilot, not a load-test result; watch database/log growth and resource use. The MQTT integration hold remains in place. Sources: [Proxmox container guide](https://github.com/proxmox/pve-docs/blob/master/pct.adoc), [resource options](https://github.com/proxmox/pve-docs/blob/master/generated/pct.conf.5-opts.adoc), and [Ubuntu support lifecycle](https://ubuntu.com/about/release-cycle).
