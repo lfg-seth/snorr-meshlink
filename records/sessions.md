@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-23 - Audited deployment admin enrollment
+
+R011's reference conversion omitted enrollment and copied its empty list into
+the expected profile. R001–R010 have B002 enrollment evidence. The saved G002
+replacement and failed G001 profiles also have empty lists. G003 and G006 need
+exact readback checks. Added a separate post-reboot B002 pin check to the
+deployment handoff. Next: enroll R011 and G002 locally at service and verify
+each from the designated controller. [Audit and coverage](deployment-nodes.md#2026-11-23-admin-enrollment-audit).
+
 ## 2026-11-23 - Checked R011 remote configuration access
 
 R011's saved admin list was empty before deployment and after the Mountain

@@ -74,6 +74,15 @@ The device records the selected source for attempt and transmit positions.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
 [G006 bench and uplink evidence](g006-terry-home.md).
 
+**Deployment admin check.** For each infrastructure node intended for B002
+administration, compare the pinned B002 public key with the target's
+`security.admin_key` entries after reboot. Do this for newly commissioned
+nodes, replacements and bench-to-field conversions, including deployments
+that retain the installed image. Record the target identity and whether the
+pin matched. An absent pin leaves admin enrollment outstanding even when
+the full profile matches the intended backup. [B002 pin and procedure](repeater-role-change.md),
+[fleet audit](../../records/deployment-nodes.md#2026-11-23-admin-enrollment-audit).
+
 2026-11-15 **deployment configuration check:** explicitly verify
 `lora.config_ok_to_mqtt=true` for project reports expected in the CLI/portal.
 R011 retained its former reference restriction and is now replaced at Angel

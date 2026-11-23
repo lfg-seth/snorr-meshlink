@@ -1,5 +1,33 @@
 # Current deployment node labels
 
+## 2026-11-23 admin enrollment audit
+
+Compared the designated B002 public-key pin in the role/location/admin
+helper with the original B002 profile and saved target admin lists. Used
+physical identities and fresh labels. Survey responder enrollment and the
+radio's own identity keys serve different purposes.
+
+| Radios | Last verified admin enrollment | Evidence |
+| --- | --- | --- |
+| R001, R005, R006, R008, R009, R010 | B002 present in all six. R005 and R009 have one admin each. The other four have two each. | Decoded November 15–21 deployment readbacks. R005 also answered authenticated B002 reads. |
+| R002, R003, R004, R007 | B002 recorded present | [November 12 reboot verification](../docs/operations/rak-batch-20261112.md#firmware-and-profile-evidence). R004 and R007 also answered [authenticated B002 reads](../docs/operations/b002-ota-admin-20261114.md). R003 remains held for RF/USB. |
+| R011, Angel Peak Mountain Side | Empty | November 15 pre-deployment, intended and reboot profiles agree. The conversion used the former REF1 settings as its starting point. It set the role, location and hop limit but omitted B002 enrollment. Verification compared against the same empty expected list. The Mountain Side move preserved it again. [R011 access evidence](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-remote-administration-check). |
+| G002, Lee Fire replacement | Empty | November 21 verified replacement profile for `!1bbf0ab8`. |
+| G001, failed predecessor | Empty | November 15 saved station profile for `!1bbf0638`. |
+| G003 mobile and G006 Terry Home | Unverified | Their deployment records describe profile verification. The exact admin lists from those deployments were unavailable on the field laptop. Check the [G003](../docs/operations/g003-mobile-gateway.md) and [G006](../docs/operations/g006-terry-home.md) post-deployment readbacks. |
+
+Member B003, the laptop V4 SURV and the retired V3 survey unit (former G005)
+also had empty incoming admin lists in their November 21–23 profiles. They
+are client/survey radios. An incoming admin list controls who can configure
+that radio. Its own controller credentials determine which remote nodes it
+can administer.
+
+Next service priorities are local B002 enrollment and reboot verification
+on R011 and G002. Independently check B002 membership in each deployment
+readback, including conversions from bench or reference roles. Keep the
+controller's public key and the target's own identity distinct. This audit
+used saved records and made no radio changes.
+
 ## 2026-11-21 - G002 selected to replace G001 at Lee Fire Station
 
 G001 **!1bbf0638** failed per the owner. The replacement retains G002
