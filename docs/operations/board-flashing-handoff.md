@@ -59,6 +59,12 @@ notes. Choose **Later** to edit it from **Run log**. **Discard test** hides
 the recording from the regular log, replay and exports. Use **Show discarded
 tests** and **Restore test** in Run log to recover it.
 
+The full-map GPS pills show status, age, satellites, fix quality and altitude.
+The separate USB laptop receiver also supplies HDOP and a labeled map fallback
+when the Heltec fix is stale. Survey mode requires fresh Heltec GPS. New
+attempt and result events can retain the separate laptop fix at host receipt.
+[GPS evidence](../../records/field-results.md#2026-11-23---heltec-survey-gps-dropouts-and-laptop-gps-comparison).
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.

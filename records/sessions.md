@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-23 - Added laptop GPS and diagnosed survey dropouts
+
+Correlated two same-boot gaps of 119.6 seconds with the Heltec's GPS retry
+scheduling. A native reproduction from the installed source returned
+120-second delays after its 15-minute and five-minute search limits. Checked
+the separate laptop GPS and deployed survey source `e7dc9c2`. The full map
+shows both sources, and the laptop supplies a labeled fallback dot when the
+Heltec fix is stale. Survey mode requires a fresh Heltec fix.
+
+All 20 survey checks passed. Verified the fallback in a map-state check and
+both sets of GPS stats in the live browser. Both live URLs returned a fresh
+laptop fix. Backed up the private recorder before restart. Next: bench-check
+continuous acquisition across the Heltec retry deadlines before selecting a
+new radio build. [GPS evidence](field-results.md#2026-11-23---heltec-survey-gps-dropouts-and-laptop-gps-comparison).
+
 ## 2026-11-23 - Added names, notes and discard for Field Survey tests
 
 Deployed survey source `e9f630b` to the laptop with a finish form that opens

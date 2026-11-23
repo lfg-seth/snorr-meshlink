@@ -1,5 +1,30 @@
 # Field testing and tangible results
 
+## 2026-11-23 - Heltec survey GPS dropouts and laptop GPS comparison
+
+Owner reports intermittent fix loss with SURV's GPS mounted outside the
+vehicle with a clear sky view. The recorder captured two **119.6-second**
+gaps in valid fixes at **12:51:27** and **12:58:26 PST**. Each gap contained
+118 invalid samples from the same Heltec firmware boot. Valid fixes immediately
+before and after each gap carried 19–21 satellites. Separate USB disconnects
+also occurred during the drive and had gaps in the event stream.
+
+The saved radio profile uses one-second GPS acquisition and a 120-second
+position broadcast interval. A native harness built from the installed
+firmware source reproduced a 120-second retry delay after the initial
+15-minute search limit and the five-minute limit following a failed search.
+Those intervals match the two long outages. The evidence points to firmware
+search backoff suppressing accepted fixes. The recorder did not capture raw
+Heltec receiver sentences at the transition.
+
+The laptop's separate u-blox USB receiver produced seven one-second GGA
+samples with 12 satellites and HDOP 1.10–1.15. Updated Field Survey showed a
+fresh laptop fix through both live URLs. The full-map browser displayed fix
+age, satellites, quality and altitude for the Heltec and added HDOP for the
+laptop. A map-state check verified handoff from stale Heltec to fresh laptop
+GPS. Survey mode requires a fresh Heltec fix. Next: verify a continuous-GPS
+firmware change across both retry deadlines and a moving drive.
+
 ## 2026-11-23 - OLED V4 laptop survey conversion
 
 USB serial **90:70:69:9C:A8:78** identified the handheld SURV **!699c2ed8**.
