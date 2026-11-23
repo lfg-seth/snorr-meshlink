@@ -59,10 +59,12 @@ notes. Choose **Later** to edit it from **Run log**. **Discard test** hides
 the recording from the regular log, replay and exports. Use **Show discarded
 tests** and **Restore test** in Run log to recover it.
 
-The full-map GPS pills show status, age, satellites, fix quality and altitude.
-The separate USB laptop receiver also supplies HDOP and a labeled map fallback
-when the Heltec fix is stale. Survey mode requires fresh Heltec GPS. New
-attempt and result events can retain the separate laptop fix at host receipt.
+The full-map pills show selected link signal, GPS fix age in seconds,
+satellites, HDOP and one altitude. **H** identifies the Heltec fix and **L**
+identifies the laptop fix or HDOP. Color grades signal and GPS health. The
+target card is on the Survey screen. An automatic pause shows a red banner
+with its reason. Survey mode requires fresh Heltec GPS. New attempt and result
+events can retain the separate laptop fix at host receipt.
 [GPS evidence](../../records/field-results.md#2026-11-23---heltec-survey-gps-dropouts-and-laptop-gps-comparison).
 
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed

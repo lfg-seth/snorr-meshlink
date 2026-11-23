@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-23 - Simplified the fullscreen survey map
+
+Deployed survey source `9b3cfe5` to the field laptop. The target card stays
+on the Survey screen. The full map uses 14 px pills for the selected link
+signal, active GPS fix age, satellites, HDOP and a single altitude. Green,
+yellow and red interpolate across the documented thresholds. A red banner
+describes an automatic pause. Page zoom suppression and 16 px text fields
+address accidental mobile zoom while the map handles its own gestures.
+
+All 20 survey checks passed. At 382 px wide, the browser preview fit the
+pills, showed no target card, and displayed the red reason after simulated
+GPS loss. A manual pause left the banner hidden. Both live URLs served the
+updated HUD and dual-GPS state. A physical iOS check remains open.
+[Laptop handoff](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
 ## 2026-11-23 - Added laptop GPS and diagnosed survey dropouts
 
 Correlated two same-boot gaps of 119.6 seconds with the Heltec's GPS retry
