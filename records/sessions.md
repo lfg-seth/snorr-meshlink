@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-23 - Published the screenless V4 SD client gateway
+
+Built `heltec-v4-sd-gateway-client` from firmware `14c35c8ff` on
+`snorr/develop`. The new target retains recording and the survey responder,
+with normal CLIENT relays and per-channel MQTT downlink. The 1,921,120-byte
+application passed ESP32 image validation and fits the deployed app0 layout.
+The published tag resolves to the build commit and all four GitHub asset
+downloads match the local files. Offline relay policy, MQTT dispatch, SD,
+survey and neighbor fixtures passed. Portal, broker and radios were untouched.
+Next bench step is a matching V4, downlink permission and RF-only receiver
+for a fresh text and forced-relay check. [Download and setup](../docs/operations/gateway-client-firmware.md).
+
 ## 2026-11-23 - Deployed member tracker Activity
 
 Deployed `meshlink-v0.4.16` from merged PR #100 at `35a309a`. Exact-host

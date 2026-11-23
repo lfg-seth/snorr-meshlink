@@ -43,6 +43,7 @@ Keep implementation, release, native presentation, live delivery and field accep
 
 | Task | Remaining check / evidence |
 | --- | --- |
+| Screenless V4 SD client gateway | GitHub prerelease verified. On a selected V4, verify CLIENT relay and duplicate suppression, then receive a fresh MQTT text on an RF-only peer using an account with downlink read permission. [Download and setup](../docs/operations/gateway-client-firmware.md). |
 | Member trackers in Activity | 0.4.16 is live. Two client cards, stored GPS/telemetry, current assignment display and a client node-info feed entry passed. When a member next sends GPS or telemetry through a gateway, confirm the new packet's displayed names and route. [Deployment checks](../docs/operations/field-portal.md#november-23-member-tracker-activity-deployment). |
 | Portal appearance and iPhone Duo layout | 0.4.10 is live. The remaining device check is a signed-in scroll through Activity refreshes, theme switching and an open card across a fold on the physical Duo. [Production checks](../docs/operations/field-portal.md#november-16-portal-appearance-release), [Duo measurements](../records/sessions.md#2026-11-16---iphone-duo-layout). |
 | G006 / Terry Home on-site uplink | Fixed Heltec V3 gateway profile passed reboot. USB reported Wi-Fi and direct MQTT disconnected at the bench. After installation on AC at Terry Home, verify association and a fresh packet received through G006. [Bench record](../docs/operations/g006-terry-home.md). |
