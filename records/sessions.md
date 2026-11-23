@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-23 - Reassigned the handheld V4 to laptop surveys
+
+Flashed the USB-identified OLED V4 SURV **!699c2ed8** with the laptop
+`heltec-v4-survey` app. Verified the recovery image, app-only write, retained
+handheld journal and full profile through reboot. Rebound the existing recorder
+to the correct USB serial and confirmed live enrollment and ten available
+target IDs. Restored one-second GPS acquisition and verified GPS freshness
+and offline map access. R008 and R007 each timed out on one recorded bench
+attempt.
+Next: run from the laptop at a known direct-link location and capture a reply
+before assessing moving coverage. Keep B003 and the old V3 powered off while
+using this survey identity. The flashing and enrollment review is deferred at
+owner request. [Bench evidence](field-results.md#2026-11-23---oled-v4-laptop-survey-conversion),
+[review note](wishlist.md#survey-radio-flashing-and-enrollment-review).
+
 ## 2026-11-23 - Planned migration to owner-hosted MQTT
 
 Prepared a staged migration that preserves the current gateway endpoint and

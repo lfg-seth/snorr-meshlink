@@ -1,5 +1,42 @@
 # Field testing and tangible results
 
+## 2026-11-23 - OLED V4 laptop survey conversion
+
+USB serial **90:70:69:9C:A8:78** identified the handheld SURV **!699c2ed8**.
+Built `heltec-v4-survey / 2.7.26.93f80a1` from published firmware commit
+`93f80a13b044c3aaadac058dc4681e3190e4acae`. All four build artifacts passed
+SHA-256 on the builder and laptop. The 2,054,112-byte application SHA-256 is
+`88cfda361289c9fe2fd10653ad24b0e9e38263a8e7c1c47872a003c7398cc347`.
+
+The complete 16 MiB recovery image matched the onboard digest and has SHA-256
+`66727aa5fdddc64af53a98aa2e7270de4769c94c7f624a7dddc660b54d935ed4`.
+The backup reboot changed NVS and LittleFS. Before writing, fresh reads of
+both regions matched their onboard digests. The installer wrote only app0 at
+`0x10000` and independently verified the new app and preserved partition
+table, OTA state, NVS, LittleFS and handheld journal. Complete profile readback
+after the flash matched the original, including saved identity and keys,
+channel, CLIENT role, GPS enabled, US LongFast slot 35 at 10 dBm and direct
+MQTT disabled.
+
+The laptop's existing Field Survey service now uses the new stable USB path,
+the existing recorder data and offline map, and the ten enrolled RAK peers as
+selectable targets. The live handshake reported an enrolled client. The
+lid/idle/sleep inhibitor was active. Each of two one-attempt bench runs
+completed and was recorded. R008 and R007 each timed out **0/1**. Timing was
+restored. A successful round trip and moving coverage remain open.
+
+After the recorder restarted, the handheld's 60-second GPS acquisition
+interval let the fix go stale. Restored the former laptop survey's one-second
+acquisition interval and verified the complete intended profile after an
+explicit reboot. With the recorder reconnected and idle, the survey page and
+offline map both loaded. GPS was fresh in 25 consecutive one-second checks.
+
+For this drive the owner selects temporary use of the existing enrollment and
+will keep B003 and the old V3 handheld powered off while SURV is powered.
+Power SURV off before returning either shared-identity device to service.
+Recovery, serial and recorder evidence is private under
+`private/bench/laptop-survey-20261123/`.
+
 ## 2026-11-21 - G002 Lee Fire Station replacement bench check
 
 USB identified the screenless Heltec V4 G002 **!1bbf0ab8** with

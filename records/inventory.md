@@ -1,5 +1,13 @@
 # Hardware inventory
 
+## 2026-11-23 - Handheld V4 reassigned to the survey laptop
+
+The existing OLED Heltec V4 with GPS, USB **90:70:69:9C:A8:78** and
+survey identity **!699c2ed8**, moves from handheld to USB-tethered drive
+survey duty for the selected run. The old V3 handheld and member B003 are
+held powered off during use because they share the enrolled on-air identity.
+No quantity change. [Conversion evidence](field-results.md#2026-11-23---oled-v4-laptop-survey-conversion).
+
 ## 2026-11-21 - G001 failure and G002 replacement
 
 Owner reports G001 **!1bbf0638** failed and selects existing G002

@@ -16,6 +16,15 @@ Capture only; research/design/implementation wait for owner activation.
 - Repair or replace the field laptop's broken touchscreen to improve usability.
   No model, parts, budget, purchase or repair decision is selected.
 
+## Survey radio flashing and enrollment review
+
+2026-11-23: Owner requests a later review of the handheld-to-laptop survey
+flashing process and how test radios are enrolled. Review how to identify the
+board and select its firmware, preserve recovery data and existing pairings,
+and verify the laptop connection and a direct reply. Review how test identities
+are assigned, paired with responders, replaced and retired without sharing a
+live member identity. Keep this review deferred until the owner selects it.
+
 ## Offline walking and driving reception survey
 
 Added 2026-11-15 from the [AAR](aar/2026-11-15-mount-charleston.md).

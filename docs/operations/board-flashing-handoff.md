@@ -31,6 +31,13 @@ Use the selected board's release and configuration handoff for flashing.
 
 ## Board handoffs
 
+2026-11-23 **Laptop SURV / !699c2ed8** is the existing OLED Heltec V4,
+USB **90:70:69:9C:A8:78**. It runs **heltec-v4-survey / 2.7.26.93f80a1**
+with its handheld journal, identity and responder enrollment preserved.
+Open [Field Survey](http://127.0.0.1:5187/) on the tethered laptop. Keep B003
+and the old V3 powered off while using this shared survey identity.
+[Conversion and test results](../../records/field-results.md#2026-11-23---oled-v4-laptop-survey-conversion).
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
