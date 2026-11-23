@@ -1,5 +1,16 @@
 # Field testing and tangible results
 
+## 2026-11-23 - R011 pre-repair radio counters
+
+Before changing settings or rebooting R011, local device telemetry reported
+700,466 seconds of uptime. At that uptime its USB debug stream reported
+36,994 good transmissions, 22,344 relay transmissions, 43,437 good receives
+and 5,091 bad receives. These are aggregate counters across all traffic since
+boot. The requested LocalStats message was unavailable during the capture.
+USB was connected for the telemetry sample. The earlier laptop survey
+recording supplies the per-attempt evidence for the drive.
+[Repair and reboot readback](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-usb-repair-and-reboot-verification).
+
 ## 2026-11-23 - Laptop USB survey contact with Angel Peak
 
 The OLED Heltec V4 SURV made direct contact with both deployed Angel Peak

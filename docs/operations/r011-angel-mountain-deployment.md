@@ -1,5 +1,29 @@
 # R011 Angel Peak Mountain Side - 2026-11-15
 
+## 2026-11-23 USB repair and reboot verification
+
+R011 `!8737c2c9` is enrolled for remote administration by B002 and by the
+owner-approved shared SURV identity. The latter also authorizes the copies
+on member B003 and the retired V3 tester. SX126x boosted RX is enabled.
+TX was already enabled at the deployment setting of 10 dBm.
+
+Matched USB serial, hardware ID and installed `2.7.26.bcb22e0` before writing.
+The live full profile matched the November 15 reboot backup. Saved the
+pre-reboot counters, identity and configuration privately. A single local
+transaction changed only `security.admin_key` and
+`lora.sx126x_rx_boosted_gain`. Matched the B002 enrollment to the project pin
+and SURV enrollment to the verified laptop radio profile. The driver reported
+successful boosted RX initialization, 910.625 MHz and final TX power of
+10 dBm. Antenna output was not measured.
+
+A separate USB connection verified both exact keys, the complete intended
+local/module/channel configuration, owner, hardware, firmware and saved fixed
+position. After a further explicit reboot, a fresh USB connection repeated
+that comparison at 15:18:31 PST and closed. Remote admin over LoRa and
+post-repair field coverage remain untested. Private evidence is under
+`private/bench/r011-usb-repair-20261123/`.
+[Pre-reboot counters](../../records/field-results.md#2026-11-23---r011-pre-repair-radio-counters).
+
 **Publication update, 2026-11-15:** owner approves publishing the exact fixed
 location in the [deployment table](../../records/sites.md#2026-11-15---published-deployment-setup-and-fixed-locations). Earlier privacy wording below describes the original evidence handling;
 complete profiles and raw logs remain ignored.

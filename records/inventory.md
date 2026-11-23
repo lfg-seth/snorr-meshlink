@@ -1,5 +1,11 @@
 # Hardware inventory
 
+## 2026-11-23 - R011 receiver and admin configuration
+
+R011 `!8737c2c9` now has boosted RX and both approved admin keys (B002
+and shared SURV). Enabled 10 dBm TX and the existing RAK firmware were
+verified over USB. [Post-reboot evidence](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-usb-repair-and-reboot-verification).
+
 ## 2026-11-23 - Handheld V4 reassigned to the survey laptop
 
 The existing OLED Heltec V4 with GPS, USB **90:70:69:9C:A8:78** and

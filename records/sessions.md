@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-23 - Repaired R011 admin enrollment and RX gain
+
+Saved current-boot radio counters and confirmed the original deployment
+profile. Enrolled B002 and the owner-approved shared SURV identity and
+enabled boosted RX. TX was already enabled at 10 dBm. Driver setup and
+independent full-profile readback through reboot passed. Serial closed.
+Next: a fresh authenticated LoRa configuration read from an enrolled
+controller and an on-site coverage comparison.
+[Repair evidence](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-usb-repair-and-reboot-verification).
+
 ## 2026-11-23 - Clarified R011 field evidence retrieval
 
 Checked R011's installed responder and local statistics code. The laptop
