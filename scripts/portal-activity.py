@@ -1,4 +1,4 @@
-"""Publish the placed fleet's sanitized activity cards from the local read-only sampler."""
+"""Publish field infrastructure and member tracker activity for the signed-in portal."""
 import json
 from pathlib import Path
 import runpy
@@ -6,27 +6,64 @@ from contextlib import closing
 import sqlite3
 import time
 
-from server.node_readings import run
+from server.node_readings import epoch, run, utc
 
 ROOT = Path(__file__).resolve().parents[1]
 DATABASE = Path("/var/lib/meshlink/pb_data/data.db")
 
 
-def read_roster(db):
+def read_roster(db, member_radios):
     rows = db.execute("SELECT radio, shortName, name, kind FROM field_roster")
-    return {radio: {"shortName": label, "name": name, "kind": kind}
-            for radio, label, name, kind in rows}
+    sites = {radio: {"shortName": label, "name": name, "kind": kind}
+             for radio, label, name, kind in rows}
+    for key, label in db.execute("SELECT key, shortName FROM devices WHERE kind='member'"):
+        radio = member_radios.get(key)
+        if radio and radio not in sites:
+            sites[radio] = {"shortName": label or radio, "kind": "member", "key": key}
+    return sites
+
+
+def label_members(db, sites, cards):
+    # A recent packet keeps its carrier at first receipt, even after a handoff.
+    oldest_receipt = min((packet["received"] for packet in cards["packets"]), default=cards["now"])
+    cutoff = utc(oldest_receipt).replace("+00:00", "Z")
+    assignments = {}
+    for key, name, start, end in db.execute("""
+        SELECT a.deviceId, m.name, a.startedAt, a.endedAt
+        FROM assignments a JOIN members m ON m.key = a.memberId
+        WHERE a.endedAt = '' OR a.endedAt >= ?
+        ORDER BY a.startedAt DESC
+    """, (cutoff,)):
+        assignments.setdefault(key, []).append((epoch(start), epoch(end), name))
+
+    def assigned_name(site, at):
+        return next((name for start, end, name in assignments.get(site["key"], [])
+                     if start is not None and start <= at and (end is None or at < end)), None)
+
+    for card in cards["nodes"]:
+        site = sites[card["radio"]]
+        card["name"] = assigned_name(site, cards["now"]) if site["kind"] == "member" else site["name"]
+    for packet in cards["packets"]:
+        site = sites[packet["radio"]]
+        if site["kind"] == "member":
+            packet["memberName"] = assigned_name(site, packet["received"])
 
 
 def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"), config="/etc/meshlink/mqtt.json"):
     cli = runpy.run_path(str(ROOT / "scripts/watch-nodes.py"))
     dashboard = cli["Dashboard"](False, grace=3, show_inactive=True)
 
+    def member_mapping():
+        return {key: radio for radio, key in json.loads(Path(config).read_text())["members"].items()}
+
     def publish(snapshot):
-        if read_roster(db) != sites:
+        if member_mapping() != member_radios or read_roster(db, member_radios) != sites:
             return False  # Reload selection and bootstrap recent readings for new radios.
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
+            if site["kind"] == "member":
+                node["kind"] = "member"
+                continue
             for reading in ("gps", "standardNeighbors"):
                 node["readings"].pop(reading, None)
             for stream in ("position", "neighbor_info", "nodeinfo"):
@@ -41,19 +78,19 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
                     node["watchdogs"].pop(stream, None)
         dashboard.observe(snapshot, time.monotonic())
         cards = cli["card_snapshot"](dashboard, snapshot, time.time(), False, True, 3)
-        for card in cards["nodes"]:
-            card["name"] = sites[card["radio"]]["name"]
         cards["packets"] = snapshot["packets"]
+        label_members(db, sites, cards)
         pending = target.with_suffix(".pending")
         pending.write_text(json.dumps(cards, allow_nan=False, separators=(",", ":")), encoding="utf-8")
         pending.replace(target)
 
     with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
         while True:
-            sites = read_roster(db)
+            member_radios = member_mapping()
+            sites = read_roster(db, member_radios)
             labels = {radio: site["shortName"] for radio, site in sites.items()}
             reload_requested = run({"roster": labels, "selected": labels, "interval": 3, "hours": 24,
-                                    "siteNames": {radio: site["name"] for radio, site in sites.items()},
+                                    "siteNames": {radio: site["name"] for radio, site in sites.items() if "name" in site},
                                     "cadences": cli["load_cadences"](ROOT / "scripts/node-cadence.json"),
                                     "config": config, "database": str(database),
                                     "backend": str(ROOT / "backend")}, publish)

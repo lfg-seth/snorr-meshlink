@@ -89,6 +89,10 @@ class Measurements:
                 return
             old_at = epoch(old["measuredAt"]) if old["quality"] == "valid" else epoch(old["receivedAt"])
             new_at = epoch(new["measuredAt"]) if new["quality"] == "valid" else epoch(new["receivedAt"])
+            # The persisted fix omits altitude. Enrich that same receipt on archive replay.
+            if (metric == "gps" and sample and old["sample"] == old["receivedAt"]
+                    and epoch(old["receivedAt"]) == epoch(received) and old_at == new_at):
+                old["value"].update({k: v for k, v in value.items() if v is not None})
             if new_at < old_at or new_at == old_at and new["receivedAt"] <= old["receivedAt"]:
                 return
         self.nodes[radio]["readings"][metric] = new
@@ -324,7 +328,8 @@ class Decoder:
             p = mesh.Position.FromString(d.payload)
             if not p.HasField("latitude_i") or not p.HasField("longitude_i"):
                 return "position"
-            if abs(p.timestamp_millis_adjust) > 999:
+            if (abs(p.latitude_i) > 900000000 or abs(p.longitude_i) > 1800000000
+                    or abs(p.timestamp_millis_adjust) > 999):
                 return "position"
             measured = utc(p.timestamp + p.timestamp_millis_adjust / 1000) if p.timestamp else None
             data = {"satellites": p.sats_in_view or None, "pdop": p.PDOP / 100 if p.PDOP else None}

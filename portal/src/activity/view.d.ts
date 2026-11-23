@@ -5,7 +5,7 @@ export type ActivityRoute = {
 export type ActivitySnapshot = {
   at: string; now: number; status: string; nodes: unknown[];
   packets?: {
-    id: string; radio: string; stream: string; received: number;
+    id: string; radio: string; stream: string; received: number; memberName?: string | null;
     heardThrough?: string; heardThroughRadio?: string; route?: ActivityRoute | null;
   }[];
 };
