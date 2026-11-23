@@ -340,6 +340,22 @@ failures warrant checking the proxy's public ingress and any forwarding
 path during a failed connection. The exact fault and sustained availability
 remain unverified.
 
+The portal worker's one-minute subscription samples narrowed the November 23
+window. It was subscribed at 04:42 Pacific, disconnected at 04:43, and
+subscribed again at 04:44. Repeated disconnected samples began at 05:00:02
+and continued intermittently through 10:58:21. The 02:32 disconnect
+coincided with the scheduled backup restart. The earlier journal contains
+isolated false samples, including 18:16–18:18 Pacific on November 21. These
+worker samples record subscription state. The same failure mechanism for
+earlier interruptions remains unverified.
+
+G003 last reported Wi-Fi and MQTT up at 16:49 Pacific on November 21 and
+the portal accepted a G003 receipt at 18:03. Its next recorded health sample
+was measured at 09:17:27 Pacific on November 23 with Wi-Fi up and MQTT
+down. Public TCP/TLS timeouts were directly reproduced at 11:14–11:16
+Pacific. For ingress log correlation, prioritize 12:42–13:06 UTC and
+19:12–19:16 UTC on November 23.
+
 ### October hosting setup and verification
 
 2026-10-14 verification: owner-run authenticated synthetic publish/subscribe and ACL tests through the certificate-validated public TLS endpoint pass. Both V3 accounts publish and the worker receives; worker writes, gateway reads and JSON/unrelated-topic writes are denied. Test used a temporary loopback SSH relay through the external test host because broker-to-public routing timed out; relay is closed and SSH confirms no 18884 listener remains. Mosquitto remains active. Earlier pending-account statements below are historical. Actual radio/reconnect, portal ingestion, certificate renewal and unrelated-LAN denial remain untested.

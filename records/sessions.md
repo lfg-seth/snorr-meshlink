@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-23 - Bounded the MQTT interruption timeline
+
+The portal worker briefly lost its subscription at 04:43 Pacific, followed
+by repeated losses from 05:00 through 10:58. An isolated November 21
+interruption is also visible. G003 reported Wi-Fi up and MQTT down at
+09:17:27 Pacific. The start of the public-path fault remains unknown.
+Next: correlate proxy and ingress logs against the worker and active
+probe windows. [Timeline](sites.md#2026-11-23-public-mqtt-reachability).
+
 ## 2026-11-23 - Broker network and public MQTT check
 
 SSH stayed connected and the broker had zero loss across 180 LAN and
