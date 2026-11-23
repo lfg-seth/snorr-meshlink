@@ -101,3 +101,23 @@ At the next R011 service, compare repeated pings from a fixed position before
 and after enabling boost, holding the antenna, transmit power and timeout
 constant. Verify the new setting after reboot. Today's audit was read-only.
 [Angel Peak drive evidence](../../records/field-results.md#2026-11-23---laptop-usb-survey-contact-with-angel-peak).
+
+## 2026-11-23 remote administration check
+
+R011's November 15 pre-deployment backup, first deployment reboot readback
+and Mountain Side reboot readback each contain zero admin public keys.
+Legacy admin is disabled and there is no active admin channel. “Preserved”
+in the deployment history therefore means an empty list. Neither laptop
+SURV nor the historical B002 admin identity can issue an authenticated
+remote settings read or write under that profile. The direct survey
+responder uses separate enrollment. [Meshtastic remote administration](https://meshtastic.org/docs/configuration/remote-admin/).
+
+The Mountain Side snapshot has Bluetooth enabled with fixed-PIN pairing,
+USB serial enabled and managed mode off. With someone within Bluetooth
+range and able to pair, or connected to R011 by USB, the next service
+can enable receiver boost, reboot, reconnect and read
+`lora.sx126x_rx_boosted_gain=true` directly from `!8737c2c9`.
+For future remote service, enroll the designated admin controller's public
+key during that local connection and verify a fresh LoRa configuration
+response from R011 using that controller. The shared survey identity is
+in service on the laptop. No field command was sent during this check.

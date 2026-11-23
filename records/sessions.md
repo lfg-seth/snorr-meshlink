@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-23 - Checked R011 remote configuration access
+
+R011's saved admin list was empty before deployment and after the Mountain
+Side reboot. Survey enrollment allows direct pings. Remote administration
+requires a separate enrollment on R011. Next service needs local Bluetooth
+pairing or USB to enable boost and verify the setting after reboot.
+[R011 access evidence](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-remote-administration-check).
+
 ## 2026-11-23 - Checked receiver gain across the numbered RAKs
 
 R011 inherited disabled SX126x RX boost from its pre-deployment profile.
