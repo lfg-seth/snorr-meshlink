@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-23 - Broker network and public MQTT check
+
+SSH stayed connected and the broker had zero loss across 180 LAN and
+internet pings. The broker loopback and private proxy each answered six
+of six MQTT probes. Public TLS 8883 was intermittent from both laptop Wi-Fi
+and the production portal. Next, inspect public ingress during a timeout
+and recheck G003 after the endpoint is consistently reachable.
+[Probe results](sites.md#2026-11-23-public-mqtt-reachability).
+
 ## 2026-11-23 - Seth Mobile button stall and uplink diagnosis
 
 USB identified G003 **!849ad7a0** on **2.7.26.6fea6aa**. The owner

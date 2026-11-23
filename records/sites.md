@@ -318,7 +318,31 @@ Owner reports an old pilot MQTT server at `mqtt.spp.lol` and authorized SSH insp
 
 ## Broker hosting record — Mike Rollins
 
-Latest verification, 2026-10-14: owner-run authenticated synthetic publish/subscribe and ACL tests through the certificate-validated public TLS endpoint pass. Both V3 accounts publish and the worker receives; worker writes, gateway reads and JSON/unrelated-topic writes are denied. Test used a temporary loopback SSH relay through the external test host because broker-to-public routing timed out; relay is closed and SSH confirms no 18884 listener remains. Mosquitto remains active. Earlier pending-account statements below are historical. Actual radio/reconnect, portal ingestion, certificate renewal and unrelated-LAN denial remain untested.
+### 2026-11-23 public MQTT reachability
+
+During a read-only check at 11:14–11:16 Pacific, an authenticated SSH
+session to port 64582 stayed up and all 13 laptop TCP probes to that port
+connected. The broker received 60/60 ping replies from each of its default
+gateway, the private Nginx proxy and an internet target. Carrier and interface error
+counters stayed flat. The VM interface counted 31 additional receive drops
+during the ping sample, with the cause unconfirmed. Mosquitto was active.
+
+From the laptop Wi-Fi, four of 13 public port 8883 probes completed
+certificate-verified TLS and nine timed out during TCP connection. In a
+second sample pinned to the same public IPv4 address, the laptop and the
+production portal each completed three of six probes. The laptop had one
+TCP and two TLS timeouts. The portal had three TCP timeouts.
+
+From the broker host, loopback MQTT and the private Nginx TLS listener each
+returned the expected anonymous MQTT authentication rejection on all six
+tries. Responses through the private TLS listener took 14–31 ms. The public
+failures warrant checking the proxy's public ingress and any forwarding
+path during a failed connection. The exact fault and sustained availability
+remain unverified.
+
+### October hosting setup and verification
+
+2026-10-14 verification: owner-run authenticated synthetic publish/subscribe and ACL tests through the certificate-validated public TLS endpoint pass. Both V3 accounts publish and the worker receives; worker writes, gateway reads and JSON/unrelated-topic writes are denied. Test used a temporary loopback SSH relay through the external test host because broker-to-public routing timed out; relay is closed and SSH confirms no 18884 listener remains. Mosquitto remains active. Earlier pending-account statements below are historical. Actual radio/reconnect, portal ingestion, certificate renewal and unrelated-LAN denial remain untested.
 
 Owner-confirmed 2026-10-13; service inspection performed earlier the same day.
 
