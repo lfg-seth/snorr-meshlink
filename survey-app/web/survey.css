@@ -24,6 +24,7 @@ button,
 .button,
 select,
 input,
+textarea,
 summary {
   font: inherit;
   min-height: 44px;
@@ -31,7 +32,8 @@ summary {
 button,
 .button,
 select,
-input {
+input,
+textarea {
   border: 1px solid #adb8aa;
   border-radius: 6px;
   background: #fcfcf6;
@@ -53,6 +55,7 @@ button:focus-visible,
 a:focus-visible,
 select:focus-visible,
 input:focus-visible,
+textarea:focus-visible,
 canvas:focus-visible {
   outline: 3px solid #bc661e;
   outline-offset: 2px;
@@ -445,6 +448,60 @@ details .formrow {
     Consolas,
     monospace;
   overflow-wrap: anywhere;
+}
+.test-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 8px;
+}
+.test-toggle input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+}
+#testNotes {
+  margin-top: 10px;
+}
+#testNotes p {
+  margin: 4px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+#finishDialog {
+  width: min(460px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+}
+#finishDialog::backdrop {
+  background: #172c24ad;
+}
+#finishTitle {
+  margin: 0 0 14px;
+}
+#finishFields {
+  display: grid;
+  gap: 14px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#finishFields textarea {
+  width: 100%;
+  resize: vertical;
+}
+#finishError {
+  margin: 0;
+  color: #852b3a;
+}
+.discard-test {
+  color: #852b3a;
 }
 main {
   padding-bottom: max(24px, env(safe-area-inset-bottom));

@@ -83,6 +83,8 @@ Omit `site` when the target has no current fixed location. The selector uses the
 
 **Last reply** on the live target card counts from the last recorded successful reply for the selected repeater, including replies from earlier sessions. Timeouts, late or duplicate replies and replies from other repeaters leave that repeater's timer running. The card shows **No reply yet** until the recorder has a successful result for the selected repeater.
 
+After **Stop**, enter a test name and optional notes, then choose **Save test**. **Later** keeps the recording available under **Run log**, where **Edit test** opens the same fields for existing tests. **Discard test** hides the test from the regular log, replay and exports. Use **Show discarded tests** and **Restore test** in Run log to undo a discard.
+
 ## Recording and recovery
 
 The host ticks independently of HTTP clients. The firmware owns RF scheduling, GPS gating and the heartbeat interlock. The simulator models those responsibilities inside its adapter. Each source has a separate SQLite database below ignored `local-data/direct-hop-survey/{simulation,live}/`. A source lease prevents concurrent hosts from opening the same source directory. Keep the same data directory for reconnect and replay. To move a recording, stop the host before copying its data directory, or use SQLite's online backup API.

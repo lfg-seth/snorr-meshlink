@@ -30,6 +30,9 @@ let playback = null,
   playTimer = null;
 let pendingAck = null;
 let replySampleAt = 0;
+let finishAfterStop = null;
+let editingTest = null;
+let tests = new Map();
 const options = (sel, values, chosen) => {
   const keys = values.map((v) => (Array.isArray(v) ? v : [v, v]));
   if (JSON.stringify(keys) !== sel.dataset.keys) {
@@ -103,6 +106,7 @@ async function send(name, params = {}) {
         ? "Settings applied · " + JSON.stringify(ack.applied)
         : "",
   );
+  return ack;
 }
 function selectView(v) {
   view = v;
@@ -246,7 +250,19 @@ function renderRun() {
       ),
     );
 }
-$("stop").onclick = () => runAction(() => send("stop"));
+function testIsActive(id) {
+  return (
+    id &&
+    id === host?.state.session_id &&
+    ["running", "paused"].includes(host.state.run_state)
+  );
+}
+$("stop").onclick = () => runAction(async () => {
+  const id = host.state.session_id;
+  const finishing = testIsActive(id);
+  const ack = await send("stop");
+  if (finishing && ack.ok !== false) finishAfterStop = id;
+});
 $("control").onclick = () => runAction(() => api("/api/control", {}));
 $("target").onchange = () =>
   runAction(() => send("set_target", { target_id: $("target").value }));
@@ -322,7 +338,8 @@ function renderReplyWatchdog() {
 function render() {
   const s = host.state,
     caps = host.hello,
-    counts = s.counts || {};
+    discarded = host.current_test?.discarded,
+    counts = discarded ? {} : s.counts || {};
   $("source").textContent =
     host.source === "simulation" ? "Simulation" : "Live adapter";
   $("connection").textContent = !connected
@@ -386,6 +403,7 @@ function render() {
       result ? latestResult : null,
       false,
     );
+  if (!playback && discarded) $("mapReply").textContent = "Test discarded";
   const mapDir = $("direction").value,
     mapMetric = $("metric").value;
   $("pillSignal").textContent =
@@ -469,6 +487,12 @@ function render() {
   if (!playback) fieldMap.update(rows, host);
   renderReplyWatchdog();
   renderRun();
+  if (view === "journal") renderTestDetails();
+  if (finishAfterStop && (s.run_state === "idle" || s.run_state === "stopped")) {
+    if (host.current_test?.id === finishAfterStop && host.has_control && !discarded)
+      openTestDialog(host.current_test);
+    finishAfterStop = null;
+  }
   alerts();
   renderSettings();
 }
@@ -580,29 +604,126 @@ $("sitefile").onchange = () =>
     message("Fixed sites imported");
   });
 async function refreshSessions() {
-  const sessions = await api("/api/sessions"),
-    selected = $("session").value;
+  const discarded = $("showDiscarded").checked;
+  const sessions = await api(discarded ? "/api/sessions?discarded=1" : "/api/sessions");
+  if (discarded !== $("showDiscarded").checked) return;
+  const selected = $("session").value;
+  tests = new Map(sessions.map((test) => [test.id, test]));
+  const current = currentTest();
+  const initial = discarded
+    ? "Select a discarded test"
+    : current?.name
+      ? `Current test · ${current.name}`
+      : "Current test";
   options(
     $("session"),
     [
-      ["", "Current session"],
-      ...sessions.map((s) => [s.id, s.id + " · " + s.events + " events"]),
+      ["", initial],
+      ...sessions.map((s) => [s.id, (s.name || s.id) + " · " + s.events + " events"]),
     ],
-    selected,
+    tests.has(selected) ? selected : "",
   );
   sessionsAt = Date.now();
 }
+function currentTest() {
+  const test = host?.current_test;
+  return test?.discarded ? null : test;
+}
+function selectedTest() {
+  const id = $("session").value;
+  if (id) return tests.get(id);
+  return $("showDiscarded").checked ? null : currentTest();
+}
+function renderTestDetails() {
+  const test = selectedTest();
+  const button = $("testDetails");
+  button.hidden = !test;
+  button.disabled = !connected || !host?.has_control || busy || testIsActive(test?.id);
+  button.textContent = test?.discarded ? "Restore test" : "Edit test";
+  $("testNotes").hidden = !test?.notes;
+  $("testNotes").querySelector("p").textContent = test?.notes || "";
+  const hideHistory = $("showDiscarded").checked || test?.discarded;
+  $("replay").disabled = !test || hideHistory;
+  for (const id of ["older", "newer"]) $(id).disabled = !!hideHistory;
+  for (const id of ["csv", "raw"]) $(id).hidden = !!hideHistory;
+}
+const finishDialog = $("finishDialog");
+function openTestDialog(test) {
+  if (finishDialog.open) return;
+  editingTest = test;
+  $("finishTitle").textContent = test.name ? "Edit test" : "Finish test";
+  $("testName").value = test.name;
+  $("testNoteInput").value = test.notes;
+  $("finishError").hidden = true;
+  finishDialog.showModal();
+}
+function updateTest(test, action, fields = {}) {
+  return api("/api/session", { id: test.id, action, revision: test.revision, ...fields });
+}
+async function finishTest(action, fields) {
+  const test = editingTest;
+  const controls = $("finishFields");
+  if (!test || controls.disabled) return;
+  controls.disabled = true;
+  $("finishError").hidden = true;
+  try {
+    await updateTest(test, action, fields);
+    finishDialog.close();
+    if (action === "discard" && playback?.session === test.id) $("exitReplay").click();
+    message(action === "discard" ? "Test discarded. Restore it from Run log." : "Test saved");
+    await sync();
+    if (view === "journal") {
+      await refreshSessions();
+      await showPage();
+    }
+  } catch (error) {
+    if (finishDialog.open) {
+      $("finishError").textContent = error.message;
+      $("finishError").hidden = false;
+    } else {
+      message(error.message);
+    }
+  } finally {
+    controls.disabled = false;
+  }
+}
+$("finishTest").onsubmit = (event) => {
+  event.preventDefault();
+  finishTest("save", { name: $("testName").value, notes: $("testNoteInput").value });
+};
+$("discardTest").onclick = () => finishTest("discard");
+$("finishLater").onclick = () => finishDialog.close();
+finishDialog.addEventListener("cancel", (event) => {
+  if ($("finishFields").disabled) event.preventDefault();
+});
+$("testDetails").onclick = () => {
+  const test = selectedTest();
+  if (!test) return;
+  if (!test.discarded) {
+    openTestDialog(test);
+  } else {
+    runAction(async () => {
+      await updateTest(test, "restore");
+      await refreshSessions();
+      await showPage();
+      message("Test restored to Run log");
+    });
+  }
+};
 const logNames =
   "result,attempt,fault,gap,transport_lost,duplicate_delivery,adapter_error,site_record,host_command";
 async function showPage(move) {
   if (!host) return;
+  renderTestDetails();
+  const test = selectedTest();
   const serial = ++logSerial,
-    session = $("session").value || host.state.session_id;
+    session = test?.id,
+    hideHistory = $("showDiscarded").checked || test?.discarded;
   let q = new URLSearchParams({ limit: "60", names: logNames });
   if (session) q.set("session", session);
   if (move === "older" && page.length) q.set("before", page[0].cursor);
   if (move === "newer" && page.length) q.set("after", page.at(-1).cursor);
-  const data = await api("/api/events?" + q);
+  const data = hideHistory ? [] : await api("/api/events?" + q);
   if (serial !== logSerial) return;
   if (move && !data.length) {
     message("End of recorded window");
@@ -632,7 +753,9 @@ async function showPage(move) {
       page[0].cursor +
       "–" +
       page.at(-1).cursor
-    : "No matching recorded events";
+    : hideHistory && test?.discarded
+      ? "Restore this test to view its recording."
+      : "No matching recorded events";
   for (const [id, path] of [
     ["csv", "/export.csv"],
     ["raw", "/export.jsonl"],
@@ -658,6 +781,13 @@ $("session").onchange = () => {
   frozen = !!$("session").value;
   $("detail").hidden = true;
   showPage().catch((e) => message(e.message));
+};
+$("showDiscarded").onchange = () => {
+  $("session").value = "";
+  $("detail").hidden = true;
+  frozen = $("showDiscarded").checked;
+  renderTestDetails();
+  refreshSessions().then(() => showPage()).catch((e) => message(e.message));
 };
 let syncing = null;
 function pauseReplay() {
@@ -733,7 +863,7 @@ function replayError(e) {
 }
 $("replay").onclick = async () => {
   try {
-    const id = $("session").value || host.state.session_id;
+    const id = selectedTest()?.id;
     const session = (await api("/api/sessions")).find((s) => s.id === id);
     if (!session) throw Error("Start a survey to create a recording");
     pauseReplay();
@@ -789,6 +919,7 @@ async function sync() {
         !host ||
         host.host_id !== next.host_id ||
         lastSession !== s.session_id ||
+        host.current_test?.discarded !== next.current_test?.discarded ||
         next.cursor - cursor > 500;
       if (reset) {
         const q = new URLSearchParams({

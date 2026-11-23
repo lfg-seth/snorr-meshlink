@@ -181,9 +181,10 @@
         </div>
         <div class="formrow">
           <label
-            >Recording<select id="session">
-              <option value="">Current session</option>
+            >Test<select id="session">
+              <option value="">Current test</option>
             </select></label
+          ><button id="testDetails" hidden>Edit test</button
           ><button id="replay">Replay on map</button
           ><button id="older">Older events</button
           ><button id="newer">Newer events</button>
@@ -191,6 +192,10 @@
           ><a id="raw" class="button" href="/export.jsonl" download
             >Raw JSONL</a
           >
+        </div>
+        <label class="test-toggle"><input type="checkbox" id="showDiscarded" /> Show discarded tests</label>
+        <div id="testNotes" hidden>
+          <span class="eyebrow">Test notes</span><p></p>
         </div>
         <p id="windowInfo" class="fine"></p>
         <div id="events"></div>
@@ -281,6 +286,21 @@
           </div>
         </div>
       </div>
+    </dialog>
+    <dialog id="finishDialog" aria-labelledby="finishTitle">
+      <h2 id="finishTitle">Finish test</h2>
+      <form id="finishTest">
+        <fieldset id="finishFields">
+          <label>Test name<input id="testName" maxlength="120" required autofocus /></label>
+          <label>Notes <textarea id="testNoteInput" maxlength="2000" rows="4"></textarea></label>
+          <p id="finishError" role="status" hidden></p>
+          <div class="commands">
+            <button class="primary" type="submit">Save test</button>
+            <button id="discardTest" class="discard-test" type="button">Discard test</button>
+            <button id="finishLater" type="button">Later</button>
+          </div>
+        </fieldset>
+      </form>
     </dialog>
     <script type="module" src="/app.js"></script>
   </body>

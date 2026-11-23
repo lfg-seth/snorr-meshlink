@@ -67,6 +67,9 @@ class Recorder:
             CREATE TABLE IF NOT EXISTS commands (id TEXT PRIMARY KEY, request TEXT, ack TEXT);
             CREATE TABLE IF NOT EXISTS sites (id TEXT PRIMARY KEY, lat REAL, lon REAL);
             CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, first INTEGER, last INTEGER, events INTEGER);
+            CREATE TABLE IF NOT EXISTS session_details (
+              id TEXT PRIMARY KEY, name TEXT NOT NULL, notes TEXT NOT NULL,
+              discarded INTEGER NOT NULL CHECK (discarded IN (0, 1)), revision INTEGER NOT NULL);
             INSERT OR IGNORE INTO sessions SELECT session,min(cursor),max(cursor),count(*) FROM events
               WHERE session IS NOT NULL GROUP BY session;
             CREATE TRIGGER IF NOT EXISTS index_session AFTER INSERT ON events WHEN new.session IS NOT NULL BEGIN
@@ -403,15 +406,85 @@ class Recorder:
     def fixed_sites(self):
         return self.configured_sites | self.site_records
 
+    def sessions(self, *, discarded=False):
+        with self.lock:
+            cursor = self.db.cursor()
+            cursor.row_factory = sqlite3.Row
+            rows = cursor.execute("""
+                SELECT s.id,s.first,s.last,s.events,
+                       coalesce(d.name,'') AS name,coalesce(d.notes,'') AS notes,
+                       coalesce(d.discarded,0) AS discarded,coalesce(d.revision,0) AS revision
+                  FROM sessions AS s LEFT JOIN session_details AS d ON s.id=d.id
+                 WHERE coalesce(d.discarded,0)=?
+                 ORDER BY s.last DESC LIMIT 200
+            """, (int(discarded),))
+            return [dict(row) for row in rows]
+
+    def session_details(self, identifier):
+        row = self.db.execute(
+            "SELECT name,notes,discarded,revision FROM session_details WHERE id=?",
+            (identifier,),
+        ).fetchone()
+        name, notes, discarded, revision = row or ("", "", 0, 0)
+        return {
+            "id": identifier, "name": name, "notes": notes,
+            "discarded": discarded, "revision": revision,
+        }
+
+    def update_session(self, payload, controller):
+        identifier = payload.get("id")
+        action = payload.get("action")
+        revision = payload.get("revision")
+        if not isinstance(identifier, str) or not 1 <= len(identifier) <= 128:
+            raise ValueError("Expected a recording ID")
+        if action not in ("save", "discard", "restore") or type(revision) is not int:
+            raise ValueError("Expected a test action and revision")
+        with self.lock:
+            self.check_controller(controller)
+            if not self.db.execute("SELECT 1 FROM sessions WHERE id=?", (identifier,)).fetchone():
+                raise ValueError("Test recording not found")
+            if (
+                identifier == self.state.get("session_id")
+                and self.state.get("run_state") not in ("idle", "stopped")
+            ):
+                raise ValueError("Stop the test before saving or discarding it")
+            current = self.session_details(identifier)
+            updated = current.copy()
+            if action == "save":
+                name, notes = payload.get("name"), payload.get("notes")
+                if not isinstance(name, str) or not 1 <= len(name.strip()) <= 120:
+                    raise ValueError("Enter a test name of up to 120 characters")
+                if not isinstance(notes, str) or len(notes) > 2000:
+                    raise ValueError("Notes must be at most 2,000 characters")
+                if current["discarded"]:
+                    raise ValueError("Restore the test before editing it")
+                updated.update(name=name.strip(), notes=notes)
+            else:
+                updated["discarded"] = int(action == "discard")
+            if updated == current:
+                return current
+            if revision != current["revision"]:
+                raise ValueError("Test details changed. Reopen the test and try again.")
+            updated["revision"] += 1
+            self.db.execute("""
+                INSERT INTO session_details(id,name,notes,discarded,revision)
+                VALUES(:id,:name,:notes,:discarded,:revision)
+                ON CONFLICT(id) DO UPDATE SET name=excluded.name,notes=excluded.notes,
+                    discarded=excluded.discarded,revision=excluded.revision
+            """, updated)
+            return updated
+
     def snapshot(self, token):
         with self.lock:
             reply_ms = self.last_replies.get(self.state.get("target_id"))
+            identifier = self.state.get("session_id")
             return {
                 "host_id": self.host_id,
                 "cursor": self.cursor,
                 "first_cursor": self.first_cursor,
                 "source": self.adapter.source,
                 "state": self.state,
+                "current_test": self.session_details(identifier) if identifier else None,
                 "hello": self.hello,
                 "sites": self.hello.get("targets", {}) | self.fixed_sites(),
                 "last_reply_age_ms": (
@@ -429,7 +502,11 @@ class Recorder:
             }
 
     def history(self, after=None, before=None, session=None, names=None, limit=220):
-        clauses, args = [], []
+        # The recorder removes the index key from routine post-stop events.
+        # Their original session ID still counts when filtering a discarded test.
+        clauses = ["""coalesce(session,json_extract(payload,'$.data.session_id'),'')
+                      NOT IN (SELECT id FROM session_details WHERE discarded=1)"""]
+        args = []
         for key, value in (
             ("cursor>?", after),
             ("cursor<?", before),
@@ -441,7 +518,7 @@ class Recorder:
         if names:
             clauses.append("name IN (" + ",".join("?" for _ in names) + ")")
             args.extend(names)
-        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        where = " WHERE " + " AND ".join(clauses)
         # Reader connection keeps slow clients/export out of the adapter lock.
         conn = sqlite3.connect(self.dbpath)
         try:

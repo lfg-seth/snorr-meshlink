@@ -353,7 +353,12 @@ async function main() {
     await check("Replay, export and immutable history", async () => {
       await page.locator("#stop").click();
       await textIs("#run", "stopped");
+      await page.locator("#testName").fill("Simulator drive test");
+      await page.locator("#testNoteInput").fill("Example field notes");
+      await page.locator('#finishTest button[type="submit"]').click();
+      await page.locator("#finishDialog").waitFor({ state: "hidden" });
       await page.locator('[data-view="journal"]').click();
+      await textIs("#testNotes p", "Example field notes");
       await page.locator("#events button").first().click();
       assert.ok(
         (await page.locator("#detail").innerText()).includes("received_ms"),

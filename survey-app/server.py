@@ -188,15 +188,7 @@ class SurveyHandler(BaseHTTPRequestHandler):
                     )
                 )
             elif path.path == "/api/sessions":
-                with self.host.lock:
-                    rows = self.host.db.execute(
-                        "SELECT id,first,last,events FROM sessions ORDER BY last DESC LIMIT 200"
-                    )
-                    sessions = [
-                        {"id": s, "first": a, "last": b, "events": n}
-                        for s, a, b, n in rows
-                    ]
-                self.reply(sessions)
+                self.reply(self.host.sessions(discarded=q.get("discarded") == "1"))
             elif path.path in ("/export.csv", "/export.jsonl"):
                 self.export(path.path.endswith("csv"), q.get("session"))
             else:
@@ -310,6 +302,8 @@ class SurveyHandler(BaseHTTPRequestHandler):
                     result = self.host.dispatch(
                         payload.get("command"), token, payload.get("revision")
                     )
+                elif self.path == "/api/session":
+                    result = self.host.update_session(payload, token)
                 elif (
                     self.path == "/api/simulation"
                     and self.host.adapter.source == "simulation"

@@ -156,6 +156,44 @@ class DesktopRecorder(unittest.TestCase):
         self.assertGreaterEqual(len(self.host.history(names=["result"])), 2)
         self.assertTrue(self.host.state["heartbeat_ok"])
 
+    def test_finished_test_details_and_reversible_discard(self):
+        started = self.send("start", {"mode": "survey"})
+        identifier = started["applied"]["session_id"]
+        save = {"id": identifier, "action": "save", "revision": 0,
+                "name": "  West approach  ", "notes": "Antenna A\nSecond pass"}
+        with self.assertRaisesRegex(ValueError, "Stop the test"):
+            self.host.update_session(save, self.token)
+        self.send("stop")
+        self.assertEqual(self.host.snapshot(None)["current_test"]["name"], "")
+        saved = self.host.update_session(save, self.token)
+        self.assertEqual((saved["name"], saved["notes"]), ("West approach", save["notes"]))
+        self.assertEqual(self.host.update_session(save, self.token), saved)
+        self.assertEqual(self.host.sessions()[0]["name"], "West approach")
+        with self.assertRaisesRegex(ValueError, "details changed"):
+            self.host.update_session(save | {"notes": "Stale edit"}, self.token)
+
+        self.host.note("gps", {"sample_at": "local_stream"})
+        post_stop = self.host.cursor
+        self.assertTrue(self.host.history(session=identifier))
+        discard = {"id": identifier, "action": "discard", "revision": saved["revision"]}
+        self.host.update_session(discard, self.token)
+        self.assertFalse(self.host.sessions())
+        self.assertFalse(self.host.history(session=identifier))
+        self.assertFalse(self.host.history(after=post_stop - 1, names=["gps"]))
+
+        self.host.close()
+        self.host = Recorder(Simulator(), self.temp.name)
+        self.host.poll()
+        [discarded] = self.host.sessions(discarded=True)
+        self.assertEqual(discarded["notes"], save["notes"])
+        self.assertFalse(self.host.sessions())
+        restored = self.host.update_session(
+            discard | {"action": "restore", "revision": discarded["revision"]}, self.token,
+        )
+        self.assertEqual(restored["name"], "West approach")
+        self.assertTrue(self.host.history(session=identifier))
+        self.assertFalse(self.host.sessions(discarded=True))
+
     def test_watchdog_keeps_last_success_by_target_across_restart(self):
         def result(sequence, target, status, received, **fields):
             with patch("recorder.time.time", return_value=received):
