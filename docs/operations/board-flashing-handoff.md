@@ -54,6 +54,11 @@ Update the roster from the verified deployment records when assignments move,
 then restart the recorder while idle. Saved site edits take precedence over
 the roster's default coordinates. [Current site records](../../records/sites.md).
 
+After **Stop**, use **Save test** to give the recording a name and optional
+notes. Choose **Later** to edit it from **Run log**. **Discard test** hides
+the recording from the regular log, replay and exports. Use **Show discarded
+tests** and **Restore test** in Run log to recover it.
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.

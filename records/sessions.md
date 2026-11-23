@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-23 - Added names, notes and discard for Field Survey tests
+
+Deployed survey source `e9f630b` to the laptop with a finish form that opens
+after Stop. Test names and notes are stored with the recording and editable
+from Run log. Discard hides the test from the normal log, replay and exports.
+Restore makes the same recording available again.
+
+All 18 survey checks passed. A simulator browser run confirmed the form opened
+from the full map after Stop, retained a name and multiline notes, hid the
+discarded test and restored it. Both live URLs served the updated form and
+test details API. Verified a private database backup and retention of all
+13 existing test IDs. Next: name and annotate the next completed drive test.
+[Laptop handoff](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
 ## 2026-11-23 - Showed survey site names and the reply watchdog
 
 Deployed survey source `9b949f1` to the field laptop. The selector now shows
