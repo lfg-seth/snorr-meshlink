@@ -1,5 +1,8 @@
 # Board flashing and configuration handoff
 
+For a screenless 16 MB Heltec V4 SD gateway that needs CLIENT packet relaying
+and MQTT-to-mesh text, use the [client gateway release and configuration guide](gateway-client-firmware.md).
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
