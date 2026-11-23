@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-23 - Verified laptop USB survey contact with Angel Peak
+
+Matched recorded direct replies to physical RX packet IDs for Mountain Side
+R011 and Vegas Side R005. Checked the live service, both deployment profiles,
+the firmware deadline and USB records through 14:44:36 PST. R011 returned
+57 on time and one late. Its saved receiver boost is off. Next field check
+compares reply windows at a stationary point and uses responder-side logs
+when available. [Measurements and limits](field-results.md#2026-11-23---laptop-usb-survey-contact-with-angel-peak).
+
 ## 2026-11-23 - Applied dual-GPS survey interlock
 
 App-only flashed the idle laptop SURV to `2.7.26.35b35d5`. The verified

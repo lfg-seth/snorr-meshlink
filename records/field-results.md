@@ -1,5 +1,58 @@
 # Field testing and tangible results
 
+## 2026-11-23 - Laptop USB survey contact with Angel Peak
+
+The OLED Heltec V4 SURV made direct contact with both deployed Angel Peak
+radios. This read-only audit covers results from 14:08 through 14:44:36 PST.
+The recorder was still running when checked. The raw USB adapter journal and
+the recorder's SQLite results agree. Each on-time reply packet ID also matches
+a physical zero-hop RX event from the selected radio.
+
+| Selected site | On-time replies / completed attempts | Timeouts | Confirmed late replies |
+| --- | ---: | ---: | ---: |
+| Mountain Side, R011 `!8737c2c9` | 57 / 286 (19.9%) | 229 | 1 |
+| Vegas Side, R005 `!a65601b3` | 4 / 161 (2.5%) | 157 | 0 |
+
+The denominator counts successes and timeouts. The one late reply belongs to
+an attempt already counted as a timeout. Two cancelled R011 attempts and one
+cancelled R005 attempt are excluded. The sites were sampled over different
+parts of the drive. The recordings do not identify the moment the operator
+had visual line of sight.
+
+**Configuration.** The live service reported enrolled SURV `!699c2ed8`,
+firmware `2.7.26.35b35d5`, the production profile, TX enabled and a healthy
+USB heartbeat. The target roster maps both site names to their deployed IDs.
+SURV and both responders' saved reboot readbacks agree on the primary
+channel name and key, US LongFast, slot 35 and 10 dBm configured output.
+The SURV boot log confirms 910.625 MHz. The saved receiver boost setting
+is enabled on SURV and R005 and disabled on R011. These responder settings
+come from November 15. Actual antenna output and field receiver sensitivity
+were unmeasured.
+
+**Timing and radio evidence.** The 4,500 ms deadline starts at firmware
+enqueue. R011's on-time replies took 1.795–4.411 seconds from enqueue
+(median 2.429 seconds). One authenticated R011 reply took 5.395 seconds.
+The radio logged completed TX with a valid fix for 226 of 229 R011
+timeouts and 155 of 157 R005 timeouts. For the other five timeouts, two
+transmissions had started and three had no TX-start record at expiry.
+Running state samples during these intervals reported healthy heartbeats
+and zero queue drops. The recorder logged no transport-loss, GPS fault or
+stream-gap event during the Angel Peak survey windows.
+
+On successful R011 exchanges the repeater reported a median ping RSSI of
+−99 dBm, and SURV reported a median reply RSSI of −80 dBm. Receiver readings
+are uncalibrated. One additional zero-hop R011 survey-port packet had no
+matching result. Its payload could not be associated with a specific ping.
+For the remaining misses, determining which pings reached the repeater and
+which replies it sent requires responder-side evidence.
+
+**Next field check.** From one stationary line-of-sight location with the
+same target and antenna position, compare equal sets of probes at the
+production 4.5-second timeout and a longer timeout. Compare the firmware
+TX and reply timestamps and, when available, the responder's received pings
+and transmitted replies. The recorder and radio settings stayed in service
+throughout this review.
+
 ## 2026-11-23 - Laptop GPS keeps USB surveys running
 
 The earlier Heltec stale-fix pause occurred at 13:37:25 PST. The recorder
