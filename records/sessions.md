@@ -20,6 +20,14 @@ router and Mosquitto connection logs. Broker connection-reason logs were
 unavailable to the SSH account. The exact failing component remains open.
 [MQTT routing](../docs/operations/mqtt-nginx-handoff.md)
 
+Broker SSH follow-up at 10:44 Pacific confirmed Mosquitto active since
+November 21 at 11:04 UTC. The SSH account lacks read permission on the
+Mosquitto log directory, its journal view returned no entries in the incident
+window, and sudo requires interactive authentication. The owner controls
+neither the router nor Nginx and paused the inspection until desktop access
+is available. The unattended SSH prompt was closed. Resume with the broker's
+current or rotated log for client `meshlink-pilot-gps`.
+
 ## 2026-11-23 - Deployed member tracker Activity
 
 Deployed `meshlink-v0.4.16` from merged PR #100 at `35a309a`. Exact-host
