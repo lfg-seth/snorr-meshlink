@@ -11,6 +11,7 @@
   --paper: #fcfcf6;
   --accent: #1d5542;
   color-scheme: light;
+  touch-action: pan-x pan-y;
 }
 * {
   box-sizing: border-box;
@@ -45,6 +46,11 @@ button,
 summary,
 select {
   cursor: pointer;
+}
+button,
+.button,
+summary {
+  touch-action: none;
 }
 button:hover,
 .button:hover,
@@ -208,6 +214,27 @@ label,
 #alert {
   margin: 9px 0;
 }
+#pauseAlert {
+  display: grid;
+  width: min(100%, 470px);
+  gap: 2px;
+  margin: 8px 0;
+  padding: 10px 14px;
+  border: 2px solid #ffabb1;
+  border-radius: 8px;
+  background: #a61126;
+  color: #fff;
+  box-shadow: 0 2px 8px #3b121a68;
+}
+#pauseTitle {
+  font-size: clamp(20px, 4.6vw, 26px);
+  line-height: 1.1;
+}
+#pauseReason {
+  font-size: 16px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
 #detail {
   white-space: pre-wrap;
 }
@@ -235,7 +262,8 @@ label {
   font-weight: 600;
 }
 select,
-input {
+input,
+textarea {
   font-size: 16px;
   min-width: 0;
   max-width: 100%;
@@ -298,7 +326,6 @@ nav .active {
   display: block;
   width: 100%;
   height: 100%;
-  touch-action: pan-y pinch-zoom;
 }
 .maptools {
   position: absolute;
@@ -677,35 +704,33 @@ main {
   align-items: center;
   gap: 6px;
 }
-.hudtop,
 .hudrow {
   justify-content: space-between;
 }
-.map-source,
+.hudtop {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 .pills span {
   border-radius: 20px;
   box-shadow: 0 1px 5px #26342432;
   font:
-    650 12px/1.4 ui-monospace,
+    750 14px/1.3 ui-monospace,
     Consolas,
     monospace;
-}
-.map-source {
-  background: #f4d899;
-  color: #392e15;
-  padding: 5px 12px;
+  font-variant-numeric: tabular-nums;
 }
 .pills {
   flex-wrap: wrap;
-  margin-top: 7px;
-  max-width: calc(100% - 53px);
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 44px;
 }
 .pills span {
-  background: #fbfbf1ec;
-  padding: 4px 9px;
-}
-#pillRecord {
-  color: #1c523a;
+  background-color: var(--pill-color, #fbfbf1ec);
+  padding: 5px 8px;
+  white-space: nowrap;
+  transition: background-color 200ms ease;
 }
 #mapTarget {
   display: flex;
@@ -746,13 +771,6 @@ main {
   font-size: 14px;
   pointer-events: auto;
 }
-#targetMount #mapTarget {
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 6px;
-  border-radius: 6px;
-  box-shadow: 0 1px 5px #26342432;
-}
 @media (max-width: 430px) {
   #mapTarget {
     gap: 4px 8px;
@@ -760,11 +778,6 @@ main {
   }
   .target-evidence {
     flex: 1;
-  }
-}
-@media (max-height: 420px) and (min-width: 481px) {
-  #targetMount {
-    max-width: calc(100% - 195px);
   }
 }
 .hudfoot {
@@ -788,8 +801,7 @@ main {
   border-radius: 9px;
 }
 #mapdialog .north {
-  top: max(75px, calc(env(safe-area-inset-top) + 65px));
-  right: max(10px, env(safe-area-inset-right));
+  display: none;
 }
 #mapdialog .scale {
   left: max(5px, env(safe-area-inset-left));
@@ -840,14 +852,11 @@ main {
 @media (max-height: 420px) {
   #mapdialog .maptools {
     flex-direction: row;
-    bottom: auto;
-    top: max(61px, calc(env(safe-area-inset-top) + 50px));
   }
-  #mapdialog .north {
-    display: none;
-  }
-  .pills {
-    max-width: calc(100% - 200px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pills span {
+    transition: none;
   }
 }
 #replaybar {

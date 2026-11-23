@@ -224,13 +224,17 @@ async function main() {
       "Target framing, sample filter and repeater coordinates",
       async () => {
         await page.setViewportSize({ width: 382, height: 580 });
-        await page.locator("#openMap").click();
         await textIs("#mapTargetId", "SIM-R01");
         await textIs("#siteOrigin", "Simulator coordinates");
+        await page.locator("#locateTarget").click();
+        await page.locator("#openMap").click();
+        assert.equal(await page.locator("#mapdialog #mapTarget").count(), 0);
+        assert.match(await page.locator("#pillGpsAge").textContent(), /^H .* s$/);
+        assert.match(await page.locator("#pillSatellites").textContent(), /sat$/);
+        assert.equal(await page.locator("#mapdialog #pillAltitude").count(), 1);
         await page.locator("#maplayers summary").click();
         await page.locator("#filter").selectOption("SIM-R02");
         await page.locator("#maplayers summary").click();
-        await page.locator("#locateTarget").click();
         assert.equal((await state()).state.target_id, "SIM-R01");
         await page.waitForFunction(() => {
           const canvas = document.querySelector("#map");
@@ -315,6 +319,13 @@ async function main() {
       await page.locator('[data-view="readout"]').click();
       await page.locator("#scenario").selectOption("No GPS");
       await textIs("#run", "paused");
+      await textIs("#pauseTitle", "Survey paused");
+      await textIs("#pauseReason", "Survey GPS fix unavailable");
+      await page.locator('[data-view="field"]').click();
+      await page.locator("#openMap").click();
+      assert.ok(await page.locator("#mapdialog #pauseAlert").isVisible());
+      await page.locator("#closeMap").click();
+      await page.locator('[data-view="readout"]').click();
       await page.locator("#scenario").selectOption("Strong link");
       await page.waitForFunction(() =>
         document.querySelector("#facts").textContent.includes("Fix ·"),
@@ -324,6 +335,7 @@ async function main() {
       await textIs("#run", "running");
       await page.locator("#go").click();
       await textIs("#run", "paused");
+      assert.ok(await page.locator("#pauseAlert").isHidden());
     });
     await check(
       "Short keyboard viewport; applied numeric settings and target",

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
     />
     <meta name="theme-color" content="#192f2a" />
     <title>Field Survey · SNORR MeshLink</title>
@@ -29,6 +29,12 @@
         <div class="health">
           <span id="connection">Connecting…</span
           ><span id="recording">Recorder pending</span>
+        </div>
+      </div>
+      <div id="pauseHome">
+        <div id="pauseAlert" role="alert" hidden>
+          <strong id="pauseTitle">Survey paused</strong>
+          <span id="pauseReason"></span>
         </div>
       </div>
       <div id="alert" role="status" hidden></div>
@@ -263,16 +269,18 @@
       <div class="maphud">
         <div class="hudtop">
           <button id="closeMap" aria-label="Close map and return to survey">
-            ← Survey</button
-          ><span class="map-source" id="fullSource"></span>
+            ← Survey
+          </button>
+          <div class="pills" aria-label="Survey indicators">
+            <span id="pillSignal"></span>
+            <span id="pillGpsAge"></span>
+            <span id="pillSatellites"></span>
+            <span id="pillHdop"></span>
+            <span id="pillAltitude" hidden></span>
+            <span id="mapMode" hidden></span>
+          </div>
         </div>
-        <div id="targetMount"></div>
-        <div class="pills" aria-label="Survey indicators">
-          <span id="pillRun"></span><span id="pillSignal"></span
-          ><span id="pillGps"></span><span id="pillGpsStats" hidden></span
-          ><span id="pillLaptopGps" hidden></span><span id="pillRecord"></span
-          ><span id="pillMap" hidden></span>
-        </div>
+        <div id="pauseMount"></div>
       </div>
       <div class="hudfoot">
         <div id="pickmount"></div>

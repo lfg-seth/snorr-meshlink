@@ -49,11 +49,36 @@ function message(s) {
 }
 function alerts() {
   const s = host?.state || {};
+  const active = s.run_state === "running" || s.run_state === "paused";
+  let title = "", reason = "";
+  if (!connected && active) {
+    title = "Connection lost";
+    reason = "The recorder is unreachable.";
+  } else if (s.run_state === "paused" && s.fault) {
+    title = "Survey paused";
+    reason = {
+      gps_stale: "Heltec GPS fix is stale",
+      transport_lost: "Radio connection or heartbeat lost",
+      event_gap: "Radio events were missed",
+      host_reconnected: "Recorder reconnected to the radio",
+      radio_profile_unknown: "Radio profile could not be verified",
+    }[s.fault] || s.fault;
+  } else if (host?.record_error) {
+    title = "Recording stopped";
+    reason = host.record_error;
+  } else if (active && host?.adapter_error) {
+    title = "Radio connection lost";
+    reason = host.adapter_error;
+  }
+  const pauseAlert = $("pauseAlert");
+  if ($("pauseTitle").textContent !== title) $("pauseTitle").textContent = title;
+  if ($("pauseReason").textContent !== reason) $("pauseReason").textContent = reason;
+  pauseAlert.hidden = !title;
   const lines = [
-    !connected && "Browser disconnected · last received values",
-    host?.record_error,
-    host?.adapter_error,
-    s.fault,
+    !title && !connected && "Browser disconnected · last received values",
+    !title && host?.record_error,
+    !title && host?.adapter_error,
+    !title && s.fault,
     s.mode === "bench" && "Bench mode · coverage acceptance disabled",
     viewGap,
     notice,
@@ -148,6 +173,66 @@ function gpsStats(gps) {
     Number.isFinite(gps.altitude_m) ? `${Math.round(gps.altitude_m)} m alt` : "",
   ].filter(Boolean).join(" · ");
 }
+function setPill(id, text, label, value, limits) {
+  const pill = $(id);
+  pill.textContent = text;
+  pill.title = label;
+  pill.setAttribute("aria-label", label);
+  if (limits && Number.isFinite(value)) {
+    const [red, amber, green] = limits;
+    const clamp = (fraction) => Math.max(0, Math.min(1, fraction));
+    const hue = 44 * clamp((value - red) / (amber - red)) +
+      86 * clamp((value - amber) / (green - amber));
+    pill.style.setProperty("--pill-color", `hsl(${hue.toFixed(1)} 76% 80%)`);
+  } else {
+    pill.style.removeProperty("--pill-color");
+  }
+}
+function renderMapPills(state, result) {
+  const direction = $("direction").value;
+  const metric = $("metric").value;
+  const snr = metric === "snr_db";
+  const signalLimits = snr ? [-5, 0, 5] : [-120, -105, -90];
+  const signal = connected || playback ? result?.[direction]?.[metric] : null;
+  const arrow = direction === "uplink" ? "↑" : "↓";
+  const units = snr ? "dB" : "dBm";
+  const signalText = Number.isFinite(signal)
+    ? `${snr ? signal.toFixed(1) : Math.round(signal)} ${units}`
+    : "—";
+  setPill("pillSignal", `${arrow} ${signalText}`,
+    `${direction === "uplink" ? "Uplink" : "Downlink"} ${snr ? "SNR" : "RSSI"}: ${signalText}`,
+    result?.status === "timeout" ? signalLimits[0] : signal, signalLimits);
+
+  const radio = connected || playback ? state.gps || {} : {};
+  const laptop = !connected || playback ? null : host.laptop_gps;
+  const fromLaptop = !(radio.valid && hasPosition(radio)) && laptop?.valid && hasPosition(laptop);
+  const gps = fromLaptop ? laptop : radio;
+  const source = fromLaptop ? "Laptop" : "Heltec";
+  const limit = fromLaptop ? 3000 : state.settings?.gps_max_age_ms || 2000;
+  const age = gps.fix_age_ms;
+  const ageText = Number.isFinite(age) ? `${(age / 1000).toFixed(age >= 10000 ? 0 : 1)} s` : "— s";
+  setPill("pillGpsAge", `${fromLaptop ? "L" : "H"} ${ageText}`,
+    `${source} GPS fix age: ${ageText}${gps.valid ? "" : " · no fresh fix"}`,
+    gps.valid ? age : limit, [limit, limit * 0.6, limit * 0.25]);
+
+  const sats = gps.valid ? gps.satellites : null;
+  setPill("pillSatellites", `${sats ?? "—"} sat`, `${source} GPS satellites: ${sats ?? "unavailable"}`,
+    sats, [4, 6, 10]);
+  const hdopFromLaptop = !fromLaptop && !Number.isFinite(radio.hdop) && laptop?.valid;
+  const hdop = hdopFromLaptop ? laptop.hdop : gps.valid ? gps.hdop : null;
+  const hdopText = Number.isFinite(hdop) ? hdop.toFixed(1) : "—";
+  setPill("pillHdop", `HDOP${hdopFromLaptop && Number.isFinite(hdop) ? " L" : ""} ${hdopText}`,
+    `${fromLaptop || hdopFromLaptop ? "Laptop" : "Heltec"} GPS HDOP: ${hdopText}`, hdop, [5, 2.5, 1.3]);
+  $("pillAltitude").hidden = !(gps.valid && Number.isFinite(gps.altitude_m));
+  if (!$("pillAltitude").hidden) {
+    const altitude = `${Math.round(gps.altitude_m)} m`;
+    setPill("pillAltitude", altitude, `${source} GPS altitude: ${altitude}`);
+  }
+
+  const label = playback ? "Replay" : host.source === "simulation" ? "Sim" : state.mode === "bench" ? "Bench" : "";
+  $("mapMode").textContent = label;
+  $("mapMode").hidden = !label;
+}
 const targetLabel = (id, site = host?.sites?.[id]) => {
   const names = host?.target_names?.[id];
   if (site?.site_name) return `${site.site_name} (${names?.short_name || id})`;
@@ -181,7 +266,7 @@ const mapDialog = $("mapdialog"),
 function openMap() {
   if (mapDialog.open) return;
   $("mapmount").append(stage);
-  $("targetMount").append($("mapTarget"));
+  $("pauseMount").append($("pauseAlert"));
   $("optionmount").append($("mapsettings"));
   $("pickmount").append($("pick"));
   document.body.classList.add("map-open");
@@ -193,7 +278,7 @@ function closeMap() {
   if (!mapDialog.open) return;
   mapDialog.close();
   $("maphome").append(stage);
-  $("targetHome").append($("mapTarget"));
+  $("pauseHome").append($("pauseAlert"));
   $("optionshome").append($("mapsettings"));
   $("pickhome").append($("pick"));
   $("maplayers").open = false;
@@ -219,6 +304,8 @@ window.addEventListener("popstate", () => {
 });
 $("mapAction").onclick = () => $("go").click();
 $("mapStop").onclick = () => $("stop").click();
+for (const event of ["gesturestart", "gesturechange"])
+  document.addEventListener(event, (gesture) => gesture.preventDefault(), { passive: false });
 function renderRun() {
   if (!host) return;
   const s = host.state,
@@ -401,18 +488,9 @@ function render() {
   $("down").textContent = readings(result?.downlink);
   const gps = s.gps || {};
   const mapState = playback?.state || s;
-  const mapGps = mapState.gps || {};
   const mapResult = playback
     ? playback.rows.findLast((r) => isTargetResult(r, mapState))?.event.data
     : result;
-  $("fullSource").textContent = playback
-    ? host.source === "simulation"
-      ? "Simulation · replay"
-      : "Live recording · replay"
-    : host.source === "simulation"
-      ? "Simulation"
-      : "Live";
-  $("pillRun").textContent = mapState.run_state || "Awaiting state";
   if (!playback)
     targetSummary(
       s,
@@ -421,33 +499,7 @@ function render() {
       false,
     );
   if (!playback && discarded) $("mapReply").textContent = "Test discarded";
-  const mapDir = $("direction").value,
-    mapMetric = $("metric").value;
-  $("pillSignal").textContent =
-    (mapDir === "uplink" ? "↑ " : "↓ ") +
-    (mapMetric === "snr_db" ? "SNR " : "RSSI ") +
-    unit(
-      mapResult?.[mapDir]?.[mapMetric],
-      mapMetric === "snr_db" ? "dB" : "dBm",
-    );
-  $("pillGps").textContent = `Heltec GPS · ${gpsStatus(mapGps)}`;
-  const radioStats = gpsStats(mapGps);
-  $("pillGpsStats").textContent = radioStats;
-  $("pillGpsStats").hidden = !radioStats;
-  const laptopGps = playback ? null : host.laptop_gps;
-  $("pillLaptopGps").hidden = !laptopGps;
-  if (laptopGps) {
-    const label = laptopGps.valid && !mapGps.valid ? "Laptop GPS (map)" : "Laptop GPS";
-    $("pillLaptopGps").textContent = [label, gpsStatus(laptopGps), gpsStats(laptopGps)]
-      .filter(Boolean).join(" · ");
-  }
-  $("pillRecord").textContent = !connected
-    ? "Host offline"
-    : host.recording
-      ? playback
-        ? "● Host recording"
-        : "● Recording"
-      : "Recording fault";
+  renderMapPills(mapState, mapResult);
   const facts = [
     ["Selected repeater", targetLabel(s.target_id)],
     ["Last round trip", result?.status || "No result"],
@@ -466,11 +518,12 @@ function render() {
     ],
     [
       "Heltec GPS",
-      gps.valid
-        ? "Fix · " + unit(gps.fix_age_ms, "ms")
-        : "No fresh fix" +
-          (gps.fix_age_ms != null ? " · " + unit(gps.fix_age_ms, "ms") : ""),
+      [gpsStatus(gps), gpsStats(gps)].filter(Boolean).join(" · "),
     ],
+    ...(host.laptop_gps ? [[
+      "Laptop GPS",
+      [gpsStatus(host.laptop_gps), gpsStats(host.laptop_gps)].filter(Boolean).join(" · "),
+    ]] : []),
     ["Measured interval", unit(s.measured_interval_ms, "ms")],
     [
       "Scheduled interval",

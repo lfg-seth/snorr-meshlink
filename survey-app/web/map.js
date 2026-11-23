@@ -380,8 +380,6 @@ export class SurveyMap {
       }
     }
     el("mapready").textContent = this.outage ? "Outage · grid" : ready;
-    el("pillMap").hidden = !this.outage && ready === "Offline area";
-    el("pillMap").textContent = el("mapready").textContent;
     const metric = el("metric").value,
       dir = el("direction").value,
       filter = el("filter").value;
@@ -514,7 +512,7 @@ export class SurveyMap {
       g.fill();
       const name =
         targetSite.site_name || this.targetNames[this.target]?.short_name || this.target;
-      const label = "TARGET · " + name;
+      const label = name;
       g.font = "bold 12px system-ui";
       const width = g.measureText(label).width + 12;
       const left = clamp(
