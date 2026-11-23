@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-23 - Deployed member tracker Activity
+
+Deployed `meshlink-v0.4.16` from merged PR #100 at `35a309a`. Exact-host
+tests, public hashes, both backup checksums and isolated live/demo restores
+passed. The signed-in Activity view rendered two member cards with GPS and
+telemetry readings, one current assignment, and a client node-info packet in
+the recent feed. Fresh archive and feed delivery passed after the final backup
+restart. A new client GPS or telemetry transmission remains to be observed
+when a radio next reports. [Checks and rollback history](../docs/operations/field-portal.md#november-23-member-tracker-activity-deployment).
+
 ## 2026-11-23 - Added member trackers to Activity
 
 Prepared MeshLink 0.4.16 on `codex/member-client-activity`. Activity includes

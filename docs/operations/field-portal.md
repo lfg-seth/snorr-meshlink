@@ -1,5 +1,42 @@
 # Field portal and activity
 
+## November 23 member tracker Activity deployment
+
+MeshLink 0.4.16 is live at tagged main commit
+`35a309af05da3db619f0cbacb2b726d9b3e09687`.
+[PR #100](https://github.com/lfg-seth/snorr-meshlink/pull/100) adds member
+GPS and telemetry to Activity. PR, main and tag CI passed. The exact release
+on the host passed 101 backend tests, 72 portal tests, 55 script tests,
+typecheck, the live build and installed migration parity.
+
+All ten public files matched the build, anonymous Activity returned 401 and
+all seven services were active. The signed-in renderer showed eleven node
+cards, including two member radios, and eight recent packet tiles. The feed
+included a client node-info transmission. A new original packet matched its
+archived receipt after service startup, and retained routes stayed stable.
+Application table counts and private configuration and queue hashes matched
+across promotion. Previous files are retained under
+`/opt/meshlink-rollback-field-35a309a`.
+
+Two earlier promotion attempts restored 0.4.15 automatically. The first
+exposed a misencoded route separator in the verifier. The second received
+a fresh packet, then timed out waiting for another within four minutes.
+The corrected check matches a post-startup feed entry to its original archive
+receipt and compares retained entries across refreshes.
+
+| Backup (UTC) | SHA-256 |
+| --- | --- |
+| 20261123T174940Z | `3c00bd9f529d630c1c0070c81f2301ae00a5d3e24b09259249d98863b9aa7a94` |
+| 20261123T180547Z | `d3217a0ff9da7cbf4a4af29c1c6f1e396b73bb9f79d14c159c38728d3ba4a6b7` |
+
+Both backup checksums and all four isolated live/demo restores passed.
+The public asset, service, authenticated render and fresh receipt checks
+passed again after the post-release backup restarted the services.
+Both member cards had stored GPS and telemetry, and one had a current
+assignment. A check ending 270 seconds after promotion observed no new client
+GPS or telemetry packet. Confirm those feed entries when a member radio next
+reports through a gateway.
+
 ## November 21 member map restoration
 
 MeshLink 0.4.15 ships [PR #98](https://github.com/lfg-seth/snorr-meshlink/pull/98)
