@@ -76,3 +76,31 @@ Two status replies ten seconds apart reported Wi-Fi associated, an assigned IP,
 credentials and logs remain ignored under `private/bench/g003-wifi-20261117/`.
 Vehicle runtime, sustained field reliability and fresh portal receipt were not
 measured in this check.
+
+## 2026-11-23 USER button stalls and missing portal reports
+
+USB readback identified G003 **!849ad7a0**, running **2.7.26.6fea6aa**.
+The owner reported that the USER button briefly froze and recovered during
+the serial check. At 11:12:14 Pacific, the radio started a direct MQTT
+connection attempt. It failed at 11:12:21. Three read-only metadata requests
+sent during the attempt came back together at 11:12:22, after 7.60, 5.52 and
+3.45 seconds. Later replies took about half a second. This build runs the
+synchronous MQTT connection and button polling in the same main loop, so a
+blocked connection attempt can delay button handling. The USB bridge
+remained attached during this reproduction. Earlier, the laptop's hub
+dropped G003 and two other USB devices together and re-enumerated G003.
+
+One initial status reply showed no Wi-Fi association or IP. On recheck,
+six status replies showed the expected Wi-Fi associated with an IP at
+−19 to −21 dBm and direct MQTT disconnected. MQTT, TLS and one channel
+uplink were enabled. The laptop's connection to TCP 8883 timed out over
+that same Wi-Fi. The production portal host resolved the same IPv4 address
+and negotiated TLS 1.3 with the endpoint. Activity was live with fresh
+reports from other gateways. G003's last recorded heartbeat arrived at
+09:18:01 Pacific, 81 seconds into that boot, with Wi-Fi up and MQTT down.
+
+The Wi-Fi network's path to `mqtt.snorr.org:8883` needs investigation.
+Test the gateway on a network that can reach that endpoint and verify direct
+MQTT, a new G003 receipt in Activity and continued button response. The exact
+routing or filtering fault remains unconfirmed. Serial was closed after
+read-only checks.

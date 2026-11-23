@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-11-23 - Seth Mobile button stall and uplink diagnosis
+
+USB identified G003 **!849ad7a0** on **2.7.26.6fea6aa**. The owner
+reported a brief USER button freeze during the serial check. Three metadata
+replies queued during a seven-second MQTT connection attempt and returned
+immediately after it failed. G003 associated with Wi-Fi and obtained an IP;
+direct MQTT stayed down. The laptop timed out on broker TCP 8883 over the
+same Wi-Fi, while the portal host negotiated TLS to the same address.
+Serial is closed and the radio and services were only queried. Next: test
+on a network with broker reachability and verify a fresh Activity receipt
+and button response. [Bench evidence](../docs/operations/g003-mobile-gateway.md#2026-11-23-user-button-stalls-and-missing-portal-reports).
+
 ## 2026-11-21 - Lee Fire Station live portal handoff
 
 Moved the live Lee Fire Station roster entry from failed G001 **!1bbf0638**
