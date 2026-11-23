@@ -85,6 +85,8 @@ Omit `site` when the target has no current fixed location. The selector uses the
 
 After **Stop**, enter a test name and optional notes, then choose **Save test**. **Later** keeps the recording available under **Run log**, where **Edit test** opens the same fields for existing tests. **Discard test** hides the test from the regular log, replay and exports. Use **Show discarded tests** and **Restore test** in Run log to undo a discard.
 
+The full map shows the Heltec fix age, satellites, fix quality code and altitude when available. Add `--laptop-gps` with the separate laptop receiver's USB by-ID path to see its fix age, satellites, HDOP and altitude. A fresh laptop fix supplies the live map dot when the Heltec fix goes stale. New attempt and result records can include the laptop fix at host receipt as a separate JSONL field. Survey mode still pauses when the Heltec fix is stale, and recorded radio positions retain their original source.
+
 ## Recording and recovery
 
 The host ticks independently of HTTP clients. The firmware owns RF scheduling, GPS gating and the heartbeat interlock. The simulator models those responsibilities inside its adapter. Each source has a separate SQLite database below ignored `local-data/direct-hop-survey/{simulation,live}/`. A source lease prevents concurrent hosts from opening the same source directory. Keep the same data directory for reconnect and replay. To move a recording, stop the host before copying its data directory, or use SQLite's online backup API.

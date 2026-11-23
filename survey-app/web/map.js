@@ -277,7 +277,9 @@ export class SurveyMap {
     this.rows = rows;
     this.sites = state.sites || {};
     this.targetNames = state.target_names || {};
-    this.gps = state.state.gps;
+    const radioGps = state.state.gps;
+    this.laptopFallback = !good(radioGps) && good(state.laptop_gps);
+    this.gps = this.laptopFallback ? state.laptop_gps : radioGps;
     this.target = state.state.target_id;
     this.outage = state.state.scenario === "Map outage";
     this.draw();
@@ -487,6 +489,12 @@ export class SurveyMap {
       g.strokeStyle = "white";
       g.lineWidth = 2;
       g.stroke();
+      if (this.laptopFallback) {
+        g.font = "bold 12px system-ui";
+        g.strokeText("Laptop GPS", x + 9, y + 4);
+        g.fillStyle = "#1e4e64";
+        g.fillText("Laptop GPS", x + 9, y + 4);
+      }
     }
     if (hasPosition(targetSite)) {
       const [x, y] = ll(targetSite.lon_deg, targetSite.lat_deg);

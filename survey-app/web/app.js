@@ -131,6 +131,23 @@ document
 const unit = (v, s) => (Number.isFinite(v) ? v + " " + s : "—");
 const readings = (d) =>
   d ? unit(d.rssi_dbm, "dBm") + " / " + unit(d.snr_db, "dB") : "—";
+function gpsStatus(gps) {
+  const age = Number.isFinite(gps.fix_age_ms)
+    ? `${(gps.fix_age_ms / 1000).toFixed(1)} s`
+    : "";
+  if (gps.valid) return age ? `Fix · ${age}` : "Fix";
+  if (gps.connected === false) return "Disconnected";
+  return age ? `Stale · ${age}` : "No fix";
+}
+function gpsStats(gps) {
+  if (!gps.valid) return "";
+  return [
+    Number.isFinite(gps.satellites) ? `${gps.satellites} sats` : "",
+    Number.isFinite(gps.quality) ? `Q${gps.quality}` : "",
+    Number.isFinite(gps.hdop) ? `HDOP ${gps.hdop.toFixed(2)}` : "",
+    Number.isFinite(gps.altitude_m) ? `${Math.round(gps.altitude_m)} m alt` : "",
+  ].filter(Boolean).join(" · ");
+}
 const targetLabel = (id, site = host?.sites?.[id]) => {
   const names = host?.target_names?.[id];
   if (site?.site_name) return `${site.site_name} (${names?.short_name || id})`;
@@ -413,9 +430,17 @@ function render() {
       mapResult?.[mapDir]?.[mapMetric],
       mapMetric === "snr_db" ? "dB" : "dBm",
     );
-  $("pillGps").textContent = mapGps.valid
-    ? "GPS " + unit(mapGps.fix_age_ms, "ms")
-    : "GPS · no fix";
+  $("pillGps").textContent = `Heltec GPS · ${gpsStatus(mapGps)}`;
+  const radioStats = gpsStats(mapGps);
+  $("pillGpsStats").textContent = radioStats;
+  $("pillGpsStats").hidden = !radioStats;
+  const laptopGps = playback ? null : host.laptop_gps;
+  $("pillLaptopGps").hidden = !laptopGps;
+  if (laptopGps) {
+    const label = laptopGps.valid && !mapGps.valid ? "Laptop GPS (map)" : "Laptop GPS";
+    $("pillLaptopGps").textContent = [label, gpsStatus(laptopGps), gpsStats(laptopGps)]
+      .filter(Boolean).join(" · ");
+  }
   $("pillRecord").textContent = !connected
     ? "Host offline"
     : host.recording

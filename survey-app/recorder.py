@@ -46,8 +46,9 @@ def load_adapter(source, path, device=None, expected_id=None, root=None):
 
 
 class Recorder:
-    def __init__(self, adapter, root, *, configured_sites=None):
+    def __init__(self, adapter, root, *, configured_sites=None, laptop_gps=None):
         self.adapter = adapter
+        self.laptop_gps = laptop_gps
         self.root = Path(root) / adapter.source
         self.root.mkdir(parents=True, exist_ok=True)
         self.dbpath = self.root / "survey.sqlite3"
@@ -203,6 +204,10 @@ class Recorder:
             )
         if name in ("attempt", "result", "state"):
             e = e | {"host_context": {"fixed_sites": self.fixed_sites()}}
+            if self.laptop_gps and name in ("attempt", "result"):
+                laptop_fix = self.laptop_gps.snapshot()
+                if laptop_fix["valid"]:
+                    e["host_context"]["laptop_gps_at_receipt"] = laptop_fix
         self.store(e)
         self.sequences[boot] = max(seq, previous or 0)
         if len(self.sequences) > 16:
@@ -256,6 +261,8 @@ class Recorder:
         # A recording failure latches until the operator repairs disk and restarts.
         if not self.recording:
             return
+        if self.laptop_gps:
+            self.laptop_gps.poll(now)
         try:
             cadence = self.state.get("settings", {}).get("heartbeat_interval_ms", 1000)
             if now - self.last_beat >= cadence:
@@ -485,6 +492,7 @@ class Recorder:
                 "source": self.adapter.source,
                 "state": self.state,
                 "current_test": self.session_details(identifier) if identifier else None,
+                "laptop_gps": self.laptop_gps.snapshot() if self.laptop_gps else None,
                 "hello": self.hello,
                 "sites": self.hello.get("targets", {}) | self.fixed_sites(),
                 "last_reply_age_ms": (
@@ -550,6 +558,8 @@ class Recorder:
                 self.adapter.send(command("stop"))
                 self.poll()
             finally:
+                if self.laptop_gps:
+                    self.laptop_gps.close()
                 if hasattr(self.adapter, "close"):
                     self.adapter.close()
                 self.db.close()

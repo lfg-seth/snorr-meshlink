@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
+from laptop_gps import LaptopGPS
 from recorder import Recorder, compact, load_adapter
 
 APP = Path(__file__).resolve().parent
@@ -364,6 +365,7 @@ def main():
     parser.add_argument("--source", choices=["simulation", "live"], required=True)
     parser.add_argument("--adapter", type=Path)
     parser.add_argument("--device", help="Explicit firmware client serial device")
+    parser.add_argument("--laptop-gps", type=Path, help="Optional separate USB NMEA GPS device")
     parser.add_argument("--expected-id", help="Expected firmware client node ID")
     parser.add_argument(
         "--known-target",
@@ -382,6 +384,11 @@ def main():
         parser.error("--known-target requires --source live")
     if any(not valid_target_id(node) for node in args.known_target):
         parser.error("--known-target requires a non-reserved !xxxxxxxx node ID")
+    if args.laptop_gps:
+        if args.source != "live":
+            parser.error("--laptop-gps requires --source live")
+        if args.device and args.laptop_gps.resolve() == Path(args.device).resolve():
+            parser.error("The laptop GPS and survey radio must use different devices")
     names, sites = {}, {}
     if args.target_roster:
         if args.source != "live":
@@ -402,7 +409,10 @@ def serve(args, names, sites):
     adapter = load_adapter(
         args.source, args.adapter, args.device, args.expected_id, args.data_dir
     )
-    host = server.recorder = Recorder(adapter, args.data_dir, configured_sites=sites)
+    host = server.recorder = Recorder(
+        adapter, args.data_dir, configured_sites=sites,
+        laptop_gps=LaptopGPS(args.laptop_gps) if args.laptop_gps else None,
+    )
     host.start_worker()
     stop_file = host.root / f"stop-{os.getpid()}"
     stop_file.unlink(missing_ok=True)
