@@ -1,5 +1,25 @@
 # Session log
 
+## 2026-11-23 - Traced the intermittent MQTT feed warning
+
+At 10:40:44 Pacific the production worker reported its MQTT subscription down
+with a heartbeat only 0.1 seconds old. At 10:40:47 it reported subscribed
+again. Activity uses that flag and a 20-second heartbeat limit for “MQTT feed
+offline.” Individual radio report intervals do not enter that calculation.
+
+The worker logged 55 unsubscribed minute samples between 05:00 and 09:59
+Pacific, including 44 during 05:00–08:59 with no worker starts logged. These
+are samples, so a single outage can contribute several. Around 10:41 one of
+four probes from the production portal host timed out opening TCP to the
+configured MQTT endpoint on port 8883, before TLS or login. The feed was
+down at that sample. The other three completed TLS, and the same hostname's
+SSH port accepted TCP on all four attempts. The broker service was active.
+
+Next, correlate the 10:40–10:42 Pacific window with the public 8883 listener,
+router and Mosquitto connection logs. Broker connection-reason logs were
+unavailable to the SSH account. The exact failing component remains open.
+[MQTT routing](../docs/operations/mqtt-nginx-handoff.md)
+
 ## 2026-11-23 - Deployed member tracker Activity
 
 Deployed `meshlink-v0.4.16` from merged PR #100 at `35a309a`. Exact-host
