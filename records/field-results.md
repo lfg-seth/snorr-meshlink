@@ -44,7 +44,14 @@ On successful R011 exchanges the repeater reported a median ping RSSI of
 are uncalibrated. One additional zero-hop R011 survey-port packet had no
 matching result. Its payload could not be associated with a specific ping.
 For the remaining misses, determining which pings reached the repeater and
-which replies it sent requires responder-side evidence.
+which replies it sent requires a capture at R011 during a repeat test. The
+installed RAK responder streams events live and has no persistent per-ping
+journal. Powering it down for transport leaves the laptop recording intact.
+If convenient, keep the battery connected to read current-boot uptime and
+aggregate radio counters over USB before any reset or configuration write.
+Those totals cover all traffic. For new per-ping evidence, start the USB
+capture at R011 before the tester sends the first probe and match received
+pings, queued replies and completed transmissions by packet ID.
 
 **Next field check.** From one stationary line-of-sight location with the
 same target and antenna position, compare equal sets of probes at the

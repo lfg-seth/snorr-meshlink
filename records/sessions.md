@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-23 - Clarified R011 field evidence retrieval
+
+Checked R011's installed responder and local statistics code. The laptop
+holds the drive recording. Keeping R011 powered can preserve current-boot
+radio totals, but the responder has no stored per-ping history to retrieve.
+Next repeat test needs live USB capture at R011 before the first probe.
+[Field evidence and pickup guidance](field-results.md#2026-11-23---laptop-usb-survey-contact-with-angel-peak).
+
 ## 2026-11-23 - Audited deployment admin enrollment
 
 R011's reference conversion omitted enrollment and copied its empty list into
