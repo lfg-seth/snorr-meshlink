@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-11-23 - Added Field Survey target names and map pins
+
+Deployed survey source `159b571` to the field laptop with its existing
+firmware adapter. Matched all ten enrolled target IDs to their short and long
+radio names. Six currently assigned fixed sites loaded from the deployment
+records, including Escarpment Trail for R008 and Mack’s Canyon for R009.
+R002, R004, R006 and R007 have no current fixed site in the roster. The app
+continues to use mesh IDs for dispatch and retains positions in recorded
+events. Backed up the private recorder database before restart.
+
+All 16 survey checks and a separate site override and replay check passed.
+Loopback and Wi-Fi served the live recorder, ten labels, six matching pins
+and offline map. The browser showed both names and Escarpment Trail for R008.
+Next: confirm direct replies and moving coverage during the drive.
+[Laptop handoff](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
 ## 2026-11-23 - Enabled Field Survey access on local Wi-Fi
 
 Enabled a dedicated relay on the field laptop's Wi-Fi IPv4 address at port

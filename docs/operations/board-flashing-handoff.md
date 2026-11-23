@@ -44,6 +44,13 @@ The relay binds the selected Wi-Fi IPv4 address and forwards to the loopback
 recorder. Update its address and subnet if the laptop moves networks or
 receives a different address. Stop the relay to withdraw the Wi-Fi endpoint.
 
+The laptop recorder loads radio names and fixed site defaults from
+`/var/lib/meshlink-survey/target-roster.json`. The target list shows both radio
+names. Pins use the short name, and **Show target** locates the selected site.
+Update the roster from the verified deployment records when assignments move,
+then restart the recorder while idle. Saved site edits take precedence over
+the roster's default coordinates. [Current site records](../../records/sites.md).
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.
