@@ -67,7 +67,19 @@ systemd-inhibit --list
 
 The amber ring and **TARGET** label identify the repeater selected by the client. **Show target** brings its fixed site into view along with the vehicle when GPS is available. The dotted line shows the geographic bearing to the selected site. The reply or timeout time comes from the most recent completed result matching that target, session and configuration segment. **Samples for** filters historical measurements and leaves the selected repeater in view.
 
-The simulation supplies two preset repeater IDs and coordinates. A saved site record for the same ID takes precedence on the map. In live mode, the client reports the target node ID through the firmware USB adapter. Enter or import its fixed coordinates under **Setup → Fixed repeater locations**. A target with unknown coordinates still shows its ID and results. Replay uses the site positions stored with the recording.
+The simulation supplies two preset repeater IDs and coordinates. In live mode, `--target-roster /path/to/target-roster.json` supplies the target names and optional fixed sites. The JSON is keyed by mesh ID.
+
+~~~json
+{
+  "!12345678": {
+    "short_name": "R001",
+    "long_name": "Example Repeater",
+    "site": { "name": "Example site", "lat_deg": 36.25, "lon_deg": -115.65 }
+  }
+}
+~~~
+
+Omit `site` when the target has no current fixed location. The selector shows both radio names, map pins use short names, and **Show target** locates the selected pin. The mesh ID still identifies the target in commands and recordings. Enter or import additional fixed coordinates under **Setup → Fixed repeater locations**. A saved site for the same ID takes precedence over roster coordinates. Replay uses the positions stored with the recording.
 
 ## Recording and recovery
 

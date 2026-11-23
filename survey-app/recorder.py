@@ -46,7 +46,7 @@ def load_adapter(source, path, device=None, expected_id=None, root=None):
 
 
 class Recorder:
-    def __init__(self, adapter, root):
+    def __init__(self, adapter, root, *, configured_sites=None):
         self.adapter = adapter
         self.root = Path(root) / adapter.source
         self.root.mkdir(parents=True, exist_ok=True)
@@ -85,6 +85,7 @@ class Recorder:
         self.sequences = {}
         self.state = {}
         self.hello = {}
+        self.configured_sites = configured_sites or {}
         self.site_records = {
             i: {"lat_deg": a, "lon_deg": b}
             for i, a, b in self.db.execute("SELECT * FROM sites")
@@ -180,7 +181,7 @@ class Recorder:
                 },
             )
         if name in ("attempt", "result", "state"):
-            e = e | {"host_context": {"fixed_sites": self.site_records}}
+            e = e | {"host_context": {"fixed_sites": self.fixed_sites()}}
         self.store(e)
         self.sequences[boot] = max(seq, previous or 0)
         if len(self.sequences) > 16:
@@ -381,6 +382,9 @@ class Recorder:
         if self.controller != token:
             raise ValueError("Another browser has controls. Take controls explicitly.")
 
+    def fixed_sites(self):
+        return self.configured_sites | self.site_records
+
     def snapshot(self, token):
         with self.lock:
             return {
@@ -390,7 +394,7 @@ class Recorder:
                 "source": self.adapter.source,
                 "state": self.state,
                 "hello": self.hello,
-                "sites": (self.hello.get("targets", {}) | self.site_records),
+                "sites": self.hello.get("targets", {}) | self.fixed_sites(),
                 "revision": self.revision,
                 "has_control": self.controller in (None, token),
                 "recording": self.recording,

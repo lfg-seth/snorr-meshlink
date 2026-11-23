@@ -126,10 +126,14 @@ document
 const unit = (v, s) => (Number.isFinite(v) ? v + " " + s : "—");
 const readings = (d) =>
   d ? unit(d.rssi_dbm, "dBm") + " / " + unit(d.snr_db, "dB") : "—";
+const targetLabel = (id) => {
+  const names = host?.target_names?.[id];
+  return names ? `${names.short_name} · ${names.long_name}` : id;
+};
 const describe = (r) => {
   const d = r.event.data;
   return [
-    d.target_id,
+    targetLabel(d.target_id),
     d.status,
     d.reason,
     d.uplink && "↑ " + readings(d.uplink),
@@ -257,12 +261,15 @@ function isTargetResult(row, state) {
 }
 function targetSummary(state, site, result, isReplay) {
   const id = state.target_id;
-  $("mapTargetId").textContent = id || "Unselected";
+  $("mapTargetId").textContent = targetLabel(id) || "Unselected";
+  $("mapTargetId").title = id || "";
   $("locateTarget").disabled = !hasPosition(site);
   if (!id) {
     $("siteOrigin").textContent = "";
   } else if (!hasPosition(site)) {
     $("siteOrigin").textContent = "Site position unknown";
+  } else if (site.site_name) {
+    $("siteOrigin").textContent = site.site_name;
   } else if (isReplay) {
     $("siteOrigin").textContent = "Recorded site position";
   } else {
@@ -321,10 +328,11 @@ function render() {
     ]),
   ];
   if (s.target_id && !targets.includes(s.target_id)) targets.push(s.target_id);
-  options($("target"), targets, s.target_id);
+  options($("target"), targets.map((id) => [id, targetLabel(id)]), s.target_id);
+  const filterTargets = [...new Set([...targets, ...Object.keys(host.sites || {})])];
   options($("filter"), [
     ["", "All targets"],
-    ...new Set([...targets, ...Object.keys(host.sites || {})]),
+    ...filterTargets.map((id) => [id, targetLabel(id)]),
   ]);
   $("simlabel").hidden = host.source !== "simulation";
   options($("scenario"), caps.scenarios || [], s.scenario);
@@ -377,7 +385,7 @@ function render() {
         : "● Recording"
       : "Recording fault";
   const facts = [
-    ["Selected repeater", s.target_id],
+    ["Selected repeater", targetLabel(s.target_id)],
     ["Last round trip", result?.status || "No result"],
     [
       s.round_trip_basis === "completed"
@@ -670,7 +678,11 @@ async function replayStep() {
     Object.assign(p.sites, e.host_context?.fixed_sites || d.sites || {});
     if (["result", "gps", "gap", "transport_lost"].includes(e.name))
       p.rows = p.rows.concat(r).slice(-600);
-    fieldMap.update(p.rows, { state: p.state, sites: p.sites });
+    fieldMap.update(p.rows, {
+      state: p.state,
+      sites: p.sites,
+      target_names: host.target_names,
+    });
     targetSummary(
       p.state,
       p.sites[p.state.target_id],

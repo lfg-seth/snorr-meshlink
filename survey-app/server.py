@@ -42,6 +42,46 @@ VIEWS = {
 IDENT = re.compile(r"[\w.!\-]{1,100}\Z")
 
 
+def valid_target_id(node):
+    return (
+        isinstance(node, str)
+        and re.fullmatch(r"![0-9a-fA-F]{8}", node)
+        and 1 < int(node[1:], 16) < 0xFFFFFFFF
+    )
+
+
+def read_target_roster(path):
+    records = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(records, dict):
+        raise ValueError("Target roster must be an object keyed by mesh ID")
+    names, sites = {}, {}
+    for node, record in records.items():
+        if not valid_target_id(node) or node.lower() in names:
+            raise ValueError(f"Invalid or duplicate target mesh ID: {node}")
+        node = node.lower()
+        if not isinstance(record, dict) or any(
+            not isinstance(record.get(key), str) or not record[key].strip()
+            for key in ("short_name", "long_name")
+        ):
+            raise ValueError(f"Target {node} requires short_name and long_name")
+        names[node] = {
+            key: record[key].strip() for key in ("short_name", "long_name")
+        }
+        if "site" in record:
+            site = record["site"]
+            lat, lon = float(site["lat_deg"]), float(site["lon_deg"])
+            label = site["name"]
+            if (
+                not -90 <= lat <= 90
+                or not -180 <= lon <= 180
+                or not isinstance(label, str)
+                or not label.strip()
+            ):
+                raise ValueError(f"Invalid fixed site for {node}")
+            sites[node] = {"lat_deg": lat, "lon_deg": lon, "site_name": label.strip()}
+    return names, sites
+
+
 @contextmanager
 def source_lease(directory):
     """OS releases this lease automatically after a crash."""
@@ -122,7 +162,12 @@ class SurveyHandler(BaseHTTPRequestHandler):
                     self.reply({"error": "Offline area is not installed"}, 404)
             elif path.path == "/api/state":
                 snapshot = self.host.snapshot(self.headers.get("X-Survey-Controller"))
-                self.reply(snapshot | {"known_targets": self.server.known_targets})
+                self.reply(
+                    snapshot | {
+                        "known_targets": self.server.known_targets,
+                        "target_names": self.server.target_names,
+                    }
+                )
             elif path.path == "/api/ack":
                 with self.host.lock:
                     row = self.host.db.execute(
@@ -333,30 +378,37 @@ def main():
         metavar="NODE_ID",
         help="Offer this repeater in the live target selector (repeatable)",
     )
+    parser.add_argument(
+        "--target-roster", type=Path, help="JSON names and fixed sites for live targets"
+    )
     parser.add_argument("--port", type=int, default=5187)
     parser.add_argument("--data-dir", type=Path, default=DATA)
     args = parser.parse_args()
     if args.known_target and args.source != "live":
         parser.error("--known-target requires --source live")
-    if any(
-        not re.fullmatch(r"![0-9a-fA-F]{8}", node)
-        or not 1 < int(node[1:], 16) < 0xFFFFFFFF
-        for node in args.known_target
-    ):
+    if any(not valid_target_id(node) for node in args.known_target):
         parser.error("--known-target requires a non-reserved !xxxxxxxx node ID")
+    names, sites = {}, {}
+    if args.target_roster:
+        if args.source != "live":
+            parser.error("--target-roster requires --source live")
+        try:
+            names, sites = read_target_roster(args.target_roster)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            parser.error(f"Invalid target roster: {exc}")
     with source_lease(args.data_dir / args.source):
-        serve(args)
+        serve(args, names, sites)
 
 
-def serve(args):
+def serve(args, names, sites):
     server = ThreadingHTTPServer(("127.0.0.1", args.port), SurveyHandler)
-    server.known_targets = list(
-        dict.fromkeys(node.lower() for node in args.known_target)
-    )
+    selected = dict.fromkeys(node.lower() for node in args.known_target)
+    server.known_targets = list(selected | names)
+    server.target_names = names
     adapter = load_adapter(
         args.source, args.adapter, args.device, args.expected_id, args.data_dir
     )
-    host = server.recorder = Recorder(adapter, args.data_dir)
+    host = server.recorder = Recorder(adapter, args.data_dir, configured_sites=sites)
     host.start_worker()
     stop_file = host.root / f"stop-{os.getpid()}"
     stop_file.unlink(missing_ok=True)

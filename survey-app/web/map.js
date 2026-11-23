@@ -40,6 +40,7 @@ export class SurveyMap {
     this.rows = [];
     this.hits = [];
     this.sites = {};
+    this.targetNames = {};
     this.gps = null;
     this.queued = false;
     this.area = null;
@@ -275,6 +276,7 @@ export class SurveyMap {
   update(rows, state) {
     this.rows = rows;
     this.sites = state.sites || {};
+    this.targetNames = state.target_names || {};
     this.gps = state.state.gps;
     this.target = state.state.target_id;
     this.outage = state.state.scenario === "Map outage";
@@ -458,8 +460,9 @@ export class SurveyMap {
         g.strokeRect(x - 3, y - 3, 6, 6);
       }
     }
-    for (const [name, p] of Object.entries(this.sites)) {
-      if (!hasPosition(p) || name === this.target) continue;
+    for (const [id, p] of Object.entries(this.sites)) {
+      if (!hasPosition(p) || id === this.target) continue;
+      const name = this.targetNames[id]?.short_name || id;
       const [x, y] = ll(p.lon_deg, p.lat_deg);
       g.beginPath();
       g.moveTo(x, y - 7);
@@ -501,7 +504,8 @@ export class SurveyMap {
       g.closePath();
       g.fillStyle = "#492d0e";
       g.fill();
-      const label = "TARGET · " + this.target;
+      const label =
+        "TARGET · " + (this.targetNames[this.target]?.short_name || this.target);
       g.font = "bold 12px system-ui";
       const width = g.measureText(label).width + 12;
       const left = x + 16 + width < w ? x + 16 : x - 16 - width;
