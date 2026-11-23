@@ -6,6 +6,8 @@ The existing OLED Heltec V4 with GPS, USB **90:70:69:9C:A8:78** and
 survey identity **!699c2ed8**, moves from handheld to USB-tethered drive
 survey duty for the selected run. The old V3 handheld and member B003 are
 held powered off during use because they share the enrolled on-air identity.
+Current USB survey firmware is `2.7.26.35b35d5`.
+[App-only update](field-results.md#2026-11-23---laptop-gps-keeps-usb-surveys-running).
 No quantity change. [Conversion evidence](field-results.md#2026-11-23---oled-v4-laptop-survey-conversion).
 
 ## 2026-11-21 - G001 failure and G002 replacement

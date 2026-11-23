@@ -32,7 +32,7 @@ Use the selected board's release and configuration handoff for flashing.
 ## Board handoffs
 
 2026-11-23 **Laptop SURV / !699c2ed8** is the existing OLED Heltec V4,
-USB **90:70:69:9C:A8:78**. It runs **heltec-v4-survey / 2.7.26.93f80a1**
+USB **90:70:69:9C:A8:78**. It runs **heltec-v4-survey / 2.7.26.35b35d5**
 with its handheld journal, identity and responder enrollment preserved.
 Open [Field Survey](http://127.0.0.1:5187/) on the tethered laptop. Keep B003
 and the old V3 powered off while using this shared survey identity.
@@ -63,9 +63,11 @@ The full-map pills show selected link signal, GPS fix age in seconds,
 satellites, HDOP and one altitude. **H** identifies the Heltec fix and **L**
 identifies the laptop fix or HDOP. Color grades signal and GPS health. The
 target card is on the Survey screen. An automatic pause shows a red banner
-with its reason. Survey mode requires fresh Heltec GPS. New attempt and result
-events can retain the separate laptop fix at host receipt.
-[GPS evidence](../../records/field-results.md#2026-11-23---heltec-survey-gps-dropouts-and-laptop-gps-comparison).
+with its reason. Survey mode uses a fresh Heltec fix first and accepts a
+laptop fix no more than three seconds old over USB when the Heltec fix goes
+stale. Loss of both fixes pauses the survey until the operator resumes it.
+The device records the selected source for attempt and transmit positions.
+[Dual-GPS update](../../records/field-results.md#2026-11-23---laptop-gps-keeps-usb-surveys-running).
 
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.

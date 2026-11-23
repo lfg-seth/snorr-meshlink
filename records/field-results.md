@@ -1,5 +1,37 @@
 # Field testing and tangible results
 
+## 2026-11-23 - Laptop GPS keeps USB surveys running
+
+The earlier Heltec stale-fix pause occurred at 13:37:25 PST. The recorder
+did not capture a separate laptop fix close enough to establish its age at
+that pause. A subsequent check found both receivers fresh. The previous
+firmware gated Survey mode on the onboard Heltec fix while the laptop fix
+was available to the map.
+
+Installed `heltec-v4-survey / 2.7.26.35b35d5` on the idle SURV
+`!699c2ed8`, from published firmware `35b35d51b46a217ea3d5085394af59d1f0c8c6b5`.
+The 2,054,784-byte application SHA-256 is
+`5196db5e5001617a809533ccf648cc1d4225696187d0aa02cf8ce14cfaac8b05`.
+Verified a full 16 MiB recovery image, then wrote only app0 at `0x10000`.
+Readback verified the new image, the preserved partition table, OTA
+state, NVS, LittleFS and journal. The complete saved identity and profile
+matched after reboot. The recorder SQLite backup passed its integrity check.
+Private evidence and rollback are in
+`private/bench/survey-laptop-gate-20261123/`.
+
+The sanitizer-enabled native controller test kept Survey mode running and
+allowed queued transmission with stale Heltec GPS and a fresh laptop fix.
+It suppressed queued transmission and paused after both fixes became stale,
+even when the same laptop timestamp was sent again. Laptop fixes expire
+after three seconds. A fresh Heltec fix retains priority. Attempt and
+transmit records identify which source supplied the coordinates.
+
+At 13:53:48 PST, both the loopback and Wi-Fi endpoints showed the enrolled
+board idle and recording, a healthy heartbeat, and the radio accepting the
+fresh laptop GPS fix. The keep-awake inhibitor was active. The live check
+was stationary and idle. A moving survey through a Heltec-only outage and
+continuous Heltec GPS across the retry deadlines remain open checks.
+
 ## 2026-11-23 - Heltec survey GPS dropouts and laptop GPS comparison
 
 Owner reports intermittent fix loss with SURV's GPS mounted outside the
@@ -22,8 +54,10 @@ samples with 12 satellites and HDOP 1.10–1.15. Updated Field Survey showed a
 fresh laptop fix through both live URLs. The full-map browser displayed fix
 age, satellites, quality and altitude for the Heltec and added HDOP for the
 laptop. A map-state check verified handoff from stale Heltec to fresh laptop
-GPS. Survey mode requires a fresh Heltec fix. Next: verify a continuous-GPS
-firmware change across both retry deadlines and a moving drive.
+GPS. The installed firmware at the time required a fresh Heltec fix.
+[The subsequent dual-GPS update](#2026-11-23---laptop-gps-keeps-usb-surveys-running)
+addresses the resulting survey pauses. A continuous-GPS change across the
+Heltec's retry deadlines and a moving drive remain open checks.
 
 ## 2026-11-23 - OLED V4 laptop survey conversion
 

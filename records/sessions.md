@@ -1,5 +1,19 @@
 # Session log
 
+## 2026-11-23 - Applied dual-GPS survey interlock
+
+App-only flashed the idle laptop SURV to `2.7.26.35b35d5`. The verified
+reboot preserved the saved profile, identity and enrollment. Deployed
+recorder `ced3c60` and USB adapter `ba40d37`. The board accepted a fresh
+laptop fix via USB on both live endpoints. With both fixes stale, the
+recorder shows a red pause reason for loss of both GPS fixes.
+
+21 recorder checks, eight USB adapter checks and both sanitizer-enabled
+native controller targets passed. The firmware pin is on
+`codex/survey-target-roster` and the adapter is on `codex/survey-laptop-adapter`.
+Next: verify survey continuity on a drive during a Heltec-only outage.
+[Flash and live evidence](field-results.md#2026-11-23---laptop-gps-keeps-usb-surveys-running).
+
 ## 2026-11-23 - Simplified the fullscreen survey map
 
 Deployed survey source `9b3cfe5` to the field laptop. The target card stays
