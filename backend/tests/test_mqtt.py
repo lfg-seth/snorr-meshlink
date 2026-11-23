@@ -18,7 +18,7 @@ from client import ApiError
 from mqtt_adapter import Adapter, PacketRejected, sd_health
 from mqtt_worker import Spool, Worker
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
-from server.node_readings import Decoder, Measurements, epoch, relay_index, seed_gateway_receipts
+from server.node_readings import Decoder, Measurements, epoch, relay_index, seed_gateway_receipts, utc
 
 CONFIG = {'host': 'mqtt.example.invalid', 'username': 'worker', 'password': 'fictional',
           'root': 'snorr/pilot', 'channel': 'Test', 'channelKey': 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -67,6 +67,17 @@ class ActivityArchiveTests(unittest.TestCase):
         binary = envelope.SerializeToString()
         raw = json.dumps({'payloadBase64': base64.b64encode(binary).decode(), 'payloadBytes': len(binary)})
         return raw, topic
+
+    def test_member_fix_replay_adds_reported_altitude_to_the_seeded_reading(self):
+        at, measured = utc(NOW), utc(NOW - 30)
+        self.state.put(self.radio, 'gps', {'satellites': 8}, at, measured)
+        topic, binary = fixture(quality={'sats_in_view': 8, 'altitude': 0})
+        raw = json.dumps({'payloadBase64': base64.b64encode(binary).decode(), 'payloadBytes': len(binary)})
+        self.decoder.consume(at, raw, topic)
+        gps = self.state.nodes[self.radio]['readings']['gps']
+        self.assertEqual(gps['value'], {'satellites': 8, 'altitude': 0})
+        self.assertEqual((gps['measuredAt'], gps['receivedAt']), (measured, at))
+        self.assertEqual([p['stream'] for p in self.state.recent_packets(NOW)], ['position'])
 
     def test_selected_transport_copy_and_newer_legacy_packet(self):
         node = self.state.nodes[self.radio]

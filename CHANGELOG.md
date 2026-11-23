@@ -3,6 +3,14 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.4.16 - 2026-11-23
+
+Signed-in Activity includes registered member trackers, their telemetry and GPS
+fix age. Recent packets includes their GPS and telemetry transmissions with
+the radio short name and the member assigned at first receipt, when known.
+The sampler and portal use the existing database and radio protocols.
+Rollback restores the 0.4.15 sampler and portal files.
+
 ## 0.4.15 - 2026-11-21
 
 The signed-in main map includes member trackers with recorded positions alongside

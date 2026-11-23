@@ -185,6 +185,21 @@ test('Activity switches views and preserves ordered readings and value bars on r
     const fresh = { voltage:{ ...reading('4.1'), revision:'next' } };
     render(fresh);
     assert.deepEqual(labels(), ['Device voltage']);
+    const member = {kind:'member',label:'T001',name:'Test carrier',timers:[{stream:'position',age:1,period:120,due:119,state:'fresh',missed:0}]};
+    render({gps:reading({satellites:8,pdop:1.2,altitude:0},901),charge:reading('76%')}, member);
+    assert.equal(root.querySelector('article h2').textContent, 'Test carrier');
+    assert.equal(root.querySelector('.heard strong').textContent, 'T001');
+    assert.equal(tile('Altitude').querySelector('b').textContent, '0m');
+    assert.equal(tile('Satellites').querySelector('b').textContent, '8');
+    assert.equal(tile('PDOP').querySelector('b').textContent, '1.2');
+    assert.equal(tile('GPS fix age').querySelector('b').textContent, '15m');
+    assert.ok(tile('GPS fix age').classList.contains('stale'));
+    render({gps:reading({},null)}, member);
+    assert.deepEqual(labels(), ['GPS fix age']);
+    assert.equal(tile('GPS fix age').querySelector('b').textContent, 'Unknown');
+    timers.click();
+    assert.match(root.querySelector('.timer').textContent,/GPS position/);
+    readings.click();
     render(fresh);
     assert.equal(root.querySelector('.heard .contact').firstChild, routeText);
     render({});
@@ -236,7 +251,17 @@ test('Activity packet row keeps visible transmissions across refresh and expires
     tick();
     assert.equal(row.children.length, 6);
     assert.equal(row.firstElementChild.textContent, 'SourcePower2s ago1 HopSahara >Seth Mobile');
-    wall += 3600000;
+    const member = {radio:'!00000001',kind:'member',label:'T001',name:'Current carrier',health:'reporting',readings:{},timers:[]};
+    const reports = [
+      {...packet('fix',0),radio:member.radio,stream:'position',memberName:'Current carrier'},
+      {...packet('battery',10),radio:member.radio,stream:'device',memberName:null},
+      {...packet('older',20),radio:member.radio,memberName:'Earlier carrier'}, ...originals,
+    ];
+    view.render({at:new Date(now*1000).toISOString(), now, status:'Live', nodes:[member], packets:reports});
+    assert.deepEqual([...row.querySelectorAll('li strong')].slice(0,3).map(n=>n.textContent),
+      ['T001 · Current carrier','T001','T001 · Earlier carrier']);
+    assert.equal(row.querySelector('.packet-type').textContent,'GPS position');
+    wall += 3601000;
     tick();
     assert.equal(row.children.length, 0);
     assert.equal(root.querySelector('.packet-window p').hidden, false);

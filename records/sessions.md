@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-23 - Added member trackers to Activity
+
+Prepared MeshLink 0.4.16 on `codex/member-client-activity`. Activity includes
+registered member radios, their readings and packet timers. Recent packets
+shows each original GPS or telemetry transmission with its radio short name,
+the member assigned at first receipt when known, and the existing receipt route.
+Tracker cards use the current assignment. GPS fix age uses the measurement
+clock and the Activity snapshot omits coordinates.
+
+The 72 portal tests, typecheck and build passed. The script suite passed
+54 checks with one POSIX-only skip. Synthetic encrypted MQTT checks covered
+duplicate gateway receipts and GPS detail recovery. After source review and a
+selected deployment, verify a fresh client GPS and telemetry packet on the
+signed-in page. [Application changes](../CHANGELOG.md#0416---2026-11-23).
+
 ## 2026-11-21 - Restored member trackers on the main map
 
 Deployed MeshLink 0.4.15 at tagged main commit `b94fc05`. Signed-in Edge verification found both positioned member trackers and eleven infrastructure pins and opened the reported pin. The initial view and Fit area include member locations. Next field check is ordinary handset use as positions update. [Release evidence](../docs/operations/field-portal.md#november-21-member-map-restoration).

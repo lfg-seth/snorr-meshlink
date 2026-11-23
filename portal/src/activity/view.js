@@ -14,11 +14,11 @@ export function mountActivity(root) {
     batteryVoltage:["Battery voltage","V",3.2,4.2], batteryCurrent:["Battery current","mA",-100,100],
     temperature:["Temperature","°C",-20,50], humidity:["Humidity","%",0,100],
     busy:["Channel use","%",0,100], tx:["TX airtime","%",0,100], uptime:["Uptime","",0,3600],
-    neighbors:["SNNS neighbors","",0,12], wifiConnected:["Wi-Fi","",0,1],
+    neighbors:["SNNS neighbors","",0,12], standardNeighbors:["Reported neighbors","",0,12], wifiConnected:["Wi-Fi","",0,1],
     mqttConnected:["MQTT","",0,1], wifi:["Wi-Fi signal","dBm",-100,-40], sd:["SD used","%",0,100],
   };
   const streams = {device:"Device",environment:"Environment",power:"Power",snns:"SNNS",
-    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD",position:"Position",nodeinfo:"Node info",
+    gateway:"Backhaul",wifi:"Wi-Fi",sd:"SD",position:"GPS position",nodeinfo:"Node info",
     neighbor_info:"Neighbors","private-other":"Private",telemetry:"Telemetry"};
   const packetRow = mountPacketRow(root.querySelector("#recent-packets"), streamName);
   const views = new Map(), buttons = new Map();
@@ -97,13 +97,25 @@ export function mountActivity(root) {
         add(key,source,v,parseFloat(v));
       }
     }
+    const gps = readings.gps;
+    if (gps) {
+      const fixAge = duration(gps.age);
+      const fixTone = gps.age == null ? "unknown" : gps.age >= 900 ? "stale" : "fresh";
+      result.set("fixAge",{key:"fixAge", source:"gps", label:"GPS fix age", unit:"",
+        value:fixAge, tone:fixTone, reading:gps});
+      for (const [key,label,unit] of [["satellites","Satellites",""],["pdop","PDOP",""],["altitude","Altitude","m"]]) {
+        const value = gps.value[key];
+        if (Number.isFinite(value)) result.set(key,{key, source:"gps", label, unit, value, tone:fixTone, reading:gps});
+      }
+    }
     return result;
   }
   function readingTile(m,changed) {
     const age = m.reading.age == null ? "Age unknown" : duration(m.reading.age)+" ago";
     return {key:"reading:"+m.key, kind:"metric", tone:m.tone, label:m.label, value:m.value,
-      unit:m.value === "Unknown" ? "" : m.unit, age, fraction:m.fraction, signed:m.key==="batteryCurrent", changed,
-      title:(m.value === "USB*" ? "Charging or no battery detected · " : "") + age+" · "+stateNames[m.reading.state]};
+      unit:m.value === "Unknown" ? "" : m.unit, age:m.key === "fixAge" ? "" : age, fraction:m.fraction, signed:m.key==="batteryCurrent", changed,
+      title:m.source === "gps" ? "GPS measurement · " + age :
+        (m.value === "USB*" ? "Charging or no battery detected · " : "") + age+" · "+stateNames[m.reading.state]};
   }
   function timerTile(t,changed) {
     return {key:"timer:"+t.stream, kind:"timer", tone:t.state, label:streamName(t),
@@ -204,7 +216,7 @@ export function mountActivity(root) {
     const {article,highlights,body} = view;
     article.className = node.health;
     article.dataset.radio = node.radio;
-    setText(view.name,node.name || node.radio);
+    setText(view.name,node.name || (node.kind === "member" ? "Member tracker" : node.radio));
     setText(view.badge,groups[node.health]);
     setText(view.label,node.label);
     const age = node.seen ? duration(data.now-Date.parse(node.seen)/1000) : null;
@@ -213,7 +225,7 @@ export function mountActivity(root) {
     setText(view.contact,contact.filter(Boolean).join(" · "));
     view.heard.title = node.radio;
     const measures = values(node);
-    const displayed = ["voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",
+    const displayed = ["fixAge","voltage","busy",measures.has("mqttConnected") ? "mqttConnected" : "temperature",
       "neighbors","charge"].filter(key=>measures.has(key)).slice(0,3);
     if (measures.has("batteryCurrent")) displayed.push("batteryCurrent");
     highlights.element.style.setProperty("--columns",Math.max(1,displayed.length));
@@ -221,7 +233,7 @@ export function mountActivity(root) {
       const m = measures.get(key);
       return readingTile(m,readChanged(m.source));
     }),"No telemetry yet");
-    const timers = node.timers.filter(t=>!["position","neighbor_info","nodeinfo"].includes(t.stream));
+    const timers = node.kind === "member" ? [...node.timers] : node.timers.filter(t=>!["position","neighbor_info","nodeinfo"].includes(t.stream));
     const late = timers.filter(t=>t.period && t.missed).length;
     const reasons = [node.linkDown && "Link down",late && late+" overdue"].filter(Boolean);
     if (!reasons.length && node.contact==="aging") reasons.push("Late contact");

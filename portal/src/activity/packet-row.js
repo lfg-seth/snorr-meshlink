@@ -7,7 +7,7 @@ export function mountPacketRow(section, streamName) {
   const win = row.ownerDocument.defaultView;
   const tiles = new Map();
   const gap = 6;
-  let packets = [], names = new Map(), timer, clockOffset = 0;
+  let packets = [], nodes = new Map(), timer, clockOffset = 0;
 
   function createTile(packet, age) {
     const box = row.ownerDocument.createElement("li");
@@ -68,7 +68,10 @@ export function mountPacketRow(section, streamName) {
         row.insertBefore(tile.box, next ?? null);
       }
       tile.box.style.setProperty("--left", index * stride + "px");
-      const label = names.get(packet.radio) ?? packet.radio;
+      const node = nodes.get(packet.radio);
+      const label = node?.kind === "member"
+        ? [node.label || packet.radio, packet.memberName].filter(Boolean).join(" · ")
+        : node?.name || packet.radio;
       if (tile.name.textContent !== label) tile.name.textContent = label;
       tile.box.title = label + " · " + streamName(packet);
       const details = receiptRoute(packet);
@@ -92,7 +95,7 @@ export function mountPacketRow(section, streamName) {
       section.hidden = !Array.isArray(snapshot.packets);
       clockOffset = snapshot.now - win.Date.now() / 1000;
       packets = snapshot.packets ?? [];
-      names = new Map(snapshot.nodes.map(node => [node.radio, node.name || node.radio]));
+      nodes = new Map(snapshot.nodes.map(node => [node.radio, node]));
       win.clearInterval(timer);
       if (packets.length) timer = win.setInterval(paint, 1000);
       paint();
