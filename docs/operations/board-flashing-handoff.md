@@ -38,6 +38,12 @@ Open [Field Survey](http://127.0.0.1:5187/) on the tethered laptop. Keep B003
 and the old V3 powered off while using this shared survey identity.
 [Conversion and test results](../../records/field-results.md#2026-11-23---oled-v4-laptop-survey-conversion).
 
+The field laptop also runs `meshlink-survey-lan.service` for phones on the
+configured Wi-Fi subnet. Open `http://<laptop-wifi-ip>:5187/` on that network.
+The relay binds the selected Wi-Fi IPv4 address and forwards to the loopback
+recorder. Update its address and subnet if the laptop moves networks or
+receives a different address. Stop the relay to withdraw the Wi-Fi endpoint.
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.

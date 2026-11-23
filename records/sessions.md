@@ -1,5 +1,15 @@
 # Session log
 
+## 2026-11-23 - Enabled Field Survey access on local Wi-Fi
+
+Enabled a dedicated relay on the field laptop's Wi-Fi IPv4 address at port
+5187 with the current Wi-Fi subnet as the source allowlist. The LAN URL served
+the survey page, live enrolled recorder and offline map during host checks.
+The relay rejected both loopback and tailnet source addresses on its LAN
+endpoint. The recorder stayed running on loopback during setup. Next: open
+the LAN URL on the phone while connected to the same Wi-Fi.
+[Laptop handoff](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
 ## 2026-11-23 - Reassigned the handheld V4 to laptop surveys
 
 Flashed the USB-identified OLED V4 SURV **!699c2ed8** with the laptop
