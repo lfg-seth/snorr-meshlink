@@ -266,7 +266,12 @@ class Recorder:
         try:
             cadence = self.state.get("settings", {}).get("heartbeat_interval_ms", 1000)
             if now - self.last_beat >= cadence:
-                self.adapter.send(command("heartbeat"))
+                params = None
+                if self.laptop_gps and self.hello.get("capabilities", {}).get("laptop_gps"):
+                    fix = self.laptop_gps.snapshot(now)
+                    if fix["valid"] and fix["fix_utc_ms"] is not None:
+                        params = {"laptop_fix": fix, "sampled_ms": now}
+                self.adapter.send(command("heartbeat", params))
                 self.last_beat = now
             events = list(self.adapter.poll(now))
             if self.needs_snapshot:

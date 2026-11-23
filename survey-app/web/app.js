@@ -57,7 +57,9 @@ function alerts() {
   } else if (s.run_state === "paused" && s.fault) {
     title = "Survey paused";
     reason = {
-      gps_stale: "Heltec GPS fix is stale",
+      gps_stale: host?.hello?.capabilities?.laptop_gps
+        ? "No fresh GPS fix from either receiver"
+        : "Heltec GPS fix is stale",
       transport_lost: "Radio connection or heartbeat lost",
       event_gap: "Radio events were missed",
       host_reconnected: "Recorder reconnected to the radio",

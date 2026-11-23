@@ -87,7 +87,7 @@ After **Stop**, enter a test name and optional notes, then choose **Save test**.
 
 The GPS age pill shows the age of the position fix used for the map dot. **H** means Heltec and **L** means laptop. Satellite count and altitude come from the same receiver. When only the laptop provides HDOP, **HDOP L** identifies that reading. Green, yellow and red fade across the selected thresholds. Fix age uses 25%, 60% and 100% of the receiver's freshness limit. Satellite count uses 10, 6 and 4. HDOP uses 1.3, 2.5 and 5. SNR uses +5, 0 and −5 dB. RSSI uses −90, −105 and −120 dBm.
 
-Add `--laptop-gps` with the separate laptop receiver's USB by-ID path. A fresh laptop fix supplies the live map dot when the Heltec fix goes stale. New attempt and result records can include the laptop fix at host receipt as a separate JSONL field. Survey mode requires a fresh Heltec fix, and recorded radio positions retain their original source.
+Add `--laptop-gps` with the separate laptop receiver's USB by-ID path. A fresh laptop fix supplies the live map dot when the Heltec fix goes stale. New attempt and result records can include the laptop fix at host receipt as a separate JSONL field. With compatible firmware and USB adapter, Survey mode uses the Heltec fix first and accepts a laptop fix measured within the last three seconds as a fallback. The radio records the source of each attempt and transmit position. If neither fix is fresh, Survey mode pauses and requires a manual resume.
 
 ## Recording and recovery
 

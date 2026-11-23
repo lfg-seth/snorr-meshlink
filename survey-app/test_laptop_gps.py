@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 from laptop_gps import LaptopGPS, parse_gga
@@ -31,7 +32,8 @@ class LaptopGpsTests(unittest.TestCase):
         line = sentence(FIX)
         gps.port.read.side_effect = [line[:30], line[30:], line, sentence(NO_FIX)]
         gps.poll(900)
-        gps.poll(1000)
+        with patch('laptop_gps.time.time_ns', return_value=0):
+            gps.poll(1000)
         with patch("laptop_gps.time.monotonic", return_value=1.3):
             self.assertTrue(gps.snapshot()["valid"])
             self.assertEqual(gps.snapshot()["fix_age_ms"], 300)
@@ -41,3 +43,17 @@ class LaptopGpsTests(unittest.TestCase):
             self.assertIsNone(gps.snapshot()["lat_deg"])
         gps.poll(4200)
         self.assertFalse(gps.reading["valid"])
+
+    def test_buffered_time_and_midnight_rollover(self):
+        gps = LaptopGPS("unused")
+        gps.port = Mock()
+        delayed = FIX.replace(b"180102.00", b"235959.750")
+        old = FIX.replace(b"180102.00", b"235955.000")
+        gps.port.read.side_effect = [sentence(delayed), sentence(old)]
+        midnight = int(datetime(2026, 11, 24, tzinfo=timezone.utc).timestamp() * 1000)
+        with patch("laptop_gps.time.time_ns", return_value=(midnight + 250) * 1_000_000):
+            gps.poll(4000)
+            self.assertEqual(gps.snapshot(4000)["fix_utc_ms"], midnight - 250)
+            self.assertEqual(gps.snapshot(4000)["fix_age_ms"], 500)
+            gps.poll(4010)
+            self.assertIsNone(gps.snapshot(4010)["fix_utc_ms"])

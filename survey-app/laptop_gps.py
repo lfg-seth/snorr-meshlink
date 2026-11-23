@@ -25,6 +25,23 @@ def optional_number(value):
     return number if math.isfinite(number) else None
 
 
+GPS_MAX_AGE_MS = 3000
+DAY_MS = 86_400_000
+
+
+def gga_utc_ms(epoch, wall_ms):
+    """Resolve GGA's time of day against the laptop clock, including midnight rollover."""
+    whole, _, fraction = epoch.partition(".")
+    hour, minute, second = int(whole[:2]), int(whole[2:4]), int(whole[4:6])
+    if hour > 23 or minute > 59 or second > 59:
+        return None
+    time_of_day = (hour * 3600 + minute * 60 + second) * 1000 + int(fraction[:3].ljust(3, "0"))
+    age = (wall_ms - time_of_day + DAY_MS // 2) % DAY_MS - DAY_MS // 2
+    if -1000 <= age <= GPS_MAX_AGE_MS:
+        return wall_ms - age
+    return None
+
+
 def parse_gga(line):
     body, marker, checksum = line.strip().partition(b"*")
     if not marker or len(checksum) != 2 or not re.match(rb"\$[A-Z]{2}GGA,", body):
@@ -63,6 +80,7 @@ class LaptopGPS:
         self.epoch = None
         self.reading = {}
         self.fix_at = None
+        self.fix_utc_ms = None
         self.next_open = 0
 
     def poll(self, now):
@@ -77,6 +95,7 @@ class LaptopGPS:
             except OSError:
                 return
             self.epoch = None
+            self.fix_at = self.fix_utc_ms = None
             self.buffer = b""
         try:
             chunk = self.port.read(4096)
@@ -91,17 +110,23 @@ class LaptopGPS:
                 continue
             epoch, reading = sample
             if reading["valid"] and epoch != self.epoch:
-                self.fix_at = now
+                wall_ms = time.time_ns() // 1_000_000
+                self.fix_utc_ms = gga_utc_ms(epoch, wall_ms)
+                age = wall_ms - self.fix_utc_ms if self.fix_utc_ms is not None else 0
+                self.fix_at = now - max(0, age)
             self.epoch = epoch
             self.reading = reading
 
-    def snapshot(self):
-        age = None if self.fix_at is None else int(time.monotonic() * 1000) - self.fix_at
+    def snapshot(self, now=None):
+        if now is None:
+            now = int(time.monotonic() * 1000)
+        age = None if self.fix_at is None else now - self.fix_at
         valid = bool(
-            self.port and self.reading.get("valid") and age is not None and age <= 3000
+            self.port and self.reading.get("valid") and age is not None and age <= GPS_MAX_AGE_MS
         )
         sample = self.reading | {
             "connected": self.port is not None, "valid": valid, "fix_age_ms": age,
+            "fix_utc_ms": self.fix_utc_ms if valid else None,
         }
         if not valid:
             sample.update(lat_deg=None, lon_deg=None, altitude_m=None, hdop=None, satellites=None)
