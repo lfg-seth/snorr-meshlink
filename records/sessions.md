@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-23 - Verified Field Survey Wi-Fi access
+
+The recorder and Wi-Fi relay were already active. The laptop fetched the
+Field Survey homepage through its Wi-Fi IPv4 address on TCP 5187 and received
+HTTP 200. The active Wi-Fi firewall zone permits that port. Opening the page
+on a second device on the same Wi-Fi remains the end-to-end check.
+[Laptop access instructions](../docs/operations/board-flashing-handoff.md#board-handoffs).
+
+## 2026-11-23 - Compared R011 gain on the two labeled drives
+
+On-time direct replies rose from 25.0% to 25.5%. Matching probes within
+25 m yielded four more replies in 301 pairs after the fix. A controlled
+weak-link test with R011 reception logged remains the next way to isolate
+receiver performance. [Field comparison](field-results.md#2026-11-23---r011-survey-before-and-after-boosted-rx).
+
 ## 2026-11-23 - Repaired R011 admin enrollment and RX gain
 
 Saved current-boot radio counters and confirmed the original deployment

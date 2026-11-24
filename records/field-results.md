@@ -1,5 +1,41 @@
 # Field testing and tangible results
 
+## 2026-11-23 - R011 survey before and after boosted RX
+
+The two laptop recordings labeled by the operator as pre- and post-fix show
+about one on-time direct reply per four probes on both drives. R011 passed
+its boosted-RX reboot readback at 15:18:31 PST between the two tests.
+Both used the same SURV, R011 target, production radio profile, 10 dBm
+configured TX and 4.5-second deadline.
+[Repair readback](../docs/operations/r011-angel-mountain-deployment.md#2026-11-23-usb-repair-and-reboot-verification).
+
+| Recorder test | Completed probe results (PST) | On-time direct replies | Timeouts | Replied late within those timeouts | Farthest on-time reply from saved site pin |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Angel rear, boost off | 14:30:12–15:09:19 | 139/557 (25.0%) | 418 | 7 | 4.92 km |
+| Angel mountain, boost on | 15:22:03–15:56:32 | 112/440 (25.5%) | 328 | 5 | 4.88 km |
+
+For a route comparison, pair probe transmit locations using valid enqueue
+GPS fixes, closest pairs first, using each probe once. Within 25 m there
+were 301 pairs (median separation 7.7 m). Before the fix, 74/301 returned
+on time (24.6%). Afterward, 78/301 returned on time (25.9%). Of those
+pairs, 47 succeeded only after the fix and 43 only before. Tightening the
+limit to 10 m yielded 62/195 before and 59/195 after. The drives show no
+consistent improvement in two-way delivery at comparable locations.
+
+Among on-time replies, median ping RSSI at R011 went from −99 to −93 dBm,
+and median reply RSSI at SURV went from −80 to −74 dBm. In the 25 m
+comparison, median ping RSSI was −94 dBm in both groups of successes.
+The drives sampled locations at different rates. Signal readings cover
+decoded packets, and a timeout alone cannot identify which leg failed.
+
+The source is the field laptop's private survey SQLite recorder, sessions
+`c7d25a57/1822596192` and `c7d25a57/1859913396`. Every completed
+probe matched a recorded attempt and every on-time result carried validated
+zero-hop evidence. Counts exclude one pre-fix and three post-fix
+cancellations, earlier drives, and a separate run started at 15:57.
+A receiver sensitivity measurement still requires a controlled weak-link
+test with per-probe reception logged at R011.
+
 ## 2026-11-23 - R011 pre-repair radio counters
 
 Before changing settings or rebooting R011, local device telemetry reported
