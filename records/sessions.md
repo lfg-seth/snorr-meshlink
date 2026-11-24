@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-24 - Located intermittent backhaul loss on the public MQTT path
+
+The private proxy and broker answered during three simultaneous public TCP
+timeouts. The worker logged 283 disconnected minute samples in 24 hours.
+G002 carried the final six hours of receipts and reported repeated boots.
+The next checks are WAN and proxy logs for the failed connections and G002's
+local reset and SD records for the longest delivery gap.
+[Timed probes and gateway measurements](sites.md#2026-11-24---intermittent-public-mqtt-and-gateway-delivery).
+
 ## 2026-11-23 - Traced the intermittent MQTT feed warning
 
 At 10:40:44 Pacific the production worker reported its MQTT subscription down

@@ -1,5 +1,43 @@
 # Candidate sites and backhaul
 
+## 2026-11-24 - Intermittent public MQTT and gateway delivery
+
+The production worker logged 283 disconnected and 1,152 subscribed minute
+samples in the 24 hours ending at 10:39:50 Pacific. A single disconnect can
+span several samples. At the cutoff the worker was subscribed, its heartbeat
+was one second old and its pending queue was empty. At 10:40:10 the
+subscription was down with a fresh heartbeat. It was up again at 10:41:34.
+
+From 10:39:52 to 10:40:29 Pacific, five of eight attempts from the portal
+host to `mqtt.snorr.org:8883` timed out opening TCP, before TLS or MQTT
+login. Three completed certificate-verified TLS. Six of eight paired TCP
+connections to the SSH port on the same hostname succeeded. From the broker
+host, all eight loopback MQTT checks and all eight checks through the
+private Nginx TLS listener received the expected anonymous login rejection.
+Mosquitto had been active since November 21. The SSH account could read
+service status but lacked read access to the Mosquitto log.
+
+Five synchronized checks started at five-second intervals at 18:42:30 UTC
+(10:42:30 Pacific). The first two received the expected MQTT rejection on
+all three paths. At 18:42:40, 18:42:45 and 18:42:50 UTC, the portal host's
+public TCP connections each exceeded the three-second timeout while broker
+loopback and private Nginx both completed MQTT at each timestamp. Public
+reachability is intermittent. Compare those attempts with WAN ingress,
+firewall/port forwarding and Nginx stream logs to locate where they stopped.
+
+Of 1,540 archived receipts in that 24-hour window, 1,501 arrived through G002
+(Lee Fire Station) and 39 through G006 (Terry Home). G006's last was November
+23 at 13:26 Pacific. All 218 receipts in the final six hours came through
+G002. Its 77 gateway health reports contained 15 distinct boot IDs. All 77
+reported Wi-Fi associated, and 21 reported direct MQTT disconnected. Those
+samples only describe moments the radio reported. G002's reset cause is unknown.
+
+Dispatch received no packets between 03:10:08 and 03:42:58 Pacific. The
+worker reported subscribed in 26 of the 33 minute samples during that gap.
+Both public connection failures and gateway restarts were observed. Assigning
+the full gap to either one would require more evidence. Compare G002's
+reset reason and local SD receipt times with the archive for that window.
+
 ## 2026-11-17 - Sahara repeater selection
 
 Owner selects **R009 / Sahara / Case 12 / eight 18650 cells / Muzi** at
