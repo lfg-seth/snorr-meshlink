@@ -2,6 +2,8 @@
 
 ## 2026-11-23 - Survey recordings and test results
 
+The [terrain comparison, road map and next field tests](field-tests/2026-11-23/terrain-review.md) match 2,384 confirmed field transmissions to the six saved repeater sites. At the assumed antenna heights, on-time replies were 57.2% on paths clearing 60% of the first Fresnel zone and 11.1% with intervening terrain. The current Mack’s pin and the earlier scout give different modeled paths to Upper Bristle.
+
 The field laptop recorded **19 sessions across seven target radios**. Of 2,454 completed probes, 726 received a validated zero-hop reply before the deadline (29.6%). The first two sessions were one-probe bench checks. The later sessions sampled different places and durations, so the overall percentage describes this recording only.
 
 [Download the raw survey recording (ZIP, 10.7 MB)](field-tests/2026-11-23/survey-recording.zip). The owner authorized publishing the exact GPS tracks for this day's tests. The capture runs from 11:31:47 through 17:23:50 Pacific. The archive includes:

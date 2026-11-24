@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-23 - Compared field probes with terrain and pilot expectations
+
+Reconciled all 2,477 attempts from GitHub main `748401d`, checked both archives and matched 2,384 field transmissions to their terrain profiles. On-time replies were 562/982 with 60% Fresnel clearance and 141/1,273 with intervening terrain. The drive exercised moving laptop-GPS fallback. Native profiles put the current Mack’s-to-Upper Bristle path 7.8 m below terrain and the earlier scout path 2.0 m above. Next field run pairs a clear R010 control and a two-position Mack’s comparison with a phone-free member tracker measured at Lee Fire and dispatch. Actual antenna heights, sustained member freshness and battery runtime remain open. [Results, map and field test order](field-tests/2026-11-23/terrain-review.md).
+
 ## 2026-11-23 - Published the day's test records
 
 Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).
