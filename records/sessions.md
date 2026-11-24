@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-23 - Published the day's test records
+
+Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).
+
 ## 2026-11-23 - Deployed member tracker Activity
 
 Deployed `meshlink-v0.4.16` from merged PR #100 at `35a309a`. Exact-host

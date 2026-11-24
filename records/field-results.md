@@ -1,5 +1,55 @@
 # Field testing and tangible results
 
+## 2026-11-23 - Survey recordings and test results
+
+The field laptop recorded **19 sessions across seven target radios**. Of 2,454 completed probes, 726 received a validated zero-hop reply before the deadline (29.6%). The first two sessions were one-probe bench checks. The later sessions sampled different places and durations, so the overall percentage describes this recording only.
+
+[Download the raw survey recording (ZIP, 10.7 MB)](field-tests/2026-11-23/survey-recording.zip). The owner authorized publishing the exact GPS tracks for this day's tests. The capture runs from 11:31:47 through 17:23:50 Pacific. The archive includes:
+
+- `gps.csv` with all 21,616 GPS events, including invalid fixes, in recorder order. Coordinates retain their recorded precision. An empty source field means the recorder did not label that sample.
+- `survey.sqlite3` with all 82,834 event rows for the day, original cursors and payloads, 94 command ledger entries, and all 19 sessions with their saved names and notes where present. Join attempts and results using the session and attempt IDs in the event payload.
+- `adapter/` with all 20 original USB journals and `target-roster.json` with the recorder's ten selectable peers.
+
+The SQLite integrity check passed. Each exported table matched its source selection in both directions, and the extracted files matched their input bytes. Archive SHA-256 is `c1ae5d4cf45fa67e21d333d0945dece7af226c2ede26a811f42b27de9d7a64db`.
+
+[Download the bench readings (ZIP)](field-tests/2026-11-23/bench-readings.zip) for the two single-probe conversion checks, dual-GPS endpoint observations, R011 device telemetry and its pre-repair USB counter samples.
+
+### Probe outcomes by session
+
+Each row starts at the first attempt. Every attempt ended in an on-time reply, timeout or cancellation. A further 41 replies arrived late, 38 after timeout and three after cancellation. The late column counts those same attempts again only to show the delayed replies.
+
+| First attempt (PST) | Target | Attempts | On time | Timeout | Late | Cancelled |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 11:32:09 | R008 | 1 | 0 | 1 | 0 | 0 |
+| 11:32:42 | R007 | 1 | 0 | 1 | 0 | 0 |
+| 11:55:15 | R001 | 35 | 29 | 5 | 4 | 1 |
+| 12:01:11 | R001 | 28 | 19 | 8 | 1 | 1 |
+| 12:03:49 | R001 | 5 | 0 | 4 | 0 | 1 |
+| 12:05:57 | R001 | 226 | 87 | 137 | 3 | 2 |
+| 12:37:56 | R001 | 205 | 95 | 108 | 3 | 2 |
+| 12:54:22 | R008 | 58 | 11 | 46 | 1 | 1 |
+| 13:26:20 | R008 | 157 | 28 | 127 | 4 | 2 |
+| 13:55:14 | R008 | 204 | 152 | 51 | 12 | 1 |
+| 14:08:20 | R005 | 162 | 4 | 157 | 0 | 1 |
+| 14:20:38 | R011 | 90 | 15 | 74 | 0 | 1 |
+| 14:27:10 | R008 | 36 | 0 | 35 | 0 | 1 |
+| 14:30:08 | R011 | 558 | 139 | 418 | 7 | 1 |
+| 15:22:01 | R011 | 443 | 112 | 328 | 5 | 3 |
+| 15:57:23 | R011 | 105 | 16 | 88 | 0 | 1 |
+| 17:05:29 | R009 | 87 | 18 | 67 | 1 | 2 |
+| 17:12:04 | R010 | 32 | 0 | 31 | 0 | 1 |
+| 17:15:00 | R009 | 44 | 1 | 42 | 0 | 1 |
+| **Total** | **7 radios** | **2,477** | **726** | **1,728** | **41** | **23** |
+
+### Field and bench findings
+
+- **Angel Peak.** Both Mountain Side (R011) and Vegas Side (R005) returned direct replies. On the two operator-labeled R011 drives, on-time replies were 139/557 (25.0%) before boosted RX and 112/440 (25.5%) afterward. Matching transmit positions within 25 m gave 74/301 before and 78/301 after. The drives showed no consistent improvement. R011 retained boosted RX and both enrolled admin keys after reboot. A stationary weak-link comparison still needs per-probe USB capture at R011. [Drive comparison](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/field-results.md#2026-11-23---r011-survey-before-and-after-boosted-rx) · [Packet timing](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/field-results.md#2026-11-23---laptop-usb-survey-contact-with-angel-peak) · [Pre-repair counters](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/field-results.md#2026-11-23---r011-pre-repair-radio-counters) · [Gain and reboot checks](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/docs/operations/r011-angel-mountain-deployment.md) · [Fleet enrollment audit](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/deployment-nodes.md#2026-11-23-admin-enrollment-audit)
+- **Survey GPS and firmware.** The V4 conversion passed image and profile readback. Two 119.6-second gaps in onboard fixes matched a reproduced 120-second retry delay. After the dual-GPS update, the radio accepted a laptop fix via USB. Native tests verified continued transmission with a fresh laptop fix and a pause when both fixes expired. The live acceptance check was stationary. [Conversion and GPS measurements](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/field-results.md#2026-11-23---heltec-survey-gps-dropouts-and-laptop-gps-comparison) · [Firmware and fallback checks](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/field-results.md#2026-11-23---laptop-gps-keeps-usb-surveys-running)
+- **Field Survey app and Wi-Fi.** Tests covered target names and map pins, the reply timer across restarts, saving/discarding/restoring a test, GPS handoff, the fullscreen map and pause banner. The final dual-GPS run passed 21 recorder checks, eight adapter checks and both native controller targets. The laptop fetched the homepage over its Wi-Fi address with HTTP 200. Access from a second device and physical iOS zoom remain open. [App, browser, adapter and network checks](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/sessions.md#2026-11-23---verified-field-survey-wi-fi-access)
+- **G003 and MQTT.** Three USB metadata replies arrived after a seven-second MQTT connection attempt ended. Broker loopback and private proxy each answered six of six probes. Public TCP 8883 was intermittent from both the laptop and portal. The portal worker's subscription dropped with its heartbeat still fresh. The fault location remains unresolved. [G003 bench diagnosis](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/docs/operations/g003-mobile-gateway.md#2026-11-23-user-button-stalls-and-missing-portal-reports) · [Broker probes and timeline](https://github.com/lfg-seth/snorr-meshlink/blob/32decafe1c0a85e91f8c17a1abea9ac6f1d2e2b1/records/sites.md#2026-11-23-public-mqtt-reachability) · [Production worker observations](https://github.com/lfg-seth/snorr-meshlink/blob/91334ff859f12c0e7c47ad91f405594401c30265/records/sessions.md#2026-11-23---traced-the-intermittent-mqtt-feed-warning)
+- **Screenless V4 gateway firmware.** Image validation, four release-asset download comparisons and offline relay, MQTT, SD, survey and neighbor checks passed. A fresh text downlink and forced relay still need hardware verification. [Firmware build and test record](https://github.com/lfg-seth/snorr-meshlink/blob/0c9e7bf748e5f234f69a2cadc110b323bfd3b0bc/docs/operations/gateway-client-firmware.md)
+- **MeshLink 0.4.16.** The release host passed 101 backend, 72 portal and 55 script tests. All ten public files matched the build, the signed-in Activity view displayed two member radios, and both backups passed live and demo recovery. A fresh member GPS or telemetry transmission remained outstanding at the end of the deployment check. [Deployment, recovery and live verification](../docs/operations/field-portal.md#november-23-member-tracker-activity-deployment)
+
 ## 2026-11-17 - G003 replacement Wi-Fi bench check
 
 G003 / !849ad7a0 passed exact credential and complete intended profile readback
