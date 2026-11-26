@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-11-26 - Deployed Activity cadence
+
+Deployed publisher `fc51086` under the portal deployment lock. Two advancing
+snapshots verified 45-minute device timers on all 11 infrastructure cards and
+preserved device periods on four member cards. Nine infrastructure nodes
+reported. G003 and G006 were silent after 72.2 and 70.1 hours without contact.
+Rollback publisher: `/opt/meshlink-rollback-activity-fc51086.QQJLl1/previous.py`.
+Next, verify radio receipt spacing after the field changes.
+
 ## 2026-11-25 - Deployed MeshLink 0.5.0 shared-channel messaging
 
 Merged PR #104, pushed the annotated `meshlink-v0.5.0` tag and deployed its

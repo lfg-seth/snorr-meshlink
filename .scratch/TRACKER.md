@@ -12,6 +12,9 @@ Exact fixed deployment locations are [published with owner approval](../records/
 
 ## Current
 
+**Activity telemetry cadence.** Deployed and verified 45-minute infrastructure
+timers. Next, verify receipt spacing after the radio changes. [Deployment](../records/sessions.md#2026-11-26---deployed-activity-cadence).
+
 | Task | Lane | Handoff / next action |
 | --- | --- | --- |
 | RAK batch intake / ID label station | Read-only USB intake | R011 is the former REF1. Start the watcher without the old reference USB argument. Heltec units are skipped. CLIENT bench; INA219 expected on all, AHT21 detected from actual temp/RH. 107 offline tests pass. Next: owner plugs selected units and labels !IDs; worker stops watcher or validates paused live process/heartbeat before opening ports. Sequential preparation and paired RF; enumeration alone is not a USB stability verdict. [Station](../docs/operations/rak-batch-station.md), [batch](../docs/operations/rak-batch-20261112.md). |
