@@ -1,5 +1,55 @@
 # Session log
 
+## 2026-11-25 - Deployed MeshLink 0.5.0 shared-channel messaging
+
+Merged PR #104, pushed the annotated `meshlink-v0.5.0` tag and deployed its
+exact commit `aeb318513aa12cfecaff582e8d1a3fa2d8318ce5`. The clean Linux
+build passed 72 portal, 107 backend and 55 dashboard tests. All ten public
+files matched the build. The shared-message migration and unique send-request
+index were present in live and demo. Both the pre-release and post-release
+backups passed SHA-256 and isolated live and demo restores.
+
+Lee Fire kept its established broker connection across deployment and backup.
+The post-backup check saw fresh legacy telemetry/GPS and G008 traffic, a ready
+dispatch connection and eight active services. The signed-in production state
+API returned one copy of the physical B004 broadcast with its unassigned
+device label. The earlier staged downlink matched on both B004 and B005 over
+LoRa. The owner requested the remaining production browser check as a manual
+test. Confirm the B004 text appears once after refresh, send one attributed
+reply and read it on both radios. [Test text, backup checksums and rollback](../docs/operations/live-mqtt.md#november-25-production-deployment).
+
+## 2026-11-25 - Started the desktop messaging stage
+
+Opened the checked 0.5.0 build from `d57e85e` on desktop loopback port 5173.
+The local demo accepted one simulated member reply. A separate local
+PocketBase on port 8090 accepted the bench member sign-in and returned
+B004, B005, a connected receiver and a ready G008 dispatch path. The
+desktop listens to G008 through a separate SSH-attached broker worker.
+The private dispatch credentials and channel key stay on the portal host.
+
+For the desktop test, choose **Sign in** and use the private staging login,
+then open **Messages**. Real manual replies carry the prefix `Bench: `.
+The legacy feed banner describes a separate worker running in production.
+This launch did not send a bench reply over RF. Production promotion and
+the signed-in production round trip remain open.
+
+## 2026-11-25 - Staged MeshLink shared-channel messaging
+
+Prepared 0.5.0 at `d57e85e` in an isolated worktree based on `748401d`.
+PR #104 and the isolated Linux release checks passed. Both pre-release
+restores passed while the original Lee Fire MQTT session remained established.
+The staged receiver matched a physical B004 text by sender, packet ID and
+payload. The staged publisher reached both B004 and B005 over LoRa with the
+same attributed bytes and packet ID. Both member mappings were observed on CT 101. [Evidence and
+operations](../docs/operations/live-mqtt.md#november-25-release-preflight).
+
+Production still runs 0.4.16. The approval review requires explicit owner
+permission to merge the release PR into main. Browser control found the open
+MeshLink window and stopped because it could not verify its URL. After main
+promotion, tag and stage the merge, deploy under the release lock, observe
+one member text in the signed-in Messages page, and match its browser reply
+on both member radios. Verify fresh legacy ingestion and post-release recovery.
+
 ## 2026-11-23 - Published the day's test records
 
 Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).

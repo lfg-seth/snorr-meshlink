@@ -39,6 +39,12 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
+**Live shared-channel messaging.** MeshLink 0.5.0 is in production at `aeb3185`.
+The signed-in state API returned the physical B004 test text once. Fresh Lee
+Fire and G008 receipts passed after backup. The owner will confirm one B004
+entry in production Messages, send one reply and read its exact attributed
+text on both B004 and B005. [Test text and release evidence](../docs/operations/live-mqtt.md#november-25-production-deployment).
+
 Keep implementation, release, native presentation, live delivery and field acceptance separate. Imported open criteria remain pending unless later evidence is recorded.
 
 | Task | Remaining check / evidence |
