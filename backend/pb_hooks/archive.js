@@ -20,8 +20,9 @@ function archive(e) {
       ['normalized', 'unsupported', 'rejected', 'error'].indexOf(b.decodeOutcome) < 0)
     throw new BadRequestError('Invalid archive metadata.');
   const fields = ['receiptId', 'topic', 'receivedAt', 'qos', 'retained', 'duplicate',
-    'payloadBase64', 'payloadBytes', 'decodeOutcome', 'decodeReason'];
+    'payloadBase64', 'payloadBytes', 'decodeOutcome', 'decodeReason', 'broker'];
   if (Object.keys(b).some((key) => fields.indexOf(key) < 0) ||
+      (b.broker !== undefined && b.broker !== 'mqtt.spp.lol') ||
       (b.decodeReason !== undefined && (typeof b.decodeReason !== 'string' || b.decodeReason.length > 200)))
     throw new BadRequestError('Invalid archive fields.');
   let outcome = 'saved';

@@ -5,13 +5,36 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sqlite3
+from contextlib import closing
 import subprocess
 import tarfile
 import tempfile
 
 DESTINATION = Path('/var/backups/meshlink')
-SERVICES = ['meshlink-demo-worker.service', 'meshlink-demo-api.service',
-            'meshlink-worker.service', 'meshlink-api.service']
+SERVICES = ['meshlink-demo-worker.service', 'meshlink-demo-api.service', 'meshlink-api.service']
+
+
+def add_worker_state(archive, source, name):
+    """APIs are stopped. Subscribers keep receiving; snapshot each durable SQLite queue."""
+    if not source.exists():
+        return
+    queue = source / 'receipts.sqlite'
+    archive.add(source, arcname=name, filter=lambda info: None if
+                info.name in {f'{name}/receipts.sqlite{suffix}' for suffix in ('', '-wal', '-shm', '-journal')}
+                else info)
+    if queue.exists():
+        with tempfile.TemporaryDirectory() as directory:
+            snapshot = Path(directory) / 'receipts.sqlite'
+            with closing(sqlite3.connect(queue.as_uri() + '?mode=ro', uri=True)) as db, \
+                    closing(sqlite3.connect(snapshot)) as copy:
+                db.backup(copy)
+                if copy.execute('PRAGMA quick_check').fetchone() != ('ok',):
+                    raise RuntimeError('Invalid receipt queue snapshot.')
+            info = archive.gettarinfo(str(queue), arcname=f'{name}/receipts.sqlite')
+            info.size = snapshot.stat().st_size
+            with snapshot.open('rb') as data:
+                archive.addfile(info, data)
 
 
 def main():
@@ -38,14 +61,16 @@ def main():
                 archive.add(source, arcname=name, filter=lambda info: None
                             if '__pycache__' in Path(info.name).parts else info)
             # Live adapter configuration/key and buffered receipts are private
-            # recovery state too. Worker has already stopped before archiving.
+            # recovery state too. Subscribers retain their established broker sessions.
+            add_worker_state(archive, Path('/var/lib/meshlink-worker'), 'worker-state')
+            add_worker_state(archive, Path('/var/lib/meshlink-channel'), 'channel-worker-state')
             for source, name in [('/etc/meshlink', 'worker-config'),
                                  ('/var/lib/meshlink-demo', 'demo-state'),
                                  ('/opt/meshlink-demo/bin', 'demo-bin'),
                                  ('/etc/nginx/sites-available/meshlink', 'services/nginx.conf'),
                                  ('/etc/systemd/system/meshlink-demo-api.service', 'services/meshlink-demo-api.service'),
                                  ('/etc/systemd/system/meshlink-demo-worker.service', 'services/meshlink-demo-worker.service'),
-                                 ('/var/lib/meshlink-worker', 'worker-state'),
+                                 ('/etc/systemd/system/meshlink-channel.service', 'services/meshlink-channel.service'),
                                  ('/etc/systemd/system/meshlink-api.service', 'services/meshlink-api.service'),
                                  ('/etc/systemd/system/meshlink-api.service.d', 'services/meshlink-api.service.d'),
                                  ('/etc/systemd/system/meshlink-worker.service', 'services/meshlink-worker.service'),

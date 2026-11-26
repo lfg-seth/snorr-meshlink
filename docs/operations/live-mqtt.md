@@ -1,5 +1,46 @@
 # Live GPS and infrastructure telemetry ingestion
 
+## Shared-channel broker overlap
+
+MeshLink 0.5.0 adds `meshlink-channel.service` alongside the established
+`meshlink-worker.service`. Keep the legacy worker running while Lee Fire
+uses its existing broker. The new unit loads the same private radio mappings
+from `/etc/meshlink/mqtt.json`, subscribes to CT 101 at `mqtt.spp.lol:8883`
+with a distinct client ID, and drains its own SQLite receipt queue in
+`/var/lib/meshlink-channel`. Its archived receipts carry the broker hostname.
+The existing GPS heartbeat belongs to the legacy worker. Messages shows the
+new subscriber connection separately. Both workers preserve GPS solution time.
+
+The Messages send control requires a fresh channel heartbeat (20 seconds),
+an authenticated dispatch connection, a validated G008 uplink during this
+connection within seven minutes, and exactly one designated backhaul matching
+the physical G008 ID. The server adds the member's map short name or account
+display name, enforces 233 UTF-8 bytes, and records the authenticated account.
+A manual click reserves an account-scoped UUID and radio packet ID before
+opening a one-shot MQTT 5 connection. It publishes once with QoS 1, a short
+expiry and retain disabled on `snorr/pilot/2/e/SNORRbench/dispatch`. A positive
+PUBACK records broker acceptance. An interrupted attempt retains uncertain
+evidence. Repeating its request ID reads the recorded result. No process loads
+saved replies for publication. Verify delivery separately on the member radio.
+
+For installation, provision a root-owned mode 0600 `/etc/meshlink/dispatch.json`
+with the dispatch account's `password` and the full base64 `channelKey` matching
+the receiver. The two live units use systemd LoadCredential. Install
+[`dispatch.conf`](../../deploy/portal/dispatch.conf) as a live API drop-in and
+[`meshlink-channel.service`](../../deploy/portal/meshlink-channel.service) as a
+separate unit. Apply the additive send-attempt migration serially to live and
+demo while their APIs are stopped. Preserve the demo unit and database.
+
+Use the release [backup helper](../../deploy/portal/backup.py) for pre-release,
+scheduled and post-release backups during overlap. It quiesces the APIs, takes
+consistent SQLite snapshots of the receiving queues, and retains the established
+broker sockets. Verify each archive's SHA-256 and restore live and demo in
+isolation. Compare the legacy worker PID, established socket and new Lee Fire
+receipts before and after. For rollback, stop and disable only the channel
+unit, remove the live dispatch drop-in, restore the saved application files,
+source marker and static build, reload systemd and restart the APIs. Preserve
+the additive fields, queues, evidence and overlap-safe backup procedure.
+
 The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered member battery-voltage telemetry and infrastructure voltage/temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
 
 GPS quality extension (2026-10-16; included in the owner-authorized accumulated release): the adapter now preserves positive `Position.PDOP` (wire value / 100) and `sats_in_view` as normalized `pdop` and `satellites`, attached to the same measurement. Absent/zero wire scalars stay unknown. PocketBase retains them in historical/latest position JSON, and the shared Map/Users card presents a plain-language GPS quality pill without exposing the score or claiming a metre radius. Existing member position flags stay unchanged. [Policy and local checks](../../.scratch/pilot/issues/15-gps-quality-pill.md). New worker/backend/frontend source must be released together to make the indicator available live; existing points without quality display Unknown until a new quality-bearing fix arrives. No archive replay/backfill is part of this change.

@@ -1,0 +1,26 @@
+[Unit]
+Description=SNORR MeshLink new-broker ingestion and dispatch readiness
+After=network-online.target meshlink-api.service
+Wants=network-online.target meshlink-api.service
+
+[Service]
+User=meshlink-worker
+Group=meshlink-worker
+WorkingDirectory=/opt/meshlink/backend
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=MESHLINK_WORKER_CREDENTIALS=/etc/meshlink/worker.json
+LoadCredential=dispatch.json:/etc/meshlink/dispatch.json
+ExecStart=/opt/meshlink-mqtt-venv/bin/python -u /opt/meshlink/backend/mqtt_worker.py --channel-overlap --spool /var/lib/meshlink-channel/receipts.sqlite
+Restart=on-failure
+RestartSec=5
+StateDirectory=meshlink-channel
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

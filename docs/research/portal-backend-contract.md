@@ -80,7 +80,7 @@ Restoration fetches the protected state endpoint for the current account and rol
 | `GET /api/meshlink/state` | Admin/member snapshot with current trackers, dated assignments, bounded history/messages/events, infrastructure, warnings/incidents and feed status |
 | `POST /api/meshlink/assign` | `{deviceId, memberId}`; member self-claim only a free tracker with no active assignment; admin closes conflicts and transfers atomically |
 | `POST /api/meshlink/release` | `{deviceId}`; member's own tracker or admin; preserve ended association and create separate release-name job |
-| `POST /api/meshlink/messages` | Human manual send only while healthy; synthetic send only; `{text}`, max 280 development characters; exactly one configured downlink gateway |
+| `POST /api/meshlink/messages` | Admin/member manual send. Demo accepts `{text}`. Live accepts `{text, requestId, until}` with the current channel availability deadline and 233 attributed UTF-8 bytes through G008. [Live operation](../operations/live-mqtt.md#shared-channel-broker-overlap) |
 | `POST /api/meshlink/rules` | Admin `{deviceId, trigger, recovery, enabled?}` in volts; `"*"` is shared default; per-device records override it; disabled rules retain history |
 | `POST /api/meshlink/configuration` | Admin `{deviceId, configuration}`; positive device/per-report cadence and timeout overrides, or `disabledMonitoring`; no hardware/sensor assertions added |
 | `POST /api/meshlink/incidents/{id}` | Human `{action:"acknowledge"}`; admin `{action:"resolve",note}`; normal samples/acknowledgment never resolve |

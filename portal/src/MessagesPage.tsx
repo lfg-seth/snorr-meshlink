@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import Badge from './Badge';
+import { useRef, useState } from 'react';
 import { timeLabel } from './demo';
 import type { Message } from './demo';
 export default function MessagesPage({
@@ -11,7 +10,9 @@ export default function MessagesPage({
   admin,
   onSend,
   onIncoming,
-  sendingEnabled = true,
+  simulation,
+  receiverOnline,
+  feedback,
 }: {
   messages: Message[];
   authorName?: string;
@@ -21,9 +22,14 @@ export default function MessagesPage({
   admin: boolean;
   onSend: () => void | Promise<void>;
   onIncoming?: () => void;
-  sendingEnabled?: boolean;
+  simulation: boolean;
+  receiverOnline: boolean;
+  feedback: string;
 }) {
   const [sending, setSending] = useState(false);
+  const busy = useRef(false);
+  const bytes = new TextEncoder().encode(`${authorName}: ${draft.trim()}`).length;
+  const oversized = !simulation && bytes > 233;
   return (
     <div className="messages-layout">
       <section className="panel message-panel">
@@ -31,7 +37,8 @@ export default function MessagesPage({
           <div>
             <h2>Shared operational channel</h2>
             <span className="muted small">
-              {sendingEnabled ? 'Chronological · fictional training traffic' : 'GPS integration only · messaging pending'}
+              {simulation ? 'Chronological · fictional training traffic'
+                : `SNORRbench · ${receiverOnline ? 'receiver connected' : 'receiver offline'}`}
             </span>
           </div>
           {onIncoming && (
@@ -56,11 +63,13 @@ export default function MessagesPage({
           className="composer"
           onSubmit={async (event) => {
             event.preventDefault();
-            if (sending || !sendingEnabled || !online || !draft.trim()) return;
+            if (busy.current || oversized || !online || !draft.trim()) return;
+            busy.current = true;
             setSending(true);
             try {
               await onSend();
             } finally {
+              busy.current = false;
               setSending(false);
             }
           }}
@@ -77,18 +86,20 @@ export default function MessagesPage({
           />
           <div>
             <span className="muted small">
-              {!sendingEnabled ? 'Radio messaging is not integrated yet.' : online
+              {online
                 ? 'Manual send · author prefix added'
                 : 'Draft preserved · reconnect, then send manually'}
+              {!simulation && ` · ${bytes}/233 bytes with author`}
             </span>
             <button
               className="primary"
-              disabled={sending || !sendingEnabled || !online || !draft.trim()}
+              disabled={sending || oversized || !online || !draft.trim()}
               type="submit"
             >
-              {sending ? 'Sending…' : sendingEnabled ? 'Simulate send' : 'Send unavailable'}
+              {sending ? 'Sending…' : simulation ? 'Simulate send' : online ? 'Send reply' : 'Send unavailable'}
             </button>
           </div>
+          {feedback && <p role="status">{feedback}</p>}
         </form>
       </section>
       <aside className="panel message-notes">
@@ -99,18 +110,14 @@ export default function MessagesPage({
           receipt.
         </p>
         <p>
-          Portal replies require a separately verified designated downlink gateway.
-          The live GPS bench currently uses two uplink-only gateways.
+          {simulation ? 'Messages in this demo stay in the training database.'
+            : 'G008 at Seth’s Home relays dispatch replies onto SNORRbench.'}
         </p>
         <hr />
         <h3>During an outage</h3>
         <p>
           Your draft stays in this browser session. Restoring the feed never
           sends it automatically.
-        </p>
-        <p className="muted small">
-          Live payload limits, expiry, authentication and delivery evidence
-          await integration.
         </p>
       </aside>
     </div>

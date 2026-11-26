@@ -20,6 +20,7 @@ export type BackendState = {
   account: BackendAccount;
   simulation: boolean;
   feedOnline: boolean;
+  channel?: { connected: boolean; ready: boolean; until: number; author: string } | null;
   trackers: Tracker[];
   members: Member[];
   assignments: Assignment[];

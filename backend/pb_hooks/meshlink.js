@@ -2,6 +2,7 @@ const c = require(`${__hooks}/common.js`);
 const health = require(`${__hooks}/health.js`);
 const telemetry = require(`${__hooks}/telemetry.js`);
 const neighborCurrent = require(`${__hooks}/neighbor_current.js`);
+const shared = require(`${__hooks}/shared-messages.js`);
 function assign(e) {
   c.human(e);
   const body = e.requestInfo().body;
@@ -95,7 +96,7 @@ function release(e) {
 }
 function send(e) {
   c.human(e);
-  c.demo();
+  if (!c.simulation()) return shared.send(e);
   const text = c.text(e.requestInfo().body.text, 'message', 280);
   let message;
   e.app.runInTransaction((app) => {
@@ -653,8 +654,11 @@ function state(e) {
       actorId: a.getString('actorId'),
     }));
   const f = c.feed(app);
+  const channel = c.simulation() ? null : shared.availability(app);
   return e.json(200, {
     simulation: c.simulation(),
+    channel: channel && {connected: channel.connected, ready: channel.ready, until: channel.until,
+      author: shared.prefix(app, e.auth)},
     trackers,
     members,
     assignments,

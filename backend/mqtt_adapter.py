@@ -1,13 +1,28 @@
-"""Receive-only adapter for encrypted member positions and device telemetry."""
+"""Normalize eligible encrypted channel traffic while retaining wire provenance."""
 import base64
 from datetime import datetime, timezone
 import hashlib
 import math
 import struct
+from functools import reduce
+from operator import xor
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from google.protobuf.message import DecodeError
 from meshtastic.protobuf import mesh_pb2, mqtt_pb2, portnums_pb2, telemetry_pb2
+
+DISPATCH_NODE = 0xffffff02
+G008 = '!9ea13cc0'
+TEXT_LIMIT = mesh_pb2.Constants.DATA_PAYLOAD_LEN
+
+
+def channel_hash(channel, key):
+    return reduce(xor, channel.encode() + key, 0)
+
+
+def channel_cipher(key, packet):
+    nonce = struct.pack('<QI', packet.id, getattr(packet, 'from')) + bytes(4)
+    return Cipher(algorithms.AES(key), modes.CTR(nonce))
 
 
 class PacketRejected(ValueError):
@@ -54,6 +69,7 @@ class Adapter:
     def __init__(self, config):
         self.root = config['root'].rstrip('/')
         self.channel = config['channel']
+        self.shared_messages = config.get('sharedMessages', False)
         self.members = config['members']
         self.infrastructure = config.get('infrastructure', {})
         if set(self.members) & set(self.infrastructure):
@@ -73,7 +89,8 @@ class Adapter:
         if len(payload) > 4096:
             raise PacketRejected('oversize envelope')
         prefix = f'{self.root}/2/e/{self.channel}/'
-        if not topic.startswith(prefix) or topic[len(prefix):] not in self.gateways:
+        dispatch_copy = self.shared_messages and topic == prefix + 'dispatch'
+        if not topic.startswith(prefix) or (topic[len(prefix):] not in self.gateways and not dispatch_copy):
             raise PacketRejected('unknown topic/gateway')
         gateway = topic[len(prefix):]
         try:
@@ -83,21 +100,39 @@ class Adapter:
                     or envelope.channel_id != self.channel):
                 raise PacketRejected('envelope/topic mismatch')
             source = f'!{getattr(packet, "from"):08x}'
-            if source not in self.members and source not in self.infrastructure:
-                raise PacketRejected('unknown source')
             if not packet.id or packet.pki_encrypted or packet.via_mqtt:
                 raise PacketRejected('unsupported packet flags/ID')
             if packet.WhichOneof('payload_variant') != 'encrypted':
                 raise PacketRejected('expected channel-encrypted packet')
-            nonce = struct.pack('<QI', packet.id, getattr(packet, 'from')) + b'\0' * 4
-            plaintext = Cipher(algorithms.AES(self.key), modes.CTR(nonce)).decryptor().update(packet.encrypted)
+            if dispatch_copy:
+                if getattr(packet, 'from') != DISPATCH_NODE or packet.to != 0xffffffff:
+                    raise PacketRejected('invalid dispatch envelope')
+                return None  # Archive the broker's copy without implying RF reception.
+            plaintext = channel_cipher(self.key, packet).decryptor().update(packet.encrypted)
             data = mesh_pb2.Data.FromString(plaintext)
             if not math.isfinite(received_at):
                 raise PacketRejected('invalid receipt time')
             digest = hashlib.sha256(self.channel.encode() + b'\0' + data.SerializeToString()).hexdigest()[:32]
             common = {'gatewayId': self.gateways[gateway], 'packetId': f'{packet.id:08x}:{digest}',
                       'receivedAt': at(received_at)}
-            device_id = (self.infrastructure if source in self.infrastructure else self.members)[source]
+            device_id = self.infrastructure.get(source) or self.members.get(source)
+            if self.shared_messages and data.portnum == portnums_pb2.TEXT_MESSAGE_APP:
+                if (packet.to != 0xffffffff or data.dest not in (0, 0xffffffff)
+                        or packet.channel != channel_hash(self.channel, self.key)
+                        or getattr(packet, 'from') in (0, DISPATCH_NODE, 0xffffffff)):
+                    return None
+                try:
+                    text = data.payload.decode('utf-8')
+                except UnicodeDecodeError:
+                    raise PacketRejected('invalid shared text encoding') from None
+                if not text.strip() or len(data.payload) > TEXT_LIMIT or '\0' in text:
+                    raise PacketRejected('invalid shared text')
+                # Source, packet ID and text survive gateway copies and optional Data flags.
+                digest = hashlib.sha256(data.payload).hexdigest()[:32]
+                return {**common, 'packetId': f'{packet.id:08x}:{digest}', 'deviceId': device_id or source,
+                        'kind': 'message', 'measuredAt': None, 'data': {'source': source, 'text': text}}
+            if not device_id:
+                raise PacketRejected('unknown source')
             if data.portnum == portnums_pb2.PRIVATE_APP:
                 if data.payload.startswith(b'SNWF'):
                     if source not in self.infrastructure or self.gateways.get(source) != device_id:
