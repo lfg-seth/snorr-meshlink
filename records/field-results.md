@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-26 - B009 and B010 member-node commissioning
+
+Both original factory applications identified HELTEC_WIFI_LORA_32_V4. The owner requested the same setup as B006 through B008 and waived factory backups. Each radio passed digest checks of its factory image, recovery and filesystem. The `heltec-v4-gateway / 2.7.26.6fea6aa` application matched SHA-256 `0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`.
+
+The private US member profile uses CLIENT, channel slot 35, 10 dBm, Wi-Fi and MQTT off, GPS acquisition every 60 seconds, position broadcasts configured for 120 seconds and device telemetry every 180 seconds. Full local and module settings, channels, names and individual keys persisted through an explicit reboot. Both directions passed packet-ID-matched PKI direct messaging.
+
+Both unassigned tracker cards passed live portal readback. The CT 101 subscriber loaded both mappings. The legacy subscriber stayed online and will load them on its next start. Dispatch accepted neighbor reports from both via G008. USB device telemetry read 4.310 V and 31.75% channel utilization on B009, and 4.342 V and 25.95% on B010. These USB-powered readings describe bench supply conditions. Both channel readings exceeded the CLIENT 25% telemetry broadcast threshold. Periodic device telemetry through G008 remains to be verified on a quieter channel.
+
+Neither radio reported a timestamped GPS solution on the indoor bench. Outdoor phone-free GPS delivery and runtime remain open.
+
 ## 2026-11-26 - B006 through B008 member-node commissioning
 
 All three factory applications identified the Heltec WiFi LoRa 32 V4 target. With antennas connected and factory backups waived, each board passed digest verification of the factory image, recovery and filesystem. The member application is `heltec-v4-gateway / 2.7.26.6fea6aa`, SHA-256 `0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`. [Physical IDs](inventory.md#2026-11-26---three-new-heltec-v4-member-radios).

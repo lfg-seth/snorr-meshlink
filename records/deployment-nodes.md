@@ -1,5 +1,7 @@
 # Current deployment node labels
 
+B009 (`!9253a42c`) and B010 (`!a35c4488`) are unassigned member nodes. [Hardware identities](inventory.md#2026-11-26---member-radios-b009-and-b010).
+
 B006 (`!9254f4b4`), B007 (`!a35af848`) and B008 (`!f669c4dc`) are unassigned member nodes. [USB and hardware identities](inventory.md#2026-11-26---three-new-heltec-v4-member-radios).
 
 [Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.

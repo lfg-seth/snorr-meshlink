@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-26 - Commissioned member radios B009 and B010
+
+Provisioned two Heltec V4 member radios. Both passed reboot readback and two-way encrypted messaging, and both are registered as unassigned trackers. Next, verify a fresh phone-free position in dispatch for each radio under open sky. [Bench verification](field-results.md#2026-11-26---b009-and-b010-member-node-commissioning).
+
 ## 2026-11-26 - Provisioned member nodes B006 through B008
 
 Flashed three new Heltec V4s, applied the member GPS profile and verified full configuration after reboot. All three passed encrypted peer messaging and appeared as unassigned trackers. G008 delivered packets from each radio. Next, verify timestamped outdoor fixes in dispatch. [Commissioning results](field-results.md#2026-11-26---b006-through-b008-member-node-commissioning)

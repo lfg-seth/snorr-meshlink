@@ -1,5 +1,16 @@
 # Hardware inventory
 
+## 2026-11-26 - Member radios B009 and B010
+
+Two additional factory-new Heltec WiFi LoRa 32 V4 radios. Each has an ESP32-S3, 2 MB PSRAM and 16 MB flash.
+
+| Label | Bench USB port | USB serial | Radio ID | Hardware ID |
+| --- | --- | --- | --- | --- |
+| B009 | COM49 | `D4:05:92:53:A4:2C` | `!9253a42c` | `2349c409764be6906f85c37bfd48fb5a` |
+| B010 | COM50 | `10:BD:A3:5C:44:88` | `!a35c4488` | `7faf411d1069538c5b2e9249060543da` |
+
+[Bench verification](field-results.md#2026-11-26---b009-and-b010-member-node-commissioning)
+
 ## 2026-11-26 - Three new Heltec V4 member radios
 
 The owner supplied three new radios with antennas connected. Each factory application identified its target as HELTEC_WIFI_LORA_32_V4. All three have an ESP32-S3, 2 MB PSRAM and 16 MB flash.
