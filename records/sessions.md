@@ -1,5 +1,20 @@
 # Session log
 
+## 2026-11-25 - Started the desktop messaging stage
+
+Opened the checked 0.5.0 build from `d57e85e` on desktop loopback port 5173.
+The local demo accepted one simulated member reply. A separate local
+PocketBase on port 8090 accepted the bench member sign-in and returned
+B004, B005, a connected receiver and a ready G008 dispatch path. The
+desktop listens to G008 through a separate SSH-attached broker worker.
+The private dispatch credentials and channel key stay on the portal host.
+
+For the desktop test, choose **Sign in** and use the private staging login,
+then open **Messages**. Real manual replies carry the prefix `Bench: `.
+The legacy feed banner describes a separate worker running in production.
+This launch did not send a bench reply over RF. Production promotion and
+the signed-in production round trip remain open.
+
 ## 2026-11-25 - Staged MeshLink shared-channel messaging
 
 Prepared 0.5.0 at `d57e85e` in an isolated worktree based on `748401d`.

@@ -40,6 +40,7 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 ## Verify
 
 **Live shared-channel messaging.** MeshLink 0.5.0 is staged at `d57e85e`.
+The [desktop test instance](../records/sessions.md#2026-11-25---started-the-desktop-messaging-stage) has a separate bench sign-in and a verified G008 send path.
 Next, obtain explicit main-merge approval for PR #104, deploy the checked tag,
 and verify the production browser round trip on B004/B005, legacy receipts
 and post-release recovery. [Checks and bench evidence](../docs/operations/live-mqtt.md#november-25-release-preflight).
