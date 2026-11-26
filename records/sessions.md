@@ -1,5 +1,22 @@
 # Session log
 
+## 2026-11-25 - Staged MeshLink shared-channel messaging
+
+Prepared 0.5.0 at `d57e85e` in an isolated worktree based on `748401d`.
+PR #104 and the isolated Linux release checks passed. Both pre-release
+restores passed while the original Lee Fire MQTT session remained established.
+The staged receiver matched a physical B004 text by sender, packet ID and
+payload. The staged publisher reached both B004 and B005 over LoRa with the
+same attributed bytes and packet ID. Both member mappings were observed on CT 101. [Evidence and
+operations](../docs/operations/live-mqtt.md#november-25-release-preflight).
+
+Production still runs 0.4.16. The approval review requires explicit owner
+permission to merge the release PR into main. Browser control found the open
+MeshLink window and stopped because it could not verify its URL. After main
+promotion, tag and stage the merge, deploy under the release lock, observe
+one member text in the signed-in Messages page, and match its browser reply
+on both member radios. Verify fresh legacy ingestion and post-release recovery.
+
 ## 2026-11-23 - Published the day's test records
 
 Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).

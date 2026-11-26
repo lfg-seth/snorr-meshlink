@@ -41,6 +41,40 @@ unit, remove the live dispatch drop-in, restore the saved application files,
 source marker and static build, reload systemd and restart the APIs. Preserve
 the additive fields, queues, evidence and overlap-safe backup procedure.
 
+### November 25 release preflight
+
+[PR #104](https://github.com/lfg-seth/snorr-meshlink/pull/104) at `d57e85e`
+passed project, portal and backend CI. The isolated release checkout on the
+portal LXC passed 72 portal, 107 backend and 55 dashboard tests and built the
+live frontend. The Windows portal build and targeted PocketBase dispatch
+integration passed. The full Windows backend run had five errors, including
+four loopback resets. The complete Linux suite passed.
+
+The live registry and private worker configuration agree on unassigned B004
+(`!a35a5fec`), B005 (`!a35b3888`) and G008 (`!9ea13cc0`), the only backhaul
+with downlink enabled. A separate staged subscriber authenticated to CT 101 and
+normalized traffic from both members through G008. The dispatch login passed.
+At 02:46:43 UTC on November 26, the release decoder matched the exact unique
+text and packet ID `fa71d48c` from a physical B004 broadcast through G008.
+The COM44 library also reported a corrupt serial frame during the check.
+The matched broker receipt and payload were independently verified.
+
+The staged publisher ran under the live API service identity with its private
+credential mount. Its first positive PUBACK had no matched USB evidence because
+the observer excluded the MQTT-origin flag. G008 preserves that flag over RF.
+A fresh marker, packet `6638c42b`, received a positive PUBACK and matched the
+exact attributed UTF-8 bytes on B005 at 02:49:11.744 UTC and B004 at
+02:49:11.947 UTC. Both USB observations reported `TRANSPORT_LORA` with the
+MQTT-origin flag set. Both ports and the station lease closed. Production
+browser acceptance requires a separate send from the signed-in Messages page.
+
+The pre-release archive `meshlink-20261126T023122Z.tar.gz` passed SHA-256
+(`82be7b1956baa278878a4c88ab54483fda29d9e6f74741838056f8f953c8baf7`)
+and isolated live and demo recovery. Lee Fire's original worker process and
+TCP session survived the backup, with a later receipt at 02:43:50 UTC.
+The private promotion, verification and rollback scripts are staged under
+`/root/meshlink-release-050` on the LXC.
+
 The receive-only Python worker decodes channel-encrypted Meshtastic ServiceEnvelope packets from the stock `2.7.26.54e0d8d` bench. It saves normalized positions through the existing authenticated PocketBase worker API. It never publishes MQTT commands, sends radio messages or changes radio names. Registered member battery-voltage telemetry and infrastructure voltage/temperature/humidity telemetry are also decoded; unsupported packet kinds are archived without updating operational state. See [repeater provisioning and measured verification](repeater-telemetry.md).
 
 GPS quality extension (2026-10-16; included in the owner-authorized accumulated release): the adapter now preserves positive `Position.PDOP` (wire value / 100) and `sats_in_view` as normalized `pdop` and `satellites`, attached to the same measurement. Absent/zero wire scalars stay unknown. PocketBase retains them in historical/latest position JSON, and the shared Map/Users card presents a plain-language GPS quality pill without exposing the score or claiming a metre radius. Existing member position flags stay unchanged. [Policy and local checks](../../.scratch/pilot/issues/15-gps-quality-pill.md). New worker/backend/frontend source must be released together to make the indicator available live; existing points without quality display Unknown until a new quality-bearing fix arrives. No archive replay/backfill is part of this change.

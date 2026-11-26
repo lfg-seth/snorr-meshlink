@@ -39,6 +39,11 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
+**Live shared-channel messaging.** MeshLink 0.5.0 is staged at `d57e85e`.
+Next, obtain explicit main-merge approval for PR #104, deploy the checked tag,
+and verify the production browser round trip on B004/B005, legacy receipts
+and post-release recovery. [Checks and bench evidence](../docs/operations/live-mqtt.md#november-25-release-preflight).
+
 Keep implementation, release, native presentation, live delivery and field acceptance separate. Imported open criteria remain pending unless later evidence is recorded.
 
 | Task | Remaining check / evidence |
