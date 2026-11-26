@@ -1,5 +1,18 @@
 # Field testing and tangible results
 
+## 2026-11-25 - G008 shared-channel bench
+
+On the release candidate, a B004 broadcast reached the staged receiver
+through G008. Both B005 and B004 then received dispatch packet `6638c42b`
+over LoRa at 02:49:11.744 and 02:49:11.947 UTC on November 26,
+respectively. The packet ID and attributed text bytes matched on both radios.
+
+After MeshLink 0.5.0 went live, B004 sent packet `dd7d3e4f` over the shared
+channel. The production state API returned one copy at 03:32:42.141 UTC
+with the correct unassigned-radio attribution. The owner will check the
+signed-in Messages page and read its reply on both physical radios.
+[Bench measurements and production test](../docs/operations/live-mqtt.md#november-25-production-deployment).
+
 ## 2026-11-23 - Survey recordings and test results
 
 The field laptop recorded **19 sessions across seven target radios**. Of 2,454 completed probes, 726 received a validated zero-hop reply before the deadline (29.6%). The first two sessions were one-probe bench checks. The later sessions sampled different places and durations, so the overall percentage describes this recording only.

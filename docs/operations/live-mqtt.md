@@ -41,6 +41,49 @@ unit, remove the live dispatch drop-in, restore the saved application files,
 source marker and static build, reload systemd and restart the APIs. Preserve
 the additive fields, queues, evidence and overlap-safe backup procedure.
 
+### November 25 production deployment
+
+On November 25 Pacific time, the portal LXC deployed MeshLink 0.5.0 from
+the tagged merge `aeb318513aa12cfecaff582e8d1a3fa2d8318ce5`. The clean
+merge build passed 72 portal, 107 backend and 55 dashboard tests. Its ten
+public files matched the build byte for byte. The production backend source
+marker matched the tag, and both live and demo applied the shared-message
+migration and request-ID index. All eight services passed the health checks.
+[Release PR](https://github.com/lfg-seth/snorr-meshlink/pull/104).
+
+The running configuration mapped B004 and B005 to their registered,
+unassigned radios. G008 was the sole downlink backhaul. The two receiver
+queues drained and the live API reported dispatch ready. Lee Fire kept its
+original worker PID and established TCP connection through promotion and
+backup. After the backup, a fresh observation window recorded two Lee Fire
+archive receipts, one normalized legacy telemetry or GPS receipt and one new
+CT 101 archive receipt through G008. The demo API returned synthetic mode
+and its service account could not read the live dispatch credential.
+
+The physical B004 broadcast `B004 portal check 36059aaf` (packet
+`dd7d3e4f`) reached production at 03:32:42.141 UTC on November 26.
+PocketBase and the signed-in state API each returned exactly one shared
+message, attributed to `Unassigned · B004 · !a35a5fec`. The staged
+two-radio downlink measurements are recorded below. The owner will perform
+the remaining production browser and radio display check.
+
+For that check, sign in to production Messages and confirm that the B004
+text appears once, including after a refresh. Send `Portal bench reply 36059aaf`
+once. Read the exact reply on **both** B004 and B005, including the name
+shown by **Message as** and the following `: ` prefix separator. Confirm the
+browser still shows one outbound copy after refresh. Its send status
+reports broker acceptance. [Production Messages](https://meshlink.spp.lol/#messages).
+
+The pre-release archive and checksum are below. The post-release archive
+`meshlink-20261126T033510Z.tar.gz` has SHA-256
+`3c4d6dbea2d97694fd156880c9baed4756ff65e40b41c7dbe0be6340464484c9`.
+Both archives passed checksum verification and isolated restores of the live
+and demo databases. The post-release archive also contains both durable
+receiver queues, the channel unit and the private dispatch configuration.
+The 0.4.16 rollback files are in
+`/opt/meshlink-rollback-field-aeb3185`, with the rollback helper under
+`/root/meshlink-release-050` on the portal LXC.
+
 ### November 25 release preflight
 
 [PR #104](https://github.com/lfg-seth/snorr-meshlink/pull/104) at `d57e85e`

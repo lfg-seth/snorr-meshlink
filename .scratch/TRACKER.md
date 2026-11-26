@@ -39,11 +39,11 @@ handoff rules](../docs/operations/local-tracking.md#task-dispatch-and-context).
 
 ## Verify
 
-**Live shared-channel messaging.** MeshLink 0.5.0 is staged at `d57e85e`.
-The [desktop test instance](../records/sessions.md#2026-11-25---started-the-desktop-messaging-stage) has a separate bench sign-in and a verified G008 send path.
-Next, obtain explicit main-merge approval for PR #104, deploy the checked tag,
-and verify the production browser round trip on B004/B005, legacy receipts
-and post-release recovery. [Checks and bench evidence](../docs/operations/live-mqtt.md#november-25-release-preflight).
+**Live shared-channel messaging.** MeshLink 0.5.0 is in production at `aeb3185`.
+The signed-in state API returned the physical B004 test text once. Fresh Lee
+Fire and G008 receipts passed after backup. The owner will confirm one B004
+entry in production Messages, send one reply and read its exact attributed
+text on both B004 and B005. [Test text and release evidence](../docs/operations/live-mqtt.md#november-25-production-deployment).
 
 Keep implementation, release, native presentation, live delivery and field acceptance separate. Imported open criteria remain pending unless later evidence is recorded.
 

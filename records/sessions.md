@@ -1,5 +1,23 @@
 # Session log
 
+## 2026-11-25 - Deployed MeshLink 0.5.0 shared-channel messaging
+
+Merged PR #104, pushed the annotated `meshlink-v0.5.0` tag and deployed its
+exact commit `aeb318513aa12cfecaff582e8d1a3fa2d8318ce5`. The clean Linux
+build passed 72 portal, 107 backend and 55 dashboard tests. All ten public
+files matched the build. The shared-message migration and unique send-request
+index were present in live and demo. Both the pre-release and post-release
+backups passed SHA-256 and isolated live and demo restores.
+
+Lee Fire kept its established broker connection across deployment and backup.
+The post-backup check saw fresh legacy telemetry/GPS and G008 traffic, a ready
+dispatch connection and eight active services. The signed-in production state
+API returned one copy of the physical B004 broadcast with its unassigned
+device label. The earlier staged downlink matched on both B004 and B005 over
+LoRa. The owner requested the remaining production browser check as a manual
+test. Confirm the B004 text appears once after refresh, send one attributed
+reply and read it on both radios. [Test text, backup checksums and rollback](../docs/operations/live-mqtt.md#november-25-production-deployment).
+
 ## 2026-11-25 - Started the desktop messaging stage
 
 Opened the checked 0.5.0 build from `d57e85e` on desktop loopback port 5173.
