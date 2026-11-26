@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-11-25 - Reviewed the development and release workflow
+
+Reviewed tracking, CI triggers, artifact coverage, the desktop preview and
+the 0.4.16 release checks. Proposed one stable phone-testing URL and explicit
+promotion of the checked candidate. Host capacity, staging and promotion
+remain unverified. Next, select the staging host and prove a fixture edit from
+a phone. [Review and rollout plan](../docs/operations/staging-plan.md).
+
 ## 2026-11-23 - Published the day's test records
 
 Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).

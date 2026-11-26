@@ -17,6 +17,9 @@ No staging site is needed now. Staging and automatic deployments are deferred
 until the owner brings them forward. Preserve same-commit validation,
 backup/recovery, serialized migrations, rollback and post-deployment checks.
 
+On November 25 the owner reopened staging for planning. The proposed
+[shared staging workflow](staging-plan.md) awaits implementation.
+
 For a new release:
 
 1. Update the root release JSON, `portal/package.json` and both root-version

@@ -18,6 +18,10 @@ Exact fixed deployment locations are [published with owner approval](../records/
 
 ## Next
 
+**Shared application staging (GH-13).** The owner reopened staging for planning.
+Next, confirm the always-on host and select the phone-test milestone in the
+[workflow review and staging plan](../docs/operations/staging-plan.md).
+
 Ready follow-ups and items needing scope/prerequisites; select with the owner before starting. Imported Triage stays unresolved rather than becoming Ready by migration.
 
 Select one Software outcome; keep a Bench plan/run available when inputs permit.
@@ -104,7 +108,6 @@ Owner activation is required before research, design, implementation or testing.
 | --- | --- |
 | [Field preparation and service access](../records/wishlist.md#field-preparation-and-service-access) | Prepared/tested configuration script with MQTT-permission verification, USB-C service access and laptop touchscreen repair/replacement; capture only, await activation. |
 | [Offline walking/driving reception survey](../records/wishlist.md#offline-walking-and-driving-reception-survey) | Phone/B003 local feedback, car-node overlap dashboard/ping-pong and antenna/feedline comparisons; capture only, await activation. |
-| [GH-13 - Future deployment automation/staging](../records/wishlist.md#future-staging-or-automatic-deployments) | Production updates are manual. Owner selected one [private desktop staging instance](../records/sessions.md#2026-11-16---desktop-staging-for-iphone-review) for iPhone review. Broader staging and deployment automation remain deferred. |
 | [GH-11 — Repeater operations/site survey](../records/tracking-import/github-11.md) | Owner-held survey; define direct-link placement procedure when resumed. |
 | [GH-12 — Heltec MQTT over WebSockets](../records/tracking-import/github-12.md) | Revisit only if the deployed transport needs an alternative. |
 | [GH-14 — Messaging/remote administration](../records/tracking-import/github-14.md) | Later communications scope after passive tracking. |

@@ -231,6 +231,10 @@ location privacy. See [content policy](content.md#public-documentation-direction
 
 ## Future staging or automatic deployments
 
+2026-11-25: the owner reopened shared staging and release workflow design.
+The [review and rollout plan](../docs/operations/staging-plan.md) proposes
+automatic staging and an owner-selected production promotion.
+
 2026-10-23: owner selects **manual production deployments**, reviewed source on
 `main`, and no staging site now. The policy decision from GH-13 is settled;
 staging and automatic-release connection/implementation remain deferred, not
