@@ -16,6 +16,8 @@ Exact fixed deployment locations are [published with owner approval](../records/
 | --- | --- | --- |
 | RAK batch intake / ID label station | Read-only USB intake | R011 is the former REF1. Start the watcher without the old reference USB argument. Heltec units are skipped. CLIENT bench; INA219 expected on all, AHT21 detected from actual temp/RH. 107 offline tests pass. Next: owner plugs selected units and labels !IDs; worker stops watcher or validates paused live process/heartbeat before opening ports. Sequential preparation and paired RF; enumeration alone is not a USB stability verdict. [Station](../docs/operations/rak-batch-station.md), [batch](../docs/operations/rak-batch-20261112.md). |
 
+**Broker migration.** CT 101 is public at `mqtt.spp.lol:8883`. Renewal and reload passed. G008 delivered encrypted member and dispatch texts in both directions. Next, move Lee Fire during the owner's maintenance window, verify its traffic, and move portal ingestion while preserving GPS coverage. [Migration record](../docs/operations/mqtt-pve06-migration.md).
+
 ## Next
 
 Ready follow-ups and items needing scope/prerequisites; select with the owner before starting. Imported Triage stays unresolved rather than becoming Ready by migration.
@@ -107,7 +109,7 @@ Owner activation is required before research, design, implementation or testing.
 | [GH-13 - Future deployment automation/staging](../records/wishlist.md#future-staging-or-automatic-deployments) | Production updates are manual. Owner selected one [private desktop staging instance](../records/sessions.md#2026-11-16---desktop-staging-for-iphone-review) for iPhone review. Broader staging and deployment automation remain deferred. |
 | [GH-11 — Repeater operations/site survey](../records/tracking-import/github-11.md) | Owner-held survey; define direct-link placement procedure when resumed. |
 | [GH-12 — Heltec MQTT over WebSockets](../records/tracking-import/github-12.md) | Revisit only if the deployed transport needs an alternative. |
-| [GH-14 — Messaging/remote administration](../records/tracking-import/github-14.md) | Later communications scope after passive tracking. |
+| [GH-14 — Messaging/remote administration](../records/tracking-import/github-14.md) | B004 and B005 passed addressed PKI texts and shared texts in both directions. G008 delivered both member uplinks and a dispatch test reply to both members. Next, integrate live shared-text ingestion and authorized portal sending, then verify a browser round trip. G009 bench rename is parked. [Bench results](../records/field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench). |
 | [GH-15 — Known Wi-Fi/MQTT backhaul](../records/tracking-import/github-15.md) | Wishlist: automatic connection using known networks. |
 | [GH-16 — Browser firmware flashing](../records/tracking-import/github-16.md) | Wishlist: member-owned supported devices. |
 | [GH-17 — Slack integration](../records/tracking-import/github-17.md) | Wishlist: exact purpose and data flow remain unspecified. |

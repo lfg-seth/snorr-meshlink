@@ -1,5 +1,39 @@
 # Field testing and tangible results
 
+## 2026-11-25 - Two V4.3 clients and G008 messaging on the bench
+
+The owner identified two new Heltec V4.3 OLED radios with GPS and antennas
+installed. COM44 became B004 (`!a35a5fec`) and COM45 became B005
+(`!a35b3888`). Both ESP32-S3s reported 16 MB flash and 2 MB PSRAM.
+The factory image for `heltec-v4-gateway / 2.7.26.6fea6aa` includes the
+OLED and GPS drivers. The application matched the B003 SHA-256
+`0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`.
+The flash verification covered the factory image, recovery and filesystem
+on both boards. The owner waived factory backups for these two new units.
+
+Both run CLIENT on the private US pilot channel, slot 35, 10 dBm configured
+power and V4.3 FEM LNA enabled. Wi-Fi and MQTT are disabled on each member.
+They accept RF messages originating at dispatch through G008. GPS is enabled
+on RX39/TX38/enable34 with 60-second acquisition and 120-second reporting.
+Device telemetry and the SNNS baseline are 180 seconds. Full settings,
+channels, names and individual keys matched through a separate reboot.
+
+| Test path | Observed result |
+| --- | --- |
+| B004 → B005 and B005 → B004 on the shared channel | Both recipients decoded the exact text and packet ID over USB. |
+| B004 and B005 → RF → G008 → mqtt.spp.lol | Public TLS subscriber decrypted each matching member text on G008's uplink topic. |
+| Dispatch test publisher → mqtt.spp.lol → G008 → RF | Both physical members decoded the same matching dispatch packet. |
+| B004 → B005 and B005 → B004 by direct address | After the nodes exchanged their public identity information, both recipients decoded the exact addressed text and reported PKI encryption. |
+
+The live portal lists two unassigned trackers, B004 and B005. Their worker
+mappings are saved for the next worker start. The existing worker connection
+stays on the older broker during the Lee Fire overlap. The downlink test
+used the dispatch MQTT account. Sending and receiving shared texts in the
+production web interface remains open. Neither USB readback showed a GPS
+solution with a measurement timestamp during the test. Outdoor fix, range,
+and battery runtime remain unmeasured.
+[Public broker and renewal](../docs/operations/mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
 ## 2026-11-23 - Survey recordings and test results
 
 The field laptop recorded **19 sessions across seven target radios**. Of 2,454 completed probes, 726 received a validated zero-hop reply before the deadline (29.6%). The first two sessions were one-probe bench checks. The later sessions sampled different places and durations, so the overall percentage describes this recording only.

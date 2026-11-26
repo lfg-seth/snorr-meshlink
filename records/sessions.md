@@ -1,5 +1,94 @@
 # Session log
 
+## 2026-11-25 - Activated mqtt.spp.lol and commissioned B004 and B005
+
+CT 101 now serves public, authenticated MQTT with a Let's Encrypt certificate.
+Its Cloudflare renewal dry run passed with the Mosquitto deploy hook. G008
+reconnected after reboot. Registered two new V4.3 OLED GPS radios as unassigned
+member nodes. Both passed encrypted direct messages, shared-channel texts,
+uplink via G008 and dispatch replies from the broker. Their complete profiles
+survived reboot. [Bench evidence](field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench)
+and [migration and rollback](../docs/operations/mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
+Next, give both GPS receivers sky view for fresh fixes. Lee Fire remains on
+the prior broker until its owner-scheduled change. Verify fleet ingestion
+when switching the worker and test a browser-originated reply after production
+shared-text integration.
+
+## 2026-11-25 - Applied G008 permissions to both MQTT brokers
+
+Private CT 101 passed hostname-verified TLS and the original and expanded
+account matrices after reload and restart. The owner ran the matching update
+on the old broker. Its private listener passed the same dispatch checks.
+Public DNS still pointed to the old IP. New public TCP connections failed
+from three locations while the established worker session received G008
+traffic. The radio retains its current login pending a fresh public TLS test.
+At 17:16 Pacific, retesting the literal public hostname from the workstation,
+MeshLink host and pve06 again failed at TCP before TLS. Next: check the old
+ingress port forward and the Nginx TCP listener.
+At 17:21 Pacific all four delegated XMission authorities still served the old
+A record with TTL 60. Confirm the submitted change with the DNS operator.
+[Changes, measurements, rollback and next step](../docs/operations/mqtt-pve06-migration.md#november-25-pacific-execution-record).
+
+## 2026-11-25 - Recorded G008 broker changes for the DNS cutover
+
+The proposed change gives G008 its own gateway login and the portal a
+dispatch-only publisher. Existing wildcard writers require an exclusion for
+the dispatch topic. The [two-broker runbook](../docs/operations/mqtt-pve06-migration.md#g008-messaging-change-to-apply-on-both-brokers)
+tracks the old production server and private CT 101 independently, including
+verification, client reconnection and rollback. Both changes are pending.
+Next: test with two new accounts on CT 101 and repeat on the old broker
+using privileged access before switching G008.
+
+## 2026-11-25 - Checked G008 readiness
+
+The signed-in field roster shows G008 at Seth's Home with its pin pending.
+G008's latest non-retained uplink was 16:53:39 Pacific, 108 seconds before
+the check. The last archived packet it forwarded from another registered
+radio was November 18 at 16:49:17 Pacific. Next: verify a fresh member packet
+through G008 and broker-to-radio delivery for dispatch replies. The owner
+parks G009. [Earlier downlink test](#2026-11-25---configured-the-seths-home-heltec-v3).
+
+## 2026-11-25 - Resolved duplicate gateway names
+
+The live registry had two repeated short names across 21 physical radios.
+G001 stays with screenless V4 `!1bbf0638`. G003 stays with mobile V3
+`!849ad7a0`. Seth's Home V3 `!9ea13cc0` is now **G008**. Its owner
+names and complete profile matched the intended values after hardware reset.
+The former G003 bench V3 `!9e9f167c` is assigned **G009** in the registry.
+It was absent from USB and returned no fresh directed RF response. Next:
+verify its hardware ID, write G009 and read back after reboot.
+
+All 21 registry short names are unique. Every live field row agrees with its
+registry identity. Authenticated portal and Activity checks passed, and the
+node CLI displayed G001, G003, G008 and G009 under their correct physical IDs.
+Storage keys and packet history stayed with each original radio. Since
+November 12, the archive had identifiable NodeInfo for 19 registered radios.
+B003 last advertised the distinct short name `SURV`; reserve that observed
+alias for the same physical radio. R003 and the G009 bench unit had no
+matching NodeInfo in that window. The G008 USB readback supersedes its
+November 19 archived name. [Current gateway assignments](deployment-nodes.md#current-gateway-names--2026-11-25).
+
+## 2026-11-25 - Configured the Seth's Home Heltec V3
+
+COM6 matched physical V3 `!9ea13cc0` and its existing hardware ID. Saved a
+private full profile, enabled primary-channel downlink alongside the existing
+uplink, and verified the full intended profile after an explicit reboot.
+Wi-Fi and direct MQTT reported connected. The production archive received
+a fresh uplink through that exact gateway at 18:32:03 UTC. The authenticated
+portal state and Activity showed Seth's Home on the V3's original record.
+
+The V3 account authenticated over validated TLS and its non-retained,
+non-radio dispatch-topic marker reached the production worker. The same
+account did not receive the marker on its channel subscription. Broker SSH
+requires interactive sudo for the ACL. Next: provide scoped downlink access
+and verify radio delivery. The residential portal pin awaits coordinates or
+geocoding approval. [Site](sites.md#2026-11-25---seths-home).
+
+## 2026-11-25 - Staged the private replacement MQTT broker
+
+CT 101 moved onto the private subnet behind OPNsense. The source backup completed and the six-account import matched the exported hashes and ACLs byte for byte. Private delivery and denial checks passed before and after a service restart. Both WAN rules remain disabled for the production certificate and renewal handoff. [Migration and acceptance](../docs/operations/mqtt-pve06-migration.md).
+
 ## 2026-11-23 - Published the day's test records
 
 Reconciled all 2,477 attempts in the field laptop's 19 recorded sessions and included the exact GPS data at the owner's request. The archive contains the full day's recorder events and original USB journals. SQLite integrity, row comparisons, ZIP integrity and byte comparisons passed. The same record links the survey, R011, G003, MQTT, gateway firmware and portal checks from today's branches. The next RF comparison needs a stationary tester and USB logging at R011 before the first probe. [Measurements and raw recording](field-results.md#2026-11-23---survey-recordings-and-test-results).

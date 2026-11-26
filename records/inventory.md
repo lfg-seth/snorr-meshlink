@@ -1,5 +1,25 @@
 # Hardware inventory
 
+## 2026-11-25 - New GPS member radios B004 and B005
+
+Two additional owner-confirmed Heltec V4.3 OLED radios with GPS modules and
+antennas installed were received on USB and commissioned as unassigned clients.
+Battery type, capacity and allocation are unknown.
+
+| Label | Radio ID | Hardware identity | USB port at commissioning |
+| --- | --- | --- | --- |
+| B004 | `!a35a5fec` | `1e504da07602a9547b0a1ee4521c5194` | COM44 |
+| B005 | `!a35b3888` | `a77e1d278f681f1e823709941d8fbbac` | COM45 |
+
+[Profile, reboot and messaging measurements](field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench).
+
+## 2026-11-25 - Heltec V3 at Seth's Home
+
+USB identifies the connected **G008** (formerly G001) as Heltec V3 `!9ea13cc0`, hardware
+`10ec58f2c54df86e200615c1e0e347c7`. Its private primary channel has MQTT
+uplink and downlink enabled after reboot. This uses an existing board.
+[Site and portal record](sites.md#2026-11-25---seths-home).
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;
