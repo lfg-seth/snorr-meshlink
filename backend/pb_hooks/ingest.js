@@ -5,6 +5,7 @@ const telemetry = require(`${__hooks}/telemetry.js`);
 const gatewayHealth = require(`${__hooks}/gateway-health.js`);
 const sd = require(`${__hooks}/sd-health.js`);
 const wifi = require(`${__hooks}/wifi-signal.js`);
+const shared = require(`${__hooks}/shared-messages.js`);
 const powerMetric = (key) => /^(sensor(Voltage|CurrentMa)|power[1-8](Voltage|CurrentMa))$/.test(key);
 function timestamp(value, now) {
   if (value === null || value === undefined || value === '')
@@ -44,7 +45,18 @@ function ingest(e) {
       if (['position', 'telemetry', 'message', 'neighbors', 'gateway-health', 'sd-health', 'wifi-signal'].indexOf(b.kind) < 0)
         throw new BadRequestError('Unknown normalized packet kind.');
       packetKey = `${b.kind}:${b.deviceId}:${b.packetId}`;
-      device = c.device(app, b.deviceId);
+      const liveText = b.kind === 'message' && !c.simulation();
+      if (liveText) {
+        const source = b.data && b.data.source;
+        if (!/^![0-9a-f]{8}$/.test(source) || ['!ffffff02', '!00000000', '!ffffffff'].includes(source))
+          throw new BadRequestError('Invalid shared text source.');
+        packetKey = `message:${source}:${b.packetId}`;
+        device = b.deviceId === source ? null : c.device(app, b.deviceId);
+        if (device && c.object(device, 'configuration').radioNodeId !== source)
+          throw new BadRequestError('Radio identity differs from registry.');
+      } else {
+        device = c.device(app, b.deviceId);
+      }
       const gateway = c.device(app, b.gatewayId);
       if (gateway.getString('kind') !== 'backhaul')
         throw new BadRequestError(
@@ -112,7 +124,7 @@ function ingest(e) {
       if (b.kind === 'wifi-signal') wifi.validate(device, b, time);
       if (b.kind === 'message') {
         c.text(data.text, 'inbound text', 400);
-        c.text(data.author, 'reported author', 80);
+        if (!liveText) c.text(data.author, 'reported author', 80);
       }
     } catch (error) {
       outcome = 'rejected';
@@ -153,8 +165,8 @@ function ingest(e) {
     if (outcome === 'rejected') return;
     // Contact is not GPS freshness; duplicate receipts may update contact only.
     if (
-      !device.getString('lastContactAt') ||
-      receivedAt > device.getString('lastContactAt')
+      device && (!device.getString('lastContactAt') ||
+      receivedAt > device.getString('lastContactAt'))
     ) {
       device.set('lastContactAt', receivedAt);
       app.save(device);
@@ -256,7 +268,7 @@ function ingest(e) {
     } else {
       c.create(app, 'messages', {
         packetKey,
-        author: data.author,
+        author: c.simulation() ? data.author : shared.radioAuthor(app, device, data.source, receivedAt),
         text: data.text,
         at: time.measuredAt || receivedAt,
         direction: 'inbound',

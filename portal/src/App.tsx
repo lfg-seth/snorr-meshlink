@@ -47,6 +47,20 @@ function Portal() {
   activeToken.current = session?.token ?? '';
 
   const [draft, setDraft] = useState('');
+  const draftSendId = useRef('');
+  const [sendFeedback, setSendFeedback] = useState('');
+  function draftKey(s: BackendSession) {
+    return `meshlink-draft-${s.demo ? 'demo' : 'live'}-${s.account.id}`;
+  }
+  function storeDraft(text: string, requestId: string) {
+    setDraft(text);
+    draftSendId.current = requestId;
+    if (!session) return;
+    try {
+      if (text) window.sessionStorage.setItem(draftKey(session), JSON.stringify({text, requestId}));
+      else window.sessionStorage.removeItem(draftKey(session));
+    } catch { /* Keep the in-memory draft when browser storage is unavailable. */ }
+  }
   const [unread, setUnread] = useState(0);
   const [notice, setNotice] = useState('');
   const [openingDemo, setOpeningDemo] = useState(!restoreToken);
@@ -108,6 +122,15 @@ function Portal() {
     seenMessages.current = null;
     setSession(value);
     setDraft('');
+    draftSendId.current = '';
+    setSendFeedback('');
+    try {
+      const saved = JSON.parse(window.sessionStorage.getItem(draftKey(value)) || 'null');
+      if (saved && typeof saved.text === 'string' && typeof saved.requestId === 'string') {
+        setDraft(saved.text);
+        draftSendId.current = saved.requestId;
+      }
+    } catch { /* A damaged draft must not prevent sign-in. */ }
     setUnread(0);
     setBackendError('');
   }
@@ -276,6 +299,7 @@ function Portal() {
     seenMessages.current = null;
   }
   function signOut() {
+    if (session) storeDraft('', '');
     forgetToken(restoreToken || session?.token || '');
     clearWorkspace();
   }
@@ -511,17 +535,37 @@ function Portal() {
             <MessagesPage
               key={session?.account.id ?? 'demo'}
               messages={messages}
-              sendingEnabled={simulation}
-              authorName={accountName}
+              simulation={simulation}
+              feedback={sendFeedback}
+              receiverOnline={Boolean(snapshot.channel?.connected && backendConnected)}
+              authorName={snapshot.channel?.author || accountName}
               draft={draft}
-              onDraft={setDraft}
-              online={feedOnline}
+              onDraft={value => { storeDraft(value, ''); setSendFeedback(''); }}
+              online={simulation ? feedOnline : backendConnected && Boolean(snapshot.channel?.ready)}
               admin={admin}
               onSend={async () => {
-                if (!feedOnline || !draft.trim()) return;
-                const submittedDraft = draft;
-                if (await saveBackend('/api/meshlink/messages', { text: submittedDraft.trim() }))
-                  setDraft(current => current === submittedDraft ? '' : current);
+                if (!draft.trim()) return;
+                const id = draftSendId.current || crypto.randomUUID();
+                storeDraft(draft, id);
+                const current = () => activeToken.current === session.token && draftSendId.current === id;
+                try {
+                  const response = await request<{status?: string}>('/api/meshlink/messages', session.token, {
+                    text: draft.trim(), requestId: id, until: snapshot.channel?.until,
+                  }, undefined, session.demo);
+                  if (!current()) return;
+                  if (simulation || response.status === 'broker_accepted') {
+                    storeDraft('', '');
+                    setSendFeedback(simulation ? 'Simulated submission.' : 'Broker accepted. Radio delivery unconfirmed.');
+                  } else if (response.status === 'not_sent' || response.status === 'rejected') {
+                    storeDraft(draft, '');
+                    setSendFeedback('Publish unsuccessful. Draft saved for manual retry.');
+                  } else {
+                    setSendFeedback('Publish outcome unknown. Check the radios. Submitting this draft again checks the same attempt.');
+                  }
+                } catch (error) {
+                  if (current()) setSendFeedback(error instanceof BackendError ? error.message :
+                    'Connection interrupted. Your draft and send ID are saved for manual retry.');
+                }
               }}
             />
           )}

@@ -15,6 +15,8 @@ import paho.mqtt.client as mqtt
 
 from client import ApiError, Client
 from mqtt_adapter import Adapter, PacketRejected, at
+from mqtt_adapter import G008
+import mqtt_dispatch
 
 
 class Spool:
@@ -43,7 +45,7 @@ class Spool:
 
 
 class Worker:
-    def __init__(self, config, api_credentials, spool):
+    def __init__(self, config, api_credentials, spool, dispatch=None):
         self.config, self.secret, self.spool = config, api_credentials, spool
         self.adapter = Adapter(config)
         self.api = Client(config.get('apiUrl', 'http://127.0.0.1:8090'))
@@ -52,8 +54,20 @@ class Worker:
         self.stopping = threading.Event()
         self.fatal = threading.Event()
         self.counts = {'queued': 0, 'unsupported': 0, 'rejected': 0, 'saved': 0}
+        self.dispatch_probe = None
+        self.dispatch_connected = threading.Event()
+        self.gateway_seen = None
+        if dispatch is not None:
+            if (config['root'], config['channel'], config['channelKey']) != (
+                    mqtt_dispatch.ROOT, mqtt_dispatch.CHANNEL, dispatch['channelKey']):
+                raise ValueError('Dispatch channel differs from receiver configuration.')
+            self.gateway_key = self.adapter.gateways[G008]
+            self.dispatch_probe = mqtt_dispatch.publisher(dispatch, 'meshlink-dispatch-health', reconnect=True)
+            self.dispatch_probe.on_connect = self.on_dispatch_connect
+            self.dispatch_probe.on_disconnect = lambda *_: self.dispatch_connected.clear()
         self.mqtt = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,
-                                client_id='meshlink-pilot-gps', clean_session=True, manual_ack=True)
+                                client_id='meshlink-channel-ingest' if dispatch else 'meshlink-pilot-gps',
+                                clean_session=True, manual_ack=True)
         self.mqtt.username_pw_set(config['username'], config['password'])
         self.mqtt.tls_set_context(ssl.create_default_context())
         self.mqtt.reconnect_delay_set(1, 30)
@@ -73,6 +87,11 @@ class Worker:
 
     def on_disconnect(self, client, userdata, flags, reason, properties):
         self.connected.clear()
+        self.gateway_seen = None
+
+    def on_dispatch_connect(self, client, userdata, flags, reason, properties):
+        if not reason.is_failure:
+            self.dispatch_connected.set()
 
     def on_message(self, client, userdata, message):
         try:
@@ -88,6 +107,8 @@ class Worker:
             packet = None
             try:
                 packet = self.adapter.decode(message.topic, message.payload, received, message.retain)
+                if self.dispatch_probe and packet and packet['gatewayId'] == self.gateway_key:
+                    self.gateway_seen = time.monotonic()
                 archive['decodeOutcome'] = 'normalized' if packet else 'unsupported'
                 if packet is None:
                     self.counts['unsupported'] += 1
@@ -100,6 +121,8 @@ class Worker:
                 archive['decodeOutcome'] = 'error'
                 archive['decodeReason'] = 'decoder error'
                 self.counts['rejected'] += 1
+            if self.dispatch_probe:
+                archive['broker'] = mqtt_dispatch.HOST
             self.spool.put({'archive': archive, 'normalized': packet})
             self.counts['queued'] += 1
             # QoS 1/2 acknowledgement follows durable local persistence.
@@ -121,8 +144,20 @@ class Worker:
                 self.api.token = ''
             raise
 
+    def heartbeat(self):
+        connected = self.connected.is_set()
+        if self.dispatch_probe:
+            seen = self.gateway_seen
+            self.request('/api/meshlink/worker/channel-heartbeat', {
+                'connected': connected, 'gatewayId': self.gateway_key,
+                'ready': connected and self.dispatch_connected.is_set()
+                         and seen is not None and time.monotonic() - seen < 420,
+            })
+        else:
+            self.request('/api/meshlink/worker/heartbeat', {'connected': connected})
+
     def tick(self):
-        self.request('/api/meshlink/worker/heartbeat', {'connected': self.connected.is_set()})
+        self.heartbeat()
         # Bound each batch so heartbeats and stop requests remain responsive.
         deadline = time.monotonic() + 5
         for _ in range(20):
@@ -151,6 +186,9 @@ class Worker:
     def run(self):
         self.mqtt.connect_async(self.config['host'], self.config.get('port', 8883), keepalive=15)
         self.mqtt.loop_start()
+        if self.dispatch_probe:
+            self.dispatch_probe.connect_async(mqtt_dispatch.HOST, 8883, keepalive=15)
+            self.dispatch_probe.loop_start()
         last_report = 0
         try:
             while not self.stopping.is_set():
@@ -168,8 +206,11 @@ class Worker:
             self.connected.clear()
             self.mqtt.disconnect()
             self.mqtt.loop_stop()
+            if self.dispatch_probe:
+                self.dispatch_probe.disconnect()
+                self.dispatch_probe.loop_stop()
             try:
-                self.request('/api/meshlink/worker/heartbeat', {'connected': False})
+                self.heartbeat()
             except Exception:
                 pass
             self.spool.close()
@@ -180,10 +221,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=Path, default=os.environ.get('MESHLINK_MQTT_CONFIG', '/etc/meshlink/mqtt.json'))
     parser.add_argument('--spool', type=Path, default=os.environ.get('MESHLINK_MQTT_SPOOL', '/var/lib/meshlink-worker/receipts.sqlite'))
+    parser.add_argument('--channel-overlap', action='store_true')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     secret = json.loads(Path(os.environ['MESHLINK_WORKER_CREDENTIALS']).read_text())
-    worker = Worker(config, secret, Spool(args.spool))
+    dispatch = None
+    if args.channel_overlap:
+        dispatch = mqtt_dispatch.credentials()
+        config.update(host=mqtt_dispatch.HOST, port=8883, sharedMessages=True)
+    worker = Worker(config, secret, Spool(args.spool), dispatch)
     for signum in (signal.SIGTERM, signal.SIGINT):
         signal.signal(signum, lambda *_: worker.stopping.set())
     worker.run()

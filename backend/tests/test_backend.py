@@ -905,7 +905,7 @@ class BackendTests(unittest.TestCase):
         wait_ready(self.url, self.process)
         self.assertFalse(self.state()['simulation'])
         self.denied(403, self.admin, 'POST', '/api/meshlink/demo/feed', {'online': False})
-        self.denied(403, self.admin, 'POST', '/api/meshlink/messages', {'text': 'Must not publish to radio'})
+        self.denied(400, self.admin, 'POST', '/api/meshlink/messages', {'text': 'Missing manual send ID'})
         self.assertFalse(self.records('send_attempts'))
 
     def test_snapshot_history_order_and_unique_records(self):
@@ -917,6 +917,68 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(len({m['id'] for m in state['messages']}), 5)
         self.assertEqual([p['latitude'] for p in state['trackers'][0]['history']], [36.2 + i * .001 for i in range(5)])
         self.assertEqual([m['text'] for m in self.state()['messages']], [f'Ordered message {i}' for i in range(5)])
+
+    def test_live_manual_dispatch_and_radio_identity(self):
+        self.stop()
+        config = {'downlink': True, 'radioNodeId': '!9ea13cc0'}
+        # Use a private copy of the hooks with a recorder in place of the publisher.
+        hooks = self.data / 'hooks'
+        shutil.copytree(Path(__file__).resolve().parents[1] / 'pb_hooks', hooks)
+        marker = self.data / 'published'
+        (self.data / 'mqtt_dispatch.py').write_text(
+            "import json,sys\nfrom pathlib import Path\nr=json.load(sys.stdin)\n"
+            f"with Path({str(marker)!r}).open('a', encoding='utf8') as f: f.write(json.dumps(r)+'\\n')\n"
+            "print('unknown' if 'uncertain' in r['text'] else 'broker_accepted')\n")
+        def launch():
+            args = [f'--hooksDir={hooks}' if s.startswith('--hooksDir=') else s for s in command(self.data)]
+            self.process = subprocess.Popen(args + ['serve', '--http=' + self.url.split('//')[1]],
+                env={**os.environ, 'MESHLINK_SIMULATION':'0', 'MESHLINK_DISPATCH_PYTHON':sys.executable},
+                stdout=self.log, stderr=self.log)
+            wait_ready(self.url, self.process)
+        launch()
+        def set_config(key, value):
+            record = next(r for r in self.records('devices') if r['key'] == key)
+            self.superuser.request('PATCH','/api/collections/devices/records/' + record['id'], {'configuration':value})
+        set_config('b1', config)
+        set_config('d1', {'radioNodeId':'!abcdef12'})
+        heartbeat = '/api/meshlink/worker/channel-heartbeat'
+        ready = {'connected':True,'ready':True,'gatewayId':'b1'}
+        url = '/api/meshlink/messages'
+        import uuid
+        def manual(text):
+            return {'text':text, 'requestId':str(uuid.uuid4()), 'until':self.state()['channel']['until']}
+        self.denied(403,self.admin,'POST',heartbeat,ready)
+        self.denied(409,self.member,'POST',url,manual('Offline'))
+        self.worker.request('POST',heartbeat,ready)
+        self.denied(403,self.worker,'POST',url,manual('Worker'))
+        self.denied(401,Client(self.url),'POST',url,manual('Anonymous'))
+        self.denied(409,self.member,'POST',url,{**manual('Expired'),'until':1})
+        self.denied(400,self.member,'POST',url,manual('🛰' * 58))
+        self.assertFalse(marker.exists())
+        body = manual('Manual reply')
+        with ThreadPoolExecutor(2) as pool:
+            pair = list(pool.map(lambda _: self.member.request('POST',url,body),range(2)))
+        self.assertEqual(pair[0]['id'],pair[1]['id'])
+        self.assertEqual(len(marker.read_text().splitlines()),1)
+        self.assertEqual(json.loads(marker.read_text())['text'],'Demo Casey: Manual reply')
+        self.assertEqual(self.member.request('POST',url,body)['status'],'broker_accepted')
+        self.denied(409,self.member,'POST',url,{**body,'text':'Different'})
+        ambiguous = manual('uncertain')
+        self.assertEqual(self.admin.request('POST',url,ambiguous)['status'],'unknown')
+        self.stop()
+        launch()
+        self.assertFalse(self.state()['channel']['ready'])
+        self.assertEqual(self.admin.request('POST',url,ambiguous)['status'],'unknown')
+        self.assertEqual(len(marker.read_text().splitlines()),2)
+        def radio(source, device):
+            return packet(device,'message',{'source':source,'text':'From radio'},gateway='b1')
+        known = radio('!abcdef12','d1')
+        self.assertEqual(self.ingest(known)['outcome'],'accepted')
+        self.assertEqual(self.ingest({**known,'gatewayId':'b2'})['outcome'],'duplicate')
+        self.ingest(radio('!12345678','!12345678'))
+        self.assertTrue(any('!abcdef12' in m['author'] for m in self.state()['messages']))
+        self.assertTrue(any(m['author']=='Unknown radio !12345678' for m in self.state()['messages']))
+        self.assertEqual(len([m for m in self.state()['messages'] if m['direction']=='inbound']),2)
 
     def test_restart_preserves_observations_and_incidents(self):
         self.ingest(packet('d1', 'position', {'latitude': 36.2, 'longitude': -115.6}, 1))

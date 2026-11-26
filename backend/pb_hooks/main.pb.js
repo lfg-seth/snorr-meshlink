@@ -108,6 +108,13 @@ routerAdd(
 );
 routerAdd(
   'POST',
+  '/api/meshlink/worker/channel-heartbeat',
+  (e) => require(`${__hooks}/shared-messages.js`).heartbeat(e),
+  $apis.requireAuth('accounts'),
+  $apis.bodyLimit(16384),
+);
+routerAdd(
+  'POST',
   '/api/meshlink/worker/heartbeat',
   (e) => require(`${__hooks}/meshlink.js`).heartbeat(e),
   $apis.requireAuth('accounts'),

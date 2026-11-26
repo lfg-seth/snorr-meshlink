@@ -3,6 +3,18 @@
 MeshLink versions cover portal and backend source together and are independent
 of SNORR Firmware versions. The authoritative version is `meshlink-release.json`.
 
+## 0.5.0 - 2026-11-25
+
+Signed-in members and admins can read SNORRbench and send attributed replies
+through G008. The CT 101 subscriber has a separate receipt queue and heartbeat
+during the Lee Fire broker overlap. Each manual publish has a durable send ID
+and a short expiry. MQTT acceptance leaves RF and human receipt unconfirmed.
+The additive migration indexes send IDs on existing send attempts. Existing
+radio firmware, GPS measurement times and the training database remain compatible.
+For rollback, disable the channel service and live dispatch credential drop-in,
+restore the previous hooks and static build, and retain the additive fields,
+private queues and overlap-safe backup helper.
+
 ## 0.4.16 - 2026-11-23
 
 Signed-in Activity includes registered member trackers, their telemetry and GPS

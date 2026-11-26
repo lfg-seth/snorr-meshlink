@@ -415,6 +415,18 @@ test('production opens the isolated demo by default and live sign-in survives re
     assert.equal(document.querySelector('.demo-mode-label'), null);
     assert.equal(document.querySelectorAll('.tracker-row').length, 0, 'authenticated empty state cannot show demos');
     assert.doesNotMatch(document.querySelector('.workspace').textContent, /Demo Avery/);
+    window.sessionStorage.setItem('meshlink-draft-live-admin', JSON.stringify({text:'Pending reply', requestId:''}));
+    await act(async () => root.render(createElement(App, { key: 'saved-draft' })));
+    await navigate('#messages');
+    assert.equal(document.querySelector('textarea').value, 'Pending reply');
+    assert.equal(button('Send unavailable').disabled, true, 'legacy GPS alone cannot enable dispatch');
+    emptyState.channel = { connected:true, ready:true, until:Date.now()+20000, author:'Test Admin' };
+    await navigate('#users');
+    await navigate('#messages');
+    assert.equal(document.querySelector('textarea').value, 'Pending reply');
+    assert.equal(button('Send reply').disabled, false);
+    assert.ok(requests.every(r => !r.url.endsWith('/messages')), 'recovery never submits the draft');
+    window.sessionStorage.removeItem('meshlink-draft-live-admin');
     window.sessionStorage.clear(); // Closing the browser discards tab storage.
     await act(async () => root.render(createElement(App, { key: 'browser-restart' })));
     assert.ok(button('Sign out'), 'reopening this browser restores the live account');
