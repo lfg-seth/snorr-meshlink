@@ -1,5 +1,17 @@
 # Hardware inventory
 
+## 2026-11-26 - Three new Heltec V4 member radios
+
+The owner supplied three new radios with antennas connected. Each factory application identified its target as HELTEC_WIFI_LORA_32_V4. All three have an ESP32-S3, 2 MB PSRAM and 16 MB flash.
+
+| Label | Bench USB port | USB serial | Radio ID | Hardware ID |
+| --- | --- | --- | --- | --- |
+| B006 | COM46 | `D4:05:92:54:F4:B4` | `!9254f4b4` | `7c09bfaeb4987df26e748f4037e84e6c` |
+| B007 | COM47 | `10:BD:A3:5A:F8:48` | `!a35af848` | `63e247f6a28020865835328a5ccbd543` |
+| B008 | COM48 | `44:1B:F6:69:C4:DC` | `!f669c4dc` | `9df7ae262238de83da8708acb34dcfb4` |
+
+[Commissioning results](field-results.md#2026-11-26---b006-through-b008-member-node-commissioning)
+
 ## 2026-11-17 - G003 Wi-Fi configuration
 
 Existing G003 / !849ad7a0 received replacement owner-supplied vehicle Wi-Fi;

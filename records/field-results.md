@@ -1,5 +1,15 @@
 # Field testing and tangible results
 
+## 2026-11-26 - B006 through B008 member-node commissioning
+
+All three factory applications identified the Heltec WiFi LoRa 32 V4 target. With antennas connected and factory backups waived, each board passed digest verification of the factory image, recovery and filesystem. The member application is `heltec-v4-gateway / 2.7.26.6fea6aa`, SHA-256 `0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`. [Physical IDs](inventory.md#2026-11-26---three-new-heltec-v4-member-radios).
+
+Each radio retained its label, individual key pair, channels and full local/module configuration through an explicit reboot. All three run CLIENT, private US channel slot 35, 10 dBm, Wi-Fi and MQTT off, GPS acquisition every 60 seconds, position broadcast configured for 120 seconds and device telemetry every 180 seconds. Each sent and received a fresh, packet-ID-matched PKI-encrypted direct message in the B006 to B007 to B008 to B006 sequence.
+
+All three unassigned tracker cards passed signed-in live portal readback. The CT 101 channel subscriber restarted with the new mappings. The legacy receiver stayed running and will load the mappings on its next start. G008 (`!9ea13cc0`) delivered fresh packets from all three to the portal archive. Dispatch accepted fresh telemetry and neighbor reports from each radio through G008 between 19:37:00 and 19:37:23 UTC.
+
+No radio supplied a timestamped GPS fix on the indoor bench. Next, give the receivers sky view and verify a fresh phone-free measured position for each tracker in dispatch. Range and battery runtime remain unmeasured.
+
 ## 2026-11-25 - G008 shared-channel bench
 
 On the release candidate, a B004 broadcast reached the staged receiver

@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-26 - Provisioned member nodes B006 through B008
+
+Flashed three new Heltec V4s, applied the member GPS profile and verified full configuration after reboot. All three passed encrypted peer messaging and appeared as unassigned trackers. G008 delivered packets from each radio. Next, verify timestamped outdoor fixes in dispatch. [Commissioning results](field-results.md#2026-11-26---b006-through-b008-member-node-commissioning)
+
 ## 2026-11-25 - Deployed MeshLink 0.5.0 shared-channel messaging
 
 Merged PR #104, pushed the annotated `meshlink-v0.5.0` tag and deployed its
