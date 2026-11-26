@@ -20,6 +20,28 @@ with patch.object(sys, "path", [str(SCRIPTS), *sys.path]):
 
 
 class LiveRosterTests(unittest.TestCase):
+    def test_activity_field_telemetry_deadlines(self):
+        cli = activity.runpy.run_path(str(SCRIPTS / "watch-nodes.py"))
+        received = "2026-11-26T00:00:00Z"
+        watches = {s: {"lastReceivedAt": received, "cadenceSeconds": period}
+                   for s, period in (("power", 180), ("gateway", 300), ("sd", 86400),
+                                     ("packet:text", None))}
+        activity.apply_activity_cadence(watches)
+        self.assertEqual(watches["device"]["cadenceSeconds"], 2700)
+        self.assertEqual(watches["gateway"]["cadenceSeconds"], 2700)
+        self.assertEqual(watches["sd"]["cadenceSeconds"], 86400)
+        self.assertIsNone(watches["packet:text"]["cadenceSeconds"])
+        node = {"radio": "!00112244", "label": "G001", "lastContactAt": received,
+                "readings": {}, "watchdogs": watches}
+        snapshot = {"at": received, "nodes": [node]}
+        dashboard = cli["Dashboard"](False, grace=3, show_inactive=True)
+        dashboard.observe(snapshot, 0)
+        for age, health in ((2700, "reporting"), (8102, "reporting"), (8103, "attention"),
+                            (10802, "attention"), (10803, "silent")):
+            now = cli["epoch"](received) + age
+            card = cli["card_snapshot"](dashboard, snapshot, now, False, True, 3)["nodes"][0]
+            self.assertEqual(card["health"], health, age)
+
     def test_add_rename_remove_without_restarting_publisher(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

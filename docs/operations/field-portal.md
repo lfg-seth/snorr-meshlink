@@ -299,6 +299,12 @@ supplies the card layout, ordering, receipt highlights, health filters and
 watchdog calculations. The portal polls every three seconds and keeps the last
 cards visible on a disconnect.
 
+Activity uses a 45-minute minimum interval for repeater and gateway device,
+environment, power, SNNS, backhaul and Wi-Fi telemetry, including the offline
+recorder's applicable streams. Daily SD health keeps its own interval. With
+45-minute telemetry, contact reaches Attention at 2 h 15 min plus three seconds
+and Silent at 3 h plus three seconds.
+
 Activity marks a node Attention when one scheduled stream misses three consecutive
 cycles or contact misses three cycles of the shortest scheduled interval. Four
 missed contact cycles mark it Silent. Both thresholds include three seconds of

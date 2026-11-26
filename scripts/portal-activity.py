@@ -10,6 +10,19 @@ from server.node_readings import epoch, run, utc
 
 ROOT = Path(__file__).resolve().parents[1]
 DATABASE = Path("/var/lib/meshlink/pb_data/data.db")
+TELEMETRY_PERIOD = 45 * 60
+TELEMETRY_STREAMS = ("device", "environment", "power", "snns", "gateway", "wifi")
+
+
+def apply_activity_cadence(watchdogs):
+    """Use the field interval even when an older gateway receipt advertises less."""
+    watchdogs.setdefault("device", {})
+    for stream in TELEMETRY_STREAMS:
+        if stream in watchdogs:
+            watch = watchdogs[stream]
+            watch["cadenceSeconds"] = max(TELEMETRY_PERIOD, watch.get("cadenceSeconds") or 0)
+
+
 
 
 def read_roster(db, member_radios):
@@ -59,11 +72,18 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
     def publish(snapshot):
         if member_mapping() != member_radios or read_roster(db, member_radios) != sites:
             return False  # Reload selection and bootstrap recent readings for new radios.
+        # Prepare display copies; the sampler retains its raw intervals and readings.
+        snapshot = {**snapshot, "nodes": [
+            {**node, "watchdogs": {s: w.copy() for s, w in node["watchdogs"].items()},
+             "readings": node["readings"].copy()} for node in snapshot["nodes"]
+        ]}
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
             if site["kind"] == "member":
                 node["kind"] = "member"
                 continue
+            if site["kind"] in ("repeater", "stationBackhaul", "mobileGateway", "offlineRecorder"):
+                apply_activity_cadence(node["watchdogs"])
             for reading in ("gps", "standardNeighbors"):
                 node["readings"].pop(reading, None)
             for stream in ("position", "neighbor_info", "nodeinfo"):
