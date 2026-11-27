@@ -25,14 +25,28 @@ def apply_activity_cadence(watchdogs):
 
 
 
-def read_roster(db, member_radios):
-    rows = db.execute("SELECT radio, shortName, name, kind FROM field_roster")
-    sites = {radio: {"shortName": label, "name": name, "kind": kind}
-             for radio, label, name, kind in rows}
-    for key, label in db.execute("SELECT key, shortName FROM devices WHERE kind='member'"):
-        radio = member_radios.get(key)
-        if radio and radio not in sites:
-            sites[radio] = {"shortName": label or radio, "kind": "member", "key": key}
+def read_roster(db, config, repeaters):
+    sites = {}
+    devices = {}
+    for key, label, kind, radio in db.execute("""
+        SELECT key, shortName, kind, json_extract(configuration, '$.radioNodeId') FROM devices
+    """):
+        devices[key] = label
+        if radio:
+            sites[radio] = {"shortName": label or radio, "kind": kind, "key": key}
+
+    gateways = config.get("gateways", {})
+    for radio, key in {**config.get("infrastructure", {}), **gateways}.items():
+        kind = "stationBackhaul" if radio in gateways else "repeater"
+        sites[radio] = {"shortName": devices.get(key) or radio, "kind": kind, "key": key}
+    for radio, key in config["members"].items():
+        sites[radio] = {"shortName": devices.get(key) or radio, "kind": "member", "key": key}
+
+    # Physical repeater numbers survive storage-key changes and site removals.
+    for radio, label in repeaters.items():
+        sites[radio] = {**sites.get(radio, {}), "shortName": label, "kind": "repeater"}
+    for radio, label, name, kind in db.execute("SELECT radio, shortName, name, kind FROM field_roster"):
+        sites[radio] = {**sites.get(radio, {}), "shortName": label, "name": name, "kind": kind}
     return sites
 
 
@@ -55,7 +69,8 @@ def label_members(db, sites, cards):
 
     for card in cards["nodes"]:
         site = sites[card["radio"]]
-        card["name"] = assigned_name(site, cards["now"]) if site["kind"] == "member" else site["name"]
+        name = assigned_name(site, cards["now"]) if site["kind"] == "member" else site.get("name")
+        card["name"] = name or "Unassigned"
     for packet in cards["packets"]:
         site = sites[packet["radio"]]
         if site["kind"] == "member":
@@ -66,11 +81,13 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
     cli = runpy.run_path(str(ROOT / "scripts/watch-nodes.py"))
     dashboard = cli["Dashboard"](False, grace=3, show_inactive=True)
 
-    def member_mapping():
-        return {key: radio for radio, key in json.loads(Path(config).read_text())["members"].items()}
+    repeaters = cli["load_roster"](ROOT / "records/deployment-nodes.md")
+
+    def current_roster():
+        return read_roster(db, json.loads(Path(config).read_text()), repeaters)
 
     def publish(snapshot):
-        if member_mapping() != member_radios or read_roster(db, member_radios) != sites:
+        if current_roster() != sites:
             return False  # Reload selection and bootstrap recent readings for new radios.
         # Prepare display copies; the sampler retains its raw intervals and readings.
         snapshot = {**snapshot, "nodes": [
@@ -88,7 +105,7 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
                 node["readings"].pop(reading, None)
             for stream in ("position", "neighbor_info", "nodeinfo"):
                 node["watchdogs"].pop(stream, None)
-            if site["kind"] in ("stationBackhaul", "mobileGateway"):
+            if site["kind"] in ("stationBackhaul", "mobileGateway", "gateway"):
                 node["kind"] = "gateway"
             elif site["kind"] == "offlineRecorder":
                 node["kind"] = "recorder"
@@ -106,11 +123,12 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
 
     with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True, timeout=2)) as db:
         while True:
-            member_radios = member_mapping()
-            sites = read_roster(db, member_radios)
+            sites = current_roster()
             labels = {radio: site["shortName"] for radio, site in sites.items()}
             reload_requested = run({"roster": labels, "selected": labels, "interval": 3, "hours": 24,
-                                    "siteNames": {radio: site["name"] for radio, site in sites.items() if "name" in site},
+                                    "deviceRadios": {site["key"]: radio for radio, site in sites.items() if "key" in site},
+                                    "siteNames": {radio: site.get("name", site["shortName"])
+                                                  for radio, site in sites.items() if site["kind"] != "member"},
                                     "cadences": cli["load_cadences"](ROOT / "scripts/node-cadence.json"),
                                     "config": config, "database": str(database),
                                     "backend": str(ROOT / "backend")}, publish)

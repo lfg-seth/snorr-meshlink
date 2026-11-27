@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-27 - Unassigned nodes on Activity
+
+Expanded Activity to include the numbered repeater fleet and registered or configured radios. Offline publisher tests cover R002, R004, R006 and R007, including a site assignment, rename and removal while the publisher is running. Next, deploy the [publisher and physical roster](../docs/operations/field-portal.md#activity-fleet-roster) and verify signed-in cards.
+
 ## 2026-11-26 - Deployed Activity cadence
 
 Deployed publisher `fc51086` under the portal deployment lock. Two advancing

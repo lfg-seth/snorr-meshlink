@@ -77,6 +77,7 @@ def main():
                                  ('/etc/systemd/system/meshlink-activity.service', 'services/meshlink-activity.service'),
                                  ('/opt/meshlink/scripts/portal-activity.py', 'release/scripts/portal-activity.py'),
                                  ('/opt/meshlink/scripts/watch-nodes.py', 'release/scripts/watch-nodes.py'),
+                                 ('/opt/meshlink/records/deployment-nodes.md', 'release/records/deployment-nodes.md'),
                                  ('/opt/meshlink/scripts/node-cadence.json', 'release/scripts/node-cadence.json'),
                                  ('/opt/meshlink/scripts/server/node_readings.py', 'release/scripts/server/node_readings.py'),
                                  ('/opt/meshlink/portal/src/placements.json', 'release/portal/src/placements.json')]:

@@ -12,6 +12,8 @@ Exact fixed deployment locations are [published with owner approval](../records/
 
 ## Current
 
+**Activity fleet roster.** Ready for deployment and signed-in verification. [Publisher checks](../records/sessions.md#2026-11-27---unassigned-nodes-on-activity).
+
 **Activity telemetry cadence.** Deployed and verified 45-minute infrastructure
 timers. Next, verify receipt spacing after the radio changes. [Deployment](../records/sessions.md#2026-11-26---deployed-activity-cadence).
 

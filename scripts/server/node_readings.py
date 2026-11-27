@@ -436,6 +436,7 @@ def run(settings, publish=None):
         if "selected" in settings:
             nodes = [node for node in nodes if node["radio"] in settings["selected"]]
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
+        mappings = {**settings.get("deviceRadios", {}), **mappings}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
         with closing(sqlite3.connect(database, uri=True, timeout=2)) as db:
             db.execute("PRAGMA query_only=ON")

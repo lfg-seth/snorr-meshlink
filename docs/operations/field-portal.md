@@ -511,3 +511,12 @@ Both archives passed checksum verification and isolated live and demo recovery.
 | --- | --- |
 | `meshlink-20261117T034702Z.tar.gz` | `1d9ccfd9ffe4111efacbb21d23a7e1a9ff4bf20ea6be13f778b03113d800e7fc` |
 | `meshlink-20261117T035344Z.tar.gz` | `7259d01e98ded9df8894cc6b9ad542e0e89a1297a3a3448d0b0995ca7cc1170a` |
+
+## Activity fleet roster
+
+Install `records/deployment-nodes.md` at `/opt/meshlink/records/deployment-nodes.md`
+with the Activity publisher. It reads the physical R-numbers at startup. The
+publisher also includes configured and registered radios and refreshes database
+assignments on each poll. A field placement supplies the site name. Removing
+the placement returns the card to Unassigned with its device label. A member
+card shows the current carrier or Unassigned.

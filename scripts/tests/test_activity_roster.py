@@ -62,13 +62,15 @@ class LiveRosterTests(unittest.TestCase):
                     INSERT INTO devices VALUES ('tracker','','{}',
                       '{"receivedAt":"2026-11-17T00:00:00Z","latitude":42,"longitude":5,"satellites":8}',
                       '{}','T001','member');
+                    INSERT INTO devices VALUES ('bench','2026-11-17T00:00:00Z','{}','{}',
+                      '{"radioNodeId":"!49ac6d7f"}','OLD','repeater');
                     INSERT INTO packet_receipts VALUES ('source','2026-11-17T00:00:00Z','gateway','accepted','key');
                 """)
                 snapshots = []
                 edits = iter([
-                    "INSERT INTO field_roster VALUES ('!00112233','R001','First site','repeater')",
-                    "UPDATE field_roster SET name='New name' WHERE shortName='R001'",
-                    "DELETE FROM field_roster WHERE shortName='R001'",
+                    "INSERT INTO field_roster VALUES ('!b456f760','R007','First site','repeater')",
+                    "UPDATE field_roster SET name='New name' WHERE shortName='R007'",
+                    "DELETE FROM field_roster WHERE shortName='R007'",
                 ])
 
                 def after_publish(_seconds):
@@ -78,13 +80,20 @@ class LiveRosterTests(unittest.TestCase):
                     self.assertEqual(source["heardThrough"], "!00112255")
                     self.assertEqual(source["heardThroughRadio"], "!00112255")
                     tracker = next(c for c in cards if c["radio"] == "!00000001")
-                    self.assertEqual((tracker["kind"], tracker["label"], tracker["name"]), ("member", "T001", None))
+                    self.assertEqual((tracker["kind"], tracker["label"], tracker["name"]), ("member", "T001", "Unassigned"))
                     gps = tracker["readings"]["gps"]
                     self.assertIsNone(gps["age"])
                     self.assertEqual(gps["value"], {"satellites": 8, "pdop": None, "altitude": None})
                     self.assertIn("position", [t["stream"] for t in tracker["timers"]])
-                    snapshots.append(([c["name"] for c in cards if c not in (source, tracker)],
-                                      source["route"].get("lastRelayCandidate")))
+                    by_radio = {c["radio"]: c for c in cards}
+                    self.assertEqual(len(by_radio), len(cards))
+                    for radio, label in (("!49ac6d7f", "R004"), ("!05237743", "R002"), ("!638b9515", "R006")):
+                        self.assertEqual((by_radio[radio]["name"], by_radio[radio]["label"]), ("Unassigned", label))
+                    self.assertEqual(by_radio["!49ac6d7f"]["seen"], "2026-11-17T00:00:00Z")
+                    self.assertEqual(by_radio["!00112255"]["kind"], "gateway")
+                    card = by_radio["!b456f760"]
+                    self.assertEqual(card["label"], "R007")
+                    snapshots.append((card["name"], source["route"].get("lastRelayCandidate")))
                     sql = next(edits, None)
                     if sql is None:
                         raise KeyboardInterrupt
@@ -92,14 +101,14 @@ class LiveRosterTests(unittest.TestCase):
 
                 def decoder(cfg, state, backend, by_byte):
                     packet = SimpleNamespace(transport_mechanism=1, hop_start=2, hop_limit=1,
-                                             rx_rssi=-90, rx_snr=0, relay_node=0x33)
+                                             rx_rssi=-90, rx_snr=0, relay_node=0x60)
                     return SimpleNamespace(persisted_route=lambda db, radio, gateway, at, key:
                                            packet_route(packet, radio, gateway, by_byte))
 
                 with patch("server.node_readings.Decoder", decoder), patch("time.sleep", after_publish):
                     activity.main(database, target, config)
-                self.assertEqual(snapshots, [([], None), (["First site"], "First site"),
-                                             (["New name"], "New name"), ([], None)])
+                self.assertEqual(snapshots, [("Unassigned", "R007"), ("First site", "First site"),
+                                             ("New name", "New name"), ("Unassigned", "R007")])
 
     def test_packet_names_follow_assignment_at_receipt_including_unassigned_gap(self):
         radio = "!00000001"
