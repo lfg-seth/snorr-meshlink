@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-27 - Deployed Activity assignment filter
+
+Deployed clean live portal and publisher commit `3878aeb`. All 72 portal tests and three publisher tests passed. Verified all served build files against their checksums and two advancing signed-in snapshots. At 17:58:34 UTC the live feed had 28 unique radios, with 17 Reporting, zero Attention and 11 Silent. Of those, 16 were Unassigned (six Reporting and ten Silent). The roster matched the predeployment snapshot. Rollback copies of the previous index, version metadata and publisher are in `/opt/meshlink-activity-3878aeb.7zmd44/previous`.
+
 ## 2026-11-27 - Activity assignment filter and contact defaults
 
 Activity counts every card under Reporting, Attention or Silent. Cards without a usable contact time show Silent. Infrastructure uses the field cadence and member radios missing a device interval use 180 seconds. The Unassigned filter includes cards across all three states and updates on assignment changes. Publisher and portal interaction tests cover the roster and overlapping counts. Next, verify counts and filter interaction after deployment.
