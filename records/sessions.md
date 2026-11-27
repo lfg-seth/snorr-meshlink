@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-27 - Deployed all-node Activity roster
+
+Deployed `5c871a9` under the portal deployment lock. The signed-in production API returned 28 unique cards, including all 20 previously displayed radios. R002, R004, R006 and R007 each returned Unassigned with the correct physical label. All mapped labels and site names matched the live map roster. The feed was Live at 17:41:21 and the snapshot advanced to 17:41:24 UTC. Rollback copies are in `/opt/meshlink-rollback-activity-5c871a9.asoymbza`. Live API acceptance is complete.
+
 ## 2026-11-27 - Unassigned nodes on Activity
 
 Expanded Activity to include the numbered repeater fleet and registered or configured radios. Offline publisher tests cover R002, R004, R006 and R007, including a site assignment, rename and removal while the publisher is running. Next, deploy the [publisher and physical roster](../docs/operations/field-portal.md#activity-fleet-roster) and verify signed-in cards.
