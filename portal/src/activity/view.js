@@ -7,7 +7,7 @@ export function mountActivity(root) {
   root.innerHTML = template;
   const cards = root.querySelector("#cards");
   const statusLine = root.querySelector("#status");
-  const groups = {all:"All nodes", reporting:"Reporting", attention:"Attention", silent:"Silent", unknown:"Unknown"};
+  const groups = {all:"All nodes", reporting:"Reporting", attention:"Attention", silent:"Silent", unassigned:"Unassigned"};
   const stateNames = {fresh:"On time", aging:"One cycle missed", stale:"Two or more cycles missed", event:"Event", unknown:"Unknown"};
   const metrics = {
     voltage:["Device voltage","V",3.2,4.2], charge:["Battery","",0,100],
@@ -260,11 +260,13 @@ export function mountActivity(root) {
   const empty = el("p","","empty");
   cards.after(empty);
   function applyFilter() {
-    const counts = {all:views.size,reporting:0,attention:0,silent:0,unknown:0};
+    const counts = {all:views.size,reporting:0,attention:0,silent:0,unassigned:0};
     for (const view of views.values()) {
       const state = view.previous.health;
       counts[state]++;
-      view.article.hidden = filter !== "all" && filter !== state;
+      const unassigned = view.previous.unassigned ?? (view.previous.name === "Unassigned");
+      if (unassigned) counts.unassigned++;
+      view.article.hidden = filter === "unassigned" ? !unassigned : filter !== "all" && filter !== state;
     }
     for (const [key,button] of buttons) {
       button.setAttribute("aria-pressed",String(key===filter));

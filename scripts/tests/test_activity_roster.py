@@ -81,6 +81,10 @@ class LiveRosterTests(unittest.TestCase):
                     self.assertEqual(source["heardThroughRadio"], "!00112255")
                     tracker = next(c for c in cards if c["radio"] == "!00000001")
                     self.assertEqual((tracker["kind"], tracker["label"], tracker["name"]), ("member", "T001", "Unassigned"))
+                    self.assertTrue(tracker["unassigned"])
+                    self.assertEqual(next(t["period"] for t in tracker["timers"] if t["stream"] == "device"), 180)
+                    self.assertFalse(source["unassigned"])
+                    self.assertTrue(all(c["health"] in ("reporting", "attention", "silent") for c in cards))
                     gps = tracker["readings"]["gps"]
                     self.assertIsNone(gps["age"])
                     self.assertEqual(gps["value"], {"satellites": 8, "pdop": None, "altitude": None})
@@ -93,6 +97,9 @@ class LiveRosterTests(unittest.TestCase):
                     self.assertEqual(by_radio["!00112255"]["kind"], "gateway")
                     card = by_radio["!b456f760"]
                     self.assertEqual(card["label"], "R007")
+                    self.assertIsNone(card["seen"])
+                    self.assertEqual(card["health"], "silent")
+                    self.assertEqual(card["unassigned"], card["name"] == "Unassigned")
                     snapshots.append((card["name"], source["route"].get("lastRelayCandidate")))
                     sql = next(edits, None)
                     if sql is None:

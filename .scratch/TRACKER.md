@@ -12,6 +12,8 @@ Exact fixed deployment locations are [published with owner approval](../records/
 
 ## Current
 
+**Activity assignment filter.** Ready for portal and publisher deployment. [Behavior and checks](../records/sessions.md#2026-11-27---activity-assignment-filter-and-contact-defaults).
+
 **Activity telemetry cadence.** Deployed and verified 45-minute infrastructure
 timers. Next, verify receipt spacing after the radio changes. [Deployment](../records/sessions.md#2026-11-26---deployed-activity-cadence).
 

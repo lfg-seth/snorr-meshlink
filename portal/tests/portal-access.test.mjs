@@ -206,6 +206,22 @@ test('Activity switches views and preserves ordered readings and value bars on r
     assert.match(root.querySelector('.metrics').textContent, /No telemetry yet/);
     render(data);
     assert.deepEqual(labels(),initial);
+    const unassigned = root.querySelector('button.stat.unassigned');
+    const article = root.querySelector('article');
+    for (const health of ['reporting','attention','silent']) {
+      render(data,{ health, name:'Unassigned', unassigned:true });
+      const status = root.querySelector('button.stat.'+health);
+      assert.equal(status.lastChild.textContent,'1');
+      assert.equal(unassigned.lastChild.textContent,'1');
+      status.click();
+      assert.equal(article.hidden,false);
+      unassigned.click();
+      assert.equal(article.hidden,false);
+      render(data,{ health, name:'Field site', unassigned:false });
+      assert.equal(article.hidden,true);
+      assert.equal(status.lastChild.textContent,'1');
+      assert.equal(unassigned.lastChild.textContent,'0');
+    }
   } finally {
     dom.window.close();
     delete globalThis.document;

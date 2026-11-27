@@ -10,6 +10,7 @@ from server.node_readings import epoch, run, utc
 
 ROOT = Path(__file__).resolve().parents[1]
 DATABASE = Path("/var/lib/meshlink/pb_data/data.db")
+MEMBER_DEVICE_PERIOD = 180
 TELEMETRY_PERIOD = 45 * 60
 TELEMETRY_STREAMS = ("device", "environment", "power", "snns", "gateway", "wifi")
 
@@ -70,6 +71,7 @@ def label_members(db, sites, cards):
     for card in cards["nodes"]:
         site = sites[card["radio"]]
         name = assigned_name(site, cards["now"]) if site["kind"] == "member" else site.get("name")
+        card["unassigned"] = name is None
         card["name"] = name or "Unassigned"
     for packet in cards["packets"]:
         site = sites[packet["radio"]]
@@ -97,10 +99,12 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
         for node in snapshot["nodes"]:
             site = sites[node["radio"]]
             if site["kind"] == "member":
+                device = node["watchdogs"].setdefault("device", {})
+                if not device.get("cadenceSeconds"):
+                    device["cadenceSeconds"] = MEMBER_DEVICE_PERIOD
                 node["kind"] = "member"
                 continue
-            if site["kind"] in ("repeater", "stationBackhaul", "mobileGateway", "offlineRecorder"):
-                apply_activity_cadence(node["watchdogs"])
+            apply_activity_cadence(node["watchdogs"])
             for reading in ("gps", "standardNeighbors"):
                 node["readings"].pop(reading, None)
             for stream in ("position", "neighbor_info", "nodeinfo"):
@@ -116,6 +120,10 @@ def main(database=DATABASE, target=Path("/run/meshlink-activity/snapshot.json"),
         dashboard.observe(snapshot, time.monotonic())
         cards = cli["card_snapshot"](dashboard, snapshot, time.time(), False, True, 3)
         cards["packets"] = snapshot["packets"]
+        for card in cards["nodes"]:
+            # All portal cards have a cadence. An unusable contact time means silence.
+            if card["health"] == "unknown":
+                card["health"] = "silent"
         label_members(db, sites, cards)
         pending = target.with_suffix(".pending")
         pending.write_text(json.dumps(cards, allow_nan=False, separators=(",", ":")), encoding="utf-8")

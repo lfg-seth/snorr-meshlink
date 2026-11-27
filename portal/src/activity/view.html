@@ -15,7 +15,7 @@ h1 { font-size:clamp(25px,3vw,34px); line-height:1.15; letter-spacing:-.04em; }
 #status { color:var(--tone); font-weight:650; }
 .dot::before { content:""; display:inline-block; width:.57em; height:.57em; border-radius:50%; background:var(--tone); margin-right:.5em; vertical-align:.1em; }
 .all { --tone:var(--info-text); } .reporting,.fresh { --tone:var(--good-text); } .attention,.aging { --tone:var(--warning-text); }
-.silent,.stale,.down { --tone:var(--danger-text); } .unknown,.event { --tone:var(--muted); }
+.silent,.stale,.down { --tone:var(--danger-text); } .unassigned,.unknown,.event { --tone:var(--muted); }
 #summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-bottom:22px; }
 button { font:inherit; color:inherit; cursor:pointer; }
 .stat { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:3px 8px; text-align:left;
@@ -101,7 +101,7 @@ h2 { font-size:22px; letter-spacing:-.035em; overflow-wrap:anywhere; line-height
 <header><div class="identity"><svg viewBox="0 0 28 28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M1 16h6l4-10 5 17 4-11 2 4h5"/></svg>
 <div><div class="brand">SNORR MeshLink</div><h1>Node activity</h1></div></div>
 <div class="statusline"><span id="status" class="dot unknown">Connecting</span><time id="stamp"></time></div></header>
-<nav id="summary" aria-label="Filter nodes by reporting status"></nav>
+<nav id="summary" aria-label="Filter nodes by reporting status or assignment"></nav>
 <section id="recent-packets" aria-labelledby="packet-heading" hidden>
 <h2 id="packet-heading">Recent packets</h2>
 <div class="packet-window"><ol aria-label="Packets, newest first"></ol><p hidden>No packets in the past hour</p></div>

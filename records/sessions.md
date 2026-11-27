@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-11-27 - Activity assignment filter and contact defaults
+
+Activity counts every card under Reporting, Attention or Silent. Cards without a usable contact time show Silent. Infrastructure uses the field cadence and member radios missing a device interval use 180 seconds. The Unassigned filter includes cards across all three states and updates on assignment changes. Publisher and portal interaction tests cover the roster and overlapping counts. Next, verify counts and filter interaction after deployment.
+
 ## 2026-11-27 - Deployed all-node Activity roster
 
 Deployed `5c871a9` under the portal deployment lock. The signed-in production API returned 28 unique cards, including all 20 previously displayed radios. R002, R004, R006 and R007 each returned Unassigned with the correct physical label. All mapped labels and site names matched the live map roster. The feed was Live at 17:41:21 and the snapshot advanced to 17:41:24 UTC. Rollback copies are in `/opt/meshlink-rollback-activity-5c871a9.asoymbza`. Live API acceptance is complete.
