@@ -65,7 +65,10 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   leaving B002 in the member role. Planned
   purchases/recoveries and 3000 mAh allocations require confirmation in
   [inventory](records/inventory.md). T-Decks are outside the first trial.
-- Active original OLED V4 clients are **B002 and B003**. On 2026-10-25 the
+- The OLED V4 member nodes are **B002, B003, B004 and B005**. The new V4.3
+  pair B004/B005 passed direct and shared-channel text tests through G008
+  on November 25. [Physical bench results](records/field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench).
+  On 2026-10-25 the
   owner reassigns former gateway G004/B001 hardware to unassigned B003, retaining
   its own identity and GPS while disabling gateway Wi-Fi/MQTT. Historical G004
   records remain separate. [Current client evidence](docs/operations/b003-v4-client.md).
@@ -78,7 +81,9 @@ pass. The [tracker](.scratch/TRACKER.md) owns current work; the
   measurement times, per-gateway receipts and deduplication. Rollout G001 is the screenless V4.3 `!1bbf0638`. It uplinks
   received RF and sends its own reports. Fresh rollout assignments supersede
   bench labels per identified board. [G001 rollout](docs/operations/g001-screenless-rollout.md). The earlier designated-gateway message-downlink design is
-  future communications scope; implementing it requires a selected assignment.
+  assigned on 2026-11-25 to [G008, the Seth's Home Heltec V3](records/sites.md#2026-11-25---seths-home)
+  `!9ea13cc0`. Both MQTT messaging directions passed with the physical
+  members on `mqtt.spp.lol:8883`. Live portal message sending remains open.
 - The portal uses React, approachable TypeScript, Vite and MapLibre/USGS layers
   on an Ubuntu Proxmox LXC, with HTTPS through Cloudflare Tunnel. Demo and live
   data stay isolated. [Live MQTT](docs/operations/live-mqtt.md) and

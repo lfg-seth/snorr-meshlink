@@ -35,9 +35,10 @@ or sensor measurement time. The exact four-hour boundary is hidden; a new
 report makes the node reappear automatically. `--include R011` keeps that
 selected node visible while waiting for its first report; repeat the option
 for other labels or physical `!radio` IDs. `--show-inactive` includes all
-nodes for troubleshooting. Filtering does not reset watchdog history. Legacy
-V3 gateways use distinct `V3-<eight-digit-radio-ID>` labels; old and active
-physical radios cannot share an ambiguous Legacy V3 row.
+nodes for troubleshooting. Filtering does not reset watchdog history. Gateways
+with legacy storage keys use their explicitly assigned registry short name when
+it is unique and the physical radio ID matches. The fallback for legacy V3s
+is `V3-<eight-digit-radio-ID>`.
 
 On this KDE laptop, run through `kde-inhibit --power --screenSaver` to prevent
 automatic sleep and screen blanking while monitoring. The CLI reads its

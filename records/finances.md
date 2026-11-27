@@ -1,5 +1,14 @@
 # Project finances
 
+## 2026-11-24 - Reimbursement receipt packet
+
+Prepared nine Amazon receipt pages for the **$427.91** reimbursement request.
+The twelve highlighted lines match rows 57, 58, 69, 75, 78, 81–83, and 86–89
+of the November 18 itemized cost workbook and Amazon order summaries 1, 5,
+10–13, and 16–18. The workbook provisionally attributes the $24.92 refund on
+summary 18 to the excluded screen protector. The packet is kept in
+`private/receipts/`. Approval and payment are unconfirmed.
+
 ## 2026-10-31 - Owner-reported gateway purchase
 
 Owner confirms purchase of two screenless Heltec V4s with external Wi-Fi antenna

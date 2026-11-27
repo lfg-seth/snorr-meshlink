@@ -1,5 +1,186 @@
 # Field testing and tangible results
 
+## 2026-11-27 - Mountain solar check at 10:00 Pacific
+
+Read-only five-day MQTT review, deduplicated by originating packet. Excluded sites currently above 85% and paired net battery current with the nearest device battery report within five minutes, retaining levels at or below 85%. Dawn figures are median voltage from 04:00–06:59 Pacific. Today's current covers 09:00–10:00 only.
+
+| Site | Latest battery | Dawn V, Nov 23 to 27 | Median net mA today (samples) |
+| --- | --- | --- | --- |
+| R009 Mack's Canyon | 38%, 3.610 V | 3.664, 3.650, 3.640, 3.626, 3.614 | −39 (20) |
+| G002 Lee Fire Station | 74%, 3.937 V | 3.748, 3.745, 3.763, 3.721, 3.722 | +384 (12) |
+| R001 Cathedral Rock | 67%, 3.871 V | 3.777, 3.798, 3.814, 3.809, 3.824 | +168 (9) |
+| R010 Upper Bristle | 67%, 3.869 V | 3.791, 3.813, 3.829, 3.834, 3.845 | +21 (20) |
+
+R009 also recorded −14 mA median across 116 readings from 09:00–14:59 November 26. Inspect exposure, wiring and panel voltage under load during the swap. Monitor G002's dawn trend. R005 (90%), R008 (92%) and R011 (95%) were excluded. R006 supplied no battery reading.
+
+## 2026-11-27 - R004 solar charging bench test
+
+R004 (`!49ac6d7f`) reported over the mesh to Seth's Home. The owner confirmed that the battery pack was charging in both setups. For this bench wiring, the dashboard showed charging current with a negative sign. Times below are measurement times in Pacific Standard Time.
+
+| Solar inputs | Time | Dashboard current | INA219 bus voltage |
+| --- | --- | ---: | ---: |
+| Two small case panels through the RAK | 9:35:11 a.m. | −252.4 mA | 3.720 V |
+| Same two panels through the RAK | 9:36:56 a.m. | −250.4 mA | 3.720 V |
+| Same two panels through the RAK | 9:38:11 a.m. | −250.0 mA | 3.716 V |
+| Same two panels through the RAK, plus one large panel through an external solar charge controller | 9:39:57 a.m. | −1,013.9 mA | 3.912 V |
+
+The owner placed the external controller inline with the battery pack, between the RAK and the INA219. The bench comparison showed about 250 mA of charging with the two case panels and 1.014 A in one sample with all three panels. The owner assessed the combined setup as a successful charging test.
+
+## 2026-11-26 - B009 and B010 member-node commissioning
+
+Both original factory applications identified HELTEC_WIFI_LORA_32_V4. The owner requested the same setup as B006 through B008 and waived factory backups. Each radio passed digest checks of its factory image, recovery and filesystem. The `heltec-v4-gateway / 2.7.26.6fea6aa` application matched SHA-256 `0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`.
+
+The private US member profile uses CLIENT, channel slot 35, 10 dBm, Wi-Fi and MQTT off, GPS acquisition every 60 seconds, position broadcasts configured for 120 seconds and device telemetry every 180 seconds. Full local and module settings, channels, names and individual keys persisted through an explicit reboot. Both directions passed packet-ID-matched PKI direct messaging.
+
+Both unassigned tracker cards passed live portal readback. The CT 101 subscriber loaded both mappings. The legacy subscriber stayed online and will load them on its next start. Dispatch accepted neighbor reports from both via G008. USB device telemetry read 4.310 V and 31.75% channel utilization on B009, and 4.342 V and 25.95% on B010. These USB-powered readings describe bench supply conditions. Both channel readings exceeded the CLIENT 25% telemetry broadcast threshold. Periodic device telemetry through G008 remains to be verified on a quieter channel.
+
+Neither radio reported a timestamped GPS solution on the indoor bench. Outdoor phone-free GPS delivery and runtime remain open.
+
+## 2026-11-26 - B006 through B008 member-node commissioning
+
+All three factory applications identified the Heltec WiFi LoRa 32 V4 target. With antennas connected and factory backups waived, each board passed digest verification of the factory image, recovery and filesystem. The member application is `heltec-v4-gateway / 2.7.26.6fea6aa`, SHA-256 `0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`. [Physical IDs](inventory.md#2026-11-26---three-new-heltec-v4-member-radios).
+
+Each radio retained its label, individual key pair, channels and full local/module configuration through an explicit reboot. All three run CLIENT, private US channel slot 35, 10 dBm, Wi-Fi and MQTT off, GPS acquisition every 60 seconds, position broadcast configured for 120 seconds and device telemetry every 180 seconds. Each sent and received a fresh, packet-ID-matched PKI-encrypted direct message in the B006 to B007 to B008 to B006 sequence.
+
+All three unassigned tracker cards passed signed-in live portal readback. The CT 101 channel subscriber restarted with the new mappings. The legacy receiver stayed running and will load the mappings on its next start. G008 (`!9ea13cc0`) delivered fresh packets from all three to the portal archive. Dispatch accepted fresh telemetry and neighbor reports from each radio through G008 between 19:37:00 and 19:37:23 UTC.
+
+No radio supplied a timestamped GPS fix on the indoor bench. Next, give the receivers sky view and verify a fresh phone-free measured position for each tracker in dispatch. Range and battery runtime remain unmeasured.
+
+## 2026-11-25 - Solar charge balance at 18:06 Pacific
+
+Read-only review of five days of production MQTT receipts, deduplicated by
+originating packet. Median device voltage from 04:00 to 06:59 Pacific on
+November 22, 23, 24 and 25 fell at R009 (3.683, 3.664, 3.650, 3.640 V).
+It ended at 3.635 V / 40% despite a +37 mA median across 44 November 25
+09:00–14:59 net battery current readings. Inspect its panel exposure and
+charging path under load first.
+
+R011 recovered to 4.168 V / 98% with +174 mA median daylight current after
+three mornings of declining voltage. R005 held near 4.08 V / 91% with sparse
+recent daylight current. G002's morning medians ranged from 3.745 to 3.777 V
+and it ended at 3.809 V / 61%. R001, R008 and R010 gained morning voltage
+over the four mornings and ended at 3.816, 4.098 and 3.844 V respectively.
+All seven supplied device voltage between 17:56 and 18:06 Pacific. Off-roster
+R006 supplied no device battery voltage in the window.
+
+## 2026-11-25 - Two V4.3 clients and G008 messaging on the bench
+
+The owner identified two new Heltec V4.3 OLED radios with GPS and antennas
+installed. COM44 became B004 (`!a35a5fec`) and COM45 became B005
+(`!a35b3888`). Both ESP32-S3s reported 16 MB flash and 2 MB PSRAM.
+The factory image for `heltec-v4-gateway / 2.7.26.6fea6aa` includes the
+OLED and GPS drivers. The application matched the B003 SHA-256
+`0fde49af9a4b270ce40c95474b8cf61c4981211955bf9a0d6913a0fc4c239a9a`.
+The flash verification covered the factory image, recovery and filesystem
+on both boards. The owner waived factory backups for these two new units.
+
+Both run CLIENT on the private US pilot channel, slot 35, 10 dBm configured
+power and V4.3 FEM LNA enabled. Wi-Fi and MQTT are disabled on each member.
+They accept RF messages originating at dispatch through G008. GPS is enabled
+on RX39/TX38/enable34 with 60-second acquisition and 120-second reporting.
+Device telemetry and the SNNS baseline are 180 seconds. Full settings,
+channels, names and individual keys matched through a separate reboot.
+
+| Test path | Observed result |
+| --- | --- |
+| B004 → B005 and B005 → B004 on the shared channel | Both recipients decoded the exact text and packet ID over USB. |
+| B004 and B005 → RF → G008 → mqtt.spp.lol | Public TLS subscriber decrypted each matching member text on G008's uplink topic. |
+| Dispatch test publisher → mqtt.spp.lol → G008 → RF | Both physical members decoded the same matching dispatch packet. |
+| B004 → B005 and B005 → B004 by direct address | After the nodes exchanged their public identity information, both recipients decoded the exact addressed text and reported PKI encryption. |
+
+The live portal lists two unassigned trackers, B004 and B005. Their worker
+mappings are saved for the next worker start. The existing worker connection
+stays on the older broker during the Lee Fire overlap. The downlink test
+used the dispatch MQTT account. Sending and receiving shared texts in the
+production web interface remains open. Neither USB readback showed a GPS
+solution with a measurement timestamp during the test. Outdoor fix, range,
+and battery runtime remain unmeasured.
+[Public broker and renewal](../docs/operations/mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
+## 2026-11-23 - Fleet health and inspection priorities
+
+Reviewed the production MQTT archive from November 21 at 09:48 through November
+23 at 09:48 Pacific (end exclusive). The archive contained 18,517 envelopes.
+All nine radios on the current field roster originated traffic, as did B002,
+B003, R004 and R006. Sites below are the current portal assignments, which
+differ from the November 15 field report. Physical placement was not inspected.
+Original packets are counted once across gateways. Uplink counts include each
+gateway's own copy. Current is INA219 channel 1 with positive values meaning
+net battery charging. Sparse samples cannot establish total daily energy.
+
+| Priority | Radio and current assignment | Evidence and next check |
+| --- | --- | --- |
+| First | G002, Lee Fire Station | Carried 14,939 gateway receipts. Gateway health showed new boot IDs Monday at 04:52, 06:18 and 08:53. Its longest Monday gap between uplinks was 19.2 minutes. Sunday's 09:00–15:00 median net current was +370 mA. The SD drop counter reached 17 on Saturday and the latest boot reported zero. Check power connections, reset reason and card continuity across boots. |
+| First | G006, Terry Home | Twelve distinct gateway-health boot IDs, including nine changes Monday from 05:18 to 09:19. All 1,845 receipts through G006 originated on G006. Check power supply and reset logs, then verify reception with a known nearby transmitter. A reported 4.28–4.33 V does not resolve reset cause. |
+| Next field power check | R009, Mack's Canyon | Device voltage fell from 3.71 to 3.66 V and the last battery estimate was 43%. Only 25 of 766 net-current readings were positive. The Sunday 09:00–15:00 median was −14.8 mA. Check panel exposure, wiring and charge current under load. |
+| Next visit | R011, Angel Peak Mountain Side | All 509 current readings indicated discharge, including 77 on Sunday from 09:00–15:00. Device voltage ended at 4.13 V / 95% with one observed boot ID. Verify panel output and charge-controller behavior in sun. |
+| Watch | R001, Cathedral Rock | Longest gap between received packets was 2 h 37 min. One observed boot ID, a +234 mA charging peak and device voltage rising from 3.76 to 3.84 V. Check the RF path if gaps persist after backhaul work. |
+| Watch | R005, Angel Peak Vegas Side | All 104 Sunday 09:00–15:00 current samples indicated discharge, but positive charging was recorded Saturday and Monday. Ended at 4.09 V / 93%. Recheck on the next daylight cycle. |
+| Routine | R008, Escarpment Trail, and R010, Upper Bristle | Sunday net charge peaked at +229 and +168 mA respectively. R008 had one boot transition and ended at 4.06 V. R010 had one observed boot ID and ended at 3.79 V. |
+| Confirm duty period | G003, mobile | Forwarded 1,732 receipts. A 39 h 13 min uplink gap ended Monday at 09:16. Check vehicle power/Wi-Fi if it was meant to run during the gap. |
+
+**Member GPS:** B002 delivered three distinct measured fixes, last Saturday
+11:26. B003 delivered 295 distinct measured fixes from Saturday 13:05 to
+18:03 with no gap of 15 minutes between successive fixes. Its Monday 09:24
+packet did not contain a new fix. Both positions were stale at cutoff.
+Confirm intended duty periods. Before relying on B003, check battery and
+power connections and verify a fresh phone-free fix. B003 reported a 3.06 V
+minimum and five neighbor-report boot IDs.
+
+**Outside the current field roster:** All 77 R004 packets and all four R006
+packets came through mobile G003 on Saturday. R004's last packet was at
+13:09 (last device voltage 4.05 V). R006 last reported at 16:05 (environment
+voltage 4.07 V), and B003's neighbor report placed a later local hearing at
+about 17:41. Confirm whether either radio should still be in service before
+dispatching an inspection. G001 and G005, two legacy gateway identities,
+and R002/R003/R007 had no originating packets. The existing bench records
+hold R002 for torn-wire repair and R003 for RF diagnosis. R007 has no field
+assignment. No current receiver evidence establishes a fault on the silent
+units. Local aggregate evidence is in `private/fleet-review-20261123.txt`.
+
+## 2026-11-17 - R009 and R002 direct reception at R005
+
+The owner selected R005 `!a65601b3` (Angel Peak Vegas Side) as the comparison
+receiver because G003 was too close. The antenna assignments and six-inch
+IPEX adapters are owner-reported. The read-only live archive query used
+RSSI/SNR from R005's own passive SNNS direct-reception rows. It deduplicated
+reports and repeated observations using the boot ID, counter and estimated
+hearing uptime, allowing two seconds for report age rounding.
+
+| Pacific window | R009 Muzi samples / median RSSI / median SNR | R002 fiberglass samples / median RSSI / median SNR |
+| --- | --- | --- |
+| 11:51:31–12:51:31 | 14 / −115 dBm / −12.875 dB | 7 / −119 dBm / −18.00 dB |
+| 10:51:31–12:51:31 | 27 / −115 dBm / −13.00 dB | 11 / −119 dBm / −17.50 dB |
+
+The Muzi setup led by 4 dB in median RSSI in both windows. It led by 5.125 dB
+in median SNR in the latest hour and 4.50 dB over two hours. In the latest hour,
+RSSI ranged from −116 to −113 dBm for R009 and −120 to −118 dBm for R002.
+On the reverse link in the same hour, R009 heard R005 at median −115 dBm and
+−7.75 dB SNR across 19 samples, and R002 heard R005 at −117 dBm and −14.00 dB
+SNR across 17 samples. SNNS snapshots carry the latest reading for each
+neighbor and sample counts do not measure packet delivery rates. An antenna
+swap would help isolate the antenna effect from differences between radios.
+
+## 2026-11-17 - R009 and R002 direct reception at G003
+
+The owner reports R009 `!da581e5f` with the Muzi and R002 `!05237743` with
+the fiberglass antenna in the same position, each with a six-inch IPEX
+adapter. A read-only query of the live MQTT archive compared receipts at G003
+`!849ad7a0` (Seth Mobile). It counted each packet ID once per sender and
+required matching positive hop start and hop limit, the sender's relay byte,
+and recorded RF signal measurements.
+
+| Pacific window | R009 Muzi packets / median RSSI / median SNR | R002 fiberglass packets / median RSSI / median SNR |
+| --- | --- | --- |
+| 11:48:42–12:48:42 | 78 / −65 dBm / +6.50 dB | 78 / −65 dBm / +6.50 dB |
+| 10:48:42–12:48:42 | 156 / −65 dBm / +6.25 dB | 156 / −64 dBm / +6.25 dB |
+
+In the latest hour RSSI ranged from −66 to −64 dBm for R009 and from −69 to
+−63 dBm for R002. Median RSSI varied more in the earlier windows. The latest
+hour shows equal median signal at G003. Archive counts measure received
+packets, with no independent count of transmissions. An antenna swap on the
+same radio with a stationary receiver would help isolate the antenna effect.
+
 ## 2026-11-17 - G003 replacement Wi-Fi bench check
 
 G003 / !849ad7a0 passed exact credential and complete intended profile readback

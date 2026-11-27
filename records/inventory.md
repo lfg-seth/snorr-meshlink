@@ -1,5 +1,48 @@
 # Hardware inventory
 
+## 2026-11-26 - Member radios B009 and B010
+
+Two additional factory-new Heltec WiFi LoRa 32 V4 radios. Each has an ESP32-S3, 2 MB PSRAM and 16 MB flash.
+
+| Label | Bench USB port | USB serial | Radio ID | Hardware ID |
+| --- | --- | --- | --- | --- |
+| B009 | COM49 | `D4:05:92:53:A4:2C` | `!9253a42c` | `2349c409764be6906f85c37bfd48fb5a` |
+| B010 | COM50 | `10:BD:A3:5C:44:88` | `!a35c4488` | `7faf411d1069538c5b2e9249060543da` |
+
+[Bench verification](field-results.md#2026-11-26---b009-and-b010-member-node-commissioning)
+
+## 2026-11-26 - Three new Heltec V4 member radios
+
+The owner supplied three new radios with antennas connected. Each factory application identified its target as HELTEC_WIFI_LORA_32_V4. All three have an ESP32-S3, 2 MB PSRAM and 16 MB flash.
+
+| Label | Bench USB port | USB serial | Radio ID | Hardware ID |
+| --- | --- | --- | --- | --- |
+| B006 | COM46 | `D4:05:92:54:F4:B4` | `!9254f4b4` | `7c09bfaeb4987df26e748f4037e84e6c` |
+| B007 | COM47 | `10:BD:A3:5A:F8:48` | `!a35af848` | `63e247f6a28020865835328a5ccbd543` |
+| B008 | COM48 | `44:1B:F6:69:C4:DC` | `!f669c4dc` | `9df7ae262238de83da8708acb34dcfb4` |
+
+[Commissioning results](field-results.md#2026-11-26---b006-through-b008-member-node-commissioning)
+
+## 2026-11-25 - New GPS member radios B004 and B005
+
+Two additional owner-confirmed Heltec V4.3 OLED radios with GPS modules and
+antennas installed were received on USB and commissioned as unassigned clients.
+Battery type, capacity and allocation are unknown.
+
+| Label | Radio ID | Hardware identity | USB port at commissioning |
+| --- | --- | --- | --- |
+| B004 | `!a35a5fec` | `1e504da07602a9547b0a1ee4521c5194` | COM44 |
+| B005 | `!a35b3888` | `a77e1d278f681f1e823709941d8fbbac` | COM45 |
+
+[Profile, reboot and messaging measurements](field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench).
+
+## 2026-11-25 - Heltec V3 at Seth's Home
+
+USB identifies the connected **G008** (formerly G001) as Heltec V3 `!9ea13cc0`, hardware
+`10ec58f2c54df86e200615c1e0e347c7`. Its private primary channel has MQTT
+uplink and downlink enabled after reboot. This uses an existing board.
+[Site and portal record](sites.md#2026-11-25---seths-home).
+
 ## 2026-11-18 - R002 wire rework and R004 allocation
 
 Owner reports a torn wire on R002 `!05237743` and holds it for rework.

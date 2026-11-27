@@ -379,13 +379,16 @@ class Decoder:
             return stream
 
 
-def configured_nodes(cfg, roster):
+def configured_nodes(cfg, roster, registry_labels=None):
     nodes = {radio: {"radio": radio, "label": label, "kind": "repeater"} for radio, label in roster.items()}
+    registry_labels = registry_labels or {}
     for group, kind in (("members", "member"), ("infrastructure", "infrastructure")):
         for radio, key in cfg.get(group, {}).items():
             if radio not in nodes:
                 legacy = key.startswith("legacy-v3-")
-                nodes[radio] = {"radio": radio, "label": f"V3-{radio[1:]}" if legacy else key.upper(),
+                label = registry_labels.get((key, radio))
+                legacy = legacy and not label
+                nodes[radio] = {"radio": radio, "label": label or (f"V3-{radio[1:]}" if legacy else key.upper()),
                                 "kind": "legacy" if legacy else "gateway" if radio in cfg["gateways"] else kind}
     registered = {**cfg.get("members", {}), **cfg.get("infrastructure", {})}
     for radio, node in nodes.items():
@@ -422,14 +425,11 @@ def run(settings, publish=None):
     """One incremental reader per SSH session; archive cursor avoids full rescans."""
     try:
         cfg = json.loads(Path(settings["config"]).read_text())
-        nodes = configured_nodes(cfg, settings["roster"])
         site_names = settings.get("siteNames", {})
         # Count collisions across the fleet, including radios without a displayed card or name.
         names = dict.fromkeys(settings.get("cadences", {}))
         identities = {**cfg["members"], **cfg.get("infrastructure", {}), **cfg["gateways"]}
         names.update(dict.fromkeys(identities))
-        if "selected" in settings:
-            nodes = [node for node in nodes if node["radio"] in settings["selected"]]
         mappings = {v: k for k, v in {**cfg["members"], **cfg.get("infrastructure", {})}.items()}
         database = Path(settings["database"]).as_uri() + "?mode=ro"
         with closing(sqlite3.connect(database, uri=True, timeout=2)) as db:
@@ -437,6 +437,17 @@ def run(settings, publish=None):
             # One consistent startup snapshot, then short incremental reads.
             db.execute("BEGIN")
             cursor = db.execute("SELECT COALESCE(MAX(rowid),0) FROM mqtt_archive").fetchone()[0]
+            # A reactivated gateway can keep its legacy storage key for packet history.
+            # Use an explicitly assigned display label only for the same physical radio.
+            registry_labels = {(key, radio): label for key, radio, label in db.execute("""
+                SELECT key, json_extract(configuration, '$.radioNodeId'), shortName FROM devices
+                WHERE shortName != '' AND (shortName = number OR shortName = json_extract(configuration, '$.shortName'))
+                AND lower(trim(shortName)) IN (SELECT lower(trim(shortName)) FROM devices
+                    GROUP BY lower(trim(shortName)) HAVING count(*) = 1)
+            """)}
+            nodes = configured_nodes(cfg, settings["roster"], registry_labels)
+            if "selected" in settings:
+                nodes = [node for node in nodes if node["radio"] in settings["selected"]]
             registered_names = {
                 key: (name or "").strip()
                 for key, name in db.execute(

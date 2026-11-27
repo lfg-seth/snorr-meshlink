@@ -1,5 +1,15 @@
 # Candidate sites and backhaul
 
+## 2026-11-25 - Seth's Home
+
+The owner selected the plugged-in **G008** Heltec V3 `!9ea13cc0` for two-way
+MQTT at Seth's Home. The authenticated field roster and Activity card use
+this radio ID and its existing portal history. The screenless V4 G001
+`!1bbf0638` is a separate physical device. The residential pin belongs in
+the authenticated portal. The street address and coordinates are omitted here.
+G008 now exchanges encrypted channel texts through `mqtt.spp.lol:8883`.
+Both directions passed with the physical radio. [Broker and renewal record](../docs/operations/mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
 ## 2026-11-18 - SaharaFG replacement
 
 R004 `!49ac6d7f` replaces R002 `!05237743` at SaharaFG after the owner

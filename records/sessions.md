@@ -1,5 +1,212 @@
 # Session log
 
+## 2026-11-27 - Verified Lee Fire G002 field firmware download
+
+The owner confirmed G002 at Lee Fire Station. The published client gateway
+application digest matches the local binary, and the published partition
+table matches G002's commissioning record. The [field handoff](../docs/operations/board-flashing-handoff.md)
+links the release. Installation, profile readback and field traffic tests remain open.
+
+## 2026-11-27 - Refreshed solar inspection priorities
+
+The [10:00 Pacific telemetry review](field-results.md#2026-11-27---mountain-solar-check-at-1000-pacific) applied the owner's 85% cutoff. R009 remains first for on-site inspection. G002 merits a follow-up dawn reading. Panel condition and the cause of R009's discharge await field measurements.
+
+## 2026-11-27 - R004 solar charging bench test
+
+Recorded the two charging configurations and the owner's polarity correction. The two case panels yielded about 250 mA through the RAK. Adding the large panel through the external controller yielded one 1.014 A charging sample. The owner requested documentation only. [Readings and wiring](field-results.md#2026-11-27---r004-solar-charging-bench-test).
+
+## 2026-11-26 - Commissioned member radios B009 and B010
+
+Provisioned two Heltec V4 member radios. Both passed reboot readback and two-way encrypted messaging, and both are registered as unassigned trackers. Next, verify a fresh phone-free position in dispatch for each radio under open sky. [Bench verification](field-results.md#2026-11-26---b009-and-b010-member-node-commissioning).
+
+## 2026-11-26 - Provisioned member nodes B006 through B008
+
+Flashed three new Heltec V4s, applied the member GPS profile and verified full configuration after reboot. All three passed encrypted peer messaging and appeared as unassigned trackers. G008 delivered packets from each radio. Next, verify timestamped outdoor fixes in dispatch. [Commissioning results](field-results.md#2026-11-26---b006-through-b008-member-node-commissioning)
+
+## 2026-11-26 - Deployed Activity cadence
+
+Deployed publisher `fc51086` under the portal deployment lock. Two advancing
+snapshots verified 45-minute device timers on all 11 infrastructure cards and
+preserved device periods on four member cards. Nine infrastructure nodes
+reported. G003 and G006 were silent after 72.2 and 70.1 hours without contact.
+Rollback publisher: `/opt/meshlink-rollback-activity-fc51086.QQJLl1/previous.py`.
+Next, verify radio receipt spacing after the field changes.
+
+## 2026-11-26 - Activity page timing for 45-minute telemetry
+
+Adjusted the Activity publisher for repeater and gateway telemetry. Verified
+the Reporting, Attention and Silent boundaries offline. The Activity roster
+and node-watch suites passed (47 passed, one skipped). Next, deploy the
+publisher and verify a live card through one reporting interval.
+[Activity timing](../docs/operations/field-portal.md#serving-activity).
+
+## 2026-11-26 - Verified both public MQTT hostnames on CT 101
+
+Deployed the dual-name certificate using HTTP-01. Fresh authenticated
+connections through both public hostnames passed, as did the renewal dry run
+and Mosquitto reload. Next, verify Lee Fire and the ingestion worker through
+fresh fleet receipts on CT 101. [Acceptance and firewall change](../docs/operations/mqtt-pve06-migration.md#november-26-2026-dual-hostname-production-acceptance).
+
+## 2026-11-25 - Next mountain day checklist
+
+The owner selected a regular repeater swap at Mack's Canyon, recovery of the
+switched-off Lee node, and solar inspections to assess larger panels. Next,
+select the replacement radio and refresh morning battery trends before departure.
+[Field checklist](../.scratch/tasks/next-mountain-day.md).
+
+## 2026-11-25 - Solar fleet database review
+
+Compared four mornings and the latest device and net-current telemetry for
+the seven field solar nodes. R009 was the only clear sustained decline.
+Inspect Mack's Canyon first and watch whether R011 retains today's recovery.
+[Measured charge trends](field-results.md#2026-11-25---solar-charge-balance-at-1806-pacific).
+
+## 2026-11-25 - Activated mqtt.spp.lol and commissioned B004 and B005
+
+CT 101 now serves public, authenticated MQTT with a Let's Encrypt certificate.
+Its Cloudflare renewal dry run passed with the Mosquitto deploy hook. G008
+reconnected after reboot. Registered two new V4.3 OLED GPS radios as unassigned
+member nodes. Both passed encrypted direct messages, shared-channel texts,
+uplink via G008 and dispatch replies from the broker. Their complete profiles
+survived reboot. [Bench evidence](field-results.md#2026-11-25---two-v43-clients-and-g008-messaging-on-the-bench)
+and [migration and rollback](../docs/operations/mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
+Next, give both GPS receivers sky view for fresh fixes. Lee Fire remains on
+the prior broker until its owner-scheduled change. Verify fleet ingestion
+when switching the worker and test a browser-originated reply after production
+shared-text integration.
+
+## 2026-11-25 - Applied G008 permissions to both MQTT brokers
+
+Private CT 101 passed hostname-verified TLS and the original and expanded
+account matrices after reload and restart. The owner ran the matching update
+on the old broker. Its private listener passed the same dispatch checks.
+Public DNS still pointed to the old IP. New public TCP connections failed
+from three locations while the established worker session received G008
+traffic. The radio retains its current login pending a fresh public TLS test.
+At 17:16 Pacific, retesting the literal public hostname from the workstation,
+MeshLink host and pve06 again failed at TCP before TLS. Next: check the old
+ingress port forward and the Nginx TCP listener.
+At 17:21 Pacific all four delegated XMission authorities still served the old
+A record with TTL 60. Confirm the submitted change with the DNS operator.
+[Changes, measurements, rollback and next step](../docs/operations/mqtt-pve06-migration.md#november-25-pacific-execution-record).
+
+## 2026-11-25 - Recorded G008 broker changes for the DNS cutover
+
+The proposed change gives G008 its own gateway login and the portal a
+dispatch-only publisher. Existing wildcard writers require an exclusion for
+the dispatch topic. The [two-broker runbook](../docs/operations/mqtt-pve06-migration.md#g008-messaging-change-to-apply-on-both-brokers)
+tracks the old production server and private CT 101 independently, including
+verification, client reconnection and rollback. Both changes are pending.
+Next: test with two new accounts on CT 101 and repeat on the old broker
+using privileged access before switching G008.
+
+## 2026-11-25 - Checked G008 readiness
+
+The signed-in field roster shows G008 at Seth's Home with its pin pending.
+G008's latest non-retained uplink was 16:53:39 Pacific, 108 seconds before
+the check. The last archived packet it forwarded from another registered
+radio was November 18 at 16:49:17 Pacific. Next: verify a fresh member packet
+through G008 and broker-to-radio delivery for dispatch replies. The owner
+parks G009. [Earlier downlink test](#2026-11-25---configured-the-seths-home-heltec-v3).
+
+## 2026-11-25 - Resolved duplicate gateway names
+
+The live registry had two repeated short names across 21 physical radios.
+G001 stays with screenless V4 `!1bbf0638`. G003 stays with mobile V3
+`!849ad7a0`. Seth's Home V3 `!9ea13cc0` is now **G008**. Its owner
+names and complete profile matched the intended values after hardware reset.
+The former G003 bench V3 `!9e9f167c` is assigned **G009** in the registry.
+It was absent from USB and returned no fresh directed RF response. Next:
+verify its hardware ID, write G009 and read back after reboot.
+
+All 21 registry short names are unique. Every live field row agrees with its
+registry identity. Authenticated portal and Activity checks passed, and the
+node CLI displayed G001, G003, G008 and G009 under their correct physical IDs.
+Storage keys and packet history stayed with each original radio. Since
+November 12, the archive had identifiable NodeInfo for 19 registered radios.
+B003 last advertised the distinct short name `SURV`; reserve that observed
+alias for the same physical radio. R003 and the G009 bench unit had no
+matching NodeInfo in that window. The G008 USB readback supersedes its
+November 19 archived name. [Current gateway assignments](deployment-nodes.md#current-gateway-names--2026-11-25).
+
+## 2026-11-25 - Configured the Seth's Home Heltec V3
+
+COM6 matched physical V3 `!9ea13cc0` and its existing hardware ID. Saved a
+private full profile, enabled primary-channel downlink alongside the existing
+uplink, and verified the full intended profile after an explicit reboot.
+Wi-Fi and direct MQTT reported connected. The production archive received
+a fresh uplink through that exact gateway at 18:32:03 UTC. The authenticated
+portal state and Activity showed Seth's Home on the V3's original record.
+
+The V3 account authenticated over validated TLS and its non-retained,
+non-radio dispatch-topic marker reached the production worker. The same
+account did not receive the marker on its channel subscription. Broker SSH
+requires interactive sudo for the ACL. Next: provide scoped downlink access
+and verify radio delivery. The residential portal pin awaits coordinates or
+geocoding approval. [Site](sites.md#2026-11-25---seths-home).
+
+## 2026-11-25 - Staged the private replacement MQTT broker
+
+CT 101 moved onto the private subnet behind OPNsense. The source backup completed and the six-account import matched the exported hashes and ACLs byte for byte. Private delivery and denial checks passed before and after a service restart. Both WAN rules remain disabled for the production certificate and renewal handoff. [Migration and acceptance](../docs/operations/mqtt-pve06-migration.md).
+
+## 2026-11-24 - Prepared reimbursement receipts
+
+Combined nine Amazon receipt pages and verified that only the twelve items
+selected in the workbook are highlighted. The owner can use the private PDF
+to support the $427.91 request. Approval and payment remain unconfirmed.
+[Finance evidence](finances.md#2026-11-24---reimbursement-receipt-packet).
+
+## 2026-11-24 - Reviewed member and portal messaging setup
+
+B002 and B003 are the first member test pair. Next bench check is a shared
+channel exchange and a direct message each way using paired clients. Live
+portal messaging needs shared-channel text decoding in the receive worker and
+a real reply path through one owner-selected transmit gateway. The physical
+gateway assignment is open. Keep the V3 recorders passive and retain manual
+sending after a backhaul outage. No radio or production test was performed.
+[Pilot roles](../PROJECT.md), [live ingestion](../docs/operations/live-mqtt.md),
+[shared-channel requirements](../.scratch/pilot/issues/06-dispatch-portal.md).
+
+## 2026-11-23 - Reviewed 48 hours of fleet health
+
+Read the live field roster and production packet archive through 09:48 Pacific.
+All nine field radios reported. G002 and G006 had repeated boots, R009 had
+the lowest ending field-radio battery estimate and R011 had no measured net
+charge. Both member fixes were stale at cutoff. Next checks are gateway reset
+causes, member duty periods and the two field charging paths. No live hardware
+or service settings changed. [Measurements and inspection order](field-results.md#2026-11-23---fleet-health-and-inspection-priorities).
+
+## 2026-11-22 - Checked remote router favorites support
+
+The [Meshtastic Python CLI](https://github.com/meshtastic/python/blob/master/meshtastic/__main__.py)
+supports `--dest <router> --set-favorite-node <peer>` over remote admin.
+The firmware handler saves the favorite when the peer already has an entry
+in the target's node database. The first relay still spends one hop. After
+that, eligible routers can preserve the hop limit when they receive from a
+favorite router. Each end needs its own favorite entry for both directions.
+[Zero-cost hop behavior](https://meshtastic.org/blog/zero-cost-hops-favorite-routers/).
+
+The fresh RAK batch was provisioned with B002's admin key, and B002 previously
+passed [direct admin reads](../docs/operations/b002-ota-admin-20261114.md)
+on three radios including R005. No live radio changes were made. If selected,
+check current admin reachability and verify a reversible favorite write on
+one pair before extending to the field fleet. An ACK alone does not verify
+the favorite entry.
+
+## 2026-11-21 - Checked the live field roster against deployment records
+
+Read the production roster and authenticated state without changing either.
+All twelve roster rows resolve to the registered physical radios. Nine pins
+exactly match the published selections, G001 resolves to its owner-supplied
+Lee Fire Station pin, and R004 resolves to the saved SaharaFG pin. R002 is
+absent from the active roster. G003 is mobile and has no fixed pin.
+The physical placements of R004, R009 and G006 still need confirmation.
+Check R006 against the field location after any move from its recorded Lee
+Junction pin. The field report records Fletcher replacement and Sisters
+recovery as outstanding, and neither site is on the current portal roster.
+[Site record](sites.md) · [Field report](aar/2026-11-15-mount-charleston.md).
+
 ## 2026-11-18 - Replaced R002 with R004 at SaharaFG
 
 Owner reports R002 `!05237743` needs torn-wire rework and selects R004
@@ -15,6 +222,28 @@ held and retains its own packet history. The scoped portal rollback is
 retained privately on the host. Physical installation, reception at the
 site and R002 rework await confirmation.
 [Hardware and site assignment](sites.md#2026-11-18---saharafg-replacement).
+
+## 2026-11-17 - Prepared Google Earth survey waypoints for iOS
+
+Converted the final mountain siting GPX to a sibling KML in the private study folder. Verified all 26 names, descriptions and coordinate pairs against the source. Opening it on the owner's iPhone is the remaining check.
+
+## 2026-11-17 - Compared R009 and R002 at R005
+
+The owner selected R005 as the comparison receiver. Its own archived
+direct-reception readings put the Muzi setup 4 dB ahead in median RSSI
+and 4.50 dB ahead in median SNR over two hours. Reverse-link readings also
+favored R009. The next useful check is to repeat with swapped antennas if
+the owner wants to isolate the antenna effect.
+[Measurements](field-results.md#2026-11-17---r009-and-r002-direct-reception-at-r005).
+
+## 2026-11-17 - Compared R009 and R002 at G003
+
+Queried the live packet archive read-only for unique direct receptions at
+G003. The latest hour had 78 packets per radio and equal median RSSI and SNR
+(−65 dBm and +6.50 dB). The two-hour window put the fiberglass setup 1 dB
+higher in median RSSI, with equal median SNR. An antenna swap with a
+stationary receiver is the next useful check if the owner wants to isolate
+the antenna effect. [Measurements](field-results.md#2026-11-17---r009-and-r002-direct-reception-at-g003).
 
 ## 2026-11-17 - Deployed compact Activity routes
 

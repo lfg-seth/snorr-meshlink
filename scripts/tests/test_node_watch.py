@@ -108,6 +108,14 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(len({n["label"] for n in nodes}), 2)
         self.assertTrue(all(n["radio"][1:] in n["label"] for n in nodes))
 
+    def test_reassigned_gateway_uses_registry_name_for_its_physical_id(self):
+        key = "legacy-v3-9ea13cc0"
+        radio = "!9ea13cc0"
+        cfg = {"infrastructure": {radio: key}, "gateways": {radio: key}}
+        labels = {(key, radio): "G008", (key, "!1bbf0638"): "G001"}
+        node, = sampler.configured_nodes(cfg, {}, labels)
+        self.assertEqual((node["label"], node["kind"]), ("G008", "gateway"))
+
     def test_contact_keeps_gateway_and_timestamp_together(self):
         state = sampler.Measurements([node()], gateway_names={"!b": "Test Gateway"})
         radio = "!12345678"

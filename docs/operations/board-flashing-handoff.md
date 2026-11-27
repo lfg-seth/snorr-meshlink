@@ -1,5 +1,22 @@
 # Board flashing and configuration handoff
 
+**Lee Fire Station G002** (`!1bbf0ab8`) has a [prebuilt client-relay and two-way MQTT image](https://github.com/lfg-seth/firmware/releases/tag/snorr-v4-sd-client-2.7.26.14c35c8-pre.1).
+Download the ordinary application binary and checksums before going offline.
+Follow the release's backup, partition and active-slot checks. Read back CLIENT/ALL,
+LoRa TX, encrypted primary-channel uplink/downlink and `lora.ignore_mqtt=false`
+after reboot. Verify a fresh GPS uplink, dispatch text at an RF-only member radio
+and a witnessed client relay. Field installation and acceptance are pending.
+
+Gateway selection uses the [current physical assignments](../../records/deployment-nodes.md#current-gateway-names--2026-11-25).
+The Seth's Home V3 is **G008 / !9ea13cc0**. The former G003 bench V3
+**!9e9f167c** is assigned **G009** and awaits on-radio renaming. Confirm
+hardware ID `4393827189e95c03021dd7b37007a6a0` before applying that change.
+
+G008 uses its dedicated login on `mqtt.spp.lol:8883`. On this designated
+reply gateway verify primary-channel uplink/downlink and
+`lora.ignore_mqtt=false` after reboot. A broker connection alone will
+still succeed when the radio discards downlink texts. [Hardware evidence](mqtt-pve06-migration.md#november-25-2026-public-activation-of-mqttspplol).
+
 2026-11-16 **Terry Home / G006** is Heltec V3 `!b03d6790`. The installed
 **heltec-v3-gateway / 2.7.26.6fea6aa** matched the checked V3 gateway build.
 Name, authorized fixed site and Wi-Fi changes passed complete reboot readback.

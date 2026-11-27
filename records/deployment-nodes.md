@@ -1,6 +1,33 @@
 # Current deployment node labels
 
+B009 (`!9253a42c`) and B010 (`!a35c4488`) are unassigned member nodes. [Hardware identities](inventory.md#2026-11-26---member-radios-b009-and-b010).
+
+B006 (`!9254f4b4`), B007 (`!a35af848`) and B008 (`!f669c4dc`) are unassigned member nodes. [USB and hardware identities](inventory.md#2026-11-26---three-new-heltec-v4-member-radios).
+
+The unassigned V4.3 member radios B004 (`!a35a5fec`) and B005
+(`!a35b3888`) were added on November 25. B002 and B003 retain their labels.
+[USB and hardware identities](inventory.md#2026-11-25---new-gps-member-radios-b004-and-b005).
+
 [Published 2026-11-15 setup and exact fixed locations](sites.md#2026-11-15---published-deployment-setup-and-fixed-locations) record the owner-selected deployment pins.
+
+## Current gateway names — 2026-11-25
+
+| Device label | Physical radio | Assignment |
+| --- | --- | --- |
+| G001 | `!1bbf0638` | Screenless V4.3. Former bench label G007. |
+| G002 | `!1bbf0ab8` | Screenless V4. Current field roster lists Lee Fire Station. |
+| G003 | `!849ad7a0` | Seth Mobile. Former V3 label G002. |
+| G005 | `!9ea039cc` | Legacy V3 in the device registry. |
+| G006 | `!b03d6790` | Terry Home. |
+| G008 | `!9ea13cc0` | Seth's Home. Former V3 label G001. USB owner names and full profile verified after reset. |
+| G009 | `!9e9f167c` | Bench gateway. Former V3 label G003. Registry assigned. On-radio rename pending physical access or a verified admin connection. |
+| 9ea4 | `!b03c9ea4` | Jacobs Home. Existing unique short name. |
+
+G004 and G007 have historical assignments. The next unused gateway number in
+this record is **G010**. Before assigning it, compare the physical radio ID with
+the live device registry, field roster and this table. Reserve each short name
+for one physical radio across field, bench and historical gateway assignments.
+Existing packet and device keys continue to identify their original radios.
 
 ## R004 replaces R002 at SaharaFG - 2026-11-18
 
